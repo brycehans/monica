@@ -12,6 +12,7 @@ use App\Services\Contact\Contact\UpdateBirthdayInformation;
 use App\Services\Contact\Contact\UpdateDeceasedInformation;
 use App\Services\Contact\Conversation\AddMessageToConversation;
 use App\Services\Contact\Conversation\CreateConversation;
+use App\Services\Contact\Gift\CreateGift;
 use App\Services\Contact\Relationship\CreateRelationship;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -50,6 +51,7 @@ class SeedRegressionDemo extends Command
         $this->populateConversations();
         $this->populateActivities();
         $this->populateTasks();
+        $this->populateGifts();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -376,6 +378,23 @@ class SeedRegressionDemo extends Command
                     'completed_at' => now()->subDays(7),
                 ]);
             }
+        }
+    }
+
+    private function populateGifts(): void
+    {
+        $accountId = $this->demoAccount->id;
+
+        foreach (array_slice($this->supportingContacts, 0, 4) as $i => $contact) {
+            app(CreateGift::class)->execute([
+                'account_id' => $accountId,
+                'contact_id' => $contact->id,
+                'status' => $i % 2 === 0 ? 'idea' : 'offered',
+                'name' => $this->faker->realText(30),
+                'comment' => $this->faker->realText(120),
+                'url' => $this->faker->url(),
+                'amount' => $this->faker->numberBetween(20, 150),
+            ]);
         }
     }
 }
