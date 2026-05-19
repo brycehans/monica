@@ -16,6 +16,7 @@ use App\Services\Contact\Gift\CreateGift;
 use App\Services\Contact\Relationship\CreateRelationship;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class SeedRegressionDemo extends Command
@@ -288,12 +289,14 @@ class SeedRegressionDemo extends Command
                 'is_favorited' => false,
             ]);
             if ($i % 4 === 0) {
-                $contact->notes()->create([
+                // `favorited_at` is not in Note's $fillable, so set it after create().
+                $favorited = $contact->notes()->create([
                     'body' => $this->faker->realText(600),
                     'account_id' => $accountId,
                     'is_favorited' => true,
-                    'favorited_at' => now()->subDays(3),
                 ]);
+                $favorited->favorited_at = now()->subDays(3);
+                $favorited->save();
             }
         }
     }
@@ -387,16 +390,23 @@ class SeedRegressionDemo extends Command
     {
         $accountId = $this->demoAccount->id;
 
-        foreach (array_slice($this->supportingContacts, 0, 4) as $i => $contact) {
-            app(CreateGift::class)->execute([
-                'account_id' => $accountId,
-                'contact_id' => $contact->id,
-                'status' => $i % 2 === 0 ? 'idea' : 'offered',
-                'name' => $this->faker->realText(30),
-                'comment' => $this->faker->realText(120),
-                'url' => $this->faker->url(),
-                'amount' => $this->faker->numberBetween(20, 150),
-            ]);
+        // CreateGift only attaches a currency_id when Auth::check() is true.
+        // Without it, demo gifts render with no currency symbol in the UI.
+        Auth::setUser($this->demoUser);
+        try {
+            foreach (array_slice($this->supportingContacts, 0, 4) as $i => $contact) {
+                app(CreateGift::class)->execute([
+                    'account_id' => $accountId,
+                    'contact_id' => $contact->id,
+                    'status' => $i % 2 === 0 ? 'idea' : 'offered',
+                    'name' => $this->faker->realText(30),
+                    'comment' => $this->faker->realText(120),
+                    'url' => $this->faker->url(),
+                    'amount' => $this->faker->numberBetween(20, 150),
+                ]);
+            }
+        } finally {
+            Auth::logout();
         }
     }
 
