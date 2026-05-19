@@ -34,8 +34,10 @@ Faker randomness is allowed and desirable because the browser dataset should fee
 
 The seed path should create stable credentials:
 
-- `demo@example.test` with a fixed password for the rich account.
-- `blank@example.test` with a fixed password for empty-state checks.
+- `test@example.com` / `password` for the rich account.
+- `blank@example.com` / `password` for empty-state checks.
+
+(The originally drafted `demo@example.test` / `demo0` and `blank@example.test` / `blank0` were dropped because Monica's `CreateUser` validator requires `password|min:6`. The 8-char `password` also makes sign-in trivial during browser smoke walks.)
 
 The rich account should call the same default-account setup paths as normal account creation, including default fields, default activity types, relationship types, genders, and policy acceptance if required for the UI.
 
@@ -77,6 +79,23 @@ Each important screen should have at least one visible example:
 - Food preferences and first-met information.
 
 Where the app has storage-backed features such as documents, photos, or avatars, the first implementation should prefer safe metadata or small local fixtures only. It should not require external downloads.
+
+## Deferred to Follow-Up Tranches
+
+The first version delivers the must-have scenarios above and deliberately defers the following to keep the implementation tractable. Each is on the spec's "important screen" list and should be added once the baseline browser smoke pass is exercising the modernization-ladder upgrades.
+
+- Addresses with varied completeness.
+- Tags.
+- Messaging handles (Whatsapp, Telegram). Email, Phone, and Facebook are covered.
+- Journal entries (`entries` + `journal_entries` rows). Activities are covered.
+- Day ratings.
+- Food preferences on the populated contacts.
+- First-met information (`first_met_*` fields).
+- Tasks with explicit overdue and future-dated states. Open and completed are covered, but every task currently has no due date.
+- Reminders beyond the single yearly anniversary reminder produced by the upcoming-birthday contact's `add_reminder=true`. Spec called for overdue, upcoming, recurring, and completed reminder states.
+- Documents, photos, and avatar attachments.
+
+The acceptance test pins the must-have set above. Adding deferred items should also extend `tests/Commands/Tests/SeedRegressionDemoTest.php` so the regression dataset's intended shape stays explicit.
 
 ## Randomness Policy
 
