@@ -55,24 +55,32 @@
     <env name="APP_KEY" value="base64:NTrXToqFZJlv48dgPc+kNpc3SBt333TfDnF1mDShsBg=" force="true"/>
     <env name="BCRYPT_ROUNDS" value="4" force="true"/>
     <env name="DB_CONNECTION" value="testing" force="true"/>
-    <env name="CACHE_DRIVER" value="array"/>
-    <env name="CHECK_VERSION" value="false"/>
-    <env name="MAIL_MAILER" value="array"/>
-    <env name="QUEUE_CONNECTION" value="sync"/>
-    <env name="SESSION_DRIVER" value="array"/>
-    <env name="FILESYSTEM_DISK" value="public"/>
-    <env name="DEBUGBAR_ENABLED" value="false"/>
-    <env name="APP_DEFAULT_LOCALE" value="en"/>
-    <env name="LOG_CHANNEL" value="testing"/>
-    <env name="DAV_ENABLED" value="true"/>
+    <env name="CACHE_DRIVER" value="array" force="true"/>
+    <env name="CHECK_VERSION" value="false" force="true"/>
+    <env name="MAIL_MAILER" value="array" force="true"/>
+    <env name="QUEUE_CONNECTION" value="sync" force="true"/>
+    <env name="SESSION_DRIVER" value="array" force="true"/>
+    <env name="FILESYSTEM_DISK" value="public" force="true"/>
+    <env name="DEBUGBAR_ENABLED" value="false" force="true"/>
+    <env name="APP_DEFAULT_LOCALE" value="en" force="true"/>
+    <env name="LOG_CHANNEL" value="testing" force="true"/>
+    <env name="DAV_ENABLED" value="true" force="true"/>
     <env name="REQUIRES_SUBSCRIPTION" value="false" force="true"/>
     <env name="MAIL_HOST" value=""/>
     <env name="MAIL_PORT" value=""/>
     <env name="MAIL_ENCRYPTION" value=""/>
     <env name="APP_EMAIL_NEW_USERS_NOTIFICATION" value=""/>
-    <env name="LARAVEL_CLOUDFLARE_ENABLED" value="false"/>
-    <env name="STRIPE_API_BASE" value="http://stripe-mock:12111"/>
+    <env name="LARAVEL_CLOUDFLARE_ENABLED" value="false" force="true"/>
+    <env name="STRIPE_API_BASE" value="http://stripe-mock:12111" force="true"/>
     <env name="STRIPE_SECRET" value="sk_test_stripemockkey" force="true"/>
     <env name="STRIPE_KEY" value="pk_test_stripemockkey" force="true"/>
+
+    <!-- Laravel's Env helper resolves through dotenv's ServerConstAdapter first,
+         which reads $_SERVER. Docker env_file populates $_SERVER too, so the
+         <env> entries above (which only touch $_ENV / putenv) are ignored by
+         env() when conflicting values live in $_SERVER. Mirror the critical
+         test-mode overrides here so $_SERVER also reflects the testing state. -->
+    <server name="APP_ENV" value="testing"/>
+    <server name="DB_CONNECTION" value="testing"/>
   </php>
 </phpunit>
