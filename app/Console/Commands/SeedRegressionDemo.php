@@ -5,8 +5,14 @@ namespace App\Console\Commands;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
 use App\Models\Contact\ContactFieldType;
+use App\Models\Contact\Reminder;
+use App\Models\Contact\Task;
+use App\Models\Journal\Day;
+use App\Models\Journal\Entry;
+use App\Models\Journal\JournalEntry;
 use App\Models\User\User;
 use App\Services\Account\Activity\Activity\CreateActivity;
+use App\Services\Contact\Address\CreateAddress;
 use App\Services\Contact\Contact\CreateContact;
 use App\Services\Contact\Contact\UpdateBirthdayInformation;
 use App\Services\Contact\Contact\UpdateDeceasedInformation;
@@ -15,6 +21,8 @@ use App\Services\Contact\Conversation\CreateConversation;
 use App\Services\Account\Settings\DestroyAccount;
 use App\Services\Contact\Gift\CreateGift;
 use App\Services\Contact\Relationship\CreateRelationship;
+use App\Services\Contact\Reminder\CreateReminder;
+use App\Services\Contact\Tag\AssociateTag;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +61,8 @@ class SeedRegressionDemo extends Command
         $this->buildEdgeCaseContacts();
         $this->buildSupportingContacts();
         $this->populateContactFields();
+        $this->populateAddresses();
+        $this->populateTags();
         $this->populateNotes();
         $this->populateCalls();
         $this->populateConversations();
@@ -60,6 +70,8 @@ class SeedRegressionDemo extends Command
         $this->populateTasks();
         $this->populateGifts();
         $this->populatePets();
+        $this->populateReminders();
+        $this->populateJournal();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -308,6 +320,130 @@ class SeedRegressionDemo extends Command
         }
     }
 
+    private function populateAddresses(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $partner = $this->supportingContacts[0];
+        $parent = $this->supportingContacts[1];
+        $sibling = $this->supportingContacts[2];
+        $morgan = $this->supportingContacts[3];
+        $robin = $this->supportingContacts[4];
+        $taylor = $this->supportingContacts[5];
+        $riley = $this->supportingContacts[6];
+
+        // 1. Full US address on the partner.
+        app(CreateAddress::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $partner->id,
+            'name' => 'Home',
+            'street' => '742 Evergreen Terrace',
+            'city' => 'Springfield',
+            'province' => 'IL',
+            'postal_code' => '62704',
+            'country' => 'US',
+        ]);
+
+        // 2. Same partner — second address (Work) to exercise multi-address UI.
+        app(CreateAddress::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $partner->id,
+            'name' => 'Work',
+            'street' => '500 Market Street, Suite 1200',
+            'city' => 'San Francisco',
+            'province' => 'CA',
+            'postal_code' => '94105',
+            'country' => 'US',
+        ]);
+
+        // 3. Partial (city + country only) on Jordan-Parent.
+        app(CreateAddress::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $parent->id,
+            'city' => 'Bristol',
+            'country' => 'GB',
+        ]);
+
+        // 4. Country-only on Casey-Sibling.
+        app(CreateAddress::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $sibling->id,
+            'country' => 'JP',
+        ]);
+
+        // 5. Accented street name on Morgan-Friend (UTF-8 exercise).
+        app(CreateAddress::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $morgan->id,
+            'street' => '12 Rue de l\'Élysée',
+            'city' => 'Paris',
+            'postal_code' => '75008',
+            'country' => 'FR',
+        ]);
+
+        // 6–8. Faker-generated complete addresses on Robin, Taylor, Riley.
+        foreach ([$robin, $taylor, $riley] as $contact) {
+            app(CreateAddress::class)->execute([
+                'account_id' => $accountId,
+                'contact_id' => $contact->id,
+                'street' => $this->faker->streetAddress(),
+                'city' => $this->faker->city(),
+                'province' => $this->faker->randomElement(['CA', 'NY', 'TX', 'WA', 'ON', 'BC']),
+                'postal_code' => $this->faker->postcode(),
+                'country' => $this->faker->randomElement(['US', 'FR', 'GB', 'DE', 'JP']),
+            ]);
+        }
+    }
+
+    private function populateTags(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $partner = $this->supportingContacts[0];
+        $parent = $this->supportingContacts[1];
+        $sibling = $this->supportingContacts[2];
+        $morgan = $this->supportingContacts[3];
+        $robin = $this->supportingContacts[4];
+        $taylor = $this->supportingContacts[5];
+        $riley = $this->supportingContacts[6];
+
+        $associate = function (Contact $contact, string $tagName) use ($accountId) {
+            app(AssociateTag::class)->execute([
+                'account_id' => $accountId,
+                'contact_id' => $contact->id,
+                'name' => $tagName,
+            ]);
+        };
+
+        // Deterministic assignments anchoring the 5-tag taxonomy.
+        $associate($partner, 'family');
+        $associate($parent, 'family');
+        $associate($sibling, 'family');
+        $associate($morgan, 'family');
+
+        $associate($morgan, 'close-friends');
+        $associate($robin, 'close-friends');
+
+        $associate($taylor, 'work');
+        $associate($riley, 'neighborhood');
+
+        $associate($partner, 'important');
+        $elodie = Contact::where('account_id', $accountId)
+            ->where('first_name', 'Élodie')
+            ->first();
+        if ($elodie !== null) {
+            $associate($elodie, 'important');
+        }
+
+        // Faker-random contacts (anything past the named scenario indices) get 1–2 random tags.
+        $palette = ['family', 'close-friends', 'work', 'neighborhood', 'important'];
+        foreach (array_slice($this->supportingContacts, 7) as $contact) {
+            $count = $this->faker->numberBetween(1, 2);
+            $picks = $this->faker->randomElements($palette, $count);
+            foreach ($picks as $name) {
+                $associate($contact, $name);
+            }
+        }
+    }
+
     private function populateNotes(): void
     {
         $accountId = $this->demoAccount->id;
@@ -403,6 +539,16 @@ class SeedRegressionDemo extends Command
                 'completed' => 0,
             ]);
 
+            // Extra open task on the first three supporting contacts for density.
+            if ($i < 3) {
+                $contact->tasks()->create([
+                    'account_id' => $accountId,
+                    'title' => $this->faker->realText(40),
+                    'description' => $this->faker->realText(200),
+                    'completed' => 0,
+                ]);
+            }
+
             // Completed task on every second contact.
             if ($i % 2 === 0) {
                 $contact->tasks()->create([
@@ -413,6 +559,25 @@ class SeedRegressionDemo extends Command
                     'completed_at' => now()->subDays(7),
                 ]);
             }
+        }
+
+        // Account-level tasks (no contact) — appear in the dashboard's general task list.
+        $accountTitles = [
+            'Buy birthday card stock',
+            'Renew mailing list subscription',
+            'Update emergency contacts list',
+            'Schedule annual planning review',
+            'Clean up duplicate contacts',
+            'Export contact backup',
+        ];
+        foreach ($accountTitles as $title) {
+            Task::create([
+                'account_id' => $accountId,
+                'contact_id' => null,
+                'title' => $title,
+                'description' => $this->faker->realText(400),
+                'completed' => 0,
+            ]);
         }
     }
 
@@ -437,6 +602,157 @@ class SeedRegressionDemo extends Command
             }
         } finally {
             Auth::logout();
+        }
+    }
+
+    private function populateReminders(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $partner = $this->supportingContacts[0];
+        $sibling = $this->supportingContacts[2];
+
+        // Overdue one_time: CreateReminder->schedule() rolls past one_time dates forward by years
+        // (DateHelper::addTimeAccordingToFrequencyType falls through to addYears for unknown types),
+        // so the service-level path can't express "overdue". Direct write instead.
+        Reminder::create([
+            'account_id' => $accountId,
+            'contact_id' => $partner->id,
+            'title' => 'Send overdue thank-you note',
+            'description' => 'Still owed from the holidays.',
+            'initial_date' => now()->subDays(10)->toDateString(),
+            'next_expected_date' => now()->subDays(10),
+            'frequency_type' => 'one_time',
+            'frequency_number' => 1,
+            'delible' => true,
+        ]);
+
+        // Upcoming one_time (~14 days out) on partner.
+        app(CreateReminder::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $partner->id,
+            'title' => 'Plan weekend trip',
+            'description' => 'Pick a destination and book accommodation.',
+            'initial_date' => now()->addDays(14)->toDateString(),
+            'frequency_type' => 'one_time',
+            'frequency_number' => 1,
+        ]);
+
+        // Weekly recurring on partner.
+        app(CreateReminder::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $partner->id,
+            'title' => 'Weekly check-in call',
+            'initial_date' => now()->subDays(2)->toDateString(),
+            'frequency_type' => 'week',
+            'frequency_number' => 1,
+        ]);
+
+        // Monthly recurring on partner — used as the anchor for sent history.
+        $monthly = app(CreateReminder::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $partner->id,
+            'title' => 'Monthly date night',
+            'description' => 'Pick a restaurant or activity.',
+            'initial_date' => now()->subMonths(2)->toDateString(),
+            'frequency_type' => 'month',
+            'frequency_number' => 1,
+        ]);
+
+        // Extra weekly with a different initial_date for variety.
+        app(CreateReminder::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $partner->id,
+            'title' => 'Send a thoughtful text',
+            'initial_date' => now()->subDays(5)->toDateString(),
+            'frequency_type' => 'week',
+            'frequency_number' => 2,
+        ]);
+
+        // Far-out one_time upcoming (~60 days) on partner.
+        app(CreateReminder::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $partner->id,
+            'title' => 'Anniversary surprise',
+            'initial_date' => now()->addDays(60)->toDateString(),
+            'frequency_type' => 'one_time',
+            'frequency_number' => 1,
+        ]);
+
+        // Spread reminders across other contacts so the dashboard widget shows variety.
+        $elodie = Contact::where('account_id', $accountId)
+            ->where('first_name', 'Élodie')
+            ->first();
+        if ($elodie !== null) {
+            app(CreateReminder::class)->execute([
+                'account_id' => $accountId,
+                'contact_id' => $elodie->id,
+                'title' => 'Send birthday card',
+                'initial_date' => now()->addDays(30)->toDateString(),
+                'frequency_type' => 'one_time',
+                'frequency_number' => 1,
+            ]);
+        }
+
+        app(CreateReminder::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $sibling->id,
+            'title' => 'Weekly sibling chat',
+            'initial_date' => now()->subDays(3)->toDateString(),
+            'frequency_type' => 'week',
+            'frequency_number' => 1,
+        ]);
+
+        // Fired history records on the monthly reminder, so the reminder detail view shows a series.
+        foreach ([7, 30, 60] as $daysAgo) {
+            DB::table('reminders_sent')->insert([
+                'account_id' => $accountId,
+                'contact_id' => $partner->id,
+                'reminder_id' => $monthly->id,
+                'title' => $monthly->title,
+                'description' => $monthly->description ?? '',
+                'html_sent_content' => '<p>Monthly date night reminder.</p>',
+                'sent_date' => now()->subDays($daysAgo),
+                'created_at' => now()->subDays($daysAgo),
+                'updated_at' => now()->subDays($daysAgo),
+            ]);
+        }
+    }
+
+    private function populateJournal(): void
+    {
+        $accountId = $this->demoAccount->id;
+
+        // 12 free-form journal entries spread across the last 90 days.
+        // Pattern from JournalController::store: set $entry->date as a non-persisted
+        // attribute after save so JournalEntry::add picks it up for the journal_entries.date column.
+        $entryLengths = [
+            200, 200, 200, 200,   // short
+            500, 500, 500, 500,   // medium
+            1200, 1200, 1200, 1200, // long-form
+        ];
+        foreach ($entryLengths as $length) {
+            $entryDate = now()->subDays($this->faker->numberBetween(1, 90))
+                ->setTime($this->faker->numberBetween(7, 22), $this->faker->numberBetween(0, 59));
+            $entry = Entry::create([
+                'account_id' => $accountId,
+                'title' => $this->faker->realText(50),
+                'post' => $this->faker->realText($length),
+            ]);
+            $entry->date = $entryDate;
+            JournalEntry::add($entry);
+        }
+
+        // 30 day ratings across the last 30 days. Cluster around 3-4 (realistic).
+        $ratingPalette = [1, 2, 3, 3, 3, 3, 4, 4, 4, 5];
+        for ($daysAgo = 0; $daysAgo < 30; $daysAgo++) {
+            $hasComment = $daysAgo < 10; // first 10 days get a short comment
+            $day = Day::create([
+                'account_id' => $accountId,
+                'date' => now()->subDays($daysAgo)->toDateString(),
+                'rate' => $this->faker->randomElement($ratingPalette),
+                'comment' => $hasComment ? $this->faker->realText(80) : null,
+            ]);
+            JournalEntry::add($day);
         }
     }
 
