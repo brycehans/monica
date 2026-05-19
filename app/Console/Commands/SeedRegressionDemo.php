@@ -42,6 +42,7 @@ class SeedRegressionDemo extends Command
         $this->buildEdgeCaseContacts();
         $this->buildSupportingContacts();
         $this->populateContactFields();
+        $this->populateNotes();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -260,6 +261,27 @@ class SeedRegressionDemo extends Command
                     'contact_field_type_id' => $types['Facebook']->id,
                     'data' => 'https://facebook.com/'.$this->faker->userName(),
                     'account_id' => $accountId,
+                ]);
+            }
+        }
+    }
+
+    private function populateNotes(): void
+    {
+        $accountId = $this->demoAccount->id;
+
+        foreach ($this->supportingContacts as $i => $contact) {
+            $contact->notes()->create([
+                'body' => $this->faker->realText(120),
+                'account_id' => $accountId,
+                'is_favorited' => false,
+            ]);
+            if ($i % 4 === 0) {
+                $contact->notes()->create([
+                    'body' => $this->faker->realText(600),
+                    'account_id' => $accountId,
+                    'is_favorited' => true,
+                    'favorited_at' => now()->subDays(3),
                 ]);
             }
         }
