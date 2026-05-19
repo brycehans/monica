@@ -49,6 +49,7 @@ class SeedRegressionDemo extends Command
         $this->populateCalls();
         $this->populateConversations();
         $this->populateActivities();
+        $this->populateTasks();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -349,6 +350,32 @@ class SeedRegressionDemo extends Command
                 'happened_at' => $this->faker->dateTimeThisYear()->format('Y-m-d'),
                 'contacts' => [$contact->id],
             ]);
+        }
+    }
+
+    private function populateTasks(): void
+    {
+        $accountId = $this->demoAccount->id;
+
+        foreach (array_slice($this->supportingContacts, 0, 6) as $i => $contact) {
+            // Open task.
+            $contact->tasks()->create([
+                'account_id' => $accountId,
+                'title' => $this->faker->realText(40),
+                'description' => $this->faker->realText(160),
+                'completed' => 0,
+            ]);
+
+            // Completed task on every second contact.
+            if ($i % 2 === 0) {
+                $contact->tasks()->create([
+                    'account_id' => $accountId,
+                    'title' => $this->faker->realText(40),
+                    'description' => $this->faker->realText(160),
+                    'completed' => 1,
+                    'completed_at' => now()->subDays(7),
+                ]);
+            }
         }
     }
 }
