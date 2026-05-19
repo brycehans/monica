@@ -3,10 +3,12 @@
 namespace App\Console\Commands;
 
 use App\Models\Account\Account;
+use App\Models\Contact\Contact;
 use App\Models\User\User;
 use App\Services\Contact\Contact\CreateContact;
 use App\Services\Contact\Contact\UpdateBirthdayInformation;
 use App\Services\Contact\Contact\UpdateDeceasedInformation;
+use App\Services\Contact\Relationship\CreateRelationship;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\WithFaker;
 
@@ -25,6 +27,7 @@ class SeedRegressionDemo extends Command
     private Account $demoAccount;
     private Account $blankAccount;
     private User $demoUser;
+    private array $supportingContacts = [];
 
     public function handle()
     {
@@ -34,6 +37,7 @@ class SeedRegressionDemo extends Command
 
         $this->buildDemoAccount();
         $this->buildEdgeCaseContacts();
+        $this->buildSupportingContacts();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -166,5 +170,64 @@ class SeedRegressionDemo extends Command
             'add_reminder' => true,
             'is_deceased' => false,
         ]);
+    }
+
+    private function buildSupportingContacts(): void
+    {
+        $count = max((int) $this->option('contacts'), 12);
+        $accountId = $this->demoAccount->id;
+        $authorId = $this->demoUser->id;
+
+        $scenarios = [
+            ['first_name' => 'Avery', 'last_name' => 'Partner', 'role' => 'Significant other'],
+            ['first_name' => 'Jordan', 'last_name' => 'Parent', 'role' => 'Parent'],
+            ['first_name' => 'Casey', 'last_name' => 'Sibling', 'role' => 'Sibling'],
+            ['first_name' => 'Morgan', 'last_name' => 'Friend', 'role' => 'Close friend'],
+            ['first_name' => 'Robin', 'last_name' => 'Friend', 'role' => 'Close friend'],
+            ['first_name' => 'Taylor', 'last_name' => 'Coworker', 'role' => 'Coworker'],
+            ['first_name' => 'Riley', 'last_name' => 'Neighbor', 'role' => 'Neighbor'],
+        ];
+
+        foreach ($scenarios as $scenario) {
+            $contact = app(CreateContact::class)->execute([
+                'account_id' => $accountId,
+                'author_id' => $authorId,
+                'first_name' => $scenario['first_name'],
+                'last_name' => $scenario['last_name'],
+                'is_partial' => false,
+                'is_birthdate_known' => false,
+                'is_deceased' => false,
+                'is_deceased_date_known' => false,
+            ]);
+            $this->supportingContacts[] = $contact;
+        }
+
+        // Filler contacts up to the requested count (already created edge + scenario contacts count toward this).
+        $alreadyCreated = Contact::where('account_id', $accountId)->count();
+        for ($i = $alreadyCreated; $i < $count; $i++) {
+            $this->supportingContacts[] = app(CreateContact::class)->execute([
+                'account_id' => $accountId,
+                'author_id' => $authorId,
+                'first_name' => $this->faker->firstName(),
+                'last_name' => $this->faker->lastName(),
+                'is_partial' => false,
+                'is_birthdate_known' => false,
+                'is_deceased' => false,
+                'is_deceased_date_known' => false,
+            ]);
+        }
+
+        // Pick a relationship type id (the account already has them via populateDefaultFields).
+        $partner = $this->supportingContacts[0];
+        $relationshipTypeId = $this->demoAccount->relationshipTypes->first()->id;
+
+        foreach (array_slice($this->supportingContacts, 1, 6) as $relative) {
+            app(CreateRelationship::class)->execute([
+                'account_id' => $accountId,
+                'contact_is' => $partner->id,
+                'of_contact' => $relative->id,
+                'relationship_type_id' => $relationshipTypeId,
+            ]);
+        }
     }
 }
