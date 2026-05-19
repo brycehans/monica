@@ -9,6 +9,8 @@ use App\Models\User\User;
 use App\Services\Contact\Contact\CreateContact;
 use App\Services\Contact\Contact\UpdateBirthdayInformation;
 use App\Services\Contact\Contact\UpdateDeceasedInformation;
+use App\Services\Contact\Conversation\AddMessageToConversation;
+use App\Services\Contact\Conversation\CreateConversation;
 use App\Services\Contact\Relationship\CreateRelationship;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -44,6 +46,7 @@ class SeedRegressionDemo extends Command
         $this->populateContactFields();
         $this->populateNotes();
         $this->populateCalls();
+        $this->populateConversations();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -296,6 +299,35 @@ class SeedRegressionDemo extends Command
                 $contact->calls()->create([
                     'account_id' => $accountId,
                     'called_at' => $this->faker->dateTimeThisYear(),
+                ]);
+            }
+        }
+    }
+
+    private function populateConversations(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $phoneTypeId = ContactFieldType::where('account_id', $accountId)
+            ->where('name', 'Phone')
+            ->first()
+            ->id;
+
+        foreach (array_slice($this->supportingContacts, 0, 4) as $contact) {
+            $conversation = app(CreateConversation::class)->execute([
+                'happened_at' => $this->faker->dateTimeThisYear(),
+                'contact_id' => $contact->id,
+                'contact_field_type_id' => $phoneTypeId,
+                'account_id' => $accountId,
+            ]);
+
+            foreach (range(1, 4) as $_) {
+                app(AddMessageToConversation::class)->execute([
+                    'account_id' => $accountId,
+                    'contact_id' => $contact->id,
+                    'conversation_id' => $conversation->id,
+                    'written_at' => $this->faker->dateTimeThisYear(),
+                    'written_by_me' => $this->faker->boolean(),
+                    'content' => $this->faker->realText(80),
                 ]);
             }
         }
