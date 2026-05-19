@@ -4,6 +4,9 @@ namespace App\Console\Commands;
 
 use App\Models\Account\Account;
 use App\Models\User\User;
+use App\Services\Contact\Contact\CreateContact;
+use App\Services\Contact\Contact\UpdateBirthdayInformation;
+use App\Services\Contact\Contact\UpdateDeceasedInformation;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\WithFaker;
 
@@ -30,6 +33,7 @@ class SeedRegressionDemo extends Command
         $this->faker->seed($seed);
 
         $this->buildDemoAccount();
+        $this->buildEdgeCaseContacts();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -60,5 +64,107 @@ class SeedRegressionDemo extends Command
     {
         $this->blankAccount = Account::createDefault('Blank', 'State', 'blank@example.com', 'password');
         $this->blankAccount->users()->first()->markEmailAsVerified();
+    }
+
+    private function buildEdgeCaseContacts(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $authorId = $this->demoUser->id;
+
+        // Partial contact — minimal record.
+        app(CreateContact::class)->execute([
+            'account_id' => $accountId,
+            'author_id' => $authorId,
+            'first_name' => 'Demo Partial',
+            'is_partial' => true,
+            'is_birthdate_known' => false,
+            'is_deceased' => false,
+            'is_deceased_date_known' => false,
+        ]);
+
+        // Archived contact — is_active flipped after creation (CreateContact doesn't accept it).
+        $archived = app(CreateContact::class)->execute([
+            'account_id' => $accountId,
+            'author_id' => $authorId,
+            'first_name' => 'Demo Archived',
+            'last_name' => 'Person',
+            'is_partial' => false,
+            'is_birthdate_known' => false,
+            'is_deceased' => false,
+            'is_deceased_date_known' => false,
+        ]);
+        $archived->is_active = false;
+        $archived->save();
+
+        // Deceased contact — created, then UpdateDeceasedInformation flips is_dead.
+        $deceased = app(CreateContact::class)->execute([
+            'account_id' => $accountId,
+            'author_id' => $authorId,
+            'first_name' => 'Demo Deceased',
+            'last_name' => 'Memory',
+            'is_partial' => false,
+            'is_birthdate_known' => false,
+            'is_deceased' => false,
+            'is_deceased_date_known' => false,
+        ]);
+        app(UpdateDeceasedInformation::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $deceased->id,
+            'is_deceased' => true,
+            'is_date_known' => true,
+            'day' => 14,
+            'month' => 3,
+            'year' => 2020,
+            'add_reminder' => false,
+        ]);
+
+        // Non-ASCII display name.
+        app(CreateContact::class)->execute([
+            'account_id' => $accountId,
+            'author_id' => $authorId,
+            'first_name' => 'Élodie',
+            'last_name' => 'Dupré',
+            'is_partial' => false,
+            'is_birthdate_known' => false,
+            'is_deceased' => false,
+            'is_deceased_date_known' => false,
+        ]);
+
+        // Very long display name.
+        app(CreateContact::class)->execute([
+            'account_id' => $accountId,
+            'author_id' => $authorId,
+            'first_name' => 'Bartholomew-Maximilian',
+            'last_name' => 'Featherstonehaugh-Worthington',
+            'is_partial' => false,
+            'is_birthdate_known' => false,
+            'is_deceased' => false,
+            'is_deceased_date_known' => false,
+        ]);
+
+        // Contact with upcoming birthday (≤ 30 days from "now").
+        $upcoming = app(CreateContact::class)->execute([
+            'account_id' => $accountId,
+            'author_id' => $authorId,
+            'first_name' => 'Sam',
+            'last_name' => 'Upcoming-Birthday',
+            'is_partial' => false,
+            'is_birthdate_known' => false,
+            'is_deceased' => false,
+            'is_deceased_date_known' => false,
+        ]);
+        $soon = now()->addDays(7);
+        app(UpdateBirthdayInformation::class)->execute([
+            'account_id' => $accountId,
+            'contact_id' => $upcoming->id,
+            'is_date_known' => true,
+            'day' => (int) $soon->format('d'),
+            'month' => (int) $soon->format('m'),
+            'year' => (int) $soon->subYears(30)->format('Y'),
+            'is_age_based' => false,
+            'age' => 30,
+            'add_reminder' => true,
+            'is_deceased' => false,
+        ]);
     }
 }
