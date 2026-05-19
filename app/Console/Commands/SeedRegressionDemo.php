@@ -6,6 +6,7 @@ use App\Models\Account\Account;
 use App\Models\Contact\Contact;
 use App\Models\Contact\ContactFieldType;
 use App\Models\User\User;
+use App\Services\Account\Activity\Activity\CreateActivity;
 use App\Services\Contact\Contact\CreateContact;
 use App\Services\Contact\Contact\UpdateBirthdayInformation;
 use App\Services\Contact\Contact\UpdateDeceasedInformation;
@@ -47,6 +48,7 @@ class SeedRegressionDemo extends Command
         $this->populateNotes();
         $this->populateCalls();
         $this->populateConversations();
+        $this->populateActivities();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -330,6 +332,23 @@ class SeedRegressionDemo extends Command
                     'content' => $this->faker->realText(80),
                 ]);
             }
+        }
+    }
+
+    private function populateActivities(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $activityType = $this->demoAccount->activityTypes->first();
+
+        foreach (array_slice($this->supportingContacts, 0, 5) as $contact) {
+            app(CreateActivity::class)->execute([
+                'account_id' => $accountId,
+                'activity_type_id' => $activityType?->id,
+                'summary' => $this->faker->realText(50),
+                'description' => $this->faker->realText(200),
+                'happened_at' => $this->faker->dateTimeThisYear()->format('Y-m-d'),
+                'contacts' => [$contact->id],
+            ]);
         }
     }
 }
