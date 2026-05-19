@@ -16,6 +16,7 @@ use App\Services\Contact\Gift\CreateGift;
 use App\Services\Contact\Relationship\CreateRelationship;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\DB;
 
 class SeedRegressionDemo extends Command
 {
@@ -52,6 +53,7 @@ class SeedRegressionDemo extends Command
         $this->populateActivities();
         $this->populateTasks();
         $this->populateGifts();
+        $this->populatePets();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -394,6 +396,23 @@ class SeedRegressionDemo extends Command
                 'comment' => $this->faker->realText(120),
                 'url' => $this->faker->url(),
                 'amount' => $this->faker->numberBetween(20, 150),
+            ]);
+        }
+    }
+
+    private function populatePets(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $petCategoryId = DB::table('pet_categories')->value('id');
+
+        foreach (array_slice($this->supportingContacts, 0, 3) as $contact) {
+            DB::table('pets')->insert([
+                'account_id' => $accountId,
+                'contact_id' => $contact->id,
+                'pet_category_id' => $petCategoryId,
+                'name' => $this->faker->firstName(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
     }
