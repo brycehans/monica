@@ -12,6 +12,7 @@ use App\Services\Contact\Contact\UpdateBirthdayInformation;
 use App\Services\Contact\Contact\UpdateDeceasedInformation;
 use App\Services\Contact\Conversation\AddMessageToConversation;
 use App\Services\Contact\Conversation\CreateConversation;
+use App\Services\Account\Settings\DestroyAccount;
 use App\Services\Contact\Gift\CreateGift;
 use App\Services\Contact\Relationship\CreateRelationship;
 use Illuminate\Console\Command;
@@ -38,8 +39,12 @@ class SeedRegressionDemo extends Command
     /** @var array<int, Contact> */
     private array $supportingContacts = [];
 
-    public function handle()
+    public function handle(): int
     {
+        if (! $this->prepareAccountsForSeeding()) {
+            return self::FAILURE;
+        }
+
         $seed = $this->resolveSeed();
         $this->setUpFaker();
         $this->faker->seed($seed);
@@ -61,6 +66,31 @@ class SeedRegressionDemo extends Command
         if ($this->option('random')) {
             $this->line("Random seed used: {$seed}");
         }
+
+        return self::SUCCESS;
+    }
+
+    private function prepareAccountsForSeeding(): bool
+    {
+        $existing = User::whereIn('email', ['test@example.com', 'blank@example.com'])->get();
+
+        if ($existing->isEmpty()) {
+            return true;
+        }
+
+        if (! $this->option('fresh-demo')) {
+            $this->error('Demo accounts already exist. Re-run with --fresh-demo to rebuild them.');
+
+            return false;
+        }
+
+        foreach ($existing as $user) {
+            app(DestroyAccount::class)->execute([
+                'account_id' => $user->account_id,
+            ]);
+        }
+
+        return true;
     }
 
     private function resolveSeed(): int
