@@ -31,3 +31,7 @@ yarn-error.log
 
 # Fork-specific: one-time migration tooling, not part of v4 codebase
 .migration/
+
+# Fork-specific: local Claude Code session handoff notes
+CLAUDE_CONTINUE.md
+tmp/
