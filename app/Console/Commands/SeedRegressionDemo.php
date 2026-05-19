@@ -27,6 +27,8 @@ class SeedRegressionDemo extends Command
     private Account $demoAccount;
     private Account $blankAccount;
     private User $demoUser;
+
+    /** @var array<int, Contact> */
     private array $supportingContacts = [];
 
     public function handle()
@@ -164,7 +166,7 @@ class SeedRegressionDemo extends Command
             'is_date_known' => true,
             'day' => (int) $soon->format('d'),
             'month' => (int) $soon->format('m'),
-            'year' => (int) $soon->subYears(30)->format('Y'),
+            'year' => (int) $soon->copy()->subYears(30)->format('Y'),
             'is_age_based' => false,
             'age' => 30,
             'add_reminder' => true,
