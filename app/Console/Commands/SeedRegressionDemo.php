@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
+use App\Models\Contact\ContactFieldType;
 use App\Models\User\User;
 use App\Services\Contact\Contact\CreateContact;
 use App\Services\Contact\Contact\UpdateBirthdayInformation;
@@ -40,6 +41,7 @@ class SeedRegressionDemo extends Command
         $this->buildDemoAccount();
         $this->buildEdgeCaseContacts();
         $this->buildSupportingContacts();
+        $this->populateContactFields();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -230,6 +232,36 @@ class SeedRegressionDemo extends Command
                 'of_contact' => $relative->id,
                 'relationship_type_id' => $relationshipTypeId,
             ]);
+        }
+    }
+
+    private function populateContactFields(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $types = ContactFieldType::where('account_id', $accountId)->get()->keyBy('name');
+
+        foreach ($this->supportingContacts as $contact) {
+            if (isset($types['Email'])) {
+                $contact->contactFields()->create([
+                    'contact_field_type_id' => $types['Email']->id,
+                    'data' => $this->faker->email(),
+                    'account_id' => $accountId,
+                ]);
+            }
+            if (isset($types['Phone'])) {
+                $contact->contactFields()->create([
+                    'contact_field_type_id' => $types['Phone']->id,
+                    'data' => $this->faker->phoneNumber(),
+                    'account_id' => $accountId,
+                ]);
+            }
+            if (isset($types['Facebook']) && $this->faker->boolean(40)) {
+                $contact->contactFields()->create([
+                    'contact_field_type_id' => $types['Facebook']->id,
+                    'data' => 'https://facebook.com/'.$this->faker->userName(),
+                    'account_id' => $accountId,
+                ]);
+            }
         }
     }
 }
