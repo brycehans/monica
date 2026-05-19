@@ -19,6 +19,22 @@ class SeedRegressionDemo extends Command
 
     public function handle()
     {
+        $seed = $this->resolveSeed();
+        $this->setUpFaker();
+        $this->faker->seed($seed);
+
         $this->info('Browser regression demo data created.');
+        if ($this->option('random')) {
+            $this->line("Random seed used: {$seed}");
+        }
+    }
+
+    private function resolveSeed(): int
+    {
+        if ($this->option('random')) {
+            return random_int(1, PHP_INT_MAX);
+        }
+
+        return (int) $this->option('seed');
     }
 }
