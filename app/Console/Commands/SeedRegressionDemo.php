@@ -43,6 +43,7 @@ class SeedRegressionDemo extends Command
         $this->buildSupportingContacts();
         $this->populateContactFields();
         $this->populateNotes();
+        $this->populateCalls();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -282,6 +283,19 @@ class SeedRegressionDemo extends Command
                     'account_id' => $accountId,
                     'is_favorited' => true,
                     'favorited_at' => now()->subDays(3),
+                ]);
+            }
+        }
+    }
+
+    private function populateCalls(): void
+    {
+        $accountId = $this->demoAccount->id;
+        foreach ($this->supportingContacts as $contact) {
+            if ($this->faker->boolean(60)) {
+                $contact->calls()->create([
+                    'account_id' => $accountId,
+                    'called_at' => $this->faker->dateTimeThisYear(),
                 ]);
             }
         }
