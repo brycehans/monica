@@ -1,0 +1,48 @@
+# Out-of-the-box (OOTB) buildability guard for the dev Docker image.
+#
+# A freshly-cloned 4.x checkout must be able to run:
+#
+#   docker compose -f docker-compose.dev.yml build app
+#
+# without surprises. Before this workflow existed, the dev Dockerfile was only
+# exercised on post-merge pushes (and on 4.x, not at all — see the postmortem
+# in discussion #581), which let it drift silently from composer.lock /
+# package.json. This workflow runs the same command pull requests will be
+# merged from, so dependency or runtime drift fails CI before merge rather
+# than at the next clone.
+#
+# Deliberately:
+#   - no registry push, no secrets — fork PRs (incl. from forks of this fork)
+#     must be able to run this job
+#   - no Docker layer cache — the whole point is to catch drift, and a stale
+#     cache can mask exactly the kind of regression this guard exists for
+#
+# Scope: only the dev image (scripts/docker/Dockerfile via docker-compose.dev.yml).
+# Related: issue #584, discussion #581, PR #561, milestone "OOTB buildability".
+
+name: OOTB Docker build
+
+on:
+  pull_request:
+    branches:
+      - 4.x
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - 4.x
+
+concurrency:
+  group: OOTB Docker build ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-dev-image:
+    name: Build dev docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Build dev compose image
+        run: docker compose -f docker-compose.dev.yml build app
