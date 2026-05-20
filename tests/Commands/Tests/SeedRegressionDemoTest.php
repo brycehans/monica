@@ -11,7 +11,9 @@ use App\Models\Contact\Call;
 use App\Models\Contact\Contact;
 use App\Models\Contact\ContactField;
 use App\Models\Contact\Conversation;
+use App\Models\Contact\Debt;
 use App\Models\Contact\Gift;
+use App\Models\Contact\LifeEvent;
 use App\Models\Contact\Message;
 use App\Models\Contact\Note;
 use App\Models\Contact\Pet;
@@ -130,5 +132,70 @@ class SeedRegressionDemoTest extends TestCase
         $this->assertGreaterThanOrEqual(12, Entry::where('account_id', $demoAccount->id)->count());
         $this->assertGreaterThanOrEqual(30, Day::where('account_id', $demoAccount->id)->count());
         $this->assertGreaterThanOrEqual(42, JournalEntry::where('account_id', $demoAccount->id)->count());
+
+        // Life events tranche
+        $this->assertGreaterThanOrEqual(8, LifeEvent::where('account_id', $demoAccount->id)->count());
+
+        // Debts tranche
+        $this->assertGreaterThanOrEqual(6, Debt::where('account_id', $demoAccount->id)->count());
+        $this->assertTrue(
+            Debt::where('account_id', $demoAccount->id)->due()->exists(),
+            'A debt with in_debt=yes (they owe me) should exist.'
+        );
+        $this->assertTrue(
+            Debt::where('account_id', $demoAccount->id)->owed()->exists(),
+            'A debt with in_debt=no (I owe them) should exist.'
+        );
+        $this->assertTrue(
+            Debt::where('account_id', $demoAccount->id)->where('status', 'complete')->exists(),
+            'At least one debt should be marked complete (paid off).'
+        );
+
+        // Food preferences tranche
+        $this->assertGreaterThanOrEqual(
+            10,
+            Contact::where('account_id', $demoAccount->id)->whereNotNull('food_preferences')->count()
+        );
+
+        // First-met info tranche
+        $this->assertGreaterThanOrEqual(
+            10,
+            Contact::where('account_id', $demoAccount->id)->whereNotNull('first_met_where')->count()
+        );
+        $this->assertGreaterThan(
+            0,
+            Contact::where('account_id', $demoAccount->id)
+                ->whereNotNull('first_met_through_contact_id')
+                ->count(),
+            'At least one contact should have a met_through_contact_id link.'
+        );
+
+        // Work info tranche
+        $this->assertGreaterThanOrEqual(
+            12,
+            Contact::where('account_id', $demoAccount->id)->whereNotNull('job')->count()
+        );
+
+        // Messaging handles tranche (WhatsApp + Telegram in addition to Email/Phone/Facebook)
+        $whatsappTypeId = \App\Models\Contact\ContactFieldType::where('account_id', $demoAccount->id)
+            ->where('name', 'Whatsapp')
+            ->value('id');
+        $telegramTypeId = \App\Models\Contact\ContactFieldType::where('account_id', $demoAccount->id)
+            ->where('name', 'Telegram')
+            ->value('id');
+        $this->assertNotNull($whatsappTypeId, 'Whatsapp contact-field type should exist by default.');
+        $this->assertNotNull($telegramTypeId, 'Telegram contact-field type should exist by default.');
+        $this->assertGreaterThanOrEqual(
+            10,
+            ContactField::where('account_id', $demoAccount->id)
+                ->where('contact_field_type_id', $whatsappTypeId)
+                ->count()
+        );
+        $this->assertGreaterThanOrEqual(
+            6,
+            ContactField::where('account_id', $demoAccount->id)
+                ->where('contact_field_type_id', $telegramTypeId)
+                ->count()
+        );
     }
 }
