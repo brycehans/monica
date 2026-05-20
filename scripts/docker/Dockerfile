@@ -6,7 +6,7 @@
 ### This file is based off of the `apache` variant in the above mentioned repo
 ###
 
-FROM php:8.1-apache
+FROM php:8.1-apache AS base
 
 # opencontainers annotations https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="Alexis Saettler <alexis@saettler.org>" \
@@ -179,3 +179,14 @@ COPY scripts/docker/entrypoint.sh \
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["apache2-foreground"]
+
+###
+### Dev stage — extends base, adds Composer dev dependencies
+###
+FROM base AS dev
+
+RUN set -ex; \
+    \
+    composer install --no-interaction --no-progress; \
+    composer clear-cache; \
+    rm -rf .composer
