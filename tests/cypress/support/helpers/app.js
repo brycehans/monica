@@ -1,15 +1,29 @@
+// When running Cypress against the Docker dev stack (CYPRESS_USE_DOCKER=true),
+// cy.exec runs on the host which has no .env or DB connection. Prefix artisan
+// commands with docker exec so they run inside the app container instead.
+function artisan(cmd) {
+  if (Cypress.env('USE_DOCKER')) {
+    const container = Cypress.env('DOCKER_CONTAINER') || 'monica-app-1';
+    return 'docker exec ' + container + ' ' + cmd;
+  }
+  return cmd;
+}
+
 Cypress.Commands.add('login', () => {
-  cy.exec('php artisan setup:frontendtestuser').then((result) => {
+  cy.exec(artisan('php artisan setup:frontendtestuser')).then((result) => {
     // PHP versions with display_errors=on interleave deprecation
     // warnings with the artisan command's stdout; the user id is
     // always the last line emitted. See brycehans/monica#592.
     const token = result.stdout.trim().split(/\r?\n/).pop().trim();
-    cy.visit('/_dusk/login/'+token+'/');
+    // Use cy.request() rather than cy.visit(): the dusk login route returns
+    // 204 No Content (sets session cookie only). cy.visit() requires an HTML
+    // response and fails with content-type undefined on a 204.
+    cy.request('/_dusk/login/'+token);
   });
 });
 
 Cypress.Commands.add('setPremium', (accountId) => {
-  cy.exec('php artisan account:setpremium ' + accountId);
+  cy.exec(artisan('php artisan account:setpremium ' + accountId));
 });
 
 Cypress.Commands.add('register', (firstName, lastName, password, email, policy) => {

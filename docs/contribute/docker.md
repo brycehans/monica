@@ -49,6 +49,23 @@ restart the container. Map a volume to
 `/var/www/monica/storage/app/public` if you want that data to persist
 between runs. See `docker-compose.yml` for examples.
 
+## Running Cypress against the Docker dev stack
+
+`cy.exec()` always runs on the host shell, not inside the container. Set
+`CYPRESS_USE_DOCKER=true` so that artisan commands are routed through
+`docker exec` instead:
+
+```sh
+CYPRESS_USE_DOCKER=true CYPRESS_BASE_URL=http://localhost:8082 yarn run e2e
+```
+
+The container name defaults to `monica-app-1` (Docker Compose's default when
+the working directory is named `monica`). Override it if your setup differs:
+
+```sh
+CYPRESS_USE_DOCKER=true CYPRESS_DOCKER_CONTAINER=myproject-app-1 CYPRESS_BASE_URL=http://localhost:8082 yarn run e2e
+```
+
 ## Other documents to read
 
 [Connecting to MySQL inside of a Docker container](/docs/installation/docker-mysql.md)
