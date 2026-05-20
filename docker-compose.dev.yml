@@ -17,7 +17,7 @@ services:
     depends_on:
       - mysql
     ports:
-      - 8080:80
+      - 8082:80
     env_file: .env.dev
     volumes:
       - /var/www/html/storage
