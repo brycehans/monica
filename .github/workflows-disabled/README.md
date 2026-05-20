@@ -32,5 +32,4 @@ The only currently-live workflow is `.github/workflows/docker-dev.yml`,
 which guards out-of-the-box buildability of the dev Docker image. See
 issue #584 for context.
 
-Tracking issue for restoring (or deleting) the workflows in this folder:
-**see the fork's issue tracker.**
+Tracking issue for restoring (or deleting) the workflows in this folder: #586.
