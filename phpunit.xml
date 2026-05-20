@@ -2,7 +2,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
   backupGlobals="false"
   backupStaticAttributes="false"
-  bootstrap="vendor/autoload.php"
+  bootstrap="tests/bootstrap.php"
   colors="true"
   convertErrorsToExceptions="true"
   convertNoticesToExceptions="true"
@@ -53,10 +53,10 @@
   </testsuites>
 
   <php>
-    <env name="APP_ENV" value="testing"/>
-    <env name="APP_KEY" value="base64:NTrXToqFZJlv48dgPc+kNpc3SBt333TfDnF1mDShsBg="/>
-    <env name="BCRYPT_ROUNDS" value="4"/>
-    <env name="DB_CONNECTION" value="testing"/>
+    <env name="APP_ENV" value="testing" force="true"/>
+    <env name="APP_KEY" value="base64:NTrXToqFZJlv48dgPc+kNpc3SBt333TfDnF1mDShsBg=" force="true"/>
+    <env name="BCRYPT_ROUNDS" value="4" force="true"/>
+    <env name="DB_CONNECTION" value="testing" force="true"/>
     <env name="CACHE_DRIVER" value="array"/>
     <env name="CHECK_VERSION" value="false"/>
     <env name="MAIL_MAILER" value="array"/>

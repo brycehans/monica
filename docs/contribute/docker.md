@@ -49,6 +49,36 @@ restart the container. Map a volume to
 `/var/www/monica/storage/app/public` if you want that data to persist
 between runs. See `docker-compose.yml` for examples.
 
+## Running PHPUnit inside the Docker dev stack
+
+The dev stack runs tests directly inside the `app` container:
+
+```sh
+docker exec monica-app-1 yarn run migrate     # migrate + seed the testing DB
+docker exec monica-app-1 vendor/bin/phpunit   # run the suite
+```
+
+`yarn run migrate` runs `php artisan migrate:fresh --seed` with `DB_CONNECTION=testing`, which reads the `DB_TEST_*` block from `.env.dev`. The default `.env.dev` points those at `mysql` (the Docker service name) and the `monica_test` database, both of which must exist:
+
+```sh
+docker exec monica-mysql-1 mysql -u root -psekret_root_password \
+  -e "CREATE DATABASE IF NOT EXISTS monica_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; \
+      GRANT ALL ON monica_test.* TO 'homestead'@'%';"
+```
+
+### Why `phpunit.xml` uses `force="true"` and a custom bootstrap
+
+PHPUnit's `<env>` directive normally only writes to `putenv()` and `$_ENV`. It does **not** touch `$_SERVER`. When `docker compose` loads `env_file: .env.dev`, the container's `APP_ENV=local` lands in `$_SERVER`, and Laravel's `Env::get()` reads `$_SERVER` first — so `config('app.env')` returns `local` even when `phpunit.xml` says `testing`.
+
+Symptoms when this is broken: feature tests get 302 redirects to `/` on every POST. CSRF middleware's `runningUnitTests()` check fails because `APP_ENV !== 'testing'`, `TokenMismatchException` fires, and the app's custom exception handler turns it into a redirect to `loginRedirect`.
+
+Two pieces keep this working:
+
+1. **`force="true"` on the critical `<env>` overrides in `phpunit.xml`** — `APP_ENV`, `APP_KEY`, `BCRYPT_ROUNDS`, `DB_CONNECTION`. Without it, PHPUnit's `<env>` is a no-op when the same name already exists in the process environment (which it does in Docker).
+2. **`tests/bootstrap.php`** — runs after PHPUnit applies its `<env>` block and copies `$_ENV` over `$_SERVER` so Laravel's `Env::get()` sees the testing values.
+
+If you ever see a wave of feature-test 302s after touching test config or the Docker stack, check `$_SERVER['APP_ENV']` inside a middleware before chasing it through the auth stack.
+
 ## Running Cypress against the Docker dev stack
 
 `cy.exec()` always runs on the host shell, not inside the container. Set
