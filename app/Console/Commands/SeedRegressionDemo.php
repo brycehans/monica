@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
 use App\Models\Contact\ContactFieldType;
+use App\Models\Contact\Debt;
 use App\Models\Contact\Reminder;
 use App\Models\Contact\Task;
 use App\Models\Journal\Day;
@@ -14,8 +15,12 @@ use App\Models\User\User;
 use App\Services\Account\Activity\Activity\CreateActivity;
 use App\Services\Contact\Address\CreateAddress;
 use App\Services\Contact\Contact\CreateContact;
+use App\Services\Contact\LifeEvent\CreateLifeEvent;
 use App\Services\Contact\Contact\UpdateBirthdayInformation;
+use App\Services\Contact\Contact\UpdateContactFoodPreferences;
+use App\Services\Contact\Contact\UpdateContactIntroduction;
 use App\Services\Contact\Contact\UpdateDeceasedInformation;
+use App\Services\Contact\Contact\UpdateWorkInformation;
 use App\Services\Contact\Conversation\AddMessageToConversation;
 use App\Services\Contact\Conversation\CreateConversation;
 use App\Services\Account\Settings\DestroyAccount;
@@ -72,6 +77,11 @@ class SeedRegressionDemo extends Command
         $this->populatePets();
         $this->populateReminders();
         $this->populateJournal();
+        $this->populateLifeEvents();
+        $this->populateDebts();
+        $this->populateFoodPreferences();
+        $this->populateFirstMetInfo();
+        $this->populateWorkInfo();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -314,6 +324,27 @@ class SeedRegressionDemo extends Command
                 $contact->contactFields()->create([
                     'contact_field_type_id' => $types['Facebook']->id,
                     'data' => 'https://facebook.com/'.$this->faker->userName(),
+                    'account_id' => $accountId,
+                ]);
+            }
+        }
+
+        // WhatsApp + Telegram messaging handles on a deterministic slice of contacts.
+        // The default account already provisions these types via populateDefaultFields.
+        if (isset($types['Whatsapp'])) {
+            foreach (array_slice($this->supportingContacts, 0, 10) as $contact) {
+                $contact->contactFields()->create([
+                    'contact_field_type_id' => $types['Whatsapp']->id,
+                    'data' => '+1'.$this->faker->numerify('##########'),
+                    'account_id' => $accountId,
+                ]);
+            }
+        }
+        if (isset($types['Telegram'])) {
+            foreach (array_slice($this->supportingContacts, 0, 6) as $contact) {
+                $contact->contactFields()->create([
+                    'contact_field_type_id' => $types['Telegram']->id,
+                    'data' => '@'.$this->faker->userName(),
                     'account_id' => $accountId,
                 ]);
             }
@@ -753,6 +784,178 @@ class SeedRegressionDemo extends Command
                 'comment' => $hasComment ? $this->faker->realText(80) : null,
             ]);
             JournalEntry::add($day);
+        }
+    }
+
+    private function populateLifeEvents(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $partner = $this->supportingContacts[0];
+        $sibling = $this->supportingContacts[2];
+        $morgan = $this->supportingContacts[3];
+        $robin = $this->supportingContacts[4];
+        $elodie = Contact::where('account_id', $accountId)
+            ->where('first_name', 'Élodie')
+            ->first();
+
+        $eventTypes = $this->demoAccount->lifeEventTypes()->get();
+        if ($eventTypes->isEmpty()) {
+            return;
+        }
+        $pickType = function () use ($eventTypes) {
+            return $eventTypes->random()->id;
+        };
+
+        $events = [
+            [$partner, 'Moved into our first place', 'Tiny apartment with a great view.', now()->subYears(3)],
+            [$partner, 'Got engaged', 'On the hike to the lookout.', now()->subYears(1)],
+            [$sibling, 'Started a new job', 'Switched industries entirely.', now()->subMonths(8)],
+            [$morgan, 'Had a baby', 'A girl.', now()->subYears(2)->subMonths(3)],
+            [$robin, 'Bought a house', 'After looking for over a year.', now()->subMonths(14)],
+        ];
+        if ($elodie !== null) {
+            $events[] = [$elodie, 'Moved abroad', 'Settled in Lyon.', now()->subYears(4)];
+            $events[] = [$elodie, 'Took up cycling', 'Riding to work most days.', now()->subMonths(9)];
+        }
+        // One filler event to keep total >= 8 even when Élodie is missing.
+        $events[] = [$partner, 'Ran a half marathon', 'Slow but finished.', now()->subMonths(5)];
+
+        foreach ($events as [$contact, $name, $note, $happenedAt]) {
+            app(CreateLifeEvent::class)->execute([
+                'account_id' => $accountId,
+                'contact_id' => $contact->id,
+                'life_event_type_id' => $pickType(),
+                'happened_at' => $happenedAt->toDateString(),
+                'name' => $name,
+                'note' => $note,
+                'has_reminder' => false,
+                'happened_at_month_unknown' => false,
+                'happened_at_day_unknown' => false,
+            ]);
+        }
+    }
+
+    private function populateDebts(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $currencyId = $this->demoUser->currency_id;
+
+        // No service for debts — direct model writes. Amounts are stored as integers (cents).
+        $rows = [
+            [$this->supportingContacts[0], 'yes', 'inprogress', 4500, 'Concert tickets'],
+            [$this->supportingContacts[1], 'yes', 'inprogress', 12000, 'Split rent last month'],
+            [$this->supportingContacts[3], 'yes', 'complete', 800, 'Coffee'],
+            [$this->supportingContacts[2], 'no', 'inprogress', 6000, 'Lent me cash for the cab'],
+            [$this->supportingContacts[4], 'no', 'inprogress', 2500, 'Dinner I forgot to pay back'],
+            [$this->supportingContacts[5], 'no', 'complete', 3500, 'Birthday gift split'],
+        ];
+        foreach ($rows as [$contact, $inDebt, $status, $amount, $reason]) {
+            Debt::create([
+                'account_id' => $accountId,
+                'contact_id' => $contact->id,
+                'in_debt' => $inDebt,
+                'status' => $status,
+                'amount' => $amount,
+                'currency_id' => $currencyId,
+                'reason' => $reason,
+            ]);
+        }
+    }
+
+    private function populateFoodPreferences(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $samples = [
+            'Vegetarian. Loves spicy food, hates olives.',
+            'Allergic to peanuts and tree nuts.',
+            'Pescatarian. Big on Japanese cuisine.',
+            'Gluten-free. Soft spot for good chocolate.',
+            'No dietary restrictions. Adventurous eater.',
+            'Lactose intolerant. Loves a good steak.',
+            'Vegan. Always brings the best hummus.',
+            'Loves Indian food. Mild only.',
+            'Allergic to shellfish. Coffee snob.',
+            'Keto-ish. Pizza every Friday.',
+        ];
+        foreach ($samples as $i => $note) {
+            if (! isset($this->supportingContacts[$i])) {
+                break;
+            }
+            app(UpdateContactFoodPreferences::class)->execute([
+                'account_id' => $accountId,
+                'contact_id' => $this->supportingContacts[$i]->id,
+                'food_preferences' => $note,
+            ]);
+        }
+    }
+
+    private function populateFirstMetInfo(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $partnerId = $this->supportingContacts[0]->id;
+        $morganId = $this->supportingContacts[3]->id;
+
+        $samples = [
+            ['Bookstore on the corner', 'Reaching for the same poetry collection.', null],
+            ['Sarah\'s wedding', 'Sat at the same table during the reception.', $partnerId],
+            ['Climbing gym', 'Belayed for each other on a Tuesday night.', null],
+            ['College orientation week', 'Lost together looking for the right lecture hall.', null],
+            ['Pottery class', 'Both first-timers, both terrible at centering.', $morganId],
+            ['On a flight', 'Window-seat conversation that lasted the whole flight.', null],
+            ['Through friends', 'Mutual friend hosted a game night.', $partnerId],
+            ['Local farmers market', 'Recommending each other vendors.', null],
+            ['Work conference', 'Coffee line on day two.', null],
+            ['Neighborhood block party', 'Asking who made the great salsa.', null],
+        ];
+        foreach ($samples as $i => [$where, $info, $through]) {
+            if (! isset($this->supportingContacts[$i])) {
+                break;
+            }
+            $contactId = $this->supportingContacts[$i]->id;
+            if ($contactId === $through) {
+                $through = null;
+            }
+            app(UpdateContactIntroduction::class)->execute([
+                'account_id' => $accountId,
+                'contact_id' => $contactId,
+                'met_through_contact_id' => $through,
+                'general_information' => $info,
+                'where' => $where,
+                'is_date_known' => false,
+            ]);
+        }
+    }
+
+    private function populateWorkInfo(): void
+    {
+        $accountId = $this->demoAccount->id;
+        $authorId = $this->demoUser->id;
+
+        $samples = [
+            ['Product Manager', 'Northwind'],
+            ['Nurse', 'St Mary\'s Hospital'],
+            ['Software Engineer', 'Hooli'],
+            ['Architect', 'Studio Lumen'],
+            ['Teacher', 'Lincoln High'],
+            ['Designer', 'Acme Studios'],
+            ['Accountant', 'Pemberton & Co'],
+            ['Carpenter', 'Self-employed'],
+            ['Researcher', 'Polytechnic Institute'],
+            ['Barista', 'Blue Bottle'],
+            ['Photographer', 'Freelance'],
+            ['Project Coordinator', 'Globex'],
+        ];
+        foreach ($samples as $i => [$job, $company]) {
+            if (! isset($this->supportingContacts[$i])) {
+                break;
+            }
+            app(UpdateWorkInformation::class)->execute([
+                'account_id' => $accountId,
+                'author_id' => $authorId,
+                'contact_id' => $this->supportingContacts[$i]->id,
+                'job' => $job,
+                'company' => $company,
+            ]);
         }
     }
 
