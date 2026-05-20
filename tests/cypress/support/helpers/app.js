@@ -15,7 +15,10 @@ Cypress.Commands.add('login', () => {
     // warnings with the artisan command's stdout; the user id is
     // always the last line emitted. See brycehans/monica#592.
     const token = result.stdout.trim().split(/\r?\n/).pop().trim();
-    cy.visit('/_dusk/login/'+token+'/');
+    // Use cy.request() rather than cy.visit(): the dusk login route returns
+    // 204 No Content (sets session cookie only). cy.visit() requires an HTML
+    // response and fails with content-type undefined on a 204.
+    cy.request('/_dusk/login/'+token);
   });
 });
 
