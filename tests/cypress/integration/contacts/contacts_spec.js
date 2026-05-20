@@ -76,7 +76,7 @@ describe('Contacts', function () {
     // tests if the favorite button can be toggled
     cy.get('[cy-name=set-favorite]').should('be.visible');
     cy.get('[cy-name=set-favorite]').click();
-    cy.get('[cy-name=set-favorite]').should('not.be.visible');
+    cy.get('[cy-name=set-favorite]').should('not.exist');
     cy.get('[cy-name=unset-favorite]').should('be.visible');
     cy.get('[cy-name=unset-favorite]').click();
     cy.get('[cy-name=set-favorite]').should('be.visible');

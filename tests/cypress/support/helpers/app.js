@@ -26,6 +26,16 @@ Cypress.Commands.add('setPremium', (accountId) => {
   cy.exec(artisan('php artisan account:setpremium ' + accountId));
 });
 
+Cypress.Commands.add('setRequiresSubscription', (requiresSubscription) => {
+  const value = requiresSubscription ? 'true' : 'false';
+
+  cy.exec(artisan('sh -lc "REQUIRES_SUBSCRIPTION=' + value + ' php artisan config:cache"'));
+});
+
+Cypress.Commands.add('clearCachedConfig', () => {
+  cy.exec(artisan('php artisan config:clear'));
+});
+
 Cypress.Commands.add('register', (firstName, lastName, password, email, policy) => {
   cy.visit('/register');
 
@@ -38,5 +48,5 @@ Cypress.Commands.add('register', (firstName, lastName, password, email, policy) 
   if (policy) {
     cy.get('input[name=policy]').click();
   }
-  cy.get('button[type=submit]').click();
+  cy.get('button.btn-primary[type=submit]').click();
 });

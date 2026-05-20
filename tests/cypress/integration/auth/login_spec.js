@@ -4,7 +4,7 @@ describe('Login', function () {
 
     cy.get('input[name=email]').type('impossibru@test.com');
     cy.get('input[name=password]').type('testtest');
-    cy.get('button[type=submit]').click();
+    cy.get('button.btn-primary[type=submit]').click();
 
     cy.get('.alert').should('exist');
   });

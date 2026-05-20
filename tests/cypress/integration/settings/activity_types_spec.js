@@ -1,11 +1,16 @@
 var _ = require('lodash');
 
 describe('Settings: activity types', function () {
+  afterEach(function () {
+    cy.clearCachedConfig();
+  });
+
   it('doesn\'t let you manage activity types if user is not premium', function () {
+    cy.setRequiresSubscription(true);
     cy.login();
     cy.visit('/settings/personalization');
     cy.get('[cy-name=activity-type-premium-message]').should('be.visible');
-    cy.get('[cy-name=activity-type-edit-button]').should('not.exist');
+    cy.get('[cy-name=add-activity-type-category-button]').should('not.exist');
   });
 
   it('lets you manage an activity type category and activity type', function () {
@@ -19,13 +24,13 @@ describe('Settings: activity types', function () {
 
     // make sure that going premium removes restrictions
     cy.visit('/settings/personalization');
-    cy.get('[cy-name=activity-type-premium-message]').should('not.be.visible');
+    cy.get('[cy-name=activity-type-premium-message]').should('not.exist');
     cy.get('[cy-name=activity-types]').should('contain', 'played a sport together');
 
     // add an activity type category
     cy.get('[cy-name=add-activity-type-category-button]').click();
     cy.get('.sweet-modal-overlay').should('be.visible');
-    cy.get('[name=add-category-name]').type('This is an activity type category');
+    cy.get('[name=add-category-name]:visible').type('This is an activity type category');
     cy.get('[cy-name=add-activity-type-category-save-button]').click();
     cy.wait(10);
 
@@ -36,15 +41,15 @@ describe('Settings: activity types', function () {
       // edit an activity type category
       cy.get('[cy-name=activity-type-category-edit-button-'+item+']').click();
       cy.get('.sweet-modal-overlay').should('be.visible');
-      cy.get('[name=update-category-name]').clear();
-      cy.get('[name=update-category-name]').type('This is still an activity type category');
+      cy.get('[name=update-category-name]:visible').clear();
+      cy.get('[name=update-category-name]:visible').type('This is still an activity type category');
       cy.get('[cy-name=update-activity-type-category-button]').click();
       cy.get('[cy-name=activity-types]').should('contain', 'This is still an activity type category');
 
       // add an activity type
       cy.get('[cy-name=add-activity-type-button-for-category-'+item+']').click();
       cy.get('.sweet-modal-overlay').should('be.visible');
-      cy.get('[name=add-type-name]').type('This is activity type 1');
+      cy.get('[name=add-type-name]:visible').type('This is activity type 1');
       cy.get('[cy-name=add-type-button]').click();
       cy.get('[cy-name=activity-types]').should('contain', 'This is activity type 1');
 
@@ -54,8 +59,8 @@ describe('Settings: activity types', function () {
 
         cy.get('[cy-name=activity-type-edit-button-'+aitem+']').click();
         cy.get('.sweet-modal-overlay').should('be.visible');
-        cy.get('[name=update-type-name]').clear();
-        cy.get('[name=update-type-name]').type('This is modified activity type 1');
+        cy.get('[name=update-type-name]:visible').clear();
+        cy.get('[name=update-type-name]:visible').type('This is modified activity type 1');
         cy.get('[cy-name=update-type-button]').click();
         cy.wait(10);
         cy.get('[cy-name=activity-types]').should('contain', 'This is modified activity type 1');
@@ -64,7 +69,7 @@ describe('Settings: activity types', function () {
       // delete an activity type
       cy.get('[cy-name=add-activity-type-button-for-category-'+item+']').click();
       cy.get('.sweet-modal-overlay').should('be.visible');
-      cy.get('[name=add-type-name]').type('This is activity type 2');
+      cy.get('[name=add-type-name]:visible').type('This is activity type 2');
       cy.get('[cy-name=add-type-button]').click();
       cy.get('[cy-name=activity-types]').should('contain', 'This is activity type 2');
 
@@ -96,13 +101,13 @@ describe('Settings: activity types', function () {
 
     // make sure that going premium removes restrictions
     cy.visit('/settings/personalization');
-    cy.get('[cy-name=activity-type-premium-message]').should('not.be.visible');
+    cy.get('[cy-name=activity-type-premium-message]').should('not.exist');
     cy.get('[cy-name=activity-types]').should('contain', 'played a sport together');
 
     // add an activity type category
     cy.get('[cy-name=add-activity-type-category-button]').click();
     cy.get('.sweet-modal-overlay').should('be.visible');
-    cy.get('[name=add-category-name]').type('This is an activity type category');
+    cy.get('[name=add-category-name]:visible').type('This is an activity type category');
     cy.get('[cy-name=add-activity-type-category-save-button]').click();
 
     cy.get('[cy-name=activity-types]').should('contain', 'This is an activity type category');
@@ -112,15 +117,15 @@ describe('Settings: activity types', function () {
       // edit an activity type category
       cy.get('[cy-name=activity-type-category-edit-button-'+item+']').click();
       cy.get('.sweet-modal-overlay').should('be.visible');
-      cy.get('[name=update-category-name]').clear();
-      cy.get('[name=update-category-name]').type('This is still an activity type category');
+      cy.get('[name=update-category-name]:visible').clear();
+      cy.get('[name=update-category-name]:visible').type('This is still an activity type category');
       cy.get('[cy-name=update-activity-type-category-button]').click();
       cy.get('[cy-name=activity-types]').should('contain', 'This is still an activity type category');
 
       // add an activity type
       cy.get('[cy-name=add-activity-type-button-for-category-'+item+']').click();
       cy.get('.sweet-modal-overlay').should('be.visible');
-      cy.get('[name=add-type-name]').type('This is activity type 1');
+      cy.get('[name=add-type-name]:visible').type('This is activity type 1');
       cy.get('[cy-name=add-type-button]').click();
       cy.get('[cy-name=activity-types]').should('contain', 'This is activity type 1');
 

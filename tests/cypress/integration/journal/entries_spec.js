@@ -17,7 +17,7 @@ describe('Journal entries', function () {
     cy.get('[cy-name=save-entry-button]').click();
 
     cy.url().should('include', '/journal');
-    cy.get('[cy-name=journal-blank-state]').should('not.be.visible');
+    cy.get('[cy-name=journal-blank-state]').should('not.exist');
 
     cy.get('[cy-name=journal-entries-body]').should('be.visible')
       .invoke('attr', 'cy-items').then(function (item) {
@@ -29,6 +29,7 @@ describe('Journal entries', function () {
 
             // delete a journal entry
             cy.get('[cy-name=entry-delete-button-'+objItem+']').click();
+            cy.get('[cy-name=confirm-]:visible').click();
             cy.url().should('include', '/journal');
             cy.get('[cy-name=entry-body-'+item+']').should('not.exist');
           });
@@ -40,7 +41,7 @@ describe('Journal entries', function () {
 
     cy.visit('/journal');
 
-    cy.get('[cy-name=journal-blank-state]').should('not.be.visible');
+    cy.get('[cy-name=journal-blank-state]').should('not.exist');
 
     cy.get('[cy-name=journal-entries-body]').should('be.visible').then((entries) => {
       let item = entries[0].getAttribute('cy-items');
