@@ -79,6 +79,7 @@ class ImportAccounts extends Command
 
             return;
         }
+        /** @psalm-suppress UndefinedConstant */
         if (! ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3)) {
             $this->error('Could not set LDAP protocol v3');
 
