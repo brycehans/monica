@@ -7,10 +7,11 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Console\ConfirmableTrait;
+use App\Console\Concerns\RunsLoggedSteps;
 
 class Update extends Command
 {
-    use ConfirmableTrait;
+    use ConfirmableTrait, RunsLoggedSteps;
 
     /**
      * The name and signature of the console command.
@@ -39,54 +40,54 @@ class Update extends Command
     {
         if ($this->confirmToProceed()) {
             try {
-                $this->artisan('✓ Maintenance mode: on', 'down', [
+                $this->runArtisan('✓ Maintenance mode: on', 'down', [
                     '--retry' => '10',
                 ]);
 
                 // Clear or rebuild all cache
                 if (config('cache.default') != 'database' || Schema::hasTable(config('cache.stores.database.table'))) {
-                    $this->artisan('✓ Resetting application cache', 'cache:clear');
+                    $this->runArtisan('✓ Resetting application cache', 'cache:clear');
                 }
 
                 if ($this->getLaravel()->environment() == 'production') {
-                    $this->artisan('✓ Clear config cache', 'config:clear');
-                    $this->artisan('✓ Resetting route cache', 'route:cache');
+                    $this->runArtisan('✓ Clear config cache', 'config:clear');
+                    $this->runArtisan('✓ Resetting route cache', 'route:cache');
                     if ($this->getLaravel()->version() > '5.6') {
-                        $this->artisan('✓ Resetting view cache', 'view:cache');
+                        $this->runArtisan('✓ Resetting view cache', 'view:cache');
                     } else {
-                        $this->artisan('✓ Resetting view cache', 'view:clear');
+                        $this->runArtisan('✓ Resetting view cache', 'view:clear');
                     }
                 } else {
-                    $this->artisan('✓ Clear config cache', 'config:clear');
-                    $this->artisan('✓ Clear route cache', 'route:clear');
-                    $this->artisan('✓ Clear view cache', 'view:clear');
+                    $this->runArtisan('✓ Clear config cache', 'config:clear');
+                    $this->runArtisan('✓ Clear route cache', 'route:clear');
+                    $this->runArtisan('✓ Clear view cache', 'view:clear');
                 }
 
                 if ($this->option('composer-install') === true) {
-                    $this->exec('✓ Updating composer dependencies', 'composer install --no-interaction'.($this->option('dev') === false ? ' --no-dev' : ''));
+                    $this->runExec('✓ Updating composer dependencies', 'composer install --no-interaction'.($this->option('dev') === false ? ' --no-dev' : ''));
                 }
 
                 if ($this->option('skip-storage-link') !== true && $this->getLaravel()->environment() != 'testing' && ! file_exists(public_path('storage'))) {
-                    $this->artisan('✓ Symlink the storage folder', 'storage:link');
+                    $this->runArtisan('✓ Symlink the storage folder', 'storage:link');
                 }
 
                 if ($this->migrateCollationTest()) {
-                    $this->artisan('✓ Performing collation migrations', 'migrate:collation', ['--force']);
+                    $this->runArtisan('✓ Performing collation migrations', 'migrate:collation', ['--force']);
                 }
 
-                $this->artisan('✓ Performing migrations', 'migrate', ['--force']);
+                $this->runArtisan('✓ Performing migrations', 'migrate', ['--force']);
 
-                $this->artisan('✓ Check for encryption keys', 'monica:passport', ['--force']);
+                $this->runArtisan('✓ Check for encryption keys', 'monica:passport', ['--force']);
 
-                $this->artisan('✓ Ping for new version', 'monica:ping', ['--force']);
+                $this->runArtisan('✓ Ping for new version', 'monica:ping', ['--force']);
 
                 // Cache config
                 if ($this->getLaravel()->environment() == 'production'
                     && (config('cache.default') != 'database' || Schema::hasTable(config('cache.stores.database.table')))) {
-                    $this->artisan('✓ Cache configuraton', 'config:cache');
+                    $this->runArtisan('✓ Cache configuraton', 'config:cache');
                 }
             } finally {
-                $this->artisan('✓ Maintenance mode: off', 'up');
+                $this->runArtisan('✓ Maintenance mode: off', 'up');
             }
 
             $this->line('Monica v'.config('monica.app_version').' is set up, enjoy.');
