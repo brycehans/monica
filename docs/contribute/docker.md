@@ -59,6 +59,13 @@ between runs. See `docker-compose.yml` for examples.
 CYPRESS_USE_DOCKER=true CYPRESS_BASE_URL=http://localhost:8082 yarn run e2e
 ```
 
+The project expects Node 20 for frontend tooling. If your shell is on another
+Node version, run Cypress through your Node version manager, for example:
+
+```sh
+CYPRESS_USE_DOCKER=true CYPRESS_BASE_URL=http://localhost:8082 fnm exec --using=20 yarn run e2e
+```
+
 The container name defaults to `monica-app-1` (Docker Compose's default when
 the working directory is named `monica`). Override it if your setup differs:
 
