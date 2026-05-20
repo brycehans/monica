@@ -11,7 +11,7 @@ waitfordb() {
     attempts=0
     max_attempts=30
     while [ $attempts -lt $max_attempts ]; do
-        busybox nc -w 1 "${HOST}:${PORT}" && break
+        busybox nc -w 1 "${HOST}" "${PORT}" && break
         echo "Waiting for ${HOST}:${PORT}..."
         sleep 1
         let "attempts=attempts+1"
