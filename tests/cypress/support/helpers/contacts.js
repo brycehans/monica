@@ -23,7 +23,7 @@ Cypress.Commands.add('createActivity', () => {
   cy.get('[cy-name=save-activity-button]').click();
 
   cy.url().should('include', '/people/h:');
-  cy.get('[cy-name=activities-blank-state]').should('not.be.visible');
+  cy.get('[cy-name=activities-blank-state]').should('not.exist');
 
   cy.get('[cy-name=activities-body]').should('be.visible').then((activities) => {
     let item = activities[0].getAttribute('cy-items');

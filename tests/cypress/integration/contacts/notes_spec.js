@@ -6,7 +6,7 @@ describe('Notes', function () {
 
   it('lets you manage a note', function () {
     cy.url().should('include', '/people/h:');
-    cy.get('[cy-name=add-note-button]').should('not.be.visible');
+    cy.get('[cy-name=add-note-button]').should('not.exist');
 
     // add a note
     cy.get('[cy-name=add-note-textarea]').click();
