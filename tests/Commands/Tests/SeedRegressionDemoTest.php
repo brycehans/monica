@@ -12,8 +12,10 @@ use App\Models\Contact\Contact;
 use App\Models\Contact\ContactField;
 use App\Models\Contact\Conversation;
 use App\Models\Contact\Debt;
+use App\Models\Contact\Document;
 use App\Models\Contact\Gift;
 use App\Models\Contact\LifeEvent;
+use App\Models\Account\Photo;
 use App\Models\Contact\Message;
 use App\Models\Contact\Note;
 use App\Models\Contact\Pet;
@@ -195,6 +197,21 @@ class SeedRegressionDemoTest extends TestCase
             6,
             ContactField::where('account_id', $demoAccount->id)
                 ->where('contact_field_type_id', $telegramTypeId)
+                ->count()
+        );
+
+        // Attachments tranche
+        $this->assertGreaterThanOrEqual(
+            7,
+            Contact::where('account_id', $demoAccount->id)->whereNotNull('avatar_default_url')->count()
+        );
+        $this->assertGreaterThanOrEqual(5, Document::where('account_id', $demoAccount->id)->count());
+        $this->assertGreaterThanOrEqual(5, Photo::where('account_id', $demoAccount->id)->count());
+        $this->assertGreaterThanOrEqual(
+            5,
+            DB::table('contact_photo')
+                ->join('photos', 'photos.id', '=', 'contact_photo.photo_id')
+                ->where('photos.account_id', $demoAccount->id)
                 ->count()
         );
     }
