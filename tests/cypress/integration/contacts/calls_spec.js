@@ -9,7 +9,7 @@ describe('Calls', function () {
   it('lets you manage a call', function () {
     cy.url().should('include', '/people/h:');
     cy.get('[cy-name=calls-blank-state]').should('exist');
-    cy.get('[cy-name=log-call-form]').should('not.be.visible');
+    cy.get('[cy-name=log-call-form]').should('not.exist');
     cy.get('[cy-name=last-talked-to]').should('contain', 'unknown');
 
     // add a call
