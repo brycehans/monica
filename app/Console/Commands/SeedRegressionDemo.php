@@ -3,9 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Models\Account\Account;
+use App\Models\Account\Photo;
 use App\Models\Contact\Contact;
 use App\Models\Contact\ContactFieldType;
 use App\Models\Contact\Debt;
+use App\Models\Contact\Document;
 use App\Models\Contact\Reminder;
 use App\Models\Contact\Task;
 use App\Models\Journal\Day;
@@ -32,6 +34,9 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use function Safe\base64_decode;
 
 class SeedRegressionDemo extends Command
 {
@@ -82,6 +87,7 @@ class SeedRegressionDemo extends Command
         $this->populateFoodPreferences();
         $this->populateFirstMetInfo();
         $this->populateWorkInfo();
+        $this->populateAttachments();
         $this->buildBlankAccount();
 
         $this->info('Browser regression demo data created.');
@@ -956,6 +962,72 @@ class SeedRegressionDemo extends Command
                 'job' => $job,
                 'company' => $company,
             ]);
+        }
+    }
+
+    private function populateAttachments(): void
+    {
+        // Avatars: CreateContact already dispatches App\Jobs\Avatars\GenerateDefaultAvatar
+        // synchronously (QUEUE_CONNECTION=sync in dev + test), so every demo contact already has
+        // an avatar_default_url JPG written to storage. Nothing to do for avatars here.
+
+        $accountId = $this->demoAccount->id;
+        $disk = Storage::disk(config('filesystems.default'));
+        $visibility = config('filesystems.default_visibility');
+
+        // Documents: 5 contacts get a small text file each.
+        $documentSamples = [
+            ['meeting-notes.txt', "Topics discussed:\n- Q3 plan\n- Hiring update\n- Move date\n"],
+            ['shared-recipe.txt', "Ingredients:\n- flour, butter, sugar\nNotes:\n- bakes for 25min at 180c\n"],
+            ['book-list.txt', "Books to swap:\n- Pachinko\n- The Overstory\n- Klara and the Sun\n"],
+            ['address-card.txt', "Old address from when they lived in Lyon. Keep for postcards.\n"],
+            ['hike-checklist.txt', "Trail head meet at 0800. Bring water, snacks, layers.\n"],
+        ];
+        foreach ($documentSamples as $i => [$origFilename, $body]) {
+            $contact = $this->supportingContacts[$i];
+            $newFilename = 'documents/'.Str::random(40);
+            $disk->put($newFilename, $body, $visibility);
+
+            Document::create([
+                'account_id' => $accountId,
+                'contact_id' => $contact->id,
+                'original_filename' => $origFilename,
+                'new_filename' => $newFilename,
+                'filesize' => strlen($body),
+                'type' => 'txt',
+                'mime_type' => 'text/plain',
+            ]);
+        }
+
+        // Photos: 5 contacts get a placeholder 120x120 solid-color PNG.
+        // GD path was tried but PHPStan's Safe stubs conflict with PHP 8's GdImage
+        // typing — an embedded base64 PNG is simpler and visually equivalent for
+        // the regression target (exercises the photos tab and pivot relationship).
+        $pngBytes = base64_decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAACXBIWXMAAA7EAAAO'
+            .'xAGVKw4bAAABIUlEQVR4nO3QQRHAIADAMEDrvGAROVOx8liioNd59jP43rod8BdG'
+            .'R4yOGB0xOmJ0xOiI0RGjI0ZHjI4YHTE6YnTE6IjREaMjRkeMjhgdMTpidMToiNER'
+            .'oyNGR4yOGB0xOmJ0xOiI0RGjI0ZHjI4YHTE6YnTE6IjREaMjRkeMjhgdMTpidMTo'
+            .'iNERoyNGR4yOGB0xOmJ0xOiI0RGjI0ZHjI4YHTE6YnTE6IjREaMjRkeMjhgdMTpi'
+            .'dMToiNERoyNGR4yOGB0xOmJ0xOiI0RGjI0ZHjI4YHTE6YnTE6IjREaMjRkeMjhgd'
+            .'MTpidMToiNERoyNGR4yOGB0xOmJ0xOiI0RGjI0ZHjI4YHTE6YnTE6IjREaMjRkeM'
+            .'jhgdMTpidMToiNERoyNGR4yOGB0xOmJ0xOiI0RGjI0ZHjI4YHTE6YnTE6IjREaMj'
+            .'RkeMjhgdMTpidMToyAssNAKzl4iJ5QAAAABJRU5ErkJggg=='
+        );
+
+        foreach (range(0, 4) as $i) {
+            $contact = $this->supportingContacts[$i];
+            $newFilename = 'photos/'.Str::random(40).'.png';
+            $disk->put($newFilename, $pngBytes, $visibility);
+
+            $photo = Photo::create([
+                'account_id' => $accountId,
+                'original_filename' => 'snapshot.png',
+                'new_filename' => $newFilename,
+                'filesize' => strlen($pngBytes),
+                'mime_type' => 'image/png',
+            ]);
+            $contact->photos()->syncWithoutDetaching([$photo->id]);
         }
     }
 
