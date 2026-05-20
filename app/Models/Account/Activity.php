@@ -45,7 +45,7 @@ class Activity extends Model implements IsJournalableInterface
     /**
      * The relations to eager load on every query.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $with = [
         'account',
