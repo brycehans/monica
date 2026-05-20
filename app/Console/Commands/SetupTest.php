@@ -97,9 +97,9 @@ class SetupTest extends Command
             return;
         }
 
-        $this->artisan('✓ Performing migrations', 'migrate:fresh');
+        $this->runArtisan('✓ Performing migrations', 'migrate:fresh');
 
-        $this->artisan('✓ Symlink the storage folder', 'storage:link');
+        $this->runArtisan('✓ Symlink the storage folder', 'storage:link');
 
         if (! $this->option('skipSeed')) {
             $this->numberOfContacts = $this->ask('How many contacts would you like to have in this test account?');
@@ -122,7 +122,7 @@ class SetupTest extends Command
         $this->info('Setup is done. Have fun.');
     }
 
-    public function exec($message, $command)
+    public function runExec($message, $command)
     {
         $this->info($message);
         $this->line($command);
@@ -131,7 +131,7 @@ class SetupTest extends Command
         $this->line('');
     }
 
-    public function artisan($message, $command, array $arguments = [])
+    public function runArtisan($message, $command, array $arguments = [])
     {
         $this->info($message);
         $this->line(Application::formatCommandString($command));
