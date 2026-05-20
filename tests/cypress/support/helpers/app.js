@@ -3,7 +3,8 @@
 // commands with docker exec so they run inside the app container instead.
 function artisan(cmd) {
   if (Cypress.env('USE_DOCKER')) {
-    return 'docker exec monica-app-1 ' + cmd;
+    const container = Cypress.env('DOCKER_CONTAINER') || 'monica-app-1';
+    return 'docker exec ' + container + ' ' + cmd;
   }
   return cmd;
 }
