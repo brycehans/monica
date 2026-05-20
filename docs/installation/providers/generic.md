@@ -57,7 +57,7 @@ php composer-setup.php --install-dir=/usr/local/bin/ --filename=composer
 php -r "unlink('composer-setup.php');"
 ```
 
-**Node.js:** Install node.js 16+ minimum
+**Node.js:** Install Node.js 20 (matches the version declared in `package.json` and used by the Docker image and CI)
 
 
 **Yarn:** Install yarn using npm
