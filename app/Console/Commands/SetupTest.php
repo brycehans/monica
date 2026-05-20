@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use function Safe\exec;
 use App\Models\User\User;
 use App\Helpers\DateHelper;
 use Illuminate\Support\Carbon;
@@ -12,7 +11,7 @@ use Illuminate\Console\Command;
 use App\Helpers\CountriesHelper;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Console\Application;
+use App\Console\Concerns\RunsLoggedSteps;
 use App\Models\Contact\LifeEventType;
 use App\Models\Contact\ContactFieldType;
 use App\Services\Contact\Gift\CreateGift;
@@ -34,7 +33,7 @@ use App\Services\Account\Activity\Activity\AttachContactToActivity;
 
 class SetupTest extends Command
 {
-    use WithFaker;
+    use WithFaker, RunsLoggedSteps;
 
     /**
      * The name and signature of the console command.
@@ -120,23 +119,6 @@ class SetupTest extends Command
         $this->line('-----------------------------');
 
         $this->info('Setup is done. Have fun.');
-    }
-
-    public function runExec($message, $command)
-    {
-        $this->info($message);
-        $this->line($command);
-        exec($command, $output);
-        $this->line(implode('\n', $output));
-        $this->line('');
-    }
-
-    public function runArtisan($message, $command, array $arguments = [])
-    {
-        $this->info($message);
-        $this->line(Application::formatCommandString($command));
-        $this->callSilent($command, $arguments);
-        $this->line('');
     }
 
     /**
