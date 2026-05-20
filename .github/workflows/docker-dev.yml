@@ -27,9 +27,19 @@ on:
     branches:
       - 4.x
     types: [opened, synchronize, reopened]
+    paths-ignore:
+      - 'docs/**'
+      - 'tests/**'
+      - '*.md'
+      - '.migration/**'
   push:
     branches:
       - 4.x
+    paths-ignore:
+      - 'docs/**'
+      - 'tests/**'
+      - '*.md'
+      - '.migration/**'
 
 concurrency:
   group: OOTB Docker build ${{ github.ref }}
