@@ -27,7 +27,7 @@ describe('Introduction', function () {
     cy.url().should('include', '/introductions/edit');
 
     cy.get('textarea[name=first_met_additional_info]').type('Lorem ipsum');
-    cy.get('#metThrough > .v-select input').click();
+    cy.get('#metThrough input[type=search]').click();
     cy.get('#metThrough ul[role="listbox"]').contains('John Doe');
     cy.get('#metThrough ul[role="listbox"]').contains('Jane Doe');
     cy.get('#metThrough ul[role="listbox"]').contains('Joe Shmoe');

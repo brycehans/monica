@@ -17,7 +17,7 @@ describe('Debts', function () {
     cy.get('[cy-name=save-debt-button]').click();
 
     cy.url().should('include', '/people/h:');
-    cy.get('[cy-name=debt-blank-state]').should('not.be.visible');
+    cy.get('[cy-name=debt-blank-state]').should('not.exist');
 
     cy.get('[cy-name=debts-body]').should('be.visible')
       .invoke('attr', 'cy-items').then(function (item) {

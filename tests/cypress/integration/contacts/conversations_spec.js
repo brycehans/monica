@@ -22,6 +22,6 @@ describe('Conversations', function () {
     cy.get('[cy-name=save-conversation-button]').click();
 
     cy.url().should('include', '/people/h:');
-    cy.get('[cy-name=conversation-blank-state]').should('not.be.visible');
+    cy.get('[cy-name=conversation-blank-state]').should('not.exist');
   });
 });
