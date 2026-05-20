@@ -1,6 +1,10 @@
 Cypress.Commands.add('login', () => {
   cy.exec('php artisan setup:frontendtestuser').then((result) => {
-    cy.visit('/_dusk/login/'+result.stdout+'/');
+    // PHP versions with display_errors=on interleave deprecation
+    // warnings with the artisan command's stdout; the user id is
+    // always the last line emitted. See brycehans/monica#592.
+    const token = result.stdout.trim().split(/\r?\n/).pop().trim();
+    cy.visit('/_dusk/login/'+token+'/');
   });
 });
 
