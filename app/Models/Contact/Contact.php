@@ -101,7 +101,7 @@ class Contact extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'uuid',
@@ -138,7 +138,7 @@ class Contact extends Model
     /**
      * Eager load account with every contact.
      *
-     * @var array<string>
+     * @var array<int, string>
      */
     protected $with = [
         'account',

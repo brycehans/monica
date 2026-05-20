@@ -29,7 +29,7 @@ class Entry extends Model implements IsJournalableInterface
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'account_id',
