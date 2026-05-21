@@ -1,8 +1,7 @@
 module.exports = {
   'env': {
     'browser': true,
-    'es6': true,
-    'cypress/globals': true
+    'es6': true
   },
   'extends': [
     'plugin:vue/recommended'
@@ -12,8 +11,7 @@ module.exports = {
     'sourceType': 'module'
   },
   'plugins': [
-    'vue',
-    'cypress'
+    'vue'
   ],
   'rules': {
     'array-bracket-spacing': [
@@ -81,15 +79,17 @@ module.exports = {
       }
     ],
     'vue/no-v-html' : 0,
+    // plugin-vue v9 introduced these in vue2-strongly-recommended; preserved as off
+    // to avoid an out-of-scope style sweep during PR-B (build-chain audit).
+    'vue/multi-word-component-names': 'off',
+    'vue/first-attribute-linebreak': 'off',
+    'vue/html-closing-bracket-spacing': 'off',
     'vue/max-attributes-per-line': [
       // https://vuejs.org/v2/style-guide/#Multi-attribute-elements-strongly-recommended
       'error',
       {
         'singleline': 5,
-        'multiline': {
-          'max': 5,
-          'allowFirstLine': true
-        }
+        'multiline': 5
       }
     ],
   }
