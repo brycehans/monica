@@ -33,8 +33,6 @@ const KNOWN_CONSOLE_NOISE: { match: RegExp; issue: string }[] = [
   { match: /Unknown custom element: <error>/, issue: '#625' },
   // #626 — PWA manifest missing url/id in related_applications
   { match: /Manifest: one of 'url' or 'id' is required/, issue: '#626' },
-  // #627 — marked.js sanitize/sanitizer deprecation
-  { match: /marked\(\): sanitize and sanitizer parameters are deprecated/, issue: '#627' },
 ];
 
 type UnknownConsole = { type: string; text: string; url: string };
