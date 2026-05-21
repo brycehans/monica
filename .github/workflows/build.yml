@@ -65,6 +65,13 @@ jobs:
       - name: Install composer dependencies
         run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader
 
+      # Replaces roave/security-advisories install-time gatekeeping (dropped in
+      # the phase-1 composer audit pass — see composer.json `extra.fork-notes`).
+      # `--abandoned=ignore` keeps known transitive abandoned deps from failing
+      # the build; those are tracked separately in `carryover-abandoned-laravel9`.
+      - name: Audit composer dependencies
+        run: composer audit --no-interaction --abandoned=ignore
+
     # Yarn
       - name: Setup Node.js
         uses: actions/setup-node@v4

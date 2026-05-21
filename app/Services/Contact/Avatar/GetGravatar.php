@@ -95,6 +95,7 @@ class GetGravatar extends BaseService
         }
 
         if ($gravatarUrl) {
+            /** @psalm-suppress NoValue */
             $contact->avatar_gravatar_url = $gravatarUrl;
         } else {
             // in this case we need to make sure that we reset the gravatar URL

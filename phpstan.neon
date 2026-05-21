@@ -1,5 +1,5 @@
 includes:
-    - ./vendor/nunomaduro/larastan/extension.neon
+    - ./vendor/larastan/larastan/extension.neon
     - ./vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
 
 parameters:
@@ -33,8 +33,12 @@ parameters:
           path: */Console/Commands/SetupTest.php
         - message: '#Access to an undefined property Stripe\\Subscription::\$plan\.#'
           path: */Helpers/InstanceHelper.php
-        - message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany::recurring\(\)\.#'
+        - message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany(<.+>)?::recurring\(\)\.#'
           path: */Traits/Subscription.php
+        - message: '#Argument of an invalid type stdClass supplied for foreach, only iterables are supported\.#'
+          path: */Jobs/ExportAllAsSQL.php
+        - message: '#Cannot assign offset ''VALUE'' to string\.#'
+          path: */Services/VCalendar/ExportVCalendar.php
         - message: '#Function dns_get_record is unsafe to use\. It can return FALSE instead of throwing an exception\. Please add ''use function Safe\\dns_get_record;'' at the beginning of the file to use the variant provided by the ''thecodingmachine/safe'' library\.#'
           path: */Services/DavClient/Utils/Dav/ServiceUrlQuery.php
         - message: '#Access to an undefined property App\\Models\\Relationship\\Relationship::\$relationshipTypeLocalized\.#'
