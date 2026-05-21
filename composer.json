@@ -16,7 +16,7 @@
         "ext-intl": "*",
         "ext-redis": "*",
         "asbiin/laravel-adorable": "^1.0",
-        "asbiin/laravel-webauthn": "^4.0",
+        "asbiin/laravel-webauthn": "^4.6",
         "bacon/bacon-qr-code": "^2.0",
         "creativeorange/gravatar": "^1.0",
         "doctrine/dbal": "^3.0",
@@ -56,10 +56,6 @@
         "vectorface/whip": "^0.4",
         "vinkla/hashids": "^10.0",
         "vluzrmos/language-detector": "^2.2",
-        "web-token/jwt-key-mgmt": "^3.0",
-        "web-token/jwt-signature-algorithm-ecdsa": "^3.0",
-        "web-token/jwt-signature-algorithm-eddsa": "^3.0",
-        "web-token/jwt-signature-algorithm-rsa": "^3.0",
         "werk365/etagconditionals": "dev-master",
         "xantios/mimey": "^2.0"
     },
@@ -67,17 +63,16 @@
         "barryvdh/laravel-debugbar": "^3",
         "fakerphp/faker": "^1.10",
         "khanamiryan/qrcode-detector-decoder": "^2.0",
+        "larastan/larastan": "^2.2",
         "laravel/dusk": "^7.11",
         "laravel/legacy-factories": "^1.0",
         "laravel/tinker": "^2.6",
         "matthiasnoback/live-code-coverage": "^1",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^6.1",
-        "nunomaduro/larastan": "^2.2",
         "phpunit/phpcov": "^8.0",
         "phpunit/phpunit": "^9.0",
         "psalm/plugin-laravel": "^2.0",
-        "roave/security-advisories": "dev-master",
         "spatie/laravel-ignition": "^1.0",
         "thecodingmachine/phpstan-safe-rule": "^1.0",
         "vimeo/psalm": "^5.5"
@@ -100,6 +95,12 @@
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": {
+                "CVE-2025-27515": "laravel/framework <10.48.29 file validation bypass — Laravel 9 is EOL, no backport. Cleared in phase 3 PR-E. See extra.fork-notes.carryover-advisories-laravel9.",
+                "CVE-2025-45769": "firebase/php-jwt <7 weak encryption (low) — pinned transitively by laravel/passport ^11 / laravel/socialite ^5. Cleared when passport bumps to ^12 in phase 3."
+            }
         }
     },
     "extra": {
@@ -107,7 +108,10 @@
             "dont-discover": []
         },
         "fork-notes": {
-            "replace-spatie-ray": "DO NOT REMOVE the top-level `replace` block for spatie/ray + spatie/laravel-ray without reading this first. They are pulled in transitively via psalm/plugin-laravel -> orchestra/testbench -> orchestra/workbench -> spatie/laravel-ray -> spatie/ray, because orchestra/workbench declares spatie/laravel-ray as a regular `require` (not `require-dev`). Nothing in this project or any installed vendor package actually calls ray(). spatie/ray/src/helpers.php registers a shutdown handler at file-load time that invokes ray() -> class_exists(Spatie\\LaravelRay\\Ray::class); during `composer install --no-dev` inside a dev container that previously had dev deps, the shutdown handler fires AFTER the package is removed from disk but while composer's in-memory ClassLoader still holds the stale PSR-4 mapping, fatalling on the missing file. The `replace` block tells composer the root project provides these packages, so the orchestra/workbench dep is satisfied without installing them. composer.lock has been hand-pruned (#613) to also drop the now-orphaned transitive deps: rector/rector, zbateson/{mail-mime-parser,mb-wrapper,stream-decorators}, pimple/pimple, symfony/polyfill-iconv. The underlying issue is also resolved upstream in psalm/plugin-laravel >= 2.10.1, which dropped the orchestra/testbench dep entirely, but that release requires Laravel ^10.48 so we cannot adopt it on the Laravel 9 line. This `replace` block becomes safe to remove once psalm/plugin-laravel >= 2.10.1 is in the lock. See issue brycehans/monica#613."
+            "replace-spatie-ray": "DO NOT REMOVE the top-level `replace` block for spatie/ray + spatie/laravel-ray without reading this first. They are pulled in transitively via psalm/plugin-laravel -> orchestra/testbench -> orchestra/workbench -> spatie/laravel-ray -> spatie/ray, because orchestra/workbench declares spatie/laravel-ray as a regular `require` (not `require-dev`). Nothing in this project or any installed vendor package actually calls ray(). spatie/ray/src/helpers.php registers a shutdown handler at file-load time that invokes ray() -> class_exists(Spatie\\LaravelRay\\Ray::class); during `composer install --no-dev` inside a dev container that previously had dev deps, the shutdown handler fires AFTER the package is removed from disk but while composer's in-memory ClassLoader still holds the stale PSR-4 mapping, fatalling on the missing file. The `replace` block tells composer the root project provides these packages, so the orchestra/workbench dep is satisfied without installing them. composer.lock has been hand-pruned (#613) to also drop the now-orphaned transitive deps: rector/rector, zbateson/{mail-mime-parser,mb-wrapper,stream-decorators}, pimple/pimple, symfony/polyfill-iconv. The underlying issue is also resolved upstream in psalm/plugin-laravel >= 2.10.1, which dropped the orchestra/testbench dep entirely, but that release requires Laravel ^10.48 so we cannot adopt it on the Laravel 9 line. This `replace` block becomes safe to remove once psalm/plugin-laravel >= 2.10.1 is in the lock. See issue brycehans/monica#613.",
+            "dropped-roave-security-advisories": "roave/security-advisories was removed from require-dev as part of the phase-1 composer audit pass (PR-A under milestone #2, design issue #622). Current roave HEAD declares a hard conflict with `laravel/framework <10.48.29` (CVE-2025-27515, file validation bypass), which has no Laravel 9.x backport — making `composer install` resolution impossible while we hold the Laravel 9 line. The native `composer audit` CI step (added in the same PR to .github/workflows/build.yml) replaces roave's install-time gatekeeping with equivalent CI-time gating. roave returns in PR-E (Laravel 9 -> 10) once `laravel/framework >=10.48.29` is in the lock.",
+            "carryover-advisories-laravel9": "Known advisories left unresolved on the Laravel 9 line, accepted as carryover until phase 3 (Laravel 9 -> 10 -> 11 -> 12) lands. Re-checked at each phase-3 PR. (1) CVE-2025-27515 laravel/framework <10.48.29 (file validation bypass) — no Laravel 9 backport, framework is EOL. (2) CVE-2025-45769 firebase/php-jwt <7.0.0 (weak encryption, low) — pulled transitively by laravel/passport ^11 and laravel/socialite ^5, both of which pin firebase/php-jwt ^6.4; unblocks when passport bumps to ^12 in phase 3. See issue brycehans/monica#622 for the running decision log.",
+            "carryover-abandoned-laravel9": "Transitively-pulled abandoned packages accepted as carryover until phase 3. (1) php-http/message-factory (replacement: psr/http-factory) — pulled by sentry/sentry ^3.22, which is pinned by sentry/sentry-laravel ^2.14 (latest 2.x line). Bumping sentry-laravel to 4.x would resolve this but is a major SDK rewrite (event/span API changes); deferred to phase 3 alongside the laravel/framework move. See issue brycehans/monica#622."
         }
     },
     "autoload": {
