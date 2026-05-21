@@ -316,7 +316,7 @@ export default {
 
   methods: {
     prepareComponent() {
-      axios.all([
+      Promise.all([
         this.getGenders(),
         this.getGenderTypes()
       ]);

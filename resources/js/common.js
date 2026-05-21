@@ -16,7 +16,10 @@ Vue.filter('formatDate', function(value) {
 });
 
 // Markdown
-window.marked = require('marked');
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+window.marked = marked;
+window.DOMPurify = DOMPurify;
 
 // i18n
 import messages from '../../public/js/langs/en.json';
