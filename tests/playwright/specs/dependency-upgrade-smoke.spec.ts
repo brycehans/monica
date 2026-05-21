@@ -128,6 +128,55 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>');
   });
 
+  test('add-note flow: note persists into list with typed body', async ({ page }) => {
+    // Guards the exact regression PR-D's cypress 15 bump retired: PR-C's
+    // marked → DOMPurify swap broke the notes render path on Electron 12's
+    // Chromium 89, but CI didn't notice (no cypress workflow). Modern
+    // Chromium (this playwright run, cypress 15's Electron 37) renders fine;
+    // having the assertion here means a future marked / DOMPurify / axios
+    // bump that breaks the POST-then-update-list path fails the per-PR smoke.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    const firstContact = page.locator('a[href*="/people/h:"]').first();
+    await firstContact.click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+
+    const marker = `smoke note ${Date.now()}`;
+    await page.locator('textarea[cy-name=add-note-textarea]').click();
+    await page.locator('textarea[cy-name=add-note-textarea]').fill(marker);
+    await page.locator('a[cy-name=add-note-button]').click();
+
+    // Notes.vue calls getNotes() after the POST resolves; the list ul must
+    // contain the new marker text once the round-trip + re-render settle.
+    await expect(page.locator('ul[cy-name=notes-body]')).toContainText(marker);
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (add-note)');
+  });
+
+  test('add-journal-entry flow: entry persists into list with typed body', async ({ page }) => {
+    // Same regression guard as the add-note test above, but for the journal
+    // surface — JournalContentEntry.vue's compiledMarkdown was the other PR-C
+    // casualty on Electron 12. The /journal route shows the entry list after
+    // submission via JournalList.vue, which re-fetches and re-renders.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/journal');
+
+    const marker = `smoke entry ${Date.now()}`;
+    await page.locator('a[cy-name=add-entry-button]').click();
+    await page.waitForURL(/\/journal\/add$/);
+    await page.locator('[name=entry]').fill(marker);
+    await page.locator('[cy-name=save-entry-button]').click();
+    await page.waitForURL(/\/journal$/);
+
+    await expect(page.locator('[cy-name=journal-entries-body]')).toContainText(marker);
+
+    assertNoUnknownConsoleErrors(unknown, '/journal (add-entry)');
+  });
+
   test('vCard export downloads a valid VCARD 4.0', async ({ page }) => {
     const { unknown } = attachConsoleCapture(page);
 
