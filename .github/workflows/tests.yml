@@ -2,7 +2,7 @@ name: Unit tests
 
 on:
   push:
-    branches: 
+    branches:
       - main
       - 4.x
   pull_request:
@@ -11,12 +11,8 @@ on:
   release:
     types: [created]
 
-  workflow_run:
-    workflows: ['Compress images']
-    types: [completed]
-
 env:
-  default-php-version: '8.2'
+  default-php-version: '8.1'
   node-version: 20
 
 concurrency:
@@ -34,12 +30,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.2']
+        php-version: ['8.1']
         connection: [mysql]
         testsuite: [Api, Feature, Commands-Other, Commands-Scheduling, Unit-Models, Unit-Services]
-        # exclude:
-        #   - php-version: '8.1'
-        #     testsuite: Feature
 
     steps:
       - name: Checkout sources
@@ -66,7 +59,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       - name: Cache composer files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
@@ -82,8 +75,7 @@ jobs:
       - name: Prepare environment
         run: |
           cp scripts/ci/.env.${{ matrix.connection }} .env
-          echo 'v2.17.0' > config/.version
-          touch config/.release config/.commit
+          touch config/.version config/.release config/.commit
           mkdir -p public/js public/css results/coverage
           {\
             echo "{"; \
@@ -124,13 +116,11 @@ jobs:
         run: phpdbg -dmemory_limit=6G -qrr vendor/bin/phpunit -c phpunit.xml --testsuite ${{ matrix.testsuite }} --log-junit ./results/junit/results${{ matrix.testsuite }}.xml --coverage-clover ./results/coverage/coverage${{ matrix.testsuite }}.xml
         env:
           DB_CONNECTION: ${{ matrix.connection }}
-          STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
       - name: Run Unit test suite
         if: matrix.php-version != env.default-php-version || matrix.testsuite == 'Feature'
         run: vendor/bin/phpunit -c phpunit.xml --testsuite ${{ matrix.testsuite }} --log-junit ./results/junit/results${{ matrix.testsuite }}.xml
         env:
           DB_CONNECTION: ${{ matrix.connection }}
-          STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
 
       - name: Fix results files
         run: sed -i -e "s%$GITHUB_WORKSPACE/%%g" **/*.xml
@@ -138,9 +128,9 @@ jobs:
 
       - name: Store results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: results
+          name: results-${{ matrix.testsuite }}-php${{ matrix.php-version }}
           path: results
 
 
@@ -154,7 +144,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.2']
+        php-version: ['8.1']
         connection: [mysql]
 
     steps:
@@ -182,7 +172,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       - name: Cache composer files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
@@ -210,8 +200,7 @@ jobs:
       - name: Prepare environment
         run: |
           cp scripts/ci/.env.${{ matrix.connection }} .env
-          echo 'v2.17.0' > config/.version
-          touch config/.release config/.commit
+          touch config/.version config/.release config/.commit
           mkdir -p results/coverage results/cov results/console
           chmod -R 777 storage bootstrap/cache
 
@@ -269,59 +258,7 @@ jobs:
 
       - name: Store results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: results
+          name: results-browser-php${{ matrix.php-version }}
           path: results
-
-
-  ###########################
-  # Reporting to sonarcloud
-  ###########################
-  reporting:
-    needs: [tests, tests_browser]
-    runs-on: ubuntu-latest
-    name: Sonarcloud
-    if: ${{ ! startsWith(github.ref, 'dependabot/') }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-
-      - name: Download results
-        uses: actions/download-artifact@v3
-        with:
-          path: results
-          name: results
-
-      - name: Merge junit files
-        run: |
-          yarn global add junit-merge
-          $(yarn global bin)/junit-merge --recursive --dir results/junit --out results/results.xml
-
-      - name: Set version parameter
-        id: version
-        run: |
-          version=$(git tag --points-at HEAD)
-          test -z "$version" && version="master"
-          echo "value=$version" >> $GITHUB_OUTPUT
-
-      - name: Set coverage list
-        id: coverage
-        run: |
-          SONAR_COVERAGE=$(ls -m --format=comma results/coverage/coverage*.xml | sed -e ':a;N;$!ba;s/\n//g; s/ //g;')
-          echo "list=$SONAR_COVERAGE" >> $GITHUB_OUTPUT
-
-      - name: SonarCloud Scan
-        if: env.SONAR_TOKEN != ''
-        uses: SonarSource/sonarcloud-github-action@v2.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: |
-            -Dsonar.projectVersion=${{ steps.version.outputs.value }}
-            -Dsonar.php.tests.reportPath=./results/results.xml
-            -Dsonar.php.coverage.reportPaths=${{ steps.coverage.outputs.list }}

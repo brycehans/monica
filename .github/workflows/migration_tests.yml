@@ -7,10 +7,6 @@ on:
   release:
     types: [created]
 
-  workflow_run:
-    workflows: ['Compress images']
-    types: [completed]
-
 concurrency:
   group: Migration tests ${{ github.ref }}
   cancel-in-progress: true
@@ -26,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.2']
+        php-version: ['8.1']
         connection: [mysql]
 
     steps:
@@ -54,7 +50,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       - name: Cache composer files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
