@@ -82,6 +82,10 @@
         "thecodingmachine/phpstan-safe-rule": "^1.0",
         "vimeo/psalm": "^5.5"
     },
+    "replace": {
+        "spatie/ray": "*",
+        "spatie/laravel-ray": "*"
+    },
     "suggest": {
         "ext-apcu": "*"
     },
@@ -101,6 +105,9 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "fork-notes": {
+            "replace-spatie-ray": "DO NOT REMOVE the top-level `replace` block for spatie/ray + spatie/laravel-ray without reading this first. They are pulled in transitively via psalm/plugin-laravel -> orchestra/testbench -> orchestra/workbench -> spatie/laravel-ray -> spatie/ray, because orchestra/workbench declares spatie/laravel-ray as a regular `require` (not `require-dev`). Nothing in this project or any installed vendor package actually calls ray(). spatie/ray/src/helpers.php registers a shutdown handler at file-load time that invokes ray() -> class_exists(Spatie\\LaravelRay\\Ray::class); during `composer install --no-dev` inside a dev container that previously had dev deps, the shutdown handler fires AFTER the package is removed from disk but while composer's in-memory ClassLoader still holds the stale PSR-4 mapping, fatalling on the missing file. The `replace` block tells composer the root project provides these packages, so the orchestra/workbench dep is satisfied without installing them. composer.lock has been hand-pruned (#613) to also drop the now-orphaned transitive deps: rector/rector, zbateson/{mail-mime-parser,mb-wrapper,stream-decorators}, pimple/pimple, symfony/polyfill-iconv. The underlying issue is also resolved upstream in psalm/plugin-laravel >= 2.10.1, which dropped the orchestra/testbench dep entirely, but that release requires Laravel ^10.48 so we cannot adopt it on the Laravel 9 line. This `replace` block becomes safe to remove once psalm/plugin-laravel >= 2.10.1 is in the lock. See issue brycehans/monica#613."
         }
     },
     "autoload": {
