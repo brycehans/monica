@@ -222,7 +222,7 @@ export default {
     },
 
     compiledMarkdown (text) {
-      return text !== undefined && text !== null ? marked(text, { sanitize: true }) : '';
+      return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text)) : '';
     },
   }
 };
