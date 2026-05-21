@@ -1,4 +1,4 @@
-var faker = require('faker');
+import { faker } from '@faker-js/faker';
 
 describe('Signup', function () {
   // @TODO: get emails from Mailtrap with their API and click on the confirmation
@@ -24,7 +24,7 @@ describe('Signup', function () {
   // })
 
   //it('should block registration if policy is not accepted', function () {
-  //  cy.register(faker.name.firstName(), faker.name.lastName(), faker.internet.password(), faker.internet.email(), false);
+  //  cy.register(faker.person.firstName(), faker.person.lastName(), faker.internet.password(), faker.internet.email(), false);
   //  cy.get('.alert').should('exist');
   //});
 
@@ -32,12 +32,12 @@ describe('Signup', function () {
     const email = faker.internet.email();
 
     // test email address
-    cy.register(faker.name.firstName(), faker.name.lastName(), faker.internet.password(), email, true);
+    cy.register(faker.person.firstName(), faker.person.lastName(), faker.internet.password(), email, true);
     cy.get('.alert').should('not.exist');
 
     cy.get('[data-cy=header-link-logout]').click();
 
-    cy.register(faker.name.firstName(), faker.name.lastName(), faker.internet.password(), email, true);
+    cy.register(faker.person.firstName(), faker.person.lastName(), faker.internet.password(), email, true);
     cy.get('.alert').should('exist');
   });
 });
