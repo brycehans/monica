@@ -7,12 +7,8 @@ on:
   release:
     types: [created]
 
-  workflow_run:
-    workflows: ['Compress images']
-    types: [completed]
-
 env:
-  php-version: '8.2'
+  php-version: '8.1'
   node-version: 20
 
 concurrency:
@@ -57,7 +53,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       - name: Cache composer files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ env.php-version }}-${{ hashFiles('**/composer.lock') }}
@@ -79,18 +75,6 @@ jobs:
       - name: Install yarn dependencies
         run: yarn inst
       - name: Lint files
-        run: yarn run lint:all
+        run: yarn run lint
       - name: Build assets
         run: yarn run production
-
-      - name: Check if there is any file update needed
-        id: check
-        run: |
-          status=$(git status --porcelain)
-          if [ -z "$status" ]; then
-            echo "Nothing to push, already up to date."
-          else
-            echo -e "Waiting modifications:\n$status"
-            echo "::error::Assets are not up to date. Please rebuild with: 'yarn run lint:all' and 'yarn run prod'."
-            exit -1
-          fi

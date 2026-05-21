@@ -1,0 +1,139 @@
+name: Unit tests
+
+on:
+  push:
+    branches:
+      - main
+      - 4.x
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches-ignore: ['l10n_main*']
+  release:
+    types: [created]
+
+env:
+  default-php-version: '8.1'
+  node-version: 20
+
+concurrency:
+  group: Unit tests ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  #############
+  # Run tests
+  #############
+  tests:
+    runs-on: ubuntu-latest
+    name: Testsuite ${{ matrix.testsuite }} with PHP ${{ matrix.php-version }} (${{ matrix.connection }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.1']
+        connection: [mysql]
+        testsuite: [Api, Feature, Commands-Other, Commands-Scheduling, Unit-Models, Unit-Services]
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: redis, ${{ matrix.connection }}
+          coverage: none
+      - name: Check PHP Version
+        run: php -v
+      - name: Check Composer Version
+        run: composer -V
+      - name: Check PHP Extensions
+        run: php -m
+
+    # Composer
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: Cache composer files
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+            ${{ runner.os }}-composer-${{ matrix.php-version }}
+            ${{ runner.os }}-composer-
+
+      - name: Install composer dependencies
+        run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader $ext
+
+    # Prepare
+      - name: Prepare environment
+        run: |
+          cp scripts/ci/.env.${{ matrix.connection }} .env
+          touch config/.version config/.release config/.commit
+          mkdir -p public/js public/css results/coverage
+          {\
+            echo "{"; \
+            for f in app.js manifest.js vendor.js app-ltr.css app-rtl.css stripe.js stripe.css; do \
+              [[ $first == 1 ]] && echo -n "," || first=1; \
+              k=${f##*.}/$f; \
+              echo "\"/$k\": \"/$k\""; \
+              echo '' > public/$k; \
+            done; \
+            echo "}"; \
+          } | tee public/mix-manifest.json
+
+      - name: Generate key
+        run: php artisan key:generate
+
+      - name: Start mysql
+        if: matrix.connection == 'mysql'
+        run: sudo systemctl start mysql.service
+      - name: Create database
+        if: matrix.connection == 'mysql'
+        run: mysql --protocol=tcp -u root -proot -e "CREATE DATABASE IF NOT EXISTS monica CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+      - name: Prepare database
+        if: matrix.connection == 'mysql'
+        run: mysql --protocol=tcp -u root -proot monica < scripts/database.test.sql
+      - name: Run migrations
+        run: php artisan migrate --no-interaction -vvv
+
+      - name: Run seeds
+        run: php artisan db:seed --no-interaction -vvv
+      - name: Create passport keys
+        run: php artisan passport:keys --no-interaction -vvv
+      - name: Cache route
+        run: php artisan route:cache
+
+    # Test
+      - name: Run Unit test suite
+        if: matrix.php-version == env.default-php-version && matrix.testsuite != 'Feature'
+        run: phpdbg -dmemory_limit=6G -qrr vendor/bin/phpunit -c phpunit.xml --testsuite ${{ matrix.testsuite }} --log-junit ./results/junit/results${{ matrix.testsuite }}.xml --coverage-clover ./results/coverage/coverage${{ matrix.testsuite }}.xml
+        env:
+          DB_CONNECTION: ${{ matrix.connection }}
+      - name: Run Unit test suite
+        if: matrix.php-version != env.default-php-version || matrix.testsuite == 'Feature'
+        run: vendor/bin/phpunit -c phpunit.xml --testsuite ${{ matrix.testsuite }} --log-junit ./results/junit/results${{ matrix.testsuite }}.xml
+        env:
+          DB_CONNECTION: ${{ matrix.connection }}
+
+      - name: Fix results files
+        run: sed -i -e "s%$GITHUB_WORKSPACE/%%g" **/*.xml
+        working-directory: results
+
+      - name: Store results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.testsuite }}-php${{ matrix.php-version }}
+          path: results
+
+
+  # tests_browser (Laravel Dusk) job is temporarily suppressed.
+  # See issue #618 — chromedriver path mismatch breaks every browser test.
+  # Restore once the chromedriver binary-name resolution is fixed.

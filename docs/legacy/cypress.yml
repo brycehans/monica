@@ -1,3 +1,7 @@
+# Archived: inherited Cypress CI workflow from monicahq/monica.
+# Kept here as a reference for the Playwright port — not active CI.
+# See issue #586 for the audit decision.
+
 name: Cypress tests
 
 on:
