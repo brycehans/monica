@@ -3929,10 +3929,10 @@ he@1.2.0, he@^1.2.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
-hint.css@^2.3:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/hint.css/-/hint.css-2.7.0.tgz#2f7f9cd8fb07745de9800547e36a0c82ee9aedaf"
-  integrity sha512-kNtr/oXTOFA+qYLFAHY1dKVKZuAbavCPB22+w9kaFzqjB9ZLSFJyksxrVsJCphQiQxAYLazXZdrOaGLRe0hZMA==
+hint.css@^3.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/hint.css/-/hint.css-3.0.0.tgz#9f3a071d7b66d41f723c529a7878a3e0c23eb0ff"
+  integrity sha512-UoJ+yLO2kEcfsm/XMU1suAIR0sxCq4HO22pw4okJQo5TQDlA2BrJ57Eaxh4eT+9PDInIDTRm9TVzzbHHWEqASQ==
 
 hmac-drbg@^1.0.1:
   version "1.0.1"
