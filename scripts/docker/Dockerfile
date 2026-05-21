@@ -15,7 +15,7 @@ LABEL org.opencontainers.image.authors="Alexis Saettler <alexis@saettler.org>" \
       org.opencontainers.image.url="https://monicahq.com" \
       org.opencontainers.image.vendor="Monica"
 
-# entrypoint.sh dependencies
+# busybox-static powers `busybox crond` in scripts/docker/cron.sh; bash is the entrypoint shebang.
 RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
