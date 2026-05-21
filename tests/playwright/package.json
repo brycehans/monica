@@ -1,0 +1,15 @@
+{
+  "name": "monica-playwright-smoke",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Standalone Playwright smoke walkthrough for dependency-upgrade verification. Isolated from the root yarn.lock so npm-side upgrade PRs don't churn this dep tree.",
+  "scripts": {
+    "smoke": "playwright test",
+    "smoke:headed": "playwright test --headed",
+    "smoke:debug": "PWDEBUG=1 playwright test",
+    "smoke:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.52.0"
+  }
+}
