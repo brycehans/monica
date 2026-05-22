@@ -103,6 +103,16 @@ the working directory is named `monica`). Override it if your setup differs:
 CYPRESS_USE_DOCKER=true CYPRESS_DOCKER_CONTAINER=myproject-app-1 CYPRESS_BASE_URL=http://localhost:8082 yarn run e2e
 ```
 
+The helper also passes `--user www-data` so artisan runs as the same uid as
+apache inside the container; without it, `storage/logs/laravel.log` gets
+chowned to root and subsequent web requests 500 (see #629). Override via
+`CYPRESS_DOCKER_USER` if your container uses a different user, or set it to
+an empty string to run as root:
+
+```sh
+CYPRESS_USE_DOCKER=true CYPRESS_DOCKER_USER=appuser CYPRESS_BASE_URL=http://localhost:8082 yarn run e2e
+```
+
 ## Other documents to read
 
 [Connecting to MySQL inside of a Docker container](/docs/installation/docker-mysql.md)
