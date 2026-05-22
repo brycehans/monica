@@ -11,6 +11,12 @@ module.exports = defineConfig({
     toConsole: true,
   },
   projectId: 'q8h6k9',
+  allowCypressEnv: false,
+  expose: {
+    USE_DOCKER: process.env.CYPRESS_USE_DOCKER,
+    DOCKER_CONTAINER: process.env.CYPRESS_DOCKER_CONTAINER,
+    DOCKER_USER: process.env.CYPRESS_DOCKER_USER,
+  },
   e2e: {
     baseUrl: 'http://localhost:8000',
     supportFile: 'tests/cypress/support/e2e.js',
