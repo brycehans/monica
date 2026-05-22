@@ -41,7 +41,8 @@ class SetupTest extends Command
      * @var string
      */
     protected $signature = 'setup:test
-                            {--skipSeed : Skip the populate database with fake data.}';
+                            {--skipSeed : Skip the populate database with fake data.}
+                            {--contacts=20 : Number of contacts to seed when populating the database.}';
 
     /**
      * The console command description.
@@ -92,8 +93,11 @@ class SetupTest extends Command
      */
     public function handle()
     {
-        if (! $this->confirm('Are you sure you want to proceed? This will delete ALL data in your environment.')) {
-            return;
+        if (! $this->option('no-interaction')
+            && ! $this->confirm('Are you sure you want to proceed? This will delete ALL data in your environment.')) {
+            $this->warn('Command cancelled.');
+
+            return self::FAILURE;
         }
 
         $this->runArtisan('✓ Performing migrations', 'migrate:fresh');
@@ -101,7 +105,10 @@ class SetupTest extends Command
         $this->runArtisan('✓ Symlink the storage folder', 'storage:link');
 
         if (! $this->option('skipSeed')) {
-            $this->numberOfContacts = $this->ask('How many contacts would you like to have in this test account?');
+            $this->numberOfContacts = (int) $this->ask(
+                'How many contacts would you like to have in this test account?',
+                $this->option('contacts')
+            );
             $this->info('✓ Filling database with fake data');
             $this->seed();
         }
