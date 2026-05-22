@@ -1,10 +1,19 @@
 // When running Cypress against the Docker dev stack (CYPRESS_USE_DOCKER=true),
 // cy.exec runs on the host which has no .env or DB connection. Prefix artisan
 // commands with docker exec so they run inside the app container instead.
+//
+// docker exec defaults to root; running artisan as root chowns
+// storage/logs/laravel.log to root, after which any web request that logs
+// (i.e. most of them) 500s under the apache www-data user. Inject
+// --user www-data by default so the helper matches apache's uid. Override
+// via CYPRESS_DOCKER_USER (set to empty string to run as root).
 function artisan(cmd) {
   if (Cypress.env('USE_DOCKER')) {
     const container = Cypress.env('DOCKER_CONTAINER') || 'monica-app-1';
-    return 'docker exec ' + container + ' ' + cmd;
+    const userEnv = Cypress.env('DOCKER_USER');
+    const user = userEnv === undefined ? 'www-data' : userEnv;
+    const userFlag = user ? '--user ' + user + ' ' : '';
+    return 'docker exec ' + userFlag + container + ' ' + cmd;
   }
   return cmd;
 }
