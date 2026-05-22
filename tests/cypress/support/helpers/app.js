@@ -8,9 +8,9 @@
 // --user www-data by default so the helper matches apache's uid. Override
 // via CYPRESS_DOCKER_USER (set to empty string to run as root).
 function artisan(cmd) {
-  if (Cypress.env('USE_DOCKER')) {
-    const container = Cypress.env('DOCKER_CONTAINER') || 'monica-app-1';
-    const userEnv = Cypress.env('DOCKER_USER');
+  if (Cypress.expose('USE_DOCKER')) {
+    const container = Cypress.expose('DOCKER_CONTAINER') || 'monica-app-1';
+    const userEnv = Cypress.expose('DOCKER_USER');
     const user = userEnv === undefined ? 'www-data' : userEnv;
     const userFlag = user ? '--user ' + user + ' ' : '';
     return 'docker exec ' + userFlag + container + ' ' + cmd;
