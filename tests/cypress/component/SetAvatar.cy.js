@@ -30,7 +30,7 @@ const SweetModalStub = {
     },
   },
   template: `
-    <div v-if="isOpen" data-cy="crop-modal">
+    <div :data-cy="isOpen ? 'crop-modal' : null" :data-open="isOpen">
       <slot></slot>
       <slot name="button"></slot>
     </div>
@@ -41,9 +41,15 @@ function makeClipperStub() {
   return {
     name: 'vue-cropper',
     props: ['src', 'aspectRatio', 'autoCropArea', 'viewMode'],
-    template: '<div data-cy="cropper-stub" :data-src="src"></div>',
+    data() {
+      return { capturedSrc: this.src };
+    },
+    template: '<div data-cy="cropper-stub" :data-src="src" :data-captured-src="capturedSrc"></div>',
     methods: {
       getCroppedCanvas() {
+        if (!this.capturedSrc) {
+          return null;
+        }
         const canvas = document.createElement('canvas');
         canvas.width = 100;
         canvas.height = 100;
@@ -202,5 +208,30 @@ describe('SetAvatar.vue regression coverage', () => {
   it('disables the upload radio when the account storage limit is reached', () => {
     mountSetAvatar({ hasReachedAccountStorageLimit: true });
     cy.get('label[data-value=upload]').should('have.attr', 'data-disabled', 'true');
+  });
+
+  it('re-mounts the cropper on each new upload so the new src reaches the cropper instance', () => {
+    // Regression test for vue-cropperjs not watching :src — the wrapper
+    // captures the image src in mounted() and never updates it. Without
+    // v-if + :key on <vue-cropper>, a second upload would reuse the stale
+    // Cropper instance bound to the previous (or empty) src.
+    mountSetAvatar();
+    cy.get('[data-cy=cropper-stub]').should('not.exist');
+
+    selectFixture();
+    cy.get('[data-cy=cropper-stub]')
+      .should('have.attr', 'data-captured-src')
+      .and('match', /^blob:stub-/)
+      .then((firstSrc) => {
+        withSetAvatar((setAvatar) => {
+          setAvatar.cancelCrop();
+        });
+        selectFixture();
+        cy.get('[data-cy=cropper-stub]').should(($el) => {
+          const secondSrc = $el.attr('data-captured-src');
+          expect(secondSrc).to.match(/^blob:stub-/);
+          expect(secondSrc).to.not.equal(firstSrc);
+        });
+      });
   });
 });
