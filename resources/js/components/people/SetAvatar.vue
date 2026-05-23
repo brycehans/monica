@@ -101,7 +101,14 @@
       </form-radio>
     </div>
     <sweet-modal ref="cropModal" :title="$t('people.avatar_crop_new_avatar_photo')" :blocking="true" :hide-close-button="true">
-      <vue-cropper v-if="uploadedImgUrl" ref="clipper" :key="uploadedImgUrl" :src="uploadedImgUrl" :aspect-ratio="1" :auto-crop-area="1" :view-mode="1" />
+      <vue-cropper v-if="uploadedImgUrl"
+                   ref="clipper"
+                   :key="uploadedImgUrl"
+                   :src="uploadedImgUrl"
+                   :aspect-ratio="1"
+                   :auto-crop-area="1"
+                   :view-mode="1"
+      />
       <div slot="button">
         <a class="btn" href="" @click.prevent="cancelCrop">
           {{ $t('app.cancel') }}
