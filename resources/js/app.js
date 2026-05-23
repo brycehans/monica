@@ -29,10 +29,6 @@ import VueClipboard from 'vue-clipboard2';
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 
-// Dependency of vuejs-clipper
-import VueRx from 'vue-rx';
-Vue.use(VueRx);
-
 // Custom components
 Vue.component(
   'PassportClients',

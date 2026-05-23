@@ -14,6 +14,7 @@ describe('Avatar upload / crop / save', function () {
       cy.get('input[type=file][name=photo]').selectFile('tests/cypress/fixtures/avatar-test.jpg', { force: true });
 
       cy.get('.sweet-modal.is-visible', { timeout: 10000 }).should('exist');
+      cy.get('.sweet-modal.is-visible .cropper-container', { timeout: 10000 }).should('exist');
       cy.contains('.sweet-modal.is-visible .btn-primary', 'Done').click({ force: true });
 
       cy.get('.sweet-modal.is-visible').should('not.exist');

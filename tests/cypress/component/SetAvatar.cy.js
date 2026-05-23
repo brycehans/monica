@@ -39,11 +39,11 @@ const SweetModalStub = {
 
 function makeClipperStub() {
   return {
-    name: 'clipper-basic',
-    props: ['src', 'ratio', 'initWidth', 'initHeight'],
+    name: 'vue-cropper',
+    props: ['src', 'aspectRatio', 'autoCropArea', 'viewMode'],
     template: '<div data-cy="cropper-stub" :data-src="src"></div>',
     methods: {
-      clip() {
+      getCroppedCanvas() {
         const canvas = document.createElement('canvas');
         canvas.width = 100;
         canvas.height = 100;
@@ -96,8 +96,8 @@ function mountSetAvatar(propsData = {}) {
         'form-radio': FormRadioStub,
         SweetModal: SweetModalStub,
         'sweet-modal': SweetModalStub,
-        clipperBasic: makeClipperStub(),
-        'clipper-basic': makeClipperStub(),
+        VueCropper: makeClipperStub(),
+        'vue-cropper': makeClipperStub(),
       },
       mocks: { $t, $tc: $t },
     },

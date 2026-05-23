@@ -101,7 +101,7 @@
       </form-radio>
     </div>
     <sweet-modal ref="cropModal" :title="$t('people.avatar_crop_new_avatar_photo')" :blocking="true" :hide-close-button="true">
-      <clipper-basic ref="clipper" :src="uploadedImgUrl" :ratio="1" :init-width="100" :init-height="100" />
+      <vue-cropper ref="clipper" :key="uploadedImgUrl" :src="uploadedImgUrl" :aspect-ratio="1" :auto-crop-area="1" :view-mode="1" />
       <div slot="button">
         <a class="btn" href="" @click.prevent="cancelCrop">
           {{ $t('app.cancel') }}
@@ -115,13 +115,14 @@
 </template>
 
 <script>
-import { clipperBasic } from 'vuejs-clipper';
+import VueCropper from 'vue-cropperjs';
+import 'cropperjs/dist/cropper.css';
 import { SweetModal } from 'sweet-modal-vue';
 
 export default {
 
   components: {
-    clipperBasic,
+    VueCropper,
     SweetModal
   },
   props: {
@@ -193,7 +194,7 @@ export default {
     },
 
     setCroppedImg: function () {
-      const canvas = this.$refs.clipper.clip();
+      const canvas = this.$refs.clipper.getCroppedCanvas();
 
       canvas.toBlob((blob) => {
         const input = this.$refs.uploadedImg;
