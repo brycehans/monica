@@ -68,7 +68,7 @@ class MoveAvatarsToPhotosDirectory extends Command
     {
         try {
             if ($this->option('dryrun')) {
-                MoveContactAvatarToPhotosDirectory::dispatchNow($contact, true);
+                MoveContactAvatarToPhotosDirectory::dispatchSync($contact, true);
             } else {
                 MoveContactAvatarToPhotosDirectory::dispatch($contact, false)
                     ->delay($delay);
