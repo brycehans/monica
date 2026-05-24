@@ -593,7 +593,7 @@ class Contact extends Model
      * @param  Builder  $query
      * @return Builder
      */
-    public function scopeNotes($query, int $accountId = null, string $needle)
+    public function scopeNotes($query, string $needle, ?int $accountId = null)
     {
         $maccountId = $accountId ?? Auth::user()->account_id;
 
@@ -611,7 +611,7 @@ class Contact extends Model
      * @param  Builder  $query
      * @return Builder
      */
-    public function scopeIntroductionAdditionalInformation($query, int $accountId = null, string $needle)
+    public function scopeIntroductionAdditionalInformation($query, string $needle, ?int $accountId = null)
     {
         $maccountId = $accountId ?? Auth::user()->account_id;
 
@@ -630,7 +630,7 @@ class Contact extends Model
      * @param  string|null  $addressBookName
      * @return Builder
      */
-    public function scopeAddressBook($query, int $accountId = null, string $addressBookName = null)
+    public function scopeAddressBook($query, ?int $accountId = null, ?string $addressBookName = null)
     {
         $addressBook = null;
         if ($accountId && $addressBookName) {
@@ -1016,7 +1016,7 @@ class Contact extends Model
      * @param  string  $lastName
      * @return bool
      */
-    public function setName(string $firstName, string $lastName = null, string $middleName = null)
+    public function setName(string $firstName, ?string $lastName = null, ?string $middleName = null)
     {
         if ($firstName === '') {
             return false;
@@ -1211,7 +1211,7 @@ class Contact extends Model
      * @param  Filesystem  $storage
      * @param  int  $size
      */
-    private function deleteAvatarSize(Filesystem $storage, int $size = null)
+    private function deleteAvatarSize(Filesystem $storage, ?int $size = null)
     {
         $avatarFileName = $this->avatar_file_name;
 
