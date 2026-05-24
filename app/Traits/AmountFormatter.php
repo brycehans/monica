@@ -7,6 +7,9 @@ use App\Helpers\MoneyHelper;
 use App\Models\Settings\Currency;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property-read \App\Models\Settings\Currency|null $currency
+ */
 trait AmountFormatter
 {
     /**

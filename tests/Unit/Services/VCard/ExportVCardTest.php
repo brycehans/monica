@@ -489,7 +489,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString($result, $vCard->serialize());
     }
 
-    public function socialProfileProvider()
+    public static function socialProfileProvider(): array
     {
         return [
             ['Facebook', 'Facebook', 'test', 'SOCIALPROFILE;TYPE=facebook:https://www.facebook.com/test'],
@@ -528,7 +528,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString($result, $vCard->serialize());
     }
 
-    public function contactUrlProvider()
+    public static function contactUrlProvider(): array
     {
         return [
             ['Discord', 'https://www.discord.app/user/', 'test123', 'URL;VALUE=URI:https://www.discord.app/user/test123'],

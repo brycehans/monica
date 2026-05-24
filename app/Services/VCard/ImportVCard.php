@@ -615,7 +615,7 @@ class ImportVCard extends BaseService
 
         if ($result['is_birthdate_known']) {
             if ($result['birthdate_is_age_based'] = $contact->birthdate->is_age_based) {
-                $result['birthdate_age'] = now()->diffInYears($contact->birthdate->date, true);
+                $result['birthdate_age'] = (int) now()->diffInYears($contact->birthdate->date, true);
             } else {
                 $result['birthdate_day'] = $contact->birthdate->date->day;
                 $result['birthdate_month'] = $contact->birthdate->date->month;

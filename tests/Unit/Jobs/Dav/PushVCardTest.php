@@ -74,7 +74,7 @@ class PushVCardTest extends TestCase
         $job->withBatchId($batch->id)->handle();
     }
 
-    public function modes(): array
+    public static function modes(): array
     {
         return [
             [0, []],

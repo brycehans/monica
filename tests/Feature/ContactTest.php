@@ -523,7 +523,7 @@ class ContactTest extends FeatureTestCase
         $response = $this->get('/people/'.$contact->hashID().'/vcard');
 
         $response->assertOk();
-        $response->assertHeader('Content-type', 'text/x-vcard; charset=UTF-8');
+        $response->assertHeader('Content-type', 'text/x-vcard; charset=utf-8');
         $response->assertSee('FN:John Doe');
         $response->assertSee('N:Doe;John;;;');
     }

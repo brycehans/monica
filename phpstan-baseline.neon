@@ -1,0 +1,1843 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Console/Commands/ImportCSV.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:importjobs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Console/Commands/ImportVCards.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 1
+			path: app/Console/Commands/SentryRelease.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$relationshipTypes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SetupTest.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between Carbon\\Carbon and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Console/Scheduling/CronEvent.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$called_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Helpers/AccountHelper.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$happened_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Helpers/AccountHelper.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$reminder\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Helpers/AccountHelper.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:active\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Helpers/AccountHelper.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:real\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Helpers/AccountHelper.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Helpers/AuditLogHelper.php
+
+		-
+			message: '#^Call to function is_callable\(\) with callable\(\)\: mixed will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Helpers/CollectionHelper.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between Carbon\\Carbon\|null and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Helpers/DateHelper.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$genders\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Helpers/GenderHelper.php
+
+		-
+			message: '#^Method App\\Helpers\\MoneyHelper\:\:getCurrency\(\) should return App\\Models\\Settings\\Currency\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Helpers/MoneyHelper.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between array\|OK\\Ipstack\\Entity\\Dto\\DtoInterface and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Helpers/RequestHelper.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between list\<string\> and false will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Helpers/TimezoneHelper.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$latitude\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Helpers/WeatherHelper.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:weathers\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Helpers/WeatherHelper.php
+
+		-
+			message: '#^Parameter \#1 \$place of class App\\Jobs\\GetGPSCoordinate constructor expects App\\Models\\Account\\Place, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Helpers/WeatherHelper.php
+
+		-
+			message: '#^Parameter \#1 \$place of class App\\Jobs\\GetWeatherInformation constructor expects App\\Models\\Account\\Place, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Helpers/WeatherHelper.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$activityTypeCategories\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Account/Activity/ActivityTypeCategoriesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lifeEventCategories\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Account/LifeEvent/LifeEventCategoriesController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:activityTypeCategories\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Account/Activity/ApiActivityTypeCategoryController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:activityTypes\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Account/Activity/ApiActivityTypeController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:companies\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Account/ApiCompanyController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:genders\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Account/ApiGenderController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:places\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Account/ApiPlaceController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:activities\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiActivitiesController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:getYearlyActivitiesStatistics\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Api/ApiActivitiesController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:contacts\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiContactController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiContactTagController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:debts\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiDebtController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:gifts\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiGiftController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:entries\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiJournalController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notes\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiNoteController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:relationshipTypes\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiRelationshipTypeController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:relationshipTypeGroups\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiRelationshipTypeGroupController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:reminders\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiReminderController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:getUpcomingRemindersForMonth\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/ApiReminderController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:contacts\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiTagController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:tags\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiTagController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:tasks\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ApiTaskController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:addresses\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Contact/ApiAddressController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:calls\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Contact/ApiCallController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:getYearlyCallStatistics\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Api/Contact/ApiCallController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:conversations\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/Contact/ApiConversationController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:documents\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/Contact/ApiDocumentController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:lifeEvents\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Contact/ApiLifeEventController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:occupations\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Contact/ApiOccupationController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:photos\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Contact/ApiPhotoController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:auditLogs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Settings/ApiAuditLogController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contactFields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Settings/ApiContactFieldTypeController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:contactFieldTypes\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Settings/ApiContactFieldTypeController.php
+
+		-
+			message: '#^Instanceof between App\\Models\\User\\User and App\\Models\\User\\User will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Auth/EmailChangeController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$activityTypeCategories\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/ActivitiesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contacts\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/ActivitiesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$happened_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/ActivitiesController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:getYearlyActivitiesStatistics\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Contacts/ActivitiesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contactFieldType\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Http/Controllers/Contacts/ContactFieldsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contactFieldTypes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/ContactFieldsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contact_field_type_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/ContactFieldsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$data\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/ContactFieldsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/ContactFieldsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contactFieldType\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Contacts/ConversationsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contactFieldTypes\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Contacts/ConversationsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/ConversationsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$happened_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/ConversationsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Contacts/ConversationsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$messages\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Contacts/ConversationsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$written_by_me\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/ConversationsController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Contacts/DebtController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$happened_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/LifeEventsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/LifeEventsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lifeEventCategories\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/LifeEventsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lifeEventType\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Contacts/LifeEventsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/LifeEventsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$note\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/LifeEventsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$body\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/NotesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Contacts/NotesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$favorited_at\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Contacts/NotesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/NotesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_favorited\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/NotesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Contacts/PetsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Contacts/PetsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$petCategory\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Contacts/PetsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$pet_category_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Contacts/PetsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$birthdate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/RelationshipsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$birthday_reminder_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/RelationshipsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$default_gender_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/RelationshipsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$genders\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/RelationshipsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/RelationshipsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_partial\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/RelationshipsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$relationshipTypes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/RelationshipsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getBirthdayState\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/RelationshipsController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Contacts/RemindersController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/TagsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:tags\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/TagsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$completed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/TasksController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$completed_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/TasksController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/TasksController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/TasksController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Contacts/TasksController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$default_gender_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$legacy_free_plan_unlimited_contacts\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$relationshipType\.$#'
+			identifier: property.notFound
+			count: 8
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$relationshipTypeLocalized\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:contacts\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:modules\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:active\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 7
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasReachedContactLimit\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\StorageHelper\:\:hasReachedAccountStorageLimit\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/ContactsController.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between array and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/DAV/Backend/CalDAV/CalDAVBackend.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:contacts\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/DAV/Backend/CalDAV/CalDAVBirthdays.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:tasks\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/DAV/Backend/CalDAV/CalDAVTasks.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:contacts\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/DAV/Backend/CardDAV/CardDAVBackend.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$activities_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$gifts_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$notes_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$reminders_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tasks_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:calls\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:contacts\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:debts\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notes\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:getUpcomingRemindersForMonth\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:days\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/JournalController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:edit\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/JournalController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:journalEntries\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/JournalController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:auditLogs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/AuditLogController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Settings/AuditLogController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Settings/ExportController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$default_gender_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Settings/GendersController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$genders\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/GendersController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/GendersController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:genders\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/GendersController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\GenderHelper\:\:replace\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Settings/GendersController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$modules\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/ModulesController.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Settings/MultiFAController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contactFieldTypes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/PersonalizationController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contactFields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/PersonalizationController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:contactFieldTypes\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/PersonalizationController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Settings/PersonalizationController.php
+
+		-
+			message: '#^Parameter \#1 \$codes of method App\\Http\\Controllers\\Settings\\RecoveryCodesController\:\:response\(\) expects Illuminate\\Support\\Collection\<\(int\|string\), App\\Models\\User\\RecoveryCode\>, Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Settings/RecoveryCodesController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$reminderRules\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/ReminderRulesController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Settings/StorageController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\StorageHelper\:\:getAccountStorageSize\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Settings/StorageController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:allContacts\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:createSetupIntent\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:downloadInvoice\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getSubscribedPlan\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasInvoices\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasStripeId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:invitations\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:invoices\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isSubscribed\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:subscribe\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:subscriptionCancel\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:updateSubscription\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:users\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:canDowngrade\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:isBelowContactLimit\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Settings/SubscriptionsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$default_time_reminder_is_sent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$importjobs\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$number_of_invitations_sent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$users\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:importjobs\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:invitations\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 10
+			path: app/Http/Controllers/SettingsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tasks\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/TasksController.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Middleware/CheckAccountLimitations.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isSubscribed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Middleware/SentryContext.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Jobs/Dav/GetMultipleVCard.php
+
+		-
+			message: '#^Parameter \#1 \$user of class App\\Jobs\\Dav\\UpdateVCard constructor expects App\\Models\\User\\User, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/Dav/GetMultipleVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Jobs/Dav/GetVCard.php
+
+		-
+			message: '#^Parameter \#1 \$user of class App\\Jobs\\Dav\\UpdateVCard constructor expects App\\Models\\User\\User, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/Dav/GetVCard.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/Reminder/NotifyUserAboutReminder.php
+
+		-
+			message: '#^Parameter \#2 \$listener of method Illuminate\\Events\\Dispatcher\:\:listen\(\) expects array\|\(callable\(\)\: mixed\)\|class\-string\|Illuminate\\Events\\QueuedClosure\|null, ''\\\\App\\\\Listeners…'' given\.$#'
+			identifier: argument.type
+			count: 4
+			path: app/Listeners/LoginListener.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$locale\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Account/Account.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:addressBook\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Models/Account/Account.php
+
+		-
+			message: '#^Generic type Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\Contact\\Contact\> in PHPDoc tag @return does not specify all template types of class Illuminate\\Database\\Eloquent\\Relations\\HasMany\: TRelatedModel, TDeclaringModel$#'
+			identifier: generics.lessTypes
+			count: 1
+			path: app/Models/Account/Account.php
+
+		-
+			message: '#^Method App\\Models\\Account\\Account\:\:getRelationshipTypeByType\(\) should return App\\Models\\Relationship\\RelationshipType\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Account/Account.php
+
+		-
+			message: '#^Method App\\Models\\Account\\Account\:\:getRelationshipTypeGroupByType\(\) should return App\\Models\\Relationship\\RelationshipTypeGroup\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Account/Account.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\Account\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/Account.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$account_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Account/Activity.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Account/Activity.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$translation_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Account/Activity.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\Activity\:\:\$with is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$with\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/Activity.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\ActivityStatistic\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/ActivityStatistic.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$activity_type_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Account/ActivityType.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\ActivityType\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/ActivityType.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\ActivityTypeCategory\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/ActivityTypeCategory.php
+
+		-
+			message: '#^Property ''name'' is not a computed property, remove from \$appends\.$#'
+			identifier: rules.modelAppends
+			count: 1
+			path: app/Models/Account/ActivityTypeCategory.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\AddressBook\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/AddressBook.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\AddressBookSubscription\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/AddressBookSubscription.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\AddressBookSubscription\:\:\$with is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$with\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/AddressBookSubscription.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\Company\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/Company.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notify\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Account/ExportJob.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\ExportJob\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/ExportJob.php
+
+		-
+			message: '#^Method App\\Models\\Account\\Photo\:\:contact\(\) should return App\\Models\\Contact\\Contact but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Account/Photo.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Account\\Weather\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Account/Weather.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$happened_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_year_unknown\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$ofContact\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$relationshipType\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:contacts\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getRelationshipTypeGroupByType\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:url\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:completed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:inProgress\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:isIdea\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:offered\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Call to function is_int\(\) with int will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Generic type Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\Contact\\Contact\> in PHPDoc tag @return does not specify all template types of class Illuminate\\Database\\Eloquent\\Relations\\HasMany\: TRelatedModel, TDeclaringModel$#'
+			identifier: generics.lessTypes
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Method App\\Models\\Contact\\Contact\:\:getAgeAtDeath\(\) should return int\|null but returns float\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Contact\\Contact\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Contact\\Contact\:\:\$with is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$with\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Parameter \#1 \$address of static method App\\Helpers\\WeatherHelper\:\:getWeatherForAddress\(\) expects App\\Models\\Contact\\Address\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: string, Closure\(App\\Models\\Contact\\Tag\)\: string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Contact/Contact.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$default_gender_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Contact/Gender.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Contact\\Gender\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Contact/Gender.php
+
+		-
+			message: '#^Result of && is always true\.$#'
+			identifier: booleanAnd.alwaysTrue
+			count: 1
+			path: app/Models/Contact/Gift.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between App\\Models\\Contact\\Contact and 0 will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Models/Contact/Gift.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between App\\Models\\Contact\\Contact and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Models/Contact/Gift.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Contact\\LifeEvent\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Contact/LifeEvent.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Contact\\LifeEventCategory\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Contact/LifeEventCategory.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Contact\\LifeEventType\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Contact/LifeEventType.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Contact\\Note\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Contact/Note.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Contact\\Occupation\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Contact/Occupation.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$birthday_reminder_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Contact/Reminder.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:reminderRules\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Contact/Reminder.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Contact\\Tag\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Contact/Tag.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Instance\\AuditLog\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Instance/AuditLog.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Instance\\Cron\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Instance/Cron.php
+
+		-
+			message: '#^Method App\\Models\\Instance\\SpecialDate\:\:getAge\(\) should return int\|null but returns float\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Instance/SpecialDate.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Instance\\SpecialDate\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Instance/SpecialDate.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Journal/Entry.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Journal\\Entry\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Journal/Entry.php
+
+		-
+			message: '#^PHPDoc tag @property for property App\\Models\\Journal\\JournalEntry\:\:\$invitedBy contains unknown class App\\Models\\Journal\\User\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Models/Journal/JournalEntry.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:reverseRelationshipType\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Relationship/Relationship.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Relationship\\Relationship\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Relationship/Relationship.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getRelationshipTypeByType\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Relationship/RelationshipType.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:getDefaultGender\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Relationship/RelationshipType.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\\RecoveryCode\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User/RecoveryCode.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\\SyncToken\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User/SyncToken.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$default_time_reminder_is_sent\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User/User.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:unused\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/User/User.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\\User\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User/User.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\\User\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/User/User.php
+
+		-
+			message: '#^Method App\\Services\\Account\\Activity\\ActivityStatisticService\:\:activitiesPerYearWithContact\(\) should return Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Account\\ActivityStatistic\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Account/Activity/ActivityStatisticService.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\{0\?\: string, data\?\: non\-empty\-string, 1\?\: non\-empty\-string\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Services/Account/Photo/UploadPhoto.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Services/Account/Photo/UploadPhoto.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$journalEntries\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Account/Settings/ResetAccount.php
+
+		-
+			message: '#^PHPDoc tag @var with type App\\Services\\QueuableService is not subtype of native type App\\Services\\Account\\Settings\\ResetAccount\.$#'
+			identifier: varTag.nativeType
+			count: 2
+			path: app/Services/Account/Settings/ResetAccount.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Address/DestroyAddress.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:email\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Avatar/GetGravatar.php
+
+		-
+			message: '#^PHPDoc tag @var with type App\\Services\\QueuableService is not subtype of native type App\\Services\\Contact\\Contact\\DestroyContact\.$#'
+			identifier: varTag.nativeType
+			count: 2
+			path: app/Services/Contact/Contact/DestroyContact.php
+
+		-
+			message: '#^Parameter \#1 \$account of static method App\\Helpers\\AccountHelper\:\:hasLimitations\(\) expects App\\Models\\Account\\Account, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Contact/Contact/SetMeContact.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/ContactField/DestroyContactField.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Conversation/DestroyConversation.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Conversation/DestroyMessage.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Conversation/UpdateConversation.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Contact/Gift/CreateGift.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Contact/Gift/UpdateGift.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Label/UpdateAddressLabels.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Label/UpdateContactFieldLabels.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Contact/LifeEvent/CreateLifeEvent.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/LifeEvent/DestroyLifeEvent.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/LifeEvent/UpdateLifeEvent.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Occupation/UpdateOccupation.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Relationship/DestroyRelationship.php
+
+		-
+			message: '#^Parameter \#1 \$contact of method App\\Services\\Contact\\Relationship\\DestroyRelationship\:\:deletePartialContact\(\) expects App\\Models\\Contact\\Contact, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Contact/Relationship/DestroyRelationship.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Relationship/UpdateRelationship.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$users\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Contact/Reminder/CreateReminder.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:throwInactive\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Contact/Reminder/DestroyReminder.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$users\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Contact/Reminder/UpdateReminder.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/DavClient/UpdateSubscriptionLocalSyncToken.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Http\\Controllers\\DAV\\Backend\\CardDAV\\CardDAVBackend\:\:init\(\) expects App\\Models\\User\\User, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/DavClient/UpdateSubscriptionLocalSyncToken.php
+
+		-
+			message: '#^Parameter \#1 \$items of method Illuminate\\Support\\Collection\<\(int\|string\),App\\Services\\DavClient\\Utils\\Model\\ContactDto\>\:\:union\(\) expects Illuminate\\Contracts\\Support\\Arrayable\<\(int\|string\), App\\Services\\DavClient\\Utils\\Model\\ContactDto\>\|iterable\<\(int\|string\), App\\Services\\DavClient\\Utils\\Model\\ContactDto\>, Illuminate\\Support\\Collection\<\(int\|string\), App\\Services\\DavClient\\Utils\\Model\\ContactDeleteDto\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Services/DavClient/Utils/AddressBookSynchronizer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/DavClient/Utils/Model/SyncDto.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Http\\Controllers\\DAV\\Backend\\CardDAV\\CardDAVBackend\:\:init\(\) expects App\\Models\\User\\User, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/DavClient/Utils/Model/SyncDto.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/VCalendar/ExportVCalendar.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getLink\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Services/VCalendar/ExportVCalendar.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contactFieldType\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/VCard/ExportVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$data\.$#'
+			identifier: property.notFound
+			count: 8
+			path: app/Services/VCard/ExportVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/VCard/ExportVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$place\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Services/VCard/ExportVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/VCard/ExportVCard.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:dataUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/VCard/ExportVCard.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: string, Closure\(App\\Models\\Contact\\Tag\)\: string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/VCard/ExportVCard.php
+
+		-
+			message: '#^Parameter \#1 \$labelProvider of method App\\Services\\VCard\\ExportVCard\:\:getContactFieldLabel\(\) expects App\\Interfaces\\LabelInterface, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Services/VCard/ExportVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$address_book_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/VCard/ImportVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Services/VCard/ImportVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Services/VCard/ImportVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_age_based\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/VCard/ImportVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_year_unknown\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/VCard/ImportVCard.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/VCard/ImportVCard.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:email\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/VCard/ImportVCard.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:phone\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/VCard/ImportVCard.php
+
+		-
+			message: '#^Method App\\Services\\VCard\\ImportVCard\:\:existingContactWithEmail\(\) should return App\\Models\\Contact\\Contact\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/VCard/ImportVCard.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between bool and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Services/VCard/ImportVCard.php

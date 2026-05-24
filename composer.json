@@ -25,9 +25,9 @@
         "guzzlehttp/guzzle": "^7.2",
         "guzzlehttp/psr7": "^2.1",
         "intervention/image": "^2.3",
-        "laravel/cashier": "^13.0",
-        "laravel/framework": "^10.0",
-        "laravel/passport": "^11.0",
+        "laravel/cashier": "^15.0",
+        "laravel/framework": "^11.0",
+        "laravel/passport": "^12.0",
         "laravel/socialite": "^5.0",
         "laravel/ui": "^4.0",
         "laravolt/avatar": "^5.0",
@@ -37,7 +37,7 @@
         "matriphe/iso-639": "^1.0",
         "moneyphp/money": "^4.0",
         "monicahq/laravel-cloudflare": "^3.0",
-        "monicahq/laravel-sabre": "^1.2",
+        "monicahq/laravel-sabre": "^1.10",
         "ok/ipstack-client": "^2.0",
         "phar-io/version": "^3.1",
         "pragmarx/google2fa": "^8.0",
@@ -48,13 +48,13 @@
         "sabre/dav": "^4.0",
         "sentry/sentry-laravel": "^4.0",
         "spatie/macroable": "^2.0",
-        "stevebauman/location": "^6.1",
-        "symfony/http-client": "^6.0",
-        "symfony/mailgun-mailer": "^6.0",
-        "symfony/translation": "^6.0",
-        "thecodingmachine/safe": "^2.0",
+        "stevebauman/location": "^7.2",
+        "symfony/http-client": "^7.0",
+        "symfony/mailgun-mailer": "^7.0",
+        "symfony/translation": "^7.0",
+        "thecodingmachine/safe": "^3.0",
         "vectorface/whip": "^0.4",
-        "vinkla/hashids": "^11.0",
+        "vinkla/hashids": "^12.0",
         "vluzrmos/language-detector": "^2.2",
         "werk365/etagconditionals": "dev-master",
         "xantios/mimey": "^2.0"
@@ -63,17 +63,16 @@
         "barryvdh/laravel-debugbar": "^3",
         "fakerphp/faker": "^1.10",
         "khanamiryan/qrcode-detector-decoder": "^2.0",
-        "larastan/larastan": "^2.2",
-        "laravel/dusk": "^7.11",
+        "larastan/larastan": "^3.0",
+        "laravel/dusk": "^8.0",
         "laravel/legacy-factories": "^1.0",
         "laravel/tinker": "^2.6",
-        "matthiasnoback/live-code-coverage": "^1",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^6.1",
-        "phpunit/phpcov": "^8.0",
-        "phpunit/phpunit": "^9.0",
+        "nunomaduro/collision": "^8.0",
+        "phpunit/phpcov": "^10.0",
+        "phpunit/phpunit": "^11.0",
         "spatie/laravel-ignition": "^2.0",
-        "thecodingmachine/phpstan-safe-rule": "^1.0"
+        "thecodingmachine/phpstan-safe-rule": "^1.4"
     },
     "replace": {
         "spatie/ray": "*",
@@ -93,11 +92,6 @@
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
             "php-http/discovery": true
-        },
-        "audit": {
-            "ignore": {
-                "CVE-2025-45769": "firebase/php-jwt <7 weak encryption (low) — pinned transitively by laravel/passport ^12 / laravel/socialite ^5. Both still pin ^6.4; clears when passport's jwt dep advances. See extra.fork-notes.carryover-advisories-laravel9."
-            }
         }
     },
     "extra": {
@@ -106,8 +100,7 @@
         },
         "fork-notes": {
             "replace-spatie-ray": "DO NOT REMOVE the top-level `replace` block for spatie/ray + spatie/laravel-ray without reading this first. They are pulled in transitively via psalm/plugin-laravel -> orchestra/testbench -> orchestra/workbench -> spatie/laravel-ray -> spatie/ray, because orchestra/workbench declares spatie/laravel-ray as a regular `require` (not `require-dev`). Nothing in this project or any installed vendor package actually calls ray(). spatie/ray/src/helpers.php registers a shutdown handler at file-load time that invokes ray() -> class_exists(Spatie\\LaravelRay\\Ray::class); during `composer install --no-dev` inside a dev container that previously had dev deps, the shutdown handler fires AFTER the package is removed from disk but while composer's in-memory ClassLoader still holds the stale PSR-4 mapping, fatalling on the missing file. The `replace` block tells composer the root project provides these packages, so the orchestra/workbench dep is satisfied without installing them. composer.lock has been hand-pruned (#613) to also drop the now-orphaned transitive deps: rector/rector, zbateson/{mail-mime-parser,mb-wrapper,stream-decorators}, pimple/pimple, symfony/polyfill-iconv. The underlying issue is also resolved upstream in psalm/plugin-laravel >= 2.10.1, which dropped the orchestra/testbench dep entirely, but that release requires Laravel ^10.48 so we cannot adopt it on the Laravel 9 line. This `replace` block becomes safe to remove once psalm/plugin-laravel >= 2.10.1 is in the lock. See issue brycehans/monica#613.",
-            "carryover-advisories-laravel9": "Known advisory left unresolved after phase 3 PR-A. (1) CVE-2025-45769 firebase/php-jwt <7.0.0 (weak encryption, low) — pulled transitively by laravel/passport (passport ^11/^12/^13 all pin firebase/php-jwt ^6.4) and laravel/socialite ^5. Clears when passport's jwt dep advances upstream or php-jwt itself patches the 6.x line. See issue brycehans/monica#622 for the running decision log.",
-            "dropped-roave-security-advisories": "roave/security-advisories remains out of require-dev after phase 3 PR-A. The Phase 1 removal (PR #623) was triggered by roave's hard conflict with `laravel/framework <10.48.29` (CVE-2025-27515), which cleared at L10.50.2 in this PR. However, the laravel/framework block was not the only one — roave HEAD also declares hard conflicts against all firebase/php-jwt 6.x versions (CVE-2025-45769), which laravel/passport ^11/^12/^13 all pin transitively. Composer cannot resolve roave alongside any passport on the Laravel ladder until passport upstream advances its firebase/php-jwt requirement to ^7+. The native `composer audit` CI step continues to provide install-time advisory gating. Re-evaluate this on each phase 3 PR; expected to clear independently of our work whenever passport upstream moves.",
+            "dropped-roave-security-advisories": "roave/security-advisories was removed from require-dev in Phase 1 PR #623 due to a hard conflict with laravel/framework <10.48.29 (CVE-2025-27515). After PR-A that block cleared, but a second block surfaced: roave HEAD also conflicts with firebase/php-jwt <7 (CVE-2025-45769). PR-B unblocks BOTH — laravel/passport ^12.4 loosened its jwt requirement to allow firebase/php-jwt ^7, which composer now resolves to v7.0.5 in the post-PR-B lock. `composer require --dev roave/security-advisories:dev-master --dry-run` reports clean resolution and `composer audit` reports no advisories. Re-add deferred to a follow-up PR to keep PR-B's story singular (laravel 10 → 11). Native `composer audit` continues to provide install-time advisory gating in the interim.",
             "psalm-removed-on-php84": "vimeo/psalm v5.26.1 (latest 5.x) crashes at startup on PHP 8.4 due to a vendor cascade: psalm installs its own set_error_handler that converts all errors to RuntimeException (bypassing error_reporting), and thecodingmachine/safe v2's autoload-eager `deprecated/datetime.php` declares Safe\\gmdate() with an implicit-nullable param, which PHP 8.4 emits as a deprecation. Psalm catches it, throws, dies before analysis runs. The fix requires safe ^3.0 (blocked by monicahq/laravel-sabre ^1.2 + thecodingmachine/phpstan-safe-rule ^1.2 both pinning safe ^2) AND psalm ^6.0 (blocked by psalm/plugin-laravel ^2.9 pinning psalm ^4||^5). Both stacks move with the Laravel major: larastan v3 / psalm/plugin-laravel v3 require Laravel 10+ / 11+ respectively — that IS phase 3. Path C (defer) chosen over path A (vendor-patch safe v2 via composer-patches; anti-stability) and path B (fork laravel-sabre; real maintenance burden for one-milestone savings). vimeo/psalm and psalm/plugin-laravel are removed from require-dev for the duration of phase 2 — composer can't resolve psalm 5.x against PHP ^8.4 (its composer.json caps at ~8.3), and pretending otherwise via composer-patches is the same anti-stability tradeoff we rejected for safe v2. CI (.github/workflows/static.yml) and package.json's posttest hook drop the psalm step accordingly. PHPStan + Larastan still cover most static-analysis surface. Re-add psalm ^6 + psalm/plugin-laravel ^3 in phase 3 PR-E (tracked in brycehans/monica#647)."
         }
     },
