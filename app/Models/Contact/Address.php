@@ -12,7 +12,34 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * An Address is where the contact lives (or lived).
+ *
  * The actual address (street name etc…) is represented with a Place object.
+ *
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int|null $place_id
+ * @property int $contact_id
+ * @property string|null $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read \App\Models\Contact\Contact|null $contact
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\ContactFieldLabel> $labels
+ * @property-read int|null $labels_count
+ * @property-read Place|null $place
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address wherePlaceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereUuid($value)
+ * @mixin \Eloquent
  */
 class Address extends Model implements LabelInterface
 {

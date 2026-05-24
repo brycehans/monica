@@ -8,6 +8,36 @@ use App\Models\ModelBinding as Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int $life_event_category_id
+ * @property string|null $name
+ * @property string|null $default_life_event_type_key
+ * @property bool $core_monica_data
+ * @property string|null $specific_information_structure
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read \App\Models\Contact\LifeEventCategory $lifeEventCategory
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\LifeEvent> $lifeEvents
+ * @property-read int|null $life_events_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType whereCoreMonicaData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType whereDefaultLifeEventTypeKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType whereLifeEventCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType whereSpecificInformationStructure($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LifeEventType whereUuid($value)
+ * @mixin \Eloquent
+ */
 class LifeEventType extends Model
 {
     use HasUuid;

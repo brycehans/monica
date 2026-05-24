@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * A special date is a date that is not necessarily based on a year that we know.
+ *
  * This happens when we add a birthdate for instance. It can be based:
  *     * on a real date, where we know the day, month and year
  *     * on a date where we just know the day and the month but not the year
@@ -24,6 +25,27 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $is_age_based
  * @property bool $is_year_unknown
  * @property \Carbon\Carbon|null $date
+ * @property int $id
+ * @property int $account_id
+ * @property int $contact_id
+ * @property string $uuid
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read Contact|null $contact
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate whereContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate whereIsAgeBased($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate whereIsYearUnknown($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpecialDate whereUuid($value)
+ * @mixin \Eloquent
  */
 class SpecialDate extends Model
 {

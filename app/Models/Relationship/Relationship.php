@@ -10,6 +10,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * A relationship defines relations between contacts.
+ *
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int $relationship_type_id
+ * @property int $contact_is
+ * @property int $of_contact
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read Contact|null $contactIs
+ * @property-read Contact|null $ofContact
+ * @property-read \App\Models\Relationship\RelationshipType $relationshipType
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship whereContactIs($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship whereOfContact($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship whereRelationshipTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Relationship whereUuid($value)
+ * @mixin \Eloquent
  */
 class Relationship extends Model
 {

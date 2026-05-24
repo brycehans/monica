@@ -9,6 +9,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * A module is a section of information that appears in the Contact sheet, like
  * 'Activities' or 'Notes'.
+ *
+ * @property int $id
+ * @property int $account_id
+ * @property string $key
+ * @property string $translation_key
+ * @property bool $active
+ * @property bool $delible
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module active()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereDelible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereTranslationKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Module whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Module extends Model
 {

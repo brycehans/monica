@@ -19,6 +19,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $journalable_id
  * @property string $journalable_type
  * @property \Carbon\Carbon|null $date
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static Builder<static>|JournalEntry entry()
+ * @method static Builder<static>|JournalEntry newModelQuery()
+ * @method static Builder<static>|JournalEntry newQuery()
+ * @method static Builder<static>|JournalEntry query()
+ * @method static Builder<static>|JournalEntry whereAccountId($value)
+ * @method static Builder<static>|JournalEntry whereCreatedAt($value)
+ * @method static Builder<static>|JournalEntry whereDate($value)
+ * @method static Builder<static>|JournalEntry whereId($value)
+ * @method static Builder<static>|JournalEntry whereJournalableId($value)
+ * @method static Builder<static>|JournalEntry whereJournalableType($value)
+ * @method static Builder<static>|JournalEntry whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class JournalEntry extends Model
 {

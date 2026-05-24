@@ -13,11 +13,47 @@ use App\Models\ModelBindingHasherWithContact as Model;
 
 /**
  * A reminder has two states: active and inactive.
+ *
  * An inactive reminder is basically a one_time reminder that has already be
  * sent once and has been marked inactive so we don't schedule it again.
  *
  * @property string $next_expected_date_human_readable
  * @property string $next_expected_date
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int $contact_id
+ * @property \Illuminate\Support\Carbon $initial_date
+ * @property string $title
+ * @property string|null $description
+ * @property string $frequency_type
+ * @property int|null $frequency_number
+ * @property bool $delible
+ * @property bool $inactive
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read \App\Models\Contact\Contact|null $contact
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\ReminderOutbox> $reminderOutboxes
+ * @property-read int|null $reminder_outboxes_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder active()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereDelible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereFrequencyNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereFrequencyType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereInactive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereInitialDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Reminder whereUuid($value)
+ * @mixin \Eloquent
  */
 class Reminder extends Model
 {

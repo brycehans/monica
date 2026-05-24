@@ -7,6 +7,29 @@ use App\Models\ModelBinding as Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property string $name
+ * @property string|null $translation_key
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account\Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\ActivityType> $activityTypes
+ * @property-read int|null $activity_types_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityTypeCategory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityTypeCategory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityTypeCategory query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityTypeCategory whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityTypeCategory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityTypeCategory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityTypeCategory whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityTypeCategory whereTranslationKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityTypeCategory whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityTypeCategory whereUuid($value)
+ * @mixin \Eloquent
+ */
 class ActivityTypeCategory extends Model
 {
     use HasUuid;

@@ -7,6 +7,41 @@ use App\Models\Account\Company;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $account_id
+ * @property int $contact_id
+ * @property int $company_id
+ * @property string $title
+ * @property string|null $description
+ * @property int|null $salary
+ * @property string|null $salary_unit
+ * @property int|null $currently_works_here
+ * @property \Illuminate\Support\Carbon|null $start_date
+ * @property \Illuminate\Support\Carbon|null $end_date
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read Company $company
+ * @property-read \App\Models\Contact\Contact|null $contact
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereCurrentlyWorksHere($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereSalary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereSalaryUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Occupation whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Occupation extends Model
 {
     protected $table = 'occupations';

@@ -6,6 +6,25 @@ use App\Models\Account\Account;
 use App\Models\ModelBinding as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $account_id
+ * @property int $number_of_days_before
+ * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderRule newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderRule newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderRule query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderRule whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderRule whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderRule whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderRule whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderRule whereNumberOfDaysBefore($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderRule whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class ReminderRule extends Model
 {
     /**

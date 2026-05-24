@@ -8,6 +8,29 @@ use App\Models\ModelBinding as Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property string $name
+ * @property string|null $type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Contact> $contacts
+ * @property-read int|null $contacts_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Gender whereUuid($value)
+ * @mixin \Eloquent
+ */
 class Gender extends Model
 {
     use HasUuid;

@@ -7,6 +7,34 @@ use App\Models\ModelBinding as Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int $activity_type_category_id
+ * @property string|null $name
+ * @property string|null $translation_key
+ * @property string|null $location_type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account\Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\Activity> $activities
+ * @property-read int|null $activities_count
+ * @property-read \App\Models\Account\ActivityTypeCategory $category
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType whereActivityTypeCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType whereLocationType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType whereTranslationKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActivityType whereUuid($value)
+ * @mixin \Eloquent
+ */
 class ActivityType extends Model
 {
     use HasUuid;

@@ -20,9 +20,42 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $comment
  * @property string $url
  * @property Contact $is_for
- *
  * @method static Builder offered()
  * @method static Builder isIdea()
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int $contact_id
+ * @property string|null $amount
+ * @property int|null $currency_id
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $date
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Settings\Currency|null $currency
+ * @property-read string $display_value
+ * @property-read string|null $recipient_name
+ * @property-read string $value
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Photo> $photos
+ * @property-read int|null $photos_count
+ * @method static Builder<static>|Gift newModelQuery()
+ * @method static Builder<static>|Gift newQuery()
+ * @method static Builder<static>|Gift query()
+ * @method static Builder<static>|Gift whereAccountId($value)
+ * @method static Builder<static>|Gift whereAmount($value)
+ * @method static Builder<static>|Gift whereComment($value)
+ * @method static Builder<static>|Gift whereContactId($value)
+ * @method static Builder<static>|Gift whereCreatedAt($value)
+ * @method static Builder<static>|Gift whereCurrencyId($value)
+ * @method static Builder<static>|Gift whereDate($value)
+ * @method static Builder<static>|Gift whereId($value)
+ * @method static Builder<static>|Gift whereIsFor($value)
+ * @method static Builder<static>|Gift whereName($value)
+ * @method static Builder<static>|Gift whereStatus($value)
+ * @method static Builder<static>|Gift whereUpdatedAt($value)
+ * @method static Builder<static>|Gift whereUrl($value)
+ * @method static Builder<static>|Gift whereUuid($value)
+ * @mixin \Eloquent
  */
 class Gift extends Model
 {

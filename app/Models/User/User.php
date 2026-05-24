@@ -21,6 +21,81 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $email
+ * @property int|null $me_contact_id
+ * @property bool $admin
+ * @property string|null $email_verified_at
+ * @property string $password
+ * @property string|null $remember_token
+ * @property string|null $google2fa_secret
+ * @property int $account_id
+ * @property string|null $timezone
+ * @property int|null $currency_id
+ * @property string $locale
+ * @property string $metric
+ * @property bool $fluid_container
+ * @property string $contacts_sort_order
+ * @property string $name_order
+ * @property int|null $invited_by_user_id
+ * @property string $dashboard_active_tab
+ * @property string $gifts_active_tab
+ * @property string $profile_active_tab
+ * @property bool $profile_new_life_event_badge_seen
+ * @property string $temperature_scale
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Passport\Client> $clients
+ * @property-read int|null $clients_count
+ * @property-read Currency|null $currency
+ * @property-read string $name
+ * @property-read bool $policy_compliant
+ * @property-read Contact|null $me
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User\RecoveryCode> $recoveryCodes
+ * @property-read int|null $recovery_codes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Term> $terms
+ * @property-read int|null $terms_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Passport\Token> $tokens
+ * @property-read int|null $tokens_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAdmin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereContactsSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCurrencyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDashboardActiveTab($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereFirstName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereFluidContainer($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGiftsActiveTab($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGoogle2faSecret($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereInvitedByUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLocale($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereMeContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereMetric($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNameOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereProfileActiveTab($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereProfileNewLifeEventBadgeSeen($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTemperatureScale($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTimezone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUuid($value)
+ * @mixin \Eloquent
+ */
 class User extends Authenticatable implements MustVerifyEmail, HasLocalePreference
 {
     use Notifiable, HasApiTokens, HasUuid;

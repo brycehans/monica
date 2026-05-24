@@ -11,6 +11,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property Contact $contact
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int $contact_id
+ * @property \Illuminate\Support\Carbon $called_at
+ * @property string|null $content
+ * @property bool $contact_called
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Emotion> $emotions
+ * @property-read int|null $emotions_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call whereCalledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call whereContactCalled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call whereContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call whereContent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Call whereUuid($value)
+ * @mixin \Eloquent
  */
 class Call extends Model
 {

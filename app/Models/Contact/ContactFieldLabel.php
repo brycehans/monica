@@ -9,6 +9,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property string $label
  * @property string $label_i18n
+ * @property int $id
+ * @property int $account_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldLabel newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldLabel newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldLabel query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldLabel whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldLabel whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldLabel whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldLabel whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldLabel whereLabelI18n($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldLabel whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class ContactFieldLabel extends Model
 {

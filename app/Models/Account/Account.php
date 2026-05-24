@@ -51,6 +51,125 @@ use App\Services\Auth\Population\PopulateContactFieldTypesTable;
  * @property int $activities_count
  * @property int $gifts_count
  * @property int $tasks_count
+ * @property int $id
+ * @property string $uuid
+ * @property bool $has_access_to_paid_version_for_free
+ * @property string $api_key
+ * @property int|null $number_of_invitations_sent
+ * @property string $default_time_reminder_is_sent
+ * @property int|null $default_gender_id
+ * @property string|null $stripe_id
+ * @property string|null $pm_type
+ * @property string $pm_last_four
+ * @property string|null $trial_ends_at
+ * @property int $legacy_free_plan_unlimited_contacts
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\Activity> $activities
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\ActivityStatistic> $activityStatistics
+ * @property-read int|null $activity_statistics_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\ActivityTypeCategory> $activityTypeCategories
+ * @property-read int|null $activity_type_categories_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\ActivityType> $activityTypes
+ * @property-read int|null $activity_types_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\AddressBookSubscription> $addressBookSubscriptions
+ * @property-read int|null $address_book_subscriptions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\AddressBook> $addressBooks
+ * @property-read int|null $address_books_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Address> $addresses
+ * @property-read int|null $addresses_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Contact> $allContacts
+ * @property-read int|null $all_contacts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, AuditLog> $auditLogs
+ * @property-read int|null $audit_logs_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Call> $calls
+ * @property-read int|null $calls_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\Company> $companies
+ * @property-read int|null $companies_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ContactFieldType> $contactFieldTypes
+ * @property-read int|null $contact_field_types_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ContactField> $contactFields
+ * @property-read int|null $contact_fields_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Conversation> $conversations
+ * @property-read int|null $conversations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Day> $days
+ * @property-read int|null $days_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Debt> $debts
+ * @property-read int|null $debts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Document> $documents
+ * @property-read int|null $documents_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Entry> $entries
+ * @property-read int|null $entries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Gender> $genders
+ * @property-read int|null $genders_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Gift> $gifts
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\ImportJobReport> $importJobReports
+ * @property-read int|null $import_job_reports_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\ImportJob> $importjobs
+ * @property-read int|null $importjobs_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\Invitation> $invitations
+ * @property-read int|null $invitations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, JournalEntry> $journalEntries
+ * @property-read int|null $journal_entries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, LifeEventCategory> $lifeEventCategories
+ * @property-read int|null $life_event_categories_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, LifeEventType> $lifeEventTypes
+ * @property-read int|null $life_event_types_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, LifeEvent> $lifeEvents
+ * @property-read int|null $life_events_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Message> $messages
+ * @property-read int|null $messages_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Module> $modules
+ * @property-read int|null $modules_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Note> $notes
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Occupation> $occupations
+ * @property-read int|null $occupations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\Photo> $photos
+ * @property-read int|null $photos_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\Place> $places
+ * @property-read int|null $places_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, RelationshipTypeGroup> $relationshipTypeGroups
+ * @property-read int|null $relationship_type_groups_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, RelationshipType> $relationshipTypes
+ * @property-read int|null $relationship_types_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Relationship> $relationships
+ * @property-read int|null $relationships_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ReminderOutbox> $reminderOutboxes
+ * @property-read int|null $reminder_outboxes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ReminderRule> $reminderRules
+ * @property-read int|null $reminder_rules_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Reminder> $reminders
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, SpecialDate> $specialDates
+ * @property-read int|null $special_dates_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Cashier\Subscription> $subscriptions
+ * @property-read int|null $subscriptions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Tag> $tags
+ * @property-read int|null $tags_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Task> $tasks
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $users
+ * @property-read int|null $users_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\Weather> $weathers
+ * @property-read int|null $weathers_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account hasExpiredGenericTrial()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account onGenericTrial()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereApiKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereDefaultGenderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereDefaultTimeReminderIsSent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereHasAccessToPaidVersionForFree($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereLegacyFreePlanUnlimitedContacts($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereNumberOfInvitationsSent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account wherePmLastFour($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account wherePmType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereStripeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereTrialEndsAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereUuid($value)
+ * @mixin \Eloquent
  */
 class Account extends Model
 {

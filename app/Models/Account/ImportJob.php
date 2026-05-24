@@ -31,6 +31,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $contacts_imported
  * @property \Illuminate\Support\Carbon|null $started_at
  * @property \Illuminate\Support\Carbon|null $ended_at
+ * @property string $type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Account\ImportJobReport> $importJobReports
+ * @property-read int|null $import_job_reports_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereContactsFound($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereContactsImported($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereContactsSkipped($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereEndedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereFailed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereFailedReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereFilename($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereStartedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJob whereUserId($value)
+ * @mixin \Eloquent
  */
 class ImportJob extends Model
 {

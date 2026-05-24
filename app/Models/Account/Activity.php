@@ -16,6 +16,36 @@ use App\Http\Resources\Contact\ContactShort as ContactShortResource;
 
 /**
  * @property int|null $activity_type_id
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property string $summary
+ * @property string|null $description
+ * @property \Illuminate\Support\Carbon $happened_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account\Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Contact> $contacts
+ * @property-read int|null $contacts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Emotion> $emotions
+ * @property-read int|null $emotions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, JournalEntry> $journalEntries
+ * @property-read int|null $journal_entries_count
+ * @property-read JournalEntry|null $journalEntry
+ * @property-read \App\Models\Account\ActivityType|null $type
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereActivityTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereHappenedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereSummary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Activity whereUuid($value)
+ * @mixin \Eloquent
  */
 class Activity extends Model implements IsJournalableInterface
 {

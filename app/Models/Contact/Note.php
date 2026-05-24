@@ -16,6 +16,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $body
  * @property bool $is_favorited
  * @property \Illuminate\Support\Carbon|null $favorited_at
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int $contact_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static Builder<static>|Note favorited()
+ * @method static Builder<static>|Note newModelQuery()
+ * @method static Builder<static>|Note newQuery()
+ * @method static Builder<static>|Note query()
+ * @method static Builder<static>|Note whereAccountId($value)
+ * @method static Builder<static>|Note whereBody($value)
+ * @method static Builder<static>|Note whereContactId($value)
+ * @method static Builder<static>|Note whereCreatedAt($value)
+ * @method static Builder<static>|Note whereFavoritedAt($value)
+ * @method static Builder<static>|Note whereId($value)
+ * @method static Builder<static>|Note whereIsFavorited($value)
+ * @method static Builder<static>|Note whereUpdatedAt($value)
+ * @method static Builder<static>|Note whereUuid($value)
+ * @mixin \Eloquent
  */
 class Note extends Model
 {

@@ -12,6 +12,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property \Carbon\Carbon $date
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property string|null $title
+ * @property string $post
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Journal\JournalEntry> $journalEntries
+ * @property-read int|null $journal_entries_count
+ * @property-read \App\Models\Journal\JournalEntry|null $journalEntry
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Entry newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Entry newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Entry query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Entry whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Entry whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Entry whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Entry wherePost($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Entry whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Entry whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Entry whereUuid($value)
+ * @mixin \Eloquent
  */
 class Entry extends Model implements IsJournalableInterface
 {

@@ -15,6 +15,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $contact_information
  * @property bool $skipped
  * @property string $skip_reason
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account\ImportJob $importJob
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport whereContactInformation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport whereImportJobId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport whereSkipReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport whereSkipped($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ImportJobReport whereUserId($value)
+ * @mixin \Eloquent
  */
 class ImportJobReport extends Model
 {
