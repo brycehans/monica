@@ -88,7 +88,7 @@ class LocaleHelperTest extends FeatureTestCase
         );
     }
 
-    public function localeHelperGetLangProvider()
+    public static function localeHelperGetLangProvider(): array
     {
         return [
             ['en', 'en'],
@@ -115,7 +115,7 @@ class LocaleHelperTest extends FeatureTestCase
         );
     }
 
-    public function localeHelperGetCountryProvider()
+    public static function localeHelperGetCountryProvider(): array
     {
         return [
             ['en', 'US'],
@@ -149,7 +149,7 @@ class LocaleHelperTest extends FeatureTestCase
         );
     }
 
-    public function localeHelperExtractCountryProvider()
+    public static function localeHelperExtractCountryProvider(): array
     {
         return [
             ['en', null],

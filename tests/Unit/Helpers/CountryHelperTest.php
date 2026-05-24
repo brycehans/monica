@@ -24,7 +24,7 @@ class CountryHelperTest extends FeatureTestCase
         );
     }
 
-    public function countryDefaultCountryFromLocaleProvider()
+    public static function countryDefaultCountryFromLocaleProvider(): array
     {
         return [
             ['en', 'US'],
@@ -60,7 +60,7 @@ class CountryHelperTest extends FeatureTestCase
         );
     }
 
-    public function countryCountryFromLocaleProvider()
+    public static function countryCountryFromLocaleProvider(): array
     {
         return [
             ['en', 'US'],
@@ -102,7 +102,7 @@ class CountryHelperTest extends FeatureTestCase
         );
     }
 
-    public function timezoneFromLocaleProvider()
+    public static function timezoneFromLocaleProvider(): array
     {
         return [
             ['en', 'America/Chicago'],
