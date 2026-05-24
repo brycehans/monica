@@ -12,7 +12,7 @@ on:
     types: [created]
 
 env:
-  default-php-version: '8.1'
+  default-php-version: '8.4'
   node-version: 20
 
 concurrency:
@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.1']
+        php-version: ['8.4']
         connection: [mysql]
         testsuite: [Api, Feature, Commands-Other, Commands-Scheduling, Unit-Models, Unit-Services]
 

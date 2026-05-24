@@ -8,7 +8,7 @@ on:
     types: [created]
 
 env:
-  php-version: '8.1'
+  php-version: '8.4'
   node-version: 20
 
 concurrency:

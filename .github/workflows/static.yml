@@ -5,45 +5,20 @@ on:
     types: [opened, synchronize, reopened]
 
 env:
-  php-version: '8.1'
+  php-version: '8.4'
 
 concurrency:
   group: Static analysis ${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  psalm:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v4
-
-      - name: Setup PHP ${{ env.php-version }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.php-version }}
-          extensions: redis
-          coverage: none
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-      - name: Cache composer files
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ env.php-version }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-${{ env.php-version }}-${{ hashFiles('**/composer.lock') }}
-            ${{ runner.os }}-composer-${{ env.php-version }}
-            ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Run psalm
-        run: vendor/bin/psalm --output-format=github
-
+  # psalm job is temporarily suppressed on the PHP 8.4 line.
+  # See issue #647 — vimeo/psalm v5 crashes at startup via a vendor cascade
+  # (its custom error handler converts safe v2's implicit-nullable autoload
+  # deprecation into an uncaught exception). vimeo/psalm and psalm/plugin-laravel
+  # are also removed from composer.json require-dev. Re-add at v6 + plugin-laravel
+  # v3 in phase 3 PR-E. See composer.json extra.fork-notes.psalm-removed-on-php84
+  # for the full rationale.
 
   phpstan:
     runs-on: ubuntu-latest

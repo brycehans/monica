@@ -29,7 +29,7 @@
     "migrate": "DB_CONNECTION=testing php artisan migrate:fresh && DB_CONNECTION=testing php artisan db:seed",
     "pretest": "yarn run migrate",
     "test": "vendor/bin/phpunit",
-    "posttest": "vendor/bin/phpstan analyse && vendor/bin/psalm",
+    "posttest": "vendor/bin/phpstan analyse",
     "composer update": "COMPOSER_MEMORY_LIMIT=-1 composer update"
   },
   "engines": {
