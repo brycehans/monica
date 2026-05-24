@@ -4,7 +4,6 @@ namespace App\Services\DavClient\Utils\Dav;
 
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Support\Collection;
-use Http\Client\Exception\RequestException;
 
 class ServiceUrlQuery
 {
@@ -36,7 +35,7 @@ class ServiceUrlQuery
             foreach ($entries as $entry) {
                 try {
                     return $this->getUri($entry, $https, $client);
-                } catch (RequestException $e) {
+                } catch (\Throwable $e) {
                     // no exception
                 }
             }
@@ -53,7 +52,7 @@ class ServiceUrlQuery
      * @param  DavClient  $client
      * @return string
      *
-     * @throws \Http\Client\Exception\RequestException
+     * @throws \Throwable
      */
     private function getUri(array $entry, bool $https, DavClient $client): string
     {
