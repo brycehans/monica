@@ -471,9 +471,9 @@ class Account extends Model
     /**
      * Get the Reminder Rules records associated with the account.
      *
-     * @return HasMany
+     * @return HasMany<ReminderRule, $this>
      */
-    public function reminderRules()
+    public function reminderRules(): HasMany
     {
         return $this->hasMany(ReminderRule::class);
     }

@@ -353,19 +353,15 @@ class Contact extends Model
     /**
      * Get the list of contacts from the same address book as this contact.
      *
-     * @return HasMany<self>|null
+     * @return HasMany<self>
      */
-    public function siblingContacts(): ?HasMany
+    public function siblingContacts(): HasMany
     {
-        if ($this->account) {
-            if ($this->addressBook) {
-                return $this->account->contacts($this->addressBook->name);
-            }
-
-            return $this->account->contacts();
+        if ($this->addressBook) {
+            return $this->account->contacts($this->addressBook->name);
         }
 
-        return null;
+        return $this->account->contacts();
     }
 
     /**
