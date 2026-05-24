@@ -12,6 +12,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property string $original_filename
+ * @property string $new_filename
+ * @property int|null $filesize
+ * @property string|null $mime_type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account\Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Contact> $contacts
+ * @property-read int|null $contacts_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo whereFilesize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo whereMimeType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo whereNewFilename($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo whereOriginalFilename($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Photo whereUuid($value)
+ * @mixin \Eloquent
+ */
 class Photo extends Model
 {
     use HasUuid;

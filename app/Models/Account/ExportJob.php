@@ -9,6 +9,39 @@ use App\Notifications\ExportAccountDone;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int $user_id
+ * @property string $type
+ * @property string|null $status
+ * @property string|null $location
+ * @property string|null $filename
+ * @property \Illuminate\Support\Carbon|null $started_at
+ * @property \Illuminate\Support\Carbon|null $ended_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account\Account $account
+ * @property-read User $user
+ * @method static \Database\Factories\Account\ExportJobFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereEndedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereFilename($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereLocation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereStartedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ExportJob whereUuid($value)
+ * @mixin \Eloquent
+ */
 class ExportJob extends Model
 {
     use HasUuid, HasFactory;

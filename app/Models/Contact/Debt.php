@@ -14,10 +14,37 @@ use App\Models\ModelBindingHasherWithContact as Model;
  * @property Account $account
  * @property Contact $contact
  * @property int $amount
- *
  * @method static Builder due()
  * @method static Builder owed()
  * @method static Builder inProgress()
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int $contact_id
+ * @property string $in_debt
+ * @property string $status
+ * @property int|null $currency_id
+ * @property string|null $reason
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Currency|null $currency
+ * @property-read string $display_value
+ * @property-read string $value
+ * @method static Builder<static>|Debt newModelQuery()
+ * @method static Builder<static>|Debt newQuery()
+ * @method static Builder<static>|Debt query()
+ * @method static Builder<static>|Debt whereAccountId($value)
+ * @method static Builder<static>|Debt whereAmount($value)
+ * @method static Builder<static>|Debt whereContactId($value)
+ * @method static Builder<static>|Debt whereCreatedAt($value)
+ * @method static Builder<static>|Debt whereCurrencyId($value)
+ * @method static Builder<static>|Debt whereId($value)
+ * @method static Builder<static>|Debt whereInDebt($value)
+ * @method static Builder<static>|Debt whereReason($value)
+ * @method static Builder<static>|Debt whereStatus($value)
+ * @method static Builder<static>|Debt whereUpdatedAt($value)
+ * @method static Builder<static>|Debt whereUuid($value)
+ * @mixin \Eloquent
  */
 class Debt extends Model
 {

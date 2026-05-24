@@ -9,6 +9,38 @@ use App\Models\Contact\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $account_id
+ * @property int|null $author_id
+ * @property int|null $about_contact_id
+ * @property string $author_name
+ * @property string $action
+ * @property string $objects
+ * @property \Illuminate\Support\Carbon $audited_at
+ * @property bool $should_appear_on_dashboard
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read User|null $author
+ * @property-read Contact|null $contact
+ * @property-read mixed $object
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAboutContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAuditedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAuthorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereAuthorName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereObjects($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereShouldAppearOnDashboard($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AuditLog whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class AuditLog extends Model
 {
     protected $table = 'audit_logs';

@@ -13,6 +13,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * - Primary: Love
  * - Secondary: Affection
  * - Tertiary: Adoration.
+ *
+ * @property int $id
+ * @property int $emotion_primary_id
+ * @property int $emotion_secondary_id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Activity> $activities
+ * @property-read int|null $activities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Call> $calls
+ * @property-read int|null $calls_count
+ * @property-read \App\Models\Instance\Emotion\PrimaryEmotion $primary
+ * @property-read \App\Models\Instance\Emotion\SecondaryEmotion $secondary
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Emotion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Emotion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Emotion query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Emotion whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Emotion whereEmotionPrimaryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Emotion whereEmotionSecondaryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Emotion whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Emotion whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Emotion whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Emotion extends Model
 {

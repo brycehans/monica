@@ -16,9 +16,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $uuid
  * @property bool $completed
  * @property \Carbon\Carbon|null $completed_at
- *
  * @method static Builder completed()
  * @method static Builder inProgress()
+ * @property int $account_id
+ * @property int $contact_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static Builder<static>|Task newModelQuery()
+ * @method static Builder<static>|Task newQuery()
+ * @method static Builder<static>|Task query()
+ * @method static Builder<static>|Task whereAccountId($value)
+ * @method static Builder<static>|Task whereCompleted($value)
+ * @method static Builder<static>|Task whereCompletedAt($value)
+ * @method static Builder<static>|Task whereContactId($value)
+ * @method static Builder<static>|Task whereCreatedAt($value)
+ * @method static Builder<static>|Task whereDescription($value)
+ * @method static Builder<static>|Task whereId($value)
+ * @method static Builder<static>|Task whereTitle($value)
+ * @method static Builder<static>|Task whereUpdatedAt($value)
+ * @method static Builder<static>|Task whereUuid($value)
+ * @mixin \Eloquent
  */
 class Task extends Model
 {

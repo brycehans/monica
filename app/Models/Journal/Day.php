@@ -9,6 +9,32 @@ use App\Models\Account\Account;
 use App\Models\ModelBinding as Model;
 use App\Interfaces\IsJournalableInterface;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property \Illuminate\Support\Carbon $date
+ * @property int $rate
+ * @property string|null $comment
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Journal\JournalEntry> $journalEntries
+ * @property-read int|null $journal_entries_count
+ * @property-read \App\Models\Journal\JournalEntry|null $journalEntry
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day whereComment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day whereRate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Day whereUuid($value)
+ * @mixin \Eloquent
+ */
 class Day extends Model implements IsJournalableInterface
 {
     use Journalable, HasUuid;

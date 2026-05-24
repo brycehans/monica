@@ -6,6 +6,16 @@ use Parsedown;
 use App\Helpers\DateHelper;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property-read string $created_at
+ * @property-read string $description
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User\User> $users
+ * @property-read int|null $users_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Changelog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Changelog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Changelog query()
+ * @mixin \Eloquent
+ */
 class Changelog extends Model
 {
     /**

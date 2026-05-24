@@ -7,6 +7,31 @@ use App\Models\Account\Account;
 use App\Models\ModelBinding as Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property int $contact_id
+ * @property int $pet_category_id
+ * @property string|null $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read \App\Models\Contact\Contact|null $contact
+ * @property-read \App\Models\Contact\PetCategory $petCategory
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet wherePetCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pet whereUuid($value)
+ * @mixin \Eloquent
+ */
 class Pet extends Model
 {
     use HasUuid;

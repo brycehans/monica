@@ -9,6 +9,31 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $account_id
+ * @property int $place_id
+ * @property array<array-key, mixed> $weather_json
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account\Account $account
+ * @property-read Carbon $date
+ * @property-read string $emoji
+ * @property-read string|null $location
+ * @property-read string|null $summary
+ * @property-read string|null $summary_code
+ * @property-read \App\Models\Account\Place $place
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Weather newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Weather newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Weather query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Weather whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Weather whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Weather whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Weather wherePlaceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Weather whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Weather whereWeatherJson($value)
+ * @mixin \Eloquent
+ */
 class Weather extends Model
 {
     protected $table = 'weather';

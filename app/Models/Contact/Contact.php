@@ -41,8 +41,176 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 /**
  * @method static \Illuminate\Database\Eloquent\Builder search()
- *
  * @property \App\Models\Instance\SpecialDate|null $birthdate
+ * @property int $id
+ * @property int $account_id
+ * @property int|null $address_book_id
+ * @property string $first_name
+ * @property string|null $middle_name
+ * @property string|null $last_name
+ * @property string|null $nickname
+ * @property int|null $gender_id
+ * @property string|null $description
+ * @property string $uuid
+ * @property bool $is_starred
+ * @property bool $is_partial
+ * @property bool $is_active
+ * @property bool $is_dead
+ * @property int|null $deceased_special_date_id
+ * @property int|null $deceased_reminder_id
+ * @property Carbon|null $last_talked_to
+ * @property int|null $stay_in_touch_frequency
+ * @property Carbon|null $stay_in_touch_trigger_date
+ * @property int|null $birthday_special_date_id
+ * @property int|null $birthday_reminder_id
+ * @property int|null $first_met_through_contact_id
+ * @property int|null $first_met_special_date_id
+ * @property int|null $first_met_reminder_id
+ * @property string|null $first_met_where
+ * @property string|null $first_met_additional_info
+ * @property string|null $job
+ * @property string|null $company
+ * @property string|null $food_preferences
+ * @property string $avatar_source
+ * @property string|null $avatar_gravatar_url
+ * @property string|null $avatar_adorable_uuid
+ * @property string|null $avatar_adorable_url
+ * @property string|null $avatar_default_url
+ * @property int|null $avatar_photo_id
+ * @property bool $has_avatar
+ * @property string|null $avatar_external_url
+ * @property string|null $avatar_file_name
+ * @property string $avatar_location
+ * @property string|null $gravatar_url
+ * @property string|null $vcard
+ * @property string|null $distant_etag
+ * @property Carbon|null $last_consulted_at
+ * @property int $number_of_views
+ * @property Carbon|null $deleted_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property string $default_avatar_color
+ * @property int $has_avatar_bool
+ * @property-read Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Activity> $activities
+ * @property-read int|null $activities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ActivityStatistic> $activityStatistics
+ * @property-read int|null $activity_statistics_count
+ * @property-read AddressBook|null $addressBook
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Address> $addresses
+ * @property-read int|null $addresses_count
+ * @property-read Photo|null $avatarPhoto
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Call> $calls
+ * @property-read int|null $calls_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\ContactField> $contactFields
+ * @property-read int|null $contact_fields_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Conversation> $conversations
+ * @property-read int|null $conversations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Debt> $debts
+ * @property-read int|null $debts_count
+ * @property-read SpecialDate|null $deceasedDate
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Document> $documents
+ * @property-read int|null $documents_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Entry> $entries
+ * @property-read int|null $entries_count
+ * @property-read SpecialDate|null $firstMetDate
+ * @property-read \App\Models\Contact\Gender|null $gender
+ * @property-read string|null $avatar_adorable_data_url
+ * @property-read string $initials
+ * @property-read string $name
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Gift> $gifts
+ * @property-read int|null $gifts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\LifeEvent> $lifeEvents
+ * @property-read int|null $life_events_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, AuditLog> $logs
+ * @property-read int|null $logs_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Message> $messages
+ * @property-read int|null $messages_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Note> $notes
+ * @property-read int|null $notes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Occupation> $occupations
+ * @property-read int|null $occupations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Pet> $pets
+ * @property-read int|null $pets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Photo> $photos
+ * @property-read int|null $photos_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Relationship> $relationships
+ * @property-read int|null $relationships_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Reminder> $reminders
+ * @property-read int|null $reminders_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, SpecialDate> $specialDates
+ * @property-read int|null $special_dates_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Tag> $tags
+ * @property-read int|null $tags_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Task> $tasks
+ * @property-read int|null $tasks_count
+ * @method static Builder<static>|Contact active()
+ * @method static Builder<static>|Contact addressBook(?int $accountId = null, ?string $addressBookName = null)
+ * @method static Builder<static>|Contact alive()
+ * @method static Builder<static>|Contact dead()
+ * @method static Builder<static>|Contact introductionAdditionalInformation(string $needle, ?int $accountId = null)
+ * @method static Builder<static>|Contact newModelQuery()
+ * @method static Builder<static>|Contact newQuery()
+ * @method static Builder<static>|Contact notActive()
+ * @method static Builder<static>|Contact notes(string $needle, ?int $accountId = null)
+ * @method static Builder<static>|Contact onlyTrashed()
+ * @method static Builder<static>|Contact orderByUserPreference()
+ * @method static Builder<static>|Contact query()
+ * @method static Builder<static>|Contact real()
+ * @method static Builder<static>|Contact sortedBy(string $criteria)
+ * @method static Builder<static>|Contact tags($tags)
+ * @method static Builder<static>|Contact whereAccountId($value)
+ * @method static Builder<static>|Contact whereAddressBookId($value)
+ * @method static Builder<static>|Contact whereAvatarAdorableUrl($value)
+ * @method static Builder<static>|Contact whereAvatarAdorableUuid($value)
+ * @method static Builder<static>|Contact whereAvatarDefaultUrl($value)
+ * @method static Builder<static>|Contact whereAvatarExternalUrl($value)
+ * @method static Builder<static>|Contact whereAvatarFileName($value)
+ * @method static Builder<static>|Contact whereAvatarGravatarUrl($value)
+ * @method static Builder<static>|Contact whereAvatarLocation($value)
+ * @method static Builder<static>|Contact whereAvatarPhotoId($value)
+ * @method static Builder<static>|Contact whereAvatarSource($value)
+ * @method static Builder<static>|Contact whereBirthdayReminderId($value)
+ * @method static Builder<static>|Contact whereBirthdaySpecialDateId($value)
+ * @method static Builder<static>|Contact whereCompany($value)
+ * @method static Builder<static>|Contact whereCreatedAt($value)
+ * @method static Builder<static>|Contact whereDeceasedReminderId($value)
+ * @method static Builder<static>|Contact whereDeceasedSpecialDateId($value)
+ * @method static Builder<static>|Contact whereDefaultAvatarColor($value)
+ * @method static Builder<static>|Contact whereDeletedAt($value)
+ * @method static Builder<static>|Contact whereDescription($value)
+ * @method static Builder<static>|Contact whereDistantEtag($value)
+ * @method static Builder<static>|Contact whereFirstMetAdditionalInfo($value)
+ * @method static Builder<static>|Contact whereFirstMetReminderId($value)
+ * @method static Builder<static>|Contact whereFirstMetSpecialDateId($value)
+ * @method static Builder<static>|Contact whereFirstMetThroughContactId($value)
+ * @method static Builder<static>|Contact whereFirstMetWhere($value)
+ * @method static Builder<static>|Contact whereFirstName($value)
+ * @method static Builder<static>|Contact whereFoodPreferences($value)
+ * @method static Builder<static>|Contact whereGenderId($value)
+ * @method static Builder<static>|Contact whereGravatarUrl($value)
+ * @method static Builder<static>|Contact whereHasAvatar($value)
+ * @method static Builder<static>|Contact whereHasAvatarBool($value)
+ * @method static Builder<static>|Contact whereId($value)
+ * @method static Builder<static>|Contact whereIsActive($value)
+ * @method static Builder<static>|Contact whereIsDead($value)
+ * @method static Builder<static>|Contact whereIsPartial($value)
+ * @method static Builder<static>|Contact whereIsStarred($value)
+ * @method static Builder<static>|Contact whereJob($value)
+ * @method static Builder<static>|Contact whereLastConsultedAt($value)
+ * @method static Builder<static>|Contact whereLastName($value)
+ * @method static Builder<static>|Contact whereLastTalkedTo($value)
+ * @method static Builder<static>|Contact whereMiddleName($value)
+ * @method static Builder<static>|Contact whereNickname($value)
+ * @method static Builder<static>|Contact whereNumberOfViews($value)
+ * @method static Builder<static>|Contact whereStayInTouchFrequency($value)
+ * @method static Builder<static>|Contact whereStayInTouchTriggerDate($value)
+ * @method static Builder<static>|Contact whereUpdatedAt($value)
+ * @method static Builder<static>|Contact whereUuid($value)
+ * @method static Builder<static>|Contact whereVcard($value)
+ * @method static Builder<static>|Contact withTrashed(bool $withTrashed = true)
+ * @method static Builder<static>|Contact withoutTrashed()
+ * @mixin \Eloquent
  */
 class Contact extends Model
 {

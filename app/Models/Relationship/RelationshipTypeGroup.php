@@ -6,6 +6,25 @@ use App\Models\Account\Account;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $account_id
+ * @property string $name
+ * @property bool $delible
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RelationshipTypeGroup newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RelationshipTypeGroup newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RelationshipTypeGroup query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RelationshipTypeGroup whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RelationshipTypeGroup whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RelationshipTypeGroup whereDelible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RelationshipTypeGroup whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RelationshipTypeGroup whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RelationshipTypeGroup whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class RelationshipTypeGroup extends Model
 {
     /**

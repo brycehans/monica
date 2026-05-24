@@ -8,6 +8,35 @@ use App\Models\ModelBinding as Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property int $account_id
+ * @property string $name
+ * @property string|null $fontawesome_icon
+ * @property string|null $protocol
+ * @property bool $delible
+ * @property string|null $type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Conversation> $conversations
+ * @property-read int|null $conversations_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType whereDelible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType whereFontawesomeIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType whereProtocol($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ContactFieldType whereUuid($value)
+ * @mixin \Eloquent
+ */
 class ContactFieldType extends Model
 {
     use HasUuid;

@@ -18,6 +18,22 @@ use App\Models\ModelBindingHasherWithContact as Model;
  * @property string $nature
  * @property \Illuminate\Support\Carbon|null $planned_date
  * @property int $notification_number_days_before
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox whereNature($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox whereNotificationNumberDaysBefore($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox wherePlannedDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox whereReminderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ReminderOutbox whereUserId($value)
+ * @mixin \Eloquent
  */
 class ReminderOutbox extends Model
 {
