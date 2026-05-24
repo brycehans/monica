@@ -218,8 +218,8 @@ class DateHelper
     private static function formatDate(Carbon $date, string $format, bool $withTimezone = false): string
     {
         $format = trans($format, [], Carbon::getLocale());
-        if ($withTimezone) {
-            $date = $date->setTimezone(static::getTimezone());
+        if ($withTimezone && ($tz = static::getTimezone()) !== null) {
+            $date = $date->setTimezone($tz);
         }
 
         return $date->translatedFormat($format) ?: '';
