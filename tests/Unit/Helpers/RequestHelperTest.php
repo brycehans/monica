@@ -49,7 +49,7 @@ class RequestHelperTest extends TestCase
     {
         $driver = $this->mock(\Stevebauman\Location\Drivers\Driver::class, function (MockInterface $mock) {
             $mock->shouldReceive('get')
-                ->with('123.45.67.89')
+                ->with(\Mockery::on(fn ($request) => $request instanceof \Stevebauman\Location\Request && $request->getIp() === '123.45.67.89'))
                 ->andReturn(tap(new \Stevebauman\Location\Position(), function ($position) {
                     $position->countryCode = 'TEST';
                 }));
