@@ -48,15 +48,6 @@ class Contact extends Model
 {
     use Searchable, SoftDeletes, Prunable, HasUuid;
 
-    /** @var array<string> */
-    protected $dates = [
-        'last_talked_to',
-        'last_consulted_at',
-        'stay_in_touch_trigger_date',
-        'created_at',
-        'updated_at',
-    ];
-
     /**
      * The list of columns we want the Searchable trait to use.
      *
@@ -158,6 +149,9 @@ class Contact extends Model
         'is_starred' => 'boolean',
         'is_active' => 'boolean',
         'stay_in_touch_frequency' => 'integer',
+        'last_talked_to' => 'datetime',
+        'last_consulted_at' => 'datetime',
+        'stay_in_touch_trigger_date' => 'datetime',
     ];
 
     /**
