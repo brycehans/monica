@@ -547,12 +547,6 @@ parameters:
 			path: app/Models/Contact/Contact.php
 
 		-
-			message: '#^If condition is always true\.$#'
-			identifier: if.alwaysTrue
-			count: 1
-			path: app/Models/Contact/Contact.php
-
-		-
 			message: '#^Method App\\Models\\Contact\\Contact\:\:getAgeAtDeath\(\) should return int\|null but returns float\.$#'
 			identifier: return.type
 			count: 1
@@ -573,12 +567,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$address of static method App\\Helpers\\WeatherHelper\:\:getWeatherForAddress\(\) expects App\\Models\\Contact\\Address\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Models/Contact/Contact.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
 			count: 1
 			path: app/Models/Contact/Contact.php
 
@@ -635,12 +623,6 @@ parameters:
 			identifier: property.phpDocType
 			count: 1
 			path: app/Models/Contact/Occupation.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$number_of_days_before\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Contact/Reminder.php
 
 		-
 			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Contact\\Tag\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
