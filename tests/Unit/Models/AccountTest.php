@@ -295,7 +295,7 @@ class AccountTest extends FeatureTestCase
             'account_id' => $account->id,
             'stripe_price' => 'chandler_5',
             'stripe_id' => 'sub_C0R444pbxddhW7',
-            'name' => 'fakePlan',
+            'type' => 'fakePlan',
         ]);
 
         config(['monica.paid_plan_monthly_friendly_name' => 'fakePlan']);
@@ -314,7 +314,7 @@ class AccountTest extends FeatureTestCase
             'account_id' => $account->id,
             'stripe_price' => 'chandler_annual',
             'stripe_id' => 'sub_C0R444pbxddhW7',
-            'name' => 'annualPlan',
+            'type' => 'annualPlan',
         ]);
 
         config(['monica.paid_plan_annual_friendly_name' => 'annualPlan']);
@@ -343,7 +343,7 @@ class AccountTest extends FeatureTestCase
             'account_id' => $account->id,
             'stripe_price' => 'chandler_5',
             'stripe_id' => 'sub_C0R444pbxddhW7',
-            'name' => 'fakePlan',
+            'type' => 'fakePlan',
         ]);
 
         $this->assertTrue($account->hasInvoices());
@@ -373,7 +373,7 @@ class AccountTest extends FeatureTestCase
             'account_id' => $account->id,
             'stripe_price' => 'chandler_5',
             'stripe_id' => 'sub_C0R444pbxddhW7',
-            'name' => 'fakePlan',
+            'type' => 'fakePlan',
         ]);
 
         $this->assertEquals(
@@ -398,7 +398,7 @@ class AccountTest extends FeatureTestCase
             'account_id' => $account->id,
             'stripe_price' => 'chandler_5',
             'stripe_id' => 'sub_C0R444pbxddhW7',
-            'name' => 'fakePlan',
+            'type' => 'fakePlan',
         ]);
 
         $this->assertEquals(

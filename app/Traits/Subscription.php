@@ -59,7 +59,7 @@ trait Subscription
 
         if ($subscription->stripe_price !== $oldPlan && $subscription->stripe_price === $plan['id']) {
             $subscription->forceFill([
-                'name' => $plan['name'],
+                'type' => $plan['name'],
             ])->save();
         }
 
@@ -111,7 +111,7 @@ trait Subscription
     {
         $plan = $this->getSubscribedPlan();
 
-        return is_null($plan) ? null : $plan->name;
+        return is_null($plan) ? null : $plan->type;
     }
 
     /**
