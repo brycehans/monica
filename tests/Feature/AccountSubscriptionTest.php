@@ -16,6 +16,9 @@ class AccountSubscriptionTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
+    private const STRIPE_MOCK_KEY = 'sk_test_stripemockkey';
+    private const STRIPE_MOCK_BASE = 'http://stripe-mock:12111';
+
     /**
      * @var string
      */
@@ -36,12 +39,16 @@ class AccountSubscriptionTest extends FeatureTestCase
      */
     protected static $annualPlanId;
 
+    private static ?string $originalApiBase = null;
+    private static ?string $originalApiKey = null;
+    private static ?string $originalApiVersion = null;
+
     public function setUp(): void
     {
         parent::setUp();
 
         config([
-            'services.stripe.secret' => 'sk_test_stripemockkey',
+            'services.stripe.secret' => self::STRIPE_MOCK_KEY,
             'monica.requires_subscription' => true,
             'monica.paid_plan_monthly_friendly_name' => 'Monthly',
             'monica.paid_plan_monthly_id' => static::$monthlyPlanId,
@@ -54,8 +61,19 @@ class AccountSubscriptionTest extends FeatureTestCase
 
     public static function setUpBeforeClass(): void
     {
-        Stripe::setApiKey('sk_test_stripemockkey');
-        Stripe::$apiBase = env('STRIPE_API_BASE', 'http://stripe-mock:12111');
+        // phpunit.xml sets backupStaticProperties="false", so snapshot the
+        // Stripe SDK statics ourselves and restore them in tearDownAfterClass —
+        // otherwise this class leaks the stripe-mock pointer to anything else
+        // that touches \Stripe\Stripe directly later in the run.
+        self::$originalApiBase = Stripe::$apiBase;
+        self::$originalApiKey = Stripe::getApiKey();
+        self::$originalApiVersion = Stripe::getApiVersion();
+
+        Stripe::setApiKey(self::STRIPE_MOCK_KEY);
+        Stripe::$apiBase = env('STRIPE_API_BASE', self::STRIPE_MOCK_BASE);
+        // Pin a specific API version so stripe-mock's response shape stays deterministic
+        // across stripe-php upgrades. Cashier-mediated calls still use Cashier::STRIPE_VERSION
+        // internally — most of the test surface goes through that, not this pin.
         Stripe::setApiVersion('2024-12-18.acacia');
 
         static::$productId = static::$stripePrefix.'product-'.Str::random(10);
@@ -102,6 +120,17 @@ class AccountSubscriptionTest extends FeatureTestCase
         if (static::$productId) {
             static::deleteStripeResource(new Product(static::$productId));
             static::$productId = null;
+        }
+
+        // Restore the Stripe SDK statics we captured in setUpBeforeClass.
+        if (self::$originalApiBase !== null) {
+            Stripe::$apiBase = self::$originalApiBase;
+        }
+        if (self::$originalApiKey !== null) {
+            Stripe::setApiKey(self::$originalApiKey);
+        }
+        if (self::$originalApiVersion !== null) {
+            Stripe::setApiVersion(self::$originalApiVersion);
         }
     }
 
