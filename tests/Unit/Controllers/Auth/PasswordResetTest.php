@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Controllers\Auth;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -12,7 +13,7 @@ class PasswordResetTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sends_password_reset_email()
     {
         NotificationFacade::fake();

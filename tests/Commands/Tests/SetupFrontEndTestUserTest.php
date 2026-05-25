@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\Account\Account;
@@ -11,7 +12,7 @@ class SetupFrontEndTestUserTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_create_a_test_user()
     {
         $accountCount = Account::count();

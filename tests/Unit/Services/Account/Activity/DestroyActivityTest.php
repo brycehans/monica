@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\Activity;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -15,7 +16,7 @@ class DestroyActivityTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_activity()
     {
         $activity = factory(Activity::class)->create([]);
@@ -36,7 +37,7 @@ class DestroyActivityTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_removes_the_journal_entry_when_destroying_the_activity()
     {
         $account = factory(Account::class)->create([]);

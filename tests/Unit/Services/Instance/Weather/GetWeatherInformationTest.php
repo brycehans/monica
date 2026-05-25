@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Instance\Weather;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Place;
 use App\Models\Account\Weather;
@@ -16,7 +17,7 @@ class GetWeatherInformationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_weather_information_normal()
     {
         $place = factory(Place::class)->create([
@@ -56,7 +57,7 @@ class GetWeatherInformationTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_cant_get_weather_info_if_weather_not_enabled()
     {
         $place = factory(Place::class)->create([
@@ -74,7 +75,7 @@ class GetWeatherInformationTest extends TestCase
         app(GetWeatherInformation::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_cant_get_weather_info_if_weatherapi_key_not_provided()
     {
         $place = factory(Place::class)->create([
@@ -94,7 +95,7 @@ class GetWeatherInformationTest extends TestCase
         app(GetWeatherInformation::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_cant_get_weather_info_if_latitude_longitude_are_null()
     {
         $place = factory(Place::class)->create([]);
@@ -112,7 +113,7 @@ class GetWeatherInformationTest extends TestCase
         app(GetWeatherInformation::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         config(['monica.enable_weather' => true]);

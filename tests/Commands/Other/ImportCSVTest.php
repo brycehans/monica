@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Other;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -12,7 +13,7 @@ class ImportCSVTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function csv_import_contacts()
     {
         Storage::fake('public');
@@ -50,7 +51,7 @@ class ImportCSVTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function csv_import_validates_user()
     {
         $path = base_path('tests/stubs/single_contact_stub.csv');
@@ -64,7 +65,7 @@ class ImportCSVTest extends TestCase
             ->run();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function csv_import_validates_file()
     {
         $user = $this->getUser();

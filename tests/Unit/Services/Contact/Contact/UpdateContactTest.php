@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Contact;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\Contact\Contact;
@@ -13,7 +14,7 @@ class UpdateContactTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_contact()
     {
         $contact = factory(Contact::class)->create([]);
@@ -58,7 +59,7 @@ class UpdateContactTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_contact_is_archived()
     {
         $contact = factory(Contact::class)->state('archived')->create([]);
@@ -93,7 +94,7 @@ class UpdateContactTest extends TestCase
         app(UpdateContact::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contact = factory(Contact::class)->create([]);
@@ -125,7 +126,7 @@ class UpdateContactTest extends TestCase
         app(UpdateContact::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_account_doesnt_exist()
     {
         $contact = factory(Contact::class)->create([]);

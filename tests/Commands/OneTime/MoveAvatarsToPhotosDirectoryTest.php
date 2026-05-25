@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\OneTime;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\Account\Photo;
@@ -30,7 +31,7 @@ class MoveAvatarsToPhotosDirectoryTest extends TestCase
         return [$user, $contact];
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_move_avatars_to_photo_directory()
     {
         [$user, $contact] = $this->fetchUser();
@@ -66,7 +67,7 @@ class MoveAvatarsToPhotosDirectoryTest extends TestCase
         Storage::disk('public')->assertExists($photo->new_filename);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_handles_missing_avatar()
     {
         [$user, $contact] = $this->fetchUser();

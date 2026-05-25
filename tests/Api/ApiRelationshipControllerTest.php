@@ -2,6 +2,7 @@
 
 namespace Tests\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Contact\Contact;
 use App\Models\Relationship\Relationship;
@@ -12,7 +13,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_rejects_the_api_call_if_parameters_are_not_right()
     {
         $user = $this->signin();
@@ -54,7 +55,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         $this->expectDataError($response, ['The of contact must be an integer.']);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_relationship_type_id_is_invalid()
     {
         $user = $this->signin();
@@ -75,7 +76,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_contact_is_id_is_invalid()
     {
         $user = $this->signin();
@@ -96,7 +97,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_of_contact_id_is_invalid()
     {
         $user = $this->signin();
@@ -117,7 +118,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_a_new_resource()
     {
         $user = $this->signin();
@@ -158,7 +159,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_displays_a_relationship()
     {
         $user = $this->signin();
@@ -192,7 +193,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
                     ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_deletes_a_relationship()
     {
         $user = $this->signin();
@@ -241,7 +242,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_rejects_the_delete_api_call_if_parameters_are_not_right()
     {
         $user = $this->signin();
@@ -260,7 +261,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_rejects_the_update_api_call_if_parameters_are_not_right()
     {
         $user = $this->signin();
@@ -277,7 +278,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_rejects_the_update_api_call_if_parameters_are_not_right2()
     {
         $user = $this->signin();
@@ -293,7 +294,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         $this->expectDataError($response, ['The relationship type id must be an integer.']);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_the_update_if_relationship_type_id_is_invalid()
     {
         $user = $this->signin();
@@ -309,7 +310,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_relationship()
     {
         $user = $this->signin();
@@ -350,7 +351,7 @@ class ApiRelationshipControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_displays_all_relationships_of_a_contact()
     {
         $user = $this->signin();

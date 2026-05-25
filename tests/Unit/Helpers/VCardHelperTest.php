@@ -2,13 +2,14 @@
 
 namespace Tests\Unit\Helpers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Helpers\VCardHelper;
 use Sabre\VObject\Component\VCard;
 
 class VCardHelperTest extends FeatureTestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_get_country_by_sabre_vcard()
     {
         $vcard = new VCard([

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\Gender;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Gender;
 use App\Models\Account\Account;
@@ -13,7 +14,7 @@ class CreateGenderTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_gender()
     {
         $account = factory(Account::class)->create([]);
@@ -39,7 +40,7 @@ class CreateGenderTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $account = factory(Account::class)->create([]);

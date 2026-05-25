@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Other;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Console\Commands\CreateAccount;
@@ -11,7 +12,7 @@ class CreateAccountTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_account()
     {
         $email = 'user1@example.com';
@@ -22,7 +23,7 @@ class CreateAccountTest extends TestCase
         $this->assertNotEmpty($user);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_account_with_specified_name()
     {
         $email = 'user1@example.com';
@@ -39,7 +40,7 @@ class CreateAccountTest extends TestCase
         $this->assertNotEmpty($user);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_creation_without_email()
     {
         $this->artisan('account:create', ['--password' => 'astrongpassword'])
@@ -48,7 +49,7 @@ class CreateAccountTest extends TestCase
             ->run();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_creation_without_password()
     {
         $email = 'user1@example.com';

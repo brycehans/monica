@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Reminder;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Models\User\User;
@@ -17,7 +18,7 @@ class CreateReminderTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_recurring_reminder()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1));
@@ -57,7 +58,7 @@ class CreateReminderTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_one_time_reminder()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1));
@@ -97,7 +98,7 @@ class CreateReminderTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_reminder_for_each_user_of_an_account()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1));
@@ -151,7 +152,7 @@ class CreateReminderTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contact = factory(Contact::class)->create([]);
@@ -166,7 +167,7 @@ class CreateReminderTest extends TestCase
         $reminderService = app(CreateReminder::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_ids_are_not_found()
     {
         $account = factory(Account::class)->create();
@@ -201,7 +202,7 @@ class CreateReminderTest extends TestCase
         $reminderService = app(CreateReminder::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_frequency_type_is_not_right()
     {
         $contact = factory(Contact::class)->create([]);

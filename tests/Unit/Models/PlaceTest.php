@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Place;
 use App\Models\Account\Weather;
@@ -11,21 +12,21 @@ class PlaceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_account()
     {
         $place = factory(Place::class)->create([]);
         $this->assertTrue($place->account()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_has_many_weathers()
     {
         $weather = factory(Weather::class)->create([]);
         $this->assertTrue($weather->place->weathers()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_the_full_address_as_a_string()
     {
         $place = factory(Place::class)->create([]);
@@ -35,7 +36,7 @@ class PlaceTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_country_name()
     {
         $place = factory(Place::class)->create([]);
@@ -45,7 +46,7 @@ class PlaceTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_a_link_to_google_maps()
     {
         $place = factory(Place::class)->create([]);
@@ -56,7 +57,7 @@ class PlaceTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_a_google_map_url_with_latitude_longitude()
     {
         $place = new Place;

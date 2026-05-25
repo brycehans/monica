@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Conversation;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -16,7 +17,7 @@ class CreateConversationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_conversation()
     {
         $contact = factory(Contact::class)->create([]);
@@ -46,7 +47,7 @@ class CreateConversationTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contact = factory(Contact::class)->create([]);
@@ -61,7 +62,7 @@ class CreateConversationTest extends TestCase
         app(CreateConversation::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();
@@ -82,7 +83,7 @@ class CreateConversationTest extends TestCase
         app(CreateConversation::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contactfieldtype_is_not_linked_to_account()
     {
         $contact = factory(Contact::class)->create([]);

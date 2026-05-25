@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Conversation;
@@ -12,7 +13,7 @@ class ContactFieldTypeTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_has_many_conversations()
     {
         $contactFieldType = factory(ContactFieldType::class)->create([]);
@@ -24,7 +25,7 @@ class ContactFieldTypeTest extends FeatureTestCase
         $this->assertTrue($contactFieldType->conversations()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);

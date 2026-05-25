@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\DavClient\Utils;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use Tests\Api\DAV\CardEtag;
@@ -26,7 +27,7 @@ class AddressBookSynchronizerTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sync_empty_changes()
     {
         Bus::fake();
@@ -50,7 +51,7 @@ class AddressBookSynchronizerTest extends TestCase
         $tester->assert();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sync_no_changes()
     {
         Bus::fake();
@@ -76,7 +77,7 @@ class AddressBookSynchronizerTest extends TestCase
         $tester->assert();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sync_changes_added_local_contact()
     {
         Bus::fake();
@@ -116,7 +117,7 @@ class AddressBookSynchronizerTest extends TestCase
         $tester->assert();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sync_changes_added_local_contact_batched()
     {
         Bus::fake();
@@ -153,7 +154,7 @@ class AddressBookSynchronizerTest extends TestCase
         });
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sync_changes_deleted_contact_batched()
     {
         Bus::fake();
@@ -194,7 +195,7 @@ class AddressBookSynchronizerTest extends TestCase
         });
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_forcesync_changes_added_local_contact()
     {
         Bus::fake();
@@ -255,7 +256,7 @@ class AddressBookSynchronizerTest extends TestCase
         $tester->assert();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_forcesync_changes_added_local_contact_batched()
     {
         Bus::fake();
@@ -307,7 +308,7 @@ class AddressBookSynchronizerTest extends TestCase
         });
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_forcesync_changes_deleted_contact_batched()
     {
         Bus::fake();

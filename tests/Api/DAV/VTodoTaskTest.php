@@ -2,6 +2,8 @@
 
 namespace Tests\Api\DAV;
 
+use PHPUnit\Framework\Attributes\Group;
+use Sabre\VObject\Version;
 use Carbon\Carbon;
 use Tests\ApiTestCase;
 use Illuminate\Support\Str;
@@ -14,7 +16,7 @@ class VTodoTaskTest extends ApiTestCase
 {
     use DatabaseTransactions, CardEtag, PHPUnitAssertions;
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_caldav_get_one_task()
     {
         $user = $this->signin();
@@ -33,7 +35,7 @@ class VTodoTaskTest extends ApiTestCase
         $this->assertVObjectEqualsVObject($this->getVTodo($task, true), $response->getContent() ?: $response->streamedContent());
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_caldav_put_one_task()
     {
         $user = $this->signin();
@@ -65,7 +67,7 @@ END:VCALENDAR
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_caldav_update_existing_task()
     {
         $user = $this->signin();
@@ -98,7 +100,7 @@ END:VCALENDAR
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_caldav_update_task_complete()
     {
         $user = $this->signin();
@@ -164,7 +166,7 @@ END:VCALENDAR
         $response->assertHeader('X-Sabre-Version');
 
         $peopleurl = route('people.show', $contact);
-        $sabreversion = \Sabre\VObject\Version::VERSION;
+        $sabreversion = Version::VERSION;
 
         $response->assertSee('<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:card="urn:ietf:params:xml:ns:carddav" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:cs="http://calendarserver.org/ns/">'.
         '<d:response>'.

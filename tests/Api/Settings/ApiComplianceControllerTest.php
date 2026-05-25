@@ -2,6 +2,7 @@
 
 namespace Tests\Api\Settings;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Settings\Term;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -21,7 +22,7 @@ class ApiComplianceControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_list_of_terms()
     {
         $term = factory(Term::class, 10)->create([
@@ -52,7 +53,7 @@ class ApiComplianceControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_single_term()
     {
         $term = factory(Term::class)->create([
@@ -76,7 +77,7 @@ class ApiComplianceControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_doesnt_get_a_single_term()
     {
         $response = $this->json('GET', '/api/compliance/3');

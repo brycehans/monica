@@ -2,6 +2,7 @@
 
 namespace Tests\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Http\Controllers\Api\ApiController;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -10,7 +11,7 @@ class ApiControllerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_http_status_code_returns_the_status_code()
     {
         $apiController = new ApiController;
@@ -28,7 +29,7 @@ class ApiControllerTest extends ApiTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_error_code_returns_the_error_code()
     {
         $apiController = new ApiController;
@@ -45,7 +46,7 @@ class ApiControllerTest extends ApiTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_with_parameter_returns_the_parameter()
     {
         $apiController = new ApiController;
@@ -62,7 +63,7 @@ class ApiControllerTest extends ApiTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_limit_per_page_code_returns_the_limit_per_page()
     {
         $apiController = new ApiController;
@@ -80,7 +81,7 @@ class ApiControllerTest extends ApiTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_sort_criteria()
     {
         $apiController = new ApiController;
@@ -98,7 +99,7 @@ class ApiControllerTest extends ApiTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_only_accepts_some_sorting_parameters()
     {
         $apiController = new ApiController;
@@ -118,7 +119,7 @@ class ApiControllerTest extends ApiTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function calling_api_with_insane_limit_number_raises_an_error()
     {
         $user = $this->signin();
@@ -135,7 +136,7 @@ class ApiControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function calling_api_with_a_wrong_sort_parameter_raises_an_error()
     {
         $user = $this->signin();
@@ -152,7 +153,7 @@ class ApiControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sets_the_order_by_parameters()
     {
         $apiController = new ApiController;
@@ -182,7 +183,7 @@ class ApiControllerTest extends ApiTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function root_api()
     {
         $user = $this->signin();

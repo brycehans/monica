@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use App\Models\Account\Place;
@@ -16,7 +17,7 @@ class GetWeatherInformationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_run_job_weather_information()
     {
         $fake = Bus::fake();

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\Settings;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\Contact\Contact;
@@ -15,7 +16,7 @@ class ResetAccountTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_resets_an_account()
     {
         // populate the account with fake contacts and activities
@@ -56,7 +57,7 @@ class ResetAccountTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [];

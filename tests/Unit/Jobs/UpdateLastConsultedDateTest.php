@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Models\Contact\Contact;
@@ -12,7 +13,7 @@ class UpdateLastConsultedDateTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_the_last_consulted_at_field_for_the_given_contact()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1, 7, 0, 0));

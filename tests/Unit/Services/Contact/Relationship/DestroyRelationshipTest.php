@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Relationship;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -16,7 +17,7 @@ class DestroyRelationshipTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_relationship()
     {
         $contactA = factory(Contact::class)->create([]);
@@ -42,7 +43,7 @@ class DestroyRelationshipTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_relationship_and_reverse()
     {
         $contactA = factory(Contact::class)->create([]);
@@ -96,7 +97,7 @@ class DestroyRelationshipTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_relationship_and_reverse_and_partial_contact()
     {
         $contactA = factory(Contact::class)->create([]);
@@ -155,7 +156,7 @@ class DestroyRelationshipTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $account = factory(Account::class)->create([]);
@@ -169,7 +170,7 @@ class DestroyRelationshipTest extends TestCase
         app(DestroyRelationship::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_relationship_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();
@@ -185,7 +186,7 @@ class DestroyRelationshipTest extends TestCase
         app(DestroyRelationship::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_deletes_relationship_between_two_contacts_and_deletes_the_contact()
     {
         $account = factory(Account::class)->create([]);
@@ -219,7 +220,7 @@ class DestroyRelationshipTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_deletes_relationship_between_two_contacts_and_doesnt_delete_the_contact()
     {
         $account = factory(Account::class)->create([]);

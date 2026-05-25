@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Jobs\Dav;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Jobs\Dav\PushVCard;
@@ -21,8 +23,8 @@ class PushVCardTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('modes')]
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[DataProvider('modes')]
+    #[Test]
     public function it_push_card($mode, $ifmatch)
     {
         $fake = Bus::fake();

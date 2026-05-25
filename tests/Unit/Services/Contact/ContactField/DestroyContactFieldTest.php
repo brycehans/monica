@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\ContactField;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\ContactField;
@@ -14,7 +15,7 @@ class DestroyContactFieldTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_contact_field()
     {
         $contactField = factory(ContactField::class)->create();
@@ -31,7 +32,7 @@ class DestroyContactFieldTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $account = factory(Account::class)->create();
@@ -45,7 +46,7 @@ class DestroyContactFieldTest extends TestCase
         app(DestroyContactField::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_field_doesnt_exist()
     {
         $account = factory(Account::class)->create();
@@ -59,7 +60,7 @@ class DestroyContactFieldTest extends TestCase
         app(DestroyContactField::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_field_use_wrong_account()
     {
         $account = factory(Account::class)->create();

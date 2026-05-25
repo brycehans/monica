@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs\Dav;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Jobs\Dav\GetVCard;
@@ -21,7 +22,7 @@ class GetVCardTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_get_card()
     {
         $fake = Bus::fake();

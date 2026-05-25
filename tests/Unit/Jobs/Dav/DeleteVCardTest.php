@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs\Dav;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Jobs\Dav\DeleteVCard;
@@ -17,7 +18,7 @@ class DeleteVCardTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_delete_card()
     {
         $fake = Bus::fake();

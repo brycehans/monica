@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Models\User\User;
@@ -16,7 +17,7 @@ class ScheduleStayInTouchTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_dispatches_an_email()
     {
         NotificationFacade::fake();
@@ -57,7 +58,7 @@ class ScheduleStayInTouchTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_doesnt_dispatches_an_email_if_free_account()
     {
         NotificationFacade::fake();
@@ -91,7 +92,7 @@ class ScheduleStayInTouchTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_reschedule_missed_stayintouch()
     {
         NotificationFacade::fake();

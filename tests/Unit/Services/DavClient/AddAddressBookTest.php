@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\DavClient;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use Mockery\MockInterface;
@@ -16,7 +17,7 @@ class AddAddressBookTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_an_addressbook()
     {
         $user = factory(User::class)->create([]);
@@ -65,7 +66,7 @@ class AddAddressBookTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_next_addressbook()
     {
         $user = factory(User::class)->create([]);

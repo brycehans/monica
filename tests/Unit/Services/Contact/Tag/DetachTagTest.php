@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Tag;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Tag;
 use App\Models\Account\Account;
@@ -15,7 +16,7 @@ class DetachTagTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_detachs_a_tag()
     {
         $contact = factory(Contact::class)->create([]);
@@ -50,7 +51,7 @@ class DetachTagTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -62,7 +63,7 @@ class DetachTagTest extends TestCase
         app(DetachTag::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_does_not_exist()
     {
         $account = factory(Account::class)->create();

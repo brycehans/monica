@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Models\Contact\ReminderRule;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -25,7 +26,7 @@ class ReminderRuleTest extends FeatureTestCase
         return [$user, $reminderRule];
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function reminder_rule_index()
     {
         [$user, $reminderRule] = $this->fetchUser();
@@ -38,7 +39,7 @@ class ReminderRuleTest extends FeatureTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function reminder_rule_toggle()
     {
         [$user, $reminderRule] = $this->fetchUser();

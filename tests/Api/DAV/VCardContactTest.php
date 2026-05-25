@@ -2,6 +2,9 @@
 
 namespace Tests\Api\DAV;
 
+use PHPUnit\Framework\Attributes\Group;
+use Sabre\DAV\Version;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use Illuminate\Support\Str;
 use App\Models\Account\Photo;
@@ -16,7 +19,7 @@ class VCardContactTest extends ApiTestCase
 {
     use DatabaseTransactions, CardEtag, PHPUnitAssertions;
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_get_one_contact()
     {
         $user = $this->signin();
@@ -34,7 +37,7 @@ class VCardContactTest extends ApiTestCase
         $this->assertVObjectEqualsVObject($this->getCard($contact, true), $response->getContent());
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_put_one_contact()
     {
         $user = $this->signin();
@@ -55,7 +58,7 @@ class VCardContactTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_put_one_contact_with_photo()
     {
         Storage::fake();
@@ -87,7 +90,7 @@ class VCardContactTest extends ApiTestCase
         Storage::disk('public')->assertExists($photo->new_filename);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_put_one_contact_with_photo_already_set()
     {
         $user = $this->signin();
@@ -121,7 +124,7 @@ class VCardContactTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_put_one_contact_with_photo_and_attributes()
     {
         Storage::fake();
@@ -153,7 +156,7 @@ class VCardContactTest extends ApiTestCase
         Storage::disk('public')->assertExists($photo->new_filename);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_update_existing_contact()
     {
         $user = $this->signin();
@@ -177,7 +180,7 @@ class VCardContactTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_update_existing_contact_if_modified()
     {
         $user = $this->signin();
@@ -205,7 +208,7 @@ class VCardContactTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_update_existing_contact_if_modified_not_modified()
     {
         $user = $this->signin();
@@ -233,7 +236,7 @@ class VCardContactTest extends ApiTestCase
         $response->assertHeaderMissing('ETag');
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_update_existing_contact_if_unmodified()
     {
         $user = $this->signin();
@@ -261,7 +264,7 @@ class VCardContactTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_update_existing_contact_if_unmodified_error()
     {
         $user = $this->signin();
@@ -283,14 +286,14 @@ class VCardContactTest extends ApiTestCase
 
         $response->assertHeader('X-Sabre-Version');
 
-        $sabreversion = \Sabre\DAV\Version::VERSION;
+        $sabreversion = Version::VERSION;
         $response->assertSee("<d:error xmlns:d=\"DAV:\" xmlns:s=\"http://sabredav.org/ns\">
   <s:sabredav-version>{$sabreversion}</s:sabredav-version>
   <s:exception>Sabre\DAV\Exception\PreconditionFailed</s:exception>
   <s:message>An If-Unmodified-Since header was specified, but the entity has been changed since the specified date.</s:message>", false);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_update_existing_contact_no_modify()
     {
         $user = $this->signin();
@@ -446,8 +449,8 @@ class VCardContactTest extends ApiTestCase
           '</d:multistatus>', false);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Group('dav')]
+    #[Test]
     public function carddav_delete_one_contact()
     {
         $user = $this->signin();

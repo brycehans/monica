@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Other;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use Mockery\MockInterface;
@@ -12,7 +13,7 @@ class CreateAddressBookSubscriptionTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_add_addressbook()
     {
         $user = factory(User::class)->create();

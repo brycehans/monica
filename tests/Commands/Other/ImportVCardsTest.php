@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Other;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -12,7 +13,7 @@ class ImportVCardsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_validates_user()
     {
         $path = base_path('tests/stubs/vcard_stub.vcf');
@@ -23,7 +24,7 @@ class ImportVCardsTest extends TestCase
             ->run();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_validates_file()
     {
         $user = $this->getUser();
@@ -34,7 +35,7 @@ class ImportVCardsTest extends TestCase
             ->run();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_contacts()
     {
         Storage::fake('public');

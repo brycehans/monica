@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Console\Commands\Helpers\Command;
 use Laravel\Passport\PersonalAccessClient;
@@ -24,7 +25,7 @@ class PassportCommandTest extends TestCase
         }
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function passport_command_create()
     {
         /** @var \Tests\Helpers\CommandCallerFake */
@@ -36,7 +37,7 @@ class PassportCommandTest extends TestCase
         $this->assertCommandContains($fake->buffer[0], '✓ Creating personal access client', 'php artisan passport:client');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function passport_command_already_created()
     {
         /** @var \Tests\Helpers\CommandCallerFake */
@@ -49,7 +50,7 @@ class PassportCommandTest extends TestCase
         $this->assertCount(0, $fake->buffer, $fake->buffer->implode(','));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function passport_command_env_config()
     {
         /** @var \Tests\Helpers\CommandCallerFake */

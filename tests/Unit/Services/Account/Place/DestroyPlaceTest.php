@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\Place;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Place;
 use App\Models\Account\Account;
@@ -14,7 +15,7 @@ class DestroyPlaceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_place()
     {
         $place = factory(Place::class)->create([]);
@@ -31,7 +32,7 @@ class DestroyPlaceTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_account_is_not_linked_to_places()
     {
         $account = factory(Account::class)->create([]);
@@ -46,7 +47,7 @@ class DestroyPlaceTest extends TestCase
         app(DestroyPlace::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_ids_do_not_exist()
     {
         $request = [

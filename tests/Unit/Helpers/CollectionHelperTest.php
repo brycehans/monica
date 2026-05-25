@@ -2,13 +2,14 @@
 
 namespace Tests\Unit\Helpers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Helpers\CollectionHelper;
 use Illuminate\Support\Facades\App;
 
 class CollectionHelperTest extends FeatureTestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function sortByCollator_base()
     {
         $collection = collect([
@@ -28,7 +29,7 @@ class CollectionHelperTest extends FeatureTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function sortByCollator_macro()
     {
         $collection = collect([
@@ -48,7 +49,7 @@ class CollectionHelperTest extends FeatureTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function sortByCollator_callback()
     {
         $collection = collect([
@@ -70,7 +71,7 @@ class CollectionHelperTest extends FeatureTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function sortByCollator_default_collation()
     {
         App::setLocale('en');
@@ -94,7 +95,7 @@ class CollectionHelperTest extends FeatureTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function sortByCollator_french_collation()
     {
         App::setLocale('fr');
@@ -118,7 +119,7 @@ class CollectionHelperTest extends FeatureTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function getCollator_french_collation()
     {
         $collator = CollectionHelper::getCollator('fr');
@@ -127,7 +128,7 @@ class CollectionHelperTest extends FeatureTestCase
         $this->assertEquals($collator->getLocale(\Locale::VALID_LOCALE), 'fr');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function group_by_items_property()
     {
         $object1 = (object) ['name' => 'John'];
@@ -151,7 +152,7 @@ class CollectionHelperTest extends FeatureTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_maps_uuid()
     {
         $collection = collect();

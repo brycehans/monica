@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\DavClient\Utils\Model;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Services\DavClient\Utils\Model\ContactUpdateDto;
@@ -10,7 +11,7 @@ class ContactUpdateDtoTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_create_dto_string()
     {
         $dto = new ContactUpdateDto('uri', 'etag', 'card');
@@ -19,7 +20,7 @@ class ContactUpdateDtoTest extends TestCase
         $this->assertEquals('card', $dto->card);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_create_dto_resource()
     {
         $resource = fopen(__DIR__.'/stub.vcf', 'r');

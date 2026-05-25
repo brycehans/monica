@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Task;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Task;
 use App\Models\Account\Account;
@@ -14,7 +15,7 @@ class DestroyTaskTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_task()
     {
         $task = factory(Task::class)->create([]);
@@ -35,7 +36,7 @@ class DestroyTaskTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -47,7 +48,7 @@ class DestroyTaskTest extends TestCase
         app(DestroyTask::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_a_task_doesnt_exist()
     {
         $task = factory(Task::class)->create([]);

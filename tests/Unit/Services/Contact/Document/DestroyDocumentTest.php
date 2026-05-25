@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Document;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Contact;
 use App\Models\Contact\Document;
@@ -17,7 +18,7 @@ class DestroyDocumentTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_document()
     {
         Storage::fake();
@@ -43,7 +44,7 @@ class DestroyDocumentTest extends TestCase
         Storage::disk('public')->assertMissing($document->new_filename);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -55,7 +56,7 @@ class DestroyDocumentTest extends TestCase
         app(DestroyDocument::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_a_document_doesnt_exist()
     {
         $document = factory(Document::class)->create([]);

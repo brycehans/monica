@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
+use PragmaRX\Google2FALaravel\Support\Authenticator;
 use Tests\TestCase;
 use App\Models\User\User;
 use Illuminate\Session\Store;
@@ -13,7 +15,7 @@ class Google2FATest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_tests_a_wrong_key_for_Google2fa()
     {
         $google2fa = app('pragmarx.google2fa');
@@ -25,7 +27,7 @@ class Google2FATest extends TestCase
         $this->assertFalse($result);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_tests_a_correct_key_for_Google2fa()
     {
         $google2fa = app('pragmarx.google2fa');
@@ -38,7 +40,7 @@ class Google2FATest extends TestCase
         $this->assertTrue($result);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_logs_in_with_Google2Fa()
     {
         config(['google2fa.enabled' => true]);
@@ -55,7 +57,7 @@ class Google2FATest extends TestCase
         $request->setLaravelSession(new Store('test', new NullSessionHandler));
         $request->getSession()->start();
 
-        $authenticator = new \PragmaRX\Google2FALaravel\Support\Authenticator($request);
+        $authenticator = new Authenticator($request);
 
         $this->assertFalse($authenticator->isAuthenticated());
 

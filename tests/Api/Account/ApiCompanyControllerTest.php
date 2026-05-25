@@ -2,6 +2,7 @@
 
 namespace Tests\Api\Account;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Account\Account;
 use App\Models\Account\Company;
@@ -24,7 +25,7 @@ class ApiCompanyControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_list_of_companies()
     {
         $user = $this->signin();
@@ -41,7 +42,7 @@ class ApiCompanyControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_applies_the_limit_parameter_in_search()
     {
         $user = $this->signin();
@@ -69,7 +70,7 @@ class ApiCompanyControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_one_company()
     {
         $user = $this->signin();
@@ -90,7 +91,7 @@ class ApiCompanyControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_cant_get_a_call_with_unexistent_id()
     {
         $user = $this->signin();
@@ -100,7 +101,7 @@ class ApiCompanyControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_a_company()
     {
         $user = $this->signin();
@@ -129,7 +130,7 @@ class ApiCompanyControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_company()
     {
         $user = $this->signin();
@@ -166,7 +167,7 @@ class ApiCompanyControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_cant_update_a_company_if_account_is_not_linked_to_company()
     {
         $user = $this->signin();
@@ -183,7 +184,7 @@ class ApiCompanyControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_deletes_a_company()
     {
         $user = $this->signin();
@@ -202,7 +203,7 @@ class ApiCompanyControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_cant_delete_a_company_if_company_doesnt_exist()
     {
         $user = $this->signin();

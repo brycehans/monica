@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Task;
 use App\Models\Account\Account;
@@ -12,7 +13,7 @@ class TaskTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -25,7 +26,7 @@ class TaskTest extends TestCase
         $this->assertTrue($task->account()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_a_contact()
     {
         $account = factory(Account::class)->create([]);
@@ -38,7 +39,7 @@ class TaskTest extends TestCase
         $this->assertTrue($task->contact()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_filters_by_completed_items()
     {
         $task = factory(Task::class)->create(['completed' => true]);
@@ -52,7 +53,7 @@ class TaskTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_filters_by_incomplete_items()
     {
         $task = factory(Task::class)->create(['completed' => false]);

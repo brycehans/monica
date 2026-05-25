@@ -2,6 +2,7 @@
 
 namespace Tests\Api\Contact;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\User\User;
 use App\Models\Contact\Contact;
@@ -50,7 +51,7 @@ class ApiConversationControllerTest extends ApiTestCase
         return $conversation;
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_list_of_conversations()
     {
         $user = $this->signin();
@@ -80,7 +81,7 @@ class ApiConversationControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_applies_the_limit_parameter_in_search()
     {
         $user = $this->signin();
@@ -108,7 +109,7 @@ class ApiConversationControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_conversation()
     {
         $user = $this->signin();
@@ -124,7 +125,7 @@ class ApiConversationControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_conversation_for_a_specific_contact()
     {
         $user = $this->signin();
@@ -142,7 +143,7 @@ class ApiConversationControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_a_conversation()
     {
         $user = $this->signin();
@@ -167,7 +168,7 @@ class ApiConversationControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_conversation()
     {
         $user = $this->signin();
@@ -189,7 +190,7 @@ class ApiConversationControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_conversation()
     {
         $user = $this->signin();

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\Place;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Place;
 use App\Models\Account\Account;
@@ -15,7 +16,7 @@ class UpdatePlaceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_place_without_fetching_geolocation_information()
     {
         $place = factory(Place::class)->create([]);
@@ -47,7 +48,7 @@ class UpdatePlaceTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_place_and_fetch_geolocation_information()
     {
         config(['monica.enable_geolocation' => true]);
@@ -83,7 +84,7 @@ class UpdatePlaceTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $place = factory(Place::class)->create([]);
@@ -96,7 +97,7 @@ class UpdatePlaceTest extends TestCase
         app(UpdatePlace::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_place_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create([]);

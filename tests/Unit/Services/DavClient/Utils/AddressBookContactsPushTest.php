@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\DavClient\Utils;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use App\Jobs\Dav\PushVCard;
@@ -24,7 +25,7 @@ class AddressBookContactsPushTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_push_contacts_added()
     {
         $subscription = AddressBookSubscription::factory()->create();
@@ -86,7 +87,7 @@ class AddressBookContactsPushTest extends TestCase
         $this->assertEquals(ContactPushDto::MODE_MATCH_NONE, $dto->mode);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_push_contacts_modified()
     {
         $subscription = AddressBookSubscription::factory()->create();
@@ -150,7 +151,7 @@ class AddressBookContactsPushTest extends TestCase
         $this->assertEquals(1, $dto->mode);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_delete_contacts_removed()
     {
         $subscription = AddressBookSubscription::factory()->create();

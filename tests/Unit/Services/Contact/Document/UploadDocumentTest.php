@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Document;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -17,7 +18,7 @@ class UploadDocumentTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_uploads_a_document()
     {
         Storage::fake();
@@ -49,7 +50,7 @@ class UploadDocumentTest extends TestCase
         Storage::disk('public')->assertExists($document->new_filename);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -62,7 +63,7 @@ class UploadDocumentTest extends TestCase
         app(UploadDocument::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_does_not_exist()
     {
         Storage::fake();

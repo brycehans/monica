@@ -2,6 +2,7 @@
 
 namespace Tests\Api\DAV;
 
+use PHPUnit\Framework\Attributes\Group;
 use Tests\ApiTestCase;
 use Illuminate\Support\Str;
 use App\Models\Contact\Contact;
@@ -12,7 +13,7 @@ class VEventBirthdayTest extends ApiTestCase
 {
     use DatabaseTransactions, CardEtag, PHPUnitAssertions;
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_caldav_get_one_birthday()
     {
         $user = $this->signin();

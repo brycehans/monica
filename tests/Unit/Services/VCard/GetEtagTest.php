@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\VCard;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -12,7 +13,7 @@ class GetEtagTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_get_etag_local_contact()
     {
         $account = factory(Account::class)->create();
@@ -29,7 +30,7 @@ class GetEtagTest extends TestCase
         $this->assertEquals('"a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"', $etag);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_get_etag_distant_contact()
     {
         $account = factory(Account::class)->create();

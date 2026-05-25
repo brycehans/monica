@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\VCard;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Models\User\User;
@@ -26,7 +27,7 @@ class ImportVCardTest extends TestCase
     use DatabaseTransactions,
         PHPUnitAssertions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_can_not_import_because_no_firstname_or_nickname_in_vcard()
     {
         $account = factory(Account::class)->create([]);
@@ -37,7 +38,7 @@ class ImportVCardTest extends TestCase
         $this->assertFalse($this->invokePrivateMethod($importVCard, 'canImportCurrentEntry', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_can_not_import_because_no_firstname_in_vcard()
     {
         $account = factory(Account::class)->create([]);
@@ -50,7 +51,7 @@ class ImportVCardTest extends TestCase
         $this->assertFalse($this->invokePrivateMethod($importVCard, 'canImportCurrentEntry', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_can_not_import_because_empty_firstname_in_vcard()
     {
         $account = factory(Account::class)->create([]);
@@ -63,7 +64,7 @@ class ImportVCardTest extends TestCase
         $this->assertFalse($this->invokePrivateMethod($importVCard, 'canImportCurrentEntry', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_can_not_import_vcard()
     {
         $account = factory(Account::class)->create([]);
@@ -85,7 +86,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertFalse($this->invokePrivateMethod($importVCard, 'canImportCurrentEntry', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_can_not_import_because_empty_nickname_in_vcard()
     {
         $account = factory(Account::class)->create([]);
@@ -98,7 +99,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertFalse($this->invokePrivateMethod($importVCard, 'canImportCurrentEntry', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_can_not_import_because_empty_fullname_in_vcard()
     {
         $account = factory(Account::class)->create([]);
@@ -111,7 +112,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertFalse($this->invokePrivateMethod($importVCard, 'canImportCurrentEntry', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_can_import_firstname()
     {
         $account = factory(Account::class)->create([]);
@@ -124,7 +125,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertTrue($this->invokePrivateMethod($importVCard, 'canImportCurrentEntry', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_can_import_nickname()
     {
         $account = factory(Account::class)->create([]);
@@ -137,7 +138,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertTrue($this->invokePrivateMethod($importVCard, 'canImportCurrentEntry', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_can_import_fullname()
     {
         $account = factory(Account::class)->create([]);
@@ -150,7 +151,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertTrue($this->invokePrivateMethod($importVCard, 'canImportCurrentEntry', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_validates_email()
     {
         $account = factory(Account::class)->create([]);
@@ -165,7 +166,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertTrue($this->invokePrivateMethod($importVCard, 'isValidEmail', [$validEmail]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_checks_if_a_contact_exists()
     {
         $account = factory(Account::class)->create([]);
@@ -193,7 +194,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertNull($contact);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_an_unknown_name_if_no_name_is_in_entry()
     {
         $account = factory(Account::class)->create([]);
@@ -209,7 +210,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_a_name_for_N()
     {
         $account = factory(Account::class)->create([]);
@@ -223,7 +224,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('Doe John john@doe.com', $this->invokePrivateMethod($importVCard, 'name', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_a_name_for_N_incomplete()
     {
         $account = factory(Account::class)->create([]);
@@ -237,7 +238,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('Doe John john@doe.com', $this->invokePrivateMethod($importVCard, 'name', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_a_name_for_NICKNAME()
     {
         $account = factory(Account::class)->create([]);
@@ -251,7 +252,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('John john@doe.com', $this->invokePrivateMethod($importVCard, 'name', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_a_name_for_FN()
     {
         $account = factory(Account::class)->create([]);
@@ -265,7 +266,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('John Doe john@doe.com', $this->invokePrivateMethod($importVCard, 'name', [$vcard]));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_formats_value()
     {
         $account = factory(Account::class)->create([]);
@@ -281,7 +282,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_a_contact()
     {
         $user = factory(User::class)->create([]);
@@ -303,7 +304,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertTrue($contact->exists);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_a_contact_in_address_book()
     {
         $user = factory(User::class)->create([]);
@@ -334,7 +335,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals($addressBook->id, $contact->address_book_id);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_update_a_contact_with_birthdate()
     {
         $user = factory(User::class)->create([]);
@@ -358,7 +359,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('2001-04-01', $newContact->birthdate->date->format('Y-m-d'));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_update_a_contact_with_birthdate_age_based()
     {
         Carbon::setTestNow(Carbon::create(2021, 8, 25, 7, 0, 0));
@@ -385,7 +386,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('2002-01-01', $newContact->birthdate->date->format('Y-m-d'));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_update_a_contact_with_birthdate_and_replace_it()
     {
         $user = factory(User::class)->create([]);
@@ -410,7 +411,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('1990-01-01', $newContact->birthdate->date->format('Y-m-d'));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_update_a_contact_with_deceased_date()
     {
         $user = factory(User::class)->create([]);
@@ -436,7 +437,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('2021-07-01', $newContact->deceasedDate->date->format('Y-m-d'));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_a_contact_with_process()
     {
         $user = factory(User::class)->create([]);
@@ -465,7 +466,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_contact_with_process()
     {
         $user = factory(User::class)->create([]);
@@ -499,7 +500,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('Miles', $contact->last_name);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_names_N()
     {
         $importVCard = new ImportVCard;
@@ -514,7 +515,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('Jane', $contact['middle_name']);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_names_NICKNAME()
     {
         $importVCard = new ImportVCard;
@@ -527,7 +528,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('John', $contact['first_name']);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_names_FN()
     {
         $account = factory(Account::class)->create([]);
@@ -545,7 +546,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('Doe', $contact['last_name']);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_names_FN_last()
     {
         $account = factory(Account::class)->create([]);
@@ -566,7 +567,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('John', $contact['last_name']);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_names_FN_extra_space()
     {
         $account = factory(Account::class)->create([]);
@@ -584,7 +585,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('Doe', $contact['last_name']);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_name_FN()
     {
         $account = factory(Account::class)->create([]);
@@ -603,7 +604,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('', Arr::get($contact, 'last_name'));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_name_FN_last()
     {
         $account = factory(Account::class)->create([]);
@@ -625,7 +626,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('', Arr::get($contact, 'last_name'));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_names_FN_multiple()
     {
         $account = factory(Account::class)->create([]);
@@ -644,7 +645,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('Doe Marco', $contact['last_name']);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_work_information()
     {
         $user = factory(User::class)->create();
@@ -674,7 +675,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_birthday()
     {
         config(['monica.requires_subscription' => false]);
@@ -701,7 +702,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ], $contact);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_birthday_compact_format()
     {
         config(['monica.requires_subscription' => false]);
@@ -726,7 +727,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ], $contact);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_birthday_year_unknown()
     {
         config(['monica.requires_subscription' => false]);
@@ -751,7 +752,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ], $contact);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function import_vcard_imports_address()
     {
         $account = factory(Account::class)->create([]);
@@ -788,7 +789,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function import_vcard_imports_partial_address()
     {
         $account = factory(Account::class)->create([]);
@@ -821,7 +822,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function import_vcard_updates_address()
     {
         $account = factory(Account::class)->create([]);
@@ -871,7 +872,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals($place->country, 'US');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function import_vcard_updates_and_destroy_address()
     {
         $account = factory(Account::class)->create([]);
@@ -930,7 +931,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals($place->country, 'US');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function import_vcard_imports_email()
     {
         $account = factory(Account::class)->create([]);
@@ -957,7 +958,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function import_vcard_updates_email()
     {
         $account = factory(Account::class)->create([]);
@@ -987,7 +988,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals($email->data, 'other@doe.com');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function import_vcard_updates_and_detroy_email()
     {
         $account = factory(Account::class)->create([]);
@@ -1027,7 +1028,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals($email1->data, 'other@doe.com');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_phone()
     {
         $account = factory(Account::class)->create([]);
@@ -1055,7 +1056,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_phone_by_national_format()
     {
         $account = factory(Account::class)->create([]);
@@ -1084,7 +1085,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_phone_by_international_format()
     {
         $account = factory(Account::class)->create([]);
@@ -1113,7 +1114,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_email_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -1162,7 +1163,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals($email->data, 'test@test.com');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_address_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -1212,7 +1213,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_categories()
     {
         $account = factory(Account::class)->create();
@@ -1251,7 +1252,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_notes()
     {
         $account = factory(Account::class)->create([]);
@@ -1275,7 +1276,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_new_categories()
     {
         $account = factory(Account::class)->create();
@@ -1339,7 +1340,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_uuid_default()
     {
         $account = factory(Account::class)->create();
@@ -1357,7 +1358,7 @@ END:VCARD', Reader::OPTION_FORGIVING + Reader::OPTION_IGNORE_INVALID_LINES);
         $this->assertEquals('31fdc242-c974-436e-98de-6b21624d6e34', $contact['uuid']);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_imports_uuid_contact()
     {
         $user = factory(User::class)->create([]);

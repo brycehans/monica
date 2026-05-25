@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\FeatureTestCase;
 use App\Models\Account\Photo;
@@ -33,7 +34,7 @@ class StorageControllerTest extends FeatureTestCase
         return [$user, $contact];
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_get_photo_content()
     {
         config(['filesystems.default' => 'local']);
@@ -50,7 +51,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertHeader('etag', '"'.sha1('/store/'.$file).'"');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_get_avatar_content()
     {
         config(['filesystems.default' => 'local']);
@@ -67,7 +68,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertHeader('etag', '"'.sha1('/store/'.$file).'"');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_get_document_content()
     {
         config(['filesystems.default' => 'local']);
@@ -84,7 +85,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertHeader('etag', '"'.sha1('/store/'.$file).'"');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_404_if_avatar_not_exist()
     {
         config(['filesystems.default' => 'local']);
@@ -96,7 +97,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertStatus(404);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_404_if_folder_unknown()
     {
         config(['filesystems.default' => 'local']);
@@ -108,7 +109,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertStatus(404);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_200_if_modified_after_IfModifiedSince()
     {
         config(['filesystems.default' => 'local']);
@@ -127,7 +128,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertHeader('etag', '"'.sha1('/store/'.$file).'"');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_304_if_not_modified_since_IfModifiedSince()
     {
         config(['filesystems.default' => 'local']);
@@ -146,7 +147,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertHeader('etag', '"'.sha1('/store/'.$file).'"');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_200_if_not_modified_after_IfUnmodifiedSince()
     {
         config(['filesystems.default' => 'local']);
@@ -165,7 +166,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertHeader('etag', '"'.sha1('/store/'.$file).'"');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_412_if_modified_after_IfUnmodifiedSince()
     {
         config(['filesystems.default' => 'local']);
@@ -181,7 +182,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertStatus(412);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_file_not_found()
     {
         config(['filesystems.default' => 'local']);
@@ -193,7 +194,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertStatus(404);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_file_not_exist()
     {
         config(['filesystems.default' => 'local']);
@@ -215,7 +216,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertStatus(404);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_file_not_owned_by_user()
     {
         config(['filesystems.default' => 'local']);
@@ -233,7 +234,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertStatus(404);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_200_if_matching_IfMatch()
     {
         config(['filesystems.default' => 'local']);
@@ -252,7 +253,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertHeader('etag', '"'.sha1('/store/'.$file).'"');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_200_with_none_matching_IfNoneMatch()
     {
         config(['filesystems.default' => 'local']);
@@ -271,7 +272,7 @@ class StorageControllerTest extends FeatureTestCase
         $response->assertHeader('etag', '"'.sha1('/store/'.$file).'"');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_304_if_matching_IfNoneMatch()
     {
         config(['filesystems.default' => 'local']);

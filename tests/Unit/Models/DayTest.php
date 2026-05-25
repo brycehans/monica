@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Journal\Day;
 use Illuminate\Support\Carbon;
@@ -11,7 +12,7 @@ class DayTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_info_for_journal_entry_that_doesnt_happen_today()
     {
         $day = factory(Day::class)->make();
@@ -42,7 +43,7 @@ class DayTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_info_for_journal_entry_that_happen_today()
     {
         $date = now();

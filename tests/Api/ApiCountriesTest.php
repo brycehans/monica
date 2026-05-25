@@ -2,6 +2,7 @@
 
 namespace Tests\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
@@ -16,7 +17,7 @@ class ApiCountriesTest extends ApiTestCase
         'object',
     ];
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_list_of_countries()
     {
         $user = $this->signin();
@@ -37,7 +38,7 @@ class ApiCountriesTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_specific_country_in_a_specific_locale()
     {
         $user = $this->signin();

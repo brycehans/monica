@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs\Reminder;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Models\User\User;
@@ -19,7 +20,7 @@ class NotifyUserAboutReminderTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sends_a_reminder_to_a_user()
     {
         Notification::fake();
@@ -65,7 +66,7 @@ class NotifyUserAboutReminderTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sends_a_notification_to_a_user()
     {
         Notification::fake();
@@ -111,7 +112,7 @@ class NotifyUserAboutReminderTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_doesnt_notify_a_user_if_he_is_on_the_free_plan()
     {
         Notification::fake();
@@ -148,7 +149,7 @@ class NotifyUserAboutReminderTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_doesnt_notify_a_user_if_contact_deleted()
     {
         Notification::fake();
@@ -186,7 +187,7 @@ class NotifyUserAboutReminderTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_marks_the_one_time_reminder_has_inactive_once_it_is_sent()
     {
         Notification::fake();
@@ -226,7 +227,7 @@ class NotifyUserAboutReminderTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_reschedule_a_recurring_reminder_once_it_is_sent()
     {
         Notification::fake();

@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Scheduling;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Instance\Instance;
 use Illuminate\Support\Facades\Http;
@@ -11,7 +12,7 @@ class PingVersionServerTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_send_ping()
     {
         config(['monica.weekly_ping_server_url' => 'https://version.test/ping']);
@@ -43,7 +44,7 @@ class PingVersionServerTest extends TestCase
         $this->assertEquals(2, $instance->number_of_versions_since_current_version);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_clear_instance()
     {
         config(['monica.weekly_ping_server_url' => 'https://version.test/ping']);

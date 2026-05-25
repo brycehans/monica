@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\DavClient;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use App\Models\Account\AddressBookSubscription;
@@ -13,7 +14,7 @@ class SynchronizeAddressBookTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_runs_sync()
     {
         $this->mock(AddressBookSynchronizer::class, function (MockInterface $mock) {
@@ -36,7 +37,7 @@ class SynchronizeAddressBookTest extends TestCase
         (new SynchronizeAddressBook())->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_runs_sync_force()
     {
         $this->mock(AddressBookSynchronizer::class, function (MockInterface $mock) {

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Helpers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Helpers\AuditLogHelper;
@@ -13,7 +14,7 @@ class AuditLogHelperTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_prepares_a_collection_of_audit_logs_for_the_settings_page()
     {
         $user = factory(User::class)->create([]);
@@ -38,7 +39,7 @@ class AuditLogHelperTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_prepares_a_collection_of_audit_logs_without_likns_for_the_settings_page()
     {
         $user = factory(User::class)->create([]);

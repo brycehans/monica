@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Helpers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Models\Contact\Note;
 use App\Helpers\SearchHelper;
@@ -12,7 +13,7 @@ class SearchHelperTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function searching_for_contacts_returns_a_collection_with_pagination()
     {
         $user = $this->signin();
@@ -63,7 +64,7 @@ class SearchHelperTest extends FeatureTestCase
         $this->assertCount(1, $searchResults);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function searching_with_wrong_search_field()
     {
         $user = $this->signin();

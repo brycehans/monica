@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Call;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Call;
 use App\Models\Contact\Contact;
@@ -15,7 +16,7 @@ class DestroyCallTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_call()
     {
         $contact = factory(Contact::class)->create([]);
@@ -40,7 +41,7 @@ class DestroyCallTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_removes_emotions()
     {
         $contact = factory(Contact::class)->create([]);
@@ -72,7 +73,7 @@ class DestroyCallTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_the_last_talked_to_information()
     {
         $contact = factory(Contact::class)->create([
@@ -104,7 +105,7 @@ class DestroyCallTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_doesnt_update_the_last_talked_to_information()
     {
         $contact = factory(Contact::class)->create([
@@ -128,7 +129,7 @@ class DestroyCallTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_contact_is_archived()
     {
         $contact = factory(Contact::class)->state('archived')->create([]);

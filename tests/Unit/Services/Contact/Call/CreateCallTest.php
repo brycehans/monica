@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Call;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Call;
 use App\Models\Account\Account;
@@ -16,7 +17,7 @@ class CreateCallTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_call()
     {
         $contact = factory(Contact::class)->create([]);
@@ -44,7 +45,7 @@ class CreateCallTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_call_and_who_called_information()
     {
         $contact = factory(Contact::class)->create([]);
@@ -68,7 +69,7 @@ class CreateCallTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_adds_emotions()
     {
         $contact = factory(Contact::class)->create([]);
@@ -113,7 +114,7 @@ class CreateCallTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_adding_emotions_when_emotion_is_unknown()
     {
         $contact = factory(Contact::class)->create([]);
@@ -134,7 +135,7 @@ class CreateCallTest extends TestCase
         app(CreateCall::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_call_without_the_content()
     {
         $contact = factory(Contact::class)->create([]);
@@ -155,7 +156,7 @@ class CreateCallTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_the_last_call_info()
     {
         $contact = factory(Contact::class)->create([
@@ -178,7 +179,7 @@ class CreateCallTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_doesnt_update_the_last_call_info()
     {
         $contact = factory(Contact::class)->create([
@@ -201,7 +202,7 @@ class CreateCallTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contact = factory(Contact::class)->create([]);
@@ -215,7 +216,7 @@ class CreateCallTest extends TestCase
         app(CreateCall::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_contact_is_archived()
     {
         $contact = factory(Contact::class)->state('archived')->create([]);
@@ -231,7 +232,7 @@ class CreateCallTest extends TestCase
         app(CreateCall::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();

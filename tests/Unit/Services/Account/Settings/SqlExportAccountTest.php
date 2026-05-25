@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\Settings;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +14,7 @@ class SqlExportAccountTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_exports_account_information()
     {
         Storage::fake('local');
@@ -32,7 +33,7 @@ class SqlExportAccountTest extends TestCase
         Storage::disk('local')->assertExists($filename);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [];

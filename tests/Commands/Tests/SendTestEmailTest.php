@@ -2,12 +2,13 @@
 
 namespace Tests\Commands\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Mail;
 
 class SendTestEmailTest extends TestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function error_for_bad_email()
     {
         $exampleEmail = 'no.at.symbol';
@@ -18,7 +19,7 @@ class SendTestEmailTest extends TestCase
             ->run();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function command_prompts_for_email()
     {
         $exampleEmail = 'no.at.symbol';
@@ -30,7 +31,7 @@ class SendTestEmailTest extends TestCase
             ->run();
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function command_attempts_to_send_email()
     {
         $exampleEmail = 'test@example.org';

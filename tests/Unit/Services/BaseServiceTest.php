@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Services\BaseService;
@@ -11,7 +12,7 @@ class BaseServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_an_empty_rule_array(): void
     {
         $stub = new class extends BaseService {};
@@ -21,7 +22,7 @@ class BaseServiceTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_validates_rules(): void
     {
         $rules = [
@@ -38,7 +39,7 @@ class BaseServiceTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_null_or_the_actual_value(): void
     {
         $stub = new class extends BaseService {};
@@ -66,7 +67,7 @@ class BaseServiceTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_null_or_the_actual_date(): void
     {
         $stub = new class extends BaseService {};
@@ -94,7 +95,7 @@ class BaseServiceTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_the_default_value_or_the_given_value(): void
     {
         $stub = new class extends BaseService {};

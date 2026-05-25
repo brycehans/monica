@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\ContactField;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -14,7 +15,7 @@ class CreateContactFieldTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_contact_field()
     {
         $account = factory(Account::class)->create();
@@ -39,7 +40,7 @@ class CreateContactFieldTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $account = factory(Account::class)->create();
@@ -59,7 +60,7 @@ class CreateContactFieldTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_account_doesnt_exist()
     {
         $account = factory(Account::class)->create();
@@ -79,7 +80,7 @@ class CreateContactFieldTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_use_wrong_account()
     {
         $account = factory(Account::class)->create();
@@ -97,7 +98,7 @@ class CreateContactFieldTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_field_use_wrong_account()
     {
         $account = factory(Account::class)->create();

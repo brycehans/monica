@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\LifeEventType;
@@ -12,7 +13,7 @@ class LifeEventCategoryTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -23,7 +24,7 @@ class LifeEventCategoryTest extends TestCase
         $this->assertTrue($lifeEventCategory->account()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_has_many_life_event_types()
     {
         $lifeEventCategory = factory(LifeEventCategory::class)->create();
@@ -34,7 +35,7 @@ class LifeEventCategoryTest extends TestCase
         $this->assertTrue($lifeEventCategory->lifeEventTypes()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_name_attribute()
     {
         $lifeEventCategory = factory(LifeEventCategory::class)->create([

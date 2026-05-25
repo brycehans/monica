@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Label;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\ContactField;
@@ -15,7 +16,7 @@ class UpdateContactFieldLabelTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_contact_field_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -45,7 +46,7 @@ class UpdateContactFieldLabelTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_personal_contact_field_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -75,7 +76,7 @@ class UpdateContactFieldLabelTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_contact_field_multiple_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -131,7 +132,7 @@ class UpdateContactFieldLabelTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_adds_contact_field_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -172,7 +173,7 @@ class UpdateContactFieldLabelTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_removes_contact_field_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -213,7 +214,7 @@ class UpdateContactFieldLabelTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_account_doesnt_exist()
     {
         $contactField = factory(ContactField::class)->create();
@@ -227,7 +228,7 @@ class UpdateContactFieldLabelTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_field_doesnt_exist()
     {
         $account = factory(Account::class)->create([]);
@@ -241,7 +242,7 @@ class UpdateContactFieldLabelTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_field_is_wrong_account()
     {
         $account = factory(Account::class)->create([]);

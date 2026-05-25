@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Tag;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Tag;
 use App\Services\Contact\Tag\CreateTag;
@@ -12,7 +13,7 @@ class CreateTagTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_a_tag()
     {
         $tag = factory(Tag::class)->create([]);
@@ -36,7 +37,7 @@ class CreateTagTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [

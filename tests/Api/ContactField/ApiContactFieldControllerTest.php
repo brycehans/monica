@@ -2,6 +2,7 @@
 
 namespace Tests\Api\ContactField;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -26,7 +27,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_get_contact_all()
     {
         $user = $this->signin();
@@ -61,7 +62,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_get_contact_all_error()
     {
         $user = $this->signin();
@@ -71,7 +72,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_get_one()
     {
         $user = $this->signin();
@@ -103,7 +104,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_get_one_error()
     {
         $user = $this->signin();
@@ -113,7 +114,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_create()
     {
         $user = $this->signin();
@@ -150,7 +151,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_create_error()
     {
         $user = $this->signin();
@@ -168,7 +169,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_create_error_bad_account()
     {
         $user = $this->signin();
@@ -190,7 +191,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_update()
     {
         $user = $this->signin();
@@ -229,7 +230,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_update_error()
     {
         $user = $this->signin();
@@ -247,7 +248,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_update_error_bad_account()
     {
         $user = $this->signin();
@@ -270,7 +271,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_delete()
     {
         $user = $this->signin();
@@ -297,7 +298,7 @@ class ApiContactFieldControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function contact_fields_delete_error()
     {
         $user = $this->signin();

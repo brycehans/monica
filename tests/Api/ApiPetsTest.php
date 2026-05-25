@@ -2,6 +2,7 @@
 
 namespace Tests\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Contact\Pet;
 use App\Models\Account\Account;
@@ -33,7 +34,7 @@ class ApiPetsTest extends ApiTestCase
         'updated_at',
     ];
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_get_all()
     {
         $user = $this->signin();
@@ -68,7 +69,7 @@ class ApiPetsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_get_contact_all()
     {
         $user = $this->signin();
@@ -103,7 +104,7 @@ class ApiPetsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_get_contact_all_error()
     {
         $user = $this->signin();
@@ -113,7 +114,7 @@ class ApiPetsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_get_one()
     {
         $user = $this->signin();
@@ -145,7 +146,7 @@ class ApiPetsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_get_one_error()
     {
         $user = $this->signin();
@@ -155,7 +156,7 @@ class ApiPetsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_create()
     {
         $user = $this->signin();
@@ -191,7 +192,7 @@ class ApiPetsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_create_error()
     {
         $user = $this->signin();
@@ -208,7 +209,7 @@ class ApiPetsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_create_error_bad_account()
     {
         $user = $this->signin();
@@ -227,7 +228,7 @@ class ApiPetsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_update()
     {
         $user = $this->signin();
@@ -268,7 +269,7 @@ class ApiPetsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_update_error()
     {
         $user = $this->signin();
@@ -285,7 +286,7 @@ class ApiPetsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_update_error_bad_account()
     {
         $user = $this->signin();
@@ -308,7 +309,7 @@ class ApiPetsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_delete()
     {
         $user = $this->signin();
@@ -335,7 +336,7 @@ class ApiPetsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function pets_delete_error()
     {
         $user = $this->signin();

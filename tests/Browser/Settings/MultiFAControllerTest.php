@@ -2,6 +2,8 @@
 
 namespace Tests\Browser\Settings;
 
+use PHPUnit\Framework\Attributes\Group;
+use PragmaRX\Google2FA\Google2FA;
 use Zxing\QrReader;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -22,7 +24,7 @@ class MultiFAControllerTest extends DuskTestCase
     /**
      * Test if the user has 2fa Enable Link in Security Page.
      */
-    #[\PHPUnit\Framework\Attributes\Group('multifa')]
+    #[Group('multifa')]
     public function testHasSettings2faEnableLink()
     {
         $this->browse(function (Browser $browser) {
@@ -35,7 +37,7 @@ class MultiFAControllerTest extends DuskTestCase
     /**
      * Test if the user has WebAuthn Enable Link in Security Page.
      */
-    #[\PHPUnit\Framework\Attributes\Group('multifa')]
+    #[Group('multifa')]
     public function testHasSettingsWebAuthnEnableLink()
     {
         $this->browse(function (Browser $browser) {
@@ -48,7 +50,7 @@ class MultiFAControllerTest extends DuskTestCase
     /**
      * Test the barcode generated in 2fa Enable Page.
      */
-    #[\PHPUnit\Framework\Attributes\Group('multifa')]
+    #[Group('multifa')]
     public function testHas2faEnableBarCode()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -67,8 +69,8 @@ class MultiFAControllerTest extends DuskTestCase
     /**
      * Test the barcode generated in 2fa Enable Page.
      */
-    #[\PHPUnit\Framework\Attributes\Group('multifa')]
-    #[\PHPUnit\Framework\Attributes\Group('multifabarcode')]
+    #[Group('multifa')]
+    #[Group('multifabarcode')]
     public function testBarCodeContent()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -117,7 +119,7 @@ class MultiFAControllerTest extends DuskTestCase
     /**
      * Test the 2fa Enable Page with wrong code.
      */
-    #[\PHPUnit\Framework\Attributes\Group('multifa')]
+    #[Group('multifa')]
     public function testEnable2faWrongCode()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -144,7 +146,7 @@ class MultiFAControllerTest extends DuskTestCase
     /**
      * Test the 2fa Enable Page.
      */
-    #[\PHPUnit\Framework\Attributes\Group('multifa')]
+    #[Group('multifa')]
     public function testEnable2fa()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -166,7 +168,7 @@ class MultiFAControllerTest extends DuskTestCase
         $secretkey = $browser->waitFor('enableModal')
                              ->text('secretkey');
 
-        $google2fa = new \PragmaRX\Google2FA\Google2FA();
+        $google2fa = new Google2FA();
         $one_time_password = $google2fa->getCurrentOtp($secretkey);
         $browser->type('otpenable', $one_time_password);
 
@@ -190,7 +192,7 @@ class MultiFAControllerTest extends DuskTestCase
     /**
      * Test the 2fa Enable Page.
      */
-    #[\PHPUnit\Framework\Attributes\Group('multifa')]
+    #[Group('multifa')]
     public function testEnable2faLoginWrongCode()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -225,7 +227,7 @@ class MultiFAControllerTest extends DuskTestCase
     /**
      * Test the 2fa Enable Page.
      */
-    #[\PHPUnit\Framework\Attributes\Group('multifa')]
+    #[Group('multifa')]
     public function testEnable2faLogin()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -241,7 +243,7 @@ class MultiFAControllerTest extends DuskTestCase
                     ->waitFor('enableModal');
 
             $secretkey = $this->enable2fa($browser);
-            $google2fa = new \PragmaRX\Google2FA\Google2FA();
+            $google2fa = new Google2FA();
             $one_time_password = $google2fa->getCurrentOtp($secretkey);
 
             $browser =
@@ -260,7 +262,7 @@ class MultiFAControllerTest extends DuskTestCase
     /**
      * Test 2fa Enable Page and Disable Page.
      */
-    #[\PHPUnit\Framework\Attributes\Group('multifa')]
+    #[Group('multifa')]
     public function testEnable2faDisable2fa()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -274,7 +276,7 @@ class MultiFAControllerTest extends DuskTestCase
                     ->waitFor('enableModal');
 
             $secretkey = $this->enable2fa($browser);
-            $google2fa = new \PragmaRX\Google2FA\Google2FA();
+            $google2fa = new Google2FA();
             $one_time_password = $google2fa->getCurrentOtp($secretkey);
 
             $browser =
@@ -296,7 +298,7 @@ class MultiFAControllerTest extends DuskTestCase
     /**
      * Test 2fa Enable Page and Disable Page.
      */
-    #[\PHPUnit\Framework\Attributes\Group('multifa')]
+    #[Group('multifa')]
     public function testEnable2faDisable2faWrongCode()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');

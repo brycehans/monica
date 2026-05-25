@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Scheduling;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Models\Instance\Cron;
@@ -12,7 +13,7 @@ class CronEventTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_get_the_right_command()
     {
         $cron = factory(Cron::class)->create();
@@ -22,7 +23,7 @@ class CronEventTest extends TestCase
         $this->assertEquals($event->cron()->id, $cron->id);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function now_not_due()
     {
         $cron = factory(Cron::class)->create();
@@ -31,7 +32,7 @@ class CronEventTest extends TestCase
         $this->assertFalse($event->isDue());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function next_minute_is_due()
     {
         Carbon::setTestNow(Carbon::create(2019, 5, 1, 7, 0, 0));
@@ -51,7 +52,7 @@ class CronEventTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function hourly_cron()
     {
         Carbon::setTestNow(Carbon::create(2019, 5, 1, 7, 0, 0));
@@ -85,7 +86,7 @@ class CronEventTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function daily_cron()
     {
         Carbon::setTestNow(Carbon::create(2019, 5, 1, 7, 0, 0));

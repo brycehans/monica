@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Contact;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\Contact\Contact;
@@ -14,7 +15,7 @@ class SetMeContactTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_set_me_as_a_a_contact()
     {
         $user = factory(User::class)->create();
@@ -37,7 +38,7 @@ class SetMeContactTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $user = factory(User::class)->create();
@@ -55,7 +56,7 @@ class SetMeContactTest extends TestCase
         app(SetMeContact::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_not_found()
     {
         $user = factory(User::class)->create();

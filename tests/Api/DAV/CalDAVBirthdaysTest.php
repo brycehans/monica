@@ -2,6 +2,7 @@
 
 namespace Tests\Api\DAV;
 
+use PHPUnit\Framework\Attributes\Group;
 use Carbon\Carbon;
 use Tests\ApiTestCase;
 use Illuminate\Support\Str;
@@ -13,7 +14,7 @@ class CalDAVBirthdaysTest extends ApiTestCase
 {
     use DatabaseTransactions, CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_caldav_birthdays_propfind()
     {
         $user = $this->signin();
@@ -63,7 +64,7 @@ class CalDAVBirthdaysTest extends ApiTestCase
         '</d:multistatus', false);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_caldav_birthdays_propfind_one_birthday()
     {
         $user = $this->signin();

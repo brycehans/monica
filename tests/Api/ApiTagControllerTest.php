@@ -2,6 +2,7 @@
 
 namespace Tests\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Contact\Tag;
 use App\Models\Contact\Contact;
@@ -135,7 +136,7 @@ class ApiTagControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_get_all_tags()
     {
         $user = $this->signin();
@@ -166,7 +167,7 @@ class ApiTagControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_specific_tag()
     {
         $user = $this->signin();
@@ -188,7 +189,7 @@ class ApiTagControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_triggers_error_if_tag_unknown()
     {
         $user = $this->signin();
@@ -198,7 +199,7 @@ class ApiTagControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_a_tag()
     {
         $user = $this->signin();
@@ -226,7 +227,7 @@ class ApiTagControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_tag()
     {
         $user = $this->signin();
@@ -260,7 +261,7 @@ class ApiTagControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_deletes_a_tag()
     {
         $user = $this->signin();
@@ -282,7 +283,7 @@ class ApiTagControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_deletes_a_tag_associated()
     {
         $user = $this->signin();
@@ -330,7 +331,7 @@ class ApiTagControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_all_the_contacts_for_a_given_tag()
     {
         $user = $this->signin();
@@ -366,7 +367,7 @@ class ApiTagControllerTest extends ApiTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_all_the_contacts_for_a_given_tag_and_applies_pagination()
     {
         $user = $this->signin();

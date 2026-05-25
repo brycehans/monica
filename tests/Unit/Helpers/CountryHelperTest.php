@@ -2,12 +2,14 @@
 
 namespace Tests\Unit\Helpers;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Helpers\CountriesHelper;
 
 class CountryHelperTest extends FeatureTestCase
 {
-    #[\PHPUnit\Framework\Attributes\DataProvider('countryDefaultCountryFromLocaleProvider')]
+    #[DataProvider('countryDefaultCountryFromLocaleProvider')]
     public function test_country_getDefaultCountryFromLocale($locale, $expect)
     {
         $reflection = new \ReflectionClass(CountriesHelper::class);
@@ -44,7 +46,7 @@ class CountryHelperTest extends FeatureTestCase
         ];
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('countryCountryFromLocaleProvider')]
+    #[DataProvider('countryCountryFromLocaleProvider')]
     public function test_country_getCountryFromLocale($locale, $expect)
     {
         $country = CountriesHelper::getCountryFromLocale($locale);
@@ -82,8 +84,8 @@ class CountryHelperTest extends FeatureTestCase
         ];
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('timezoneFromLocaleProvider')]
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[DataProvider('timezoneFromLocaleProvider')]
+    #[Test]
     public function it_get_default_timezone($locale, $expect)
     {
         $country = CountriesHelper::getCountryFromLocale($locale);
