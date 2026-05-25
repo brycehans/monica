@@ -13,7 +13,7 @@ class UpdateContactTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_contact()
     {
         $contact = factory(Contact::class)->create([]);
@@ -58,7 +58,7 @@ class UpdateContactTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_contact_is_archived()
     {
         $contact = factory(Contact::class)->state('archived')->create([]);
@@ -93,7 +93,7 @@ class UpdateContactTest extends TestCase
         app(UpdateContact::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contact = factory(Contact::class)->create([]);
@@ -125,7 +125,7 @@ class UpdateContactTest extends TestCase
         app(UpdateContact::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_account_doesnt_exist()
     {
         $contact = factory(Contact::class)->create([]);

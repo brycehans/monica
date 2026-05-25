@@ -11,7 +11,7 @@ class CreateAccountTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_account()
     {
         $email = 'user1@example.com';
@@ -22,7 +22,7 @@ class CreateAccountTest extends TestCase
         $this->assertNotEmpty($user);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_account_with_specified_name()
     {
         $email = 'user1@example.com';
@@ -39,7 +39,7 @@ class CreateAccountTest extends TestCase
         $this->assertNotEmpty($user);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_creation_without_email()
     {
         $this->artisan('account:create', ['--password' => 'astrongpassword'])
@@ -48,7 +48,7 @@ class CreateAccountTest extends TestCase
             ->run();
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_creation_without_password()
     {
         $email = 'user1@example.com';

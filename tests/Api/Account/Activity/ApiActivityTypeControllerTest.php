@@ -34,7 +34,7 @@ class ApiActivityTypeControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_activity_types()
     {
         $user = $this->signin();
@@ -52,7 +52,7 @@ class ApiActivityTypeControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_applies_limit_parameter()
     {
         $user = $this->signin();
@@ -80,7 +80,7 @@ class ApiActivityTypeControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_an_activity_type()
     {
         $user = $this->signin();
@@ -106,7 +106,7 @@ class ApiActivityTypeControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_store_an_activity_type_if_query_not_valid()
     {
         $user = $this->signin();
@@ -118,7 +118,7 @@ class ApiActivityTypeControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_an_activity_type()
     {
         $user = $this->signin();
@@ -148,7 +148,7 @@ class ApiActivityTypeControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_update_if_activity_type_not_found()
     {
         $user = $this->signin();
@@ -162,7 +162,7 @@ class ApiActivityTypeControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_deletes_an_activity_type()
     {
         $user = $this->signin();
@@ -193,7 +193,7 @@ class ApiActivityTypeControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_delete_the_activity_type_if_not_found()
     {
         $user = $this->signin();
@@ -205,7 +205,7 @@ class ApiActivityTypeControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_single_activity_type()
     {
         $user = $this->signin();

@@ -19,7 +19,7 @@ class ExportAccountTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_exports_account_json()
     {
         Notification::fake();
@@ -50,7 +50,7 @@ class ExportAccountTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_exports_account_sql()
     {
         Notification::fake();
@@ -83,7 +83,7 @@ class ExportAccountTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_exports_account_file()
     {
         Storage::fake();
@@ -99,7 +99,7 @@ class ExportAccountTest extends TestCase
         Storage::disk('public')->assertExists($job->filename);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_exports_account_file_sql()
     {
         Storage::fake();
@@ -117,7 +117,7 @@ class ExportAccountTest extends TestCase
         Storage::disk('public')->assertExists($job->filename);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_exports_json_file()
     {
         Storage::fake();
@@ -237,7 +237,7 @@ class ExportAccountTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_exports_json_file_contacts()
     {
         Storage::fake();

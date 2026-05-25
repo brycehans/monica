@@ -15,7 +15,7 @@ class UpdateReminderTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_reminder()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1));
@@ -61,7 +61,7 @@ class UpdateReminderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contact = factory(Contact::class)->create([]);
@@ -76,7 +76,7 @@ class UpdateReminderTest extends TestCase
         app(UpdateReminder::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_frequency_type_is_not_right()
     {
         $reminder = factory(Reminder::class)->create([

@@ -32,7 +32,7 @@ class ApiReminderControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_reminders()
     {
         $user = $this->signin();
@@ -70,7 +70,7 @@ class ApiReminderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_reminders_of_a_contact()
     {
         $user = $this->signin();
@@ -105,7 +105,7 @@ class ApiReminderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_get_a_reminder_of_a_contact_with_an_invalid_id()
     {
         $user = $this->signin();
@@ -115,7 +115,7 @@ class ApiReminderControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_one_reminder()
     {
         $user = $this->signin();
@@ -147,7 +147,7 @@ class ApiReminderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_get_a_reminder_with_an_invalid_id()
     {
         $user = $this->signin();
@@ -157,7 +157,7 @@ class ApiReminderControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_a_reminder()
     {
         Carbon::setTestNow(Carbon::create(2018, 1, 1, 7, 0, 0));
@@ -198,7 +198,7 @@ class ApiReminderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function create_reminders_gets_an_error_if_fields_are_missing()
     {
         $user = $this->signin();
@@ -218,7 +218,7 @@ class ApiReminderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function reminders_create_error_bad_account()
     {
         Carbon::setTestNow(Carbon::create(2018, 1, 1, 7, 0, 0));
@@ -242,7 +242,7 @@ class ApiReminderControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_reminder()
     {
         Carbon::setTestNow(Carbon::create(2018, 1, 1, 7, 0, 0));
@@ -291,7 +291,7 @@ class ApiReminderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function updating_reminder_generates_an_error()
     {
         $user = $this->signin();
@@ -310,7 +310,7 @@ class ApiReminderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function reminders_update_error_bad_account()
     {
         Carbon::setTestNow(Carbon::create(2018, 1, 1, 7, 0, 0));
@@ -334,7 +334,7 @@ class ApiReminderControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_deletes_a_reminder()
     {
         $user = $this->signin();
@@ -356,7 +356,7 @@ class ApiReminderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function reminders_delete_error()
     {
         $user = $this->signin();
@@ -368,7 +368,7 @@ class ApiReminderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_upcoming_reminders()
     {
         $user = $this->signin();

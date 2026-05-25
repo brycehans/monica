@@ -12,7 +12,7 @@ class TagTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -24,7 +24,7 @@ class TagTest extends TestCase
         $this->assertTrue($tag->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_many_contacts()
     {
         $account = factory(Account::class)->create([]);

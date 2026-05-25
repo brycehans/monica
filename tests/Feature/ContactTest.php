@@ -685,7 +685,7 @@ class ContactTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_value()
     {
         $user = $this->signin();

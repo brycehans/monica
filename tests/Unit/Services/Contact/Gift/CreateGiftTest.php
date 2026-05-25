@@ -15,7 +15,7 @@ class CreateGiftTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_a_gift()
     {
         $contact = factory(Contact::class)->create();
@@ -41,7 +41,7 @@ class CreateGiftTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $this->expectException(ValidationException::class);
@@ -54,7 +54,7 @@ class CreateGiftTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_contact_is_wrong_account()
     {
         $account = factory(Account::class)->create();

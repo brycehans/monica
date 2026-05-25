@@ -10,21 +10,21 @@ class ReminderOutboxTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $reminderOutbox = factory(ReminderOutbox::class)->create([]);
         $this->assertTrue($reminderOutbox->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_reminder()
     {
         $reminderOutbox = factory(ReminderOutbox::class)->create([]);
         $this->assertTrue($reminderOutbox->reminder()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_user()
     {
         $reminderOutbox = factory(ReminderOutbox::class)->create([]);

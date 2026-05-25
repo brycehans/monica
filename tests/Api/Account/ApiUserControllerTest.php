@@ -27,7 +27,7 @@ class ApiUserControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_authenticated_user()
     {
         $user = $this->signIn();
@@ -46,7 +46,7 @@ class ApiUserControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_tells_if_the_user_has_signed_a_given_policy()
     {
         $user = $this->signIn();
@@ -72,7 +72,7 @@ class ApiUserControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_method_not_found_if_no_policy_is_found()
     {
         $user = $this->signIn();
@@ -87,7 +87,7 @@ class ApiUserControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_compliances_signed_by_user()
     {
         $user = $this->signIn();
@@ -104,7 +104,7 @@ class ApiUserControllerTest extends ApiTestCase
         $response->assertJsonCount(2, 'data');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_no_compliances_signed_by_user()
     {
         $user = $this->signIn();
@@ -114,7 +114,7 @@ class ApiUserControllerTest extends ApiTestCase
         $response->assertStatus(404);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_tries_to_sign_lapolicy()
     {
         $user = $this->signIn();
@@ -126,7 +126,7 @@ class ApiUserControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_signs_lapolicy()
     {
         $user = $this->signIn();

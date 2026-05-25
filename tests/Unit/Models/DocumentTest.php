@@ -12,7 +12,7 @@ class DocumentTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -23,7 +23,7 @@ class DocumentTest extends TestCase
         $this->assertTrue($document->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact()
     {
         $contact = factory(Contact::class)->create();
@@ -34,7 +34,7 @@ class DocumentTest extends TestCase
         $this->assertTrue($document->contact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_download_link()
     {
         $document = factory(Document::class)->create();

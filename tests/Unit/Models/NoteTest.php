@@ -12,7 +12,7 @@ class NoteTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -25,7 +25,7 @@ class NoteTest extends TestCase
         $this->assertTrue($note->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact()
     {
         $contact = factory(Contact::class)->create([]);
@@ -36,7 +36,7 @@ class NoteTest extends TestCase
         $this->assertTrue($note->contact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_filters_by_favorited_notes()
     {
         $note = factory(Note::class)->create(['is_favorited' => true]);

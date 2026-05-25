@@ -16,7 +16,7 @@ class DeleteMultipleVCardTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_delete_cards()
     {
         $fake = Bus::fake();

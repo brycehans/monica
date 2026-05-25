@@ -18,7 +18,7 @@ class ApiCurrencyControllerTest extends ApiTestCase
         'symbol',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_currencies()
     {
         // in theory the currencies table is seeded by the initial script
@@ -41,7 +41,7 @@ class ApiCurrencyControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_one_currency()
     {
         $currency = factory(Currency::class)->create([]);
@@ -60,7 +60,7 @@ class ApiCurrencyControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_currency_that_is_invalid()
     {
         $response = $this->json('GET', '/api/currencies/0');

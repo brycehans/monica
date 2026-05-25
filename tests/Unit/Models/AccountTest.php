@@ -33,7 +33,7 @@ class AccountTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_genders()
     {
         $account = factory(Account::class)->create();
@@ -49,7 +49,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->genders()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_relationship_types()
     {
         $account = factory(Account::class)->create();
@@ -63,7 +63,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->relationshipTypes()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_relationship_type_groups()
     {
         $contact = factory(Contact::class)->create();
@@ -78,7 +78,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->relationshipTypeGroups()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_modules()
     {
         $contact = factory(Contact::class)->create();
@@ -93,7 +93,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->modules()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_activity_types()
     {
         $account = factory(Account::class)->create();
@@ -104,7 +104,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->activityTypes()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_activity_type_categories()
     {
         $account = factory(Account::class)->create();
@@ -115,7 +115,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->activityTypeCategories()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_conversations()
     {
         $account = factory(Account::class)->create([]);
@@ -126,7 +126,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->conversations()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_messages()
     {
         $account = factory(Account::class)->create([]);
@@ -141,7 +141,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->messages()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_life_event_categories()
     {
         $account = factory(Account::class)->create([]);
@@ -152,14 +152,14 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->lifeEventCategories()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_reminder_outboxes()
     {
         $reminderOutbox = factory(ReminderOutbox::class)->create([]);
         $this->assertTrue($reminderOutbox->account->reminderOutboxes()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_life_event_types()
     {
         $account = factory(Account::class)->create([]);
@@ -170,7 +170,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->lifeEventTypes()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_life_events()
     {
         $account = factory(Account::class)->create([]);
@@ -181,7 +181,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->lifeEvents()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_documents()
     {
         $account = factory(Account::class)->create([]);
@@ -192,7 +192,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->documents()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_photos()
     {
         $account = factory(Account::class)->create([]);
@@ -202,14 +202,14 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->photos()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_weathers()
     {
         $weather = factory(Weather::class)->create([]);
         $this->assertTrue($weather->account->weathers()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_places()
     {
         $account = factory(Account::class)->create([]);
@@ -219,7 +219,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->places()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_addresses()
     {
         $account = factory(Account::class)->create([]);
@@ -229,7 +229,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->addresses()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_companies()
     {
         $account = factory(Account::class)->create([]);
@@ -239,7 +239,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->companies()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_occupations()
     {
         $account = factory(Account::class)->create([]);
@@ -249,7 +249,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->occupations()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_logs()
     {
         $account = factory(Account::class)->create([]);
@@ -259,7 +259,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->auditLogs()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function user_is_subscribed_if_user_can_access_to_paid_version_for_free()
     {
         $account = factory(Account::class)->make([
@@ -271,7 +271,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function user_is_subscribed_returns_false_if_not_subcribed()
     {
         $account = factory(Account::class)->make([
@@ -283,7 +283,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function user_is_subscribed_returns_true_if_monthly_plan_is_set()
     {
         $account = factory(Account::class)->create();
@@ -302,7 +302,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function user_is_subscribed_returns_true_if_annual_plan_is_set()
     {
         $account = factory(Account::class)->create();
@@ -321,7 +321,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function user_is_subscribed_returns_false_if_no_plan_is_set()
     {
         $account = factory(Account::class)->create();
@@ -331,7 +331,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function has_invoices_returns_true_if_a_plan_exists()
     {
         $account = factory(Account::class)->create();
@@ -346,7 +346,7 @@ class AccountTest extends FeatureTestCase
         $this->assertTrue($account->hasInvoices());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function has_invoices_returns_false_if_a_plan_does_not_exist()
     {
         $account = factory(Account::class)->create();
@@ -354,7 +354,7 @@ class AccountTest extends FeatureTestCase
         $this->assertFalse($account->hasInvoices());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_id_of_the_subscribed_plan()
     {
         config([
@@ -379,7 +379,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_friendly_name_of_the_subscribed_plan()
     {
         config([
@@ -404,7 +404,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_populates_the_account_with_three_default_genders()
     {
         $account = factory(Account::class)->create();
@@ -416,7 +416,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_populates_the_account_with_the_right_default_genders()
     {
         $account = factory(Account::class)->create();
@@ -438,7 +438,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_default_time_reminder_is_sent_attribute()
     {
         $account = factory(Account::class)->create(['default_time_reminder_is_sent' => '14:00']);
@@ -449,7 +449,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sets_default_time_reminder_is_sent_attribute()
     {
         $account = new Account;
@@ -461,7 +461,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_populates_the_account_with_two_default_reminder_rules()
     {
         $account = factory(Account::class)->create();
@@ -473,7 +473,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_populates_the_account_with_the_right_default_reminder_rules()
     {
         $account = factory(Account::class)->create();
@@ -490,7 +490,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_relationship_type_object_matching_a_given_name()
     {
         $account = factory(Account::class)->create();
@@ -502,7 +502,7 @@ class AccountTest extends FeatureTestCase
         $this->assertInstanceOf(RelationshipType::class, $account->getRelationshipTypeByType('partner'));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_relationship_type_group_object_matching_a_given_name()
     {
         $account = factory(Account::class)->create();
@@ -514,7 +514,7 @@ class AccountTest extends FeatureTestCase
         $this->assertInstanceOf(RelationshipTypeGroup::class, $account->getRelationshipTypeGroupByType('love'));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_populates_default_relationship_type_groups_table_if_tables_havent_been_migrated_yet()
     {
         $account = factory(Account::class)->create();
@@ -531,7 +531,7 @@ class AccountTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_skips_default_relationship_type_groups_table_for_types_already_migrated()
     {
         $account = factory(Account::class)->create();
@@ -547,7 +547,7 @@ class AccountTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_populates_default_relationship_types_table_if_tables_havent_been_migrated_yet()
     {
         $account = factory(Account::class)->create();
@@ -568,7 +568,7 @@ class AccountTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_skips_default_relationship_types_table_for_types_already_migrated()
     {
         $account = factory(Account::class)->create();
@@ -590,7 +590,7 @@ class AccountTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_create_default_account()
     {
         $account = Account::createDefault('John', 'Doe', 'john@doe.com', 'password');
@@ -603,7 +603,7 @@ class AccountTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throw_an_exception_if_user_already_exist()
     {
         $account = Account::createDefault('John', 'Doe', 'john@doe.com', 'password');
@@ -619,7 +619,7 @@ class AccountTest extends FeatureTestCase
         $account = Account::createDefault('John', 'Doe', 'john@doe.com', 'password');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_first_user_locale()
     {
         $account = factory(Account::class)->create();
@@ -638,7 +638,7 @@ class AccountTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function getting_first_locale_returns_null_if_user_doesnt_exist()
     {
         $account = factory(Account::class)->create();
@@ -646,7 +646,7 @@ class AccountTest extends FeatureTestCase
         $this->assertNull($account->getFirstLocale());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_populates_default_life_event_tables_upon_creation()
     {
         $account = factory(Account::class)->create();

@@ -11,21 +11,21 @@ class PlaceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $place = factory(Place::class)->create([]);
         $this->assertTrue($place->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_weathers()
     {
         $weather = factory(Weather::class)->create([]);
         $this->assertTrue($weather->place->weathers()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_the_full_address_as_a_string()
     {
         $place = factory(Place::class)->create([]);
@@ -35,7 +35,7 @@ class PlaceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_country_name()
     {
         $place = factory(Place::class)->create([]);
@@ -45,7 +45,7 @@ class PlaceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_a_link_to_google_maps()
     {
         $place = factory(Place::class)->create([]);
@@ -56,7 +56,7 @@ class PlaceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_a_google_map_url_with_latitude_longitude()
     {
         $place = new Place;

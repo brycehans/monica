@@ -21,9 +21,8 @@ class MultiFAControllerTest extends DuskTestCase
 
     /**
      * Test if the user has 2fa Enable Link in Security Page.
-     *
-     * @group multifa
      */
+    #[\PHPUnit\Framework\Attributes\Group('multifa')]
     public function testHasSettings2faEnableLink()
     {
         $this->browse(function (Browser $browser) {
@@ -35,9 +34,8 @@ class MultiFAControllerTest extends DuskTestCase
 
     /**
      * Test if the user has WebAuthn Enable Link in Security Page.
-     *
-     * @group multifa
      */
+    #[\PHPUnit\Framework\Attributes\Group('multifa')]
     public function testHasSettingsWebAuthnEnableLink()
     {
         $this->browse(function (Browser $browser) {
@@ -49,9 +47,8 @@ class MultiFAControllerTest extends DuskTestCase
 
     /**
      * Test the barcode generated in 2fa Enable Page.
-     *
-     * @group multifa
      */
+    #[\PHPUnit\Framework\Attributes\Group('multifa')]
     public function testHas2faEnableBarCode()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -69,10 +66,9 @@ class MultiFAControllerTest extends DuskTestCase
 
     /**
      * Test the barcode generated in 2fa Enable Page.
-     *
-     * @group multifa
-     * @group multifabarcode
      */
+    #[\PHPUnit\Framework\Attributes\Group('multifa')]
+    #[\PHPUnit\Framework\Attributes\Group('multifabarcode')]
     public function testBarCodeContent()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -120,9 +116,8 @@ class MultiFAControllerTest extends DuskTestCase
 
     /**
      * Test the 2fa Enable Page with wrong code.
-     *
-     * @group multifa
      */
+    #[\PHPUnit\Framework\Attributes\Group('multifa')]
     public function testEnable2faWrongCode()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -148,9 +143,8 @@ class MultiFAControllerTest extends DuskTestCase
 
     /**
      * Test the 2fa Enable Page.
-     *
-     * @group multifa
      */
+    #[\PHPUnit\Framework\Attributes\Group('multifa')]
     public function testEnable2fa()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -195,9 +189,8 @@ class MultiFAControllerTest extends DuskTestCase
 
     /**
      * Test the 2fa Enable Page.
-     *
-     * @group multifa
      */
+    #[\PHPUnit\Framework\Attributes\Group('multifa')]
     public function testEnable2faLoginWrongCode()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -231,9 +224,8 @@ class MultiFAControllerTest extends DuskTestCase
 
     /**
      * Test the 2fa Enable Page.
-     *
-     * @group multifa
      */
+    #[\PHPUnit\Framework\Attributes\Group('multifa')]
     public function testEnable2faLogin()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -267,9 +259,8 @@ class MultiFAControllerTest extends DuskTestCase
 
     /**
      * Test 2fa Enable Page and Disable Page.
-     *
-     * @group multifa
      */
+    #[\PHPUnit\Framework\Attributes\Group('multifa')]
     public function testEnable2faDisable2fa()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');
@@ -304,9 +295,8 @@ class MultiFAControllerTest extends DuskTestCase
 
     /**
      * Test 2fa Enable Page and Disable Page.
-     *
-     * @group multifa
      */
+    #[\PHPUnit\Framework\Attributes\Group('multifa')]
     public function testEnable2faDisable2faWrongCode()
     {
         $this->markTestIncomplete('Ignore 2fa tests for now.');

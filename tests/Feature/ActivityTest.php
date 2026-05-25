@@ -187,7 +187,7 @@ class ActivityTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_create()
     {
         $user = $this->signin();
@@ -231,7 +231,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_create_error_wrong_parameter()
     {
         $user = $this->signin();
@@ -253,7 +253,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_create_error_bad_account()
     {
         $this->signin();
@@ -273,7 +273,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_create_error_bad_account2()
     {
         $user = $this->signin();
@@ -297,7 +297,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update()
     {
         $user = $this->signin();
@@ -340,7 +340,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update_category()
     {
         $user = $this->signin();
@@ -395,7 +395,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update_existing()
     {
         $user = $this->signin();
@@ -462,7 +462,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update_error_wrong_parameter()
     {
         $user = $this->signin();
@@ -479,7 +479,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update_error_wrong_account_for_activity()
     {
         $user = $this->signin();
@@ -502,7 +502,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update_error_wrong_account_for_contacts()
     {
         $user = $this->signin();
@@ -525,7 +525,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_delete()
     {
         $user = $this->signin();
@@ -545,7 +545,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_delete_error()
     {
         $this->signin();
@@ -558,7 +558,7 @@ class ActivityTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_delete_with_wrong_account()
     {
         $this->signin();

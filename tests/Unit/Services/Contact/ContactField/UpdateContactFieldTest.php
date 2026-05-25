@@ -14,7 +14,7 @@ class UpdateContactFieldTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_contact_field()
     {
         $contactField = factory(ContactField::class)->create();
@@ -36,7 +36,7 @@ class UpdateContactFieldTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contactField = factory(ContactField::class)->create();
@@ -53,7 +53,7 @@ class UpdateContactFieldTest extends TestCase
         app(UpdateContactField::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_account_doesnt_exist()
     {
         $contactField = factory(ContactField::class)->create([]);
@@ -70,7 +70,7 @@ class UpdateContactFieldTest extends TestCase
         app(UpdateContactField::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_contact_field_doesnt_exist()
     {
         $contactField = factory(ContactField::class)->create();
@@ -87,7 +87,7 @@ class UpdateContactFieldTest extends TestCase
         app(UpdateContactField::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_contact_field_type_is_wrong_account()
     {
         $account = factory(Account::class)->create();

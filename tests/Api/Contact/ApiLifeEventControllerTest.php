@@ -54,7 +54,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         return $lifeEvent;
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_life_events()
     {
         $user = $this->signin();
@@ -84,7 +84,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_applies_the_limit_parameter_in_search()
     {
         $user = $this->signin();
@@ -112,7 +112,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_life_event()
     {
         $user = $this->signin();
@@ -128,7 +128,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function getting_a_life_event_doesnt_work_if_life_event_doesnt_exist()
     {
         $user = $this->signin();
@@ -138,7 +138,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_a_life_event()
     {
         $user = $this->signin();
@@ -168,7 +168,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function creating_a_life_event_doesnt_work_if_ids_are_not_found()
     {
         $user = $this->signin();
@@ -208,7 +208,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function creating_a_life_event_doesnt_work_if_parameters_are_not_right()
     {
         $user = $this->signin();
@@ -235,7 +235,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_life_event()
     {
         $user = $this->signin();
@@ -259,7 +259,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function updating_a_life_event_doesnt_work_if_ids_are_not_found()
     {
         $user = $this->signin();
@@ -288,7 +288,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function updating_a_life_event_doesnt_work_if_parameters_are_not_right()
     {
         $user = $this->signin();
@@ -309,7 +309,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_life_event()
     {
         $user = $this->signin();
@@ -326,7 +326,7 @@ class ApiLifeEventControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function deleting_a_life_event_doesnt_work_if_ids_are_not_found()
     {
         $user = $this->signin();

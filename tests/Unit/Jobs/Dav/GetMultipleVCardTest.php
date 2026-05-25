@@ -22,7 +22,7 @@ class GetMultipleVCardTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_get_cards()
     {
         $fake = Bus::fake();
@@ -98,7 +98,7 @@ class GetMultipleVCardTest extends TestCase
         });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_get_cards_mock_http()
     {
         $fake = Bus::fake();

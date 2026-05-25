@@ -59,7 +59,7 @@ class CallsTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_last_talked_to()
     {
         $user = $this->signin();
@@ -87,7 +87,7 @@ class CallsTest extends FeatureTestCase
         $this->assertEquals($response->json('last_talked_to'), DateHelper::getShortDate($referenceDate));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_empty_last_talked_to()
     {
         $user = $this->signin();

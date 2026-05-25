@@ -13,7 +13,7 @@ class UpdateAllGravatarsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_jobs_for_update_gravatars()
     {
         Queue::fake();

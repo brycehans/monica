@@ -15,7 +15,7 @@ class DestroyLifeEventTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_life_event()
     {
         $lifeEvent = factory(LifeEvent::class)->create([]);
@@ -36,7 +36,7 @@ class DestroyLifeEventTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_life_event_and_associated_reminder()
     {
         $lifeEvent = factory(LifeEvent::class)->create([]);
@@ -58,7 +58,7 @@ class DestroyLifeEventTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -70,7 +70,7 @@ class DestroyLifeEventTest extends TestCase
         app(DestroyLifeEvent::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_life_event_doesnt_exist()
     {
         $account = factory(Account::class)->create();

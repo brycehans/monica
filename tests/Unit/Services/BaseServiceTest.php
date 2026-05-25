@@ -11,24 +11,24 @@ class BaseServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_an_empty_rule_array(): void
     {
-        $stub = $this->getMockForAbstractClass(BaseService::class);
+        $stub = new class extends BaseService {};
 
         $this->assertIsArray(
             $stub->rules()
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_rules(): void
     {
         $rules = [
             'street' => 'nullable|string|max:255',
         ];
 
-        $stub = $this->getMockForAbstractClass(BaseService::class);
+        $stub = new class extends BaseService {};
         $stub->rules([$rules]);
 
         $this->assertTrue(
@@ -38,10 +38,10 @@ class BaseServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_null_or_the_actual_value(): void
     {
-        $stub = $this->getMockForAbstractClass(BaseService::class);
+        $stub = new class extends BaseService {};
         $array = [
             'value' => 'this',
         ];
@@ -66,10 +66,10 @@ class BaseServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_null_or_the_actual_date(): void
     {
-        $stub = $this->getMockForAbstractClass(BaseService::class);
+        $stub = new class extends BaseService {};
         $array = [
             'value' => '1990-01-01',
         ];
@@ -94,10 +94,10 @@ class BaseServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_the_default_value_or_the_given_value(): void
     {
-        $stub = $this->getMockForAbstractClass(BaseService::class);
+        $stub = new class extends BaseService {};
         $array = [
             'value' => true,
         ];

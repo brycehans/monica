@@ -11,21 +11,21 @@ class AuditLogTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account(): void
     {
         $auditLog = factory(AuditLog::class)->create([]);
         $this->assertTrue($auditLog->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_user(): void
     {
         $auditLog = factory(AuditLog::class)->create([]);
         $this->assertTrue($auditLog->author()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact(): void
     {
         $contact = factory(Contact::class)->create([]);
@@ -35,7 +35,7 @@ class AuditLogTest extends ApiTestCase
         $this->assertTrue($auditLog->contact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_the_object_attribute(): void
     {
         $auditLog = factory(AuditLog::class)->create([]);

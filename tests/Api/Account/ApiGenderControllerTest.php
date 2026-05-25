@@ -23,7 +23,7 @@ class ApiGenderControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_genders()
     {
         $user = $this->signin();
@@ -40,7 +40,7 @@ class ApiGenderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_applies_the_limit_parameter_in_search()
     {
         $user = $this->signin();
@@ -68,7 +68,7 @@ class ApiGenderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_one_gender()
     {
         $user = $this->signin();
@@ -89,7 +89,7 @@ class ApiGenderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_get_a_gender_with_unexistent_id()
     {
         $user = $this->signin();
@@ -99,7 +99,7 @@ class ApiGenderControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_a_gender()
     {
         $user = $this->signin();
@@ -129,7 +129,7 @@ class ApiGenderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_gender()
     {
         $user = $this->signin();
@@ -166,7 +166,7 @@ class ApiGenderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_update_a_gender_if_account_is_not_linked_to_gender()
     {
         $user = $this->signin();
@@ -184,7 +184,7 @@ class ApiGenderControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_update_a_gender_if_account_is_not_linked_to_gender2()
     {
         $user = $this->signin();
@@ -203,7 +203,7 @@ class ApiGenderControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_deletes_a_gender()
     {
         $user = $this->signin();
@@ -222,7 +222,7 @@ class ApiGenderControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_delete_a_gender_if_gender_doesnt_exist()
     {
         $user = $this->signin();

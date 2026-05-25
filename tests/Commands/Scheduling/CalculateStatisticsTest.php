@@ -10,7 +10,7 @@ class CalculateStatisticsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function the_command_runs_well()
     {
         $runsWell = true;

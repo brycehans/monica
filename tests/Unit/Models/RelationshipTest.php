@@ -13,7 +13,7 @@ class RelationshipTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -24,7 +24,7 @@ class RelationshipTest extends TestCase
         $this->assertTrue($relationship->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact()
     {
         $contact = factory(Contact::class)->create([]);
@@ -35,7 +35,7 @@ class RelationshipTest extends TestCase
         $this->assertTrue($relationship->contactIs()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_another_contact()
     {
         $contact = factory(Contact::class)->create([]);
@@ -46,7 +46,7 @@ class RelationshipTest extends TestCase
         $this->assertTrue($relationship->ofContact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_relationship_type()
     {
         $account = factory(Account::class)->create([]);
@@ -61,7 +61,7 @@ class RelationshipTest extends TestCase
         $this->assertTrue($relationship->relationshipType()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact_through_with_contact_field()
     {
         $contact = factory(Contact::class)->create([]);
@@ -72,7 +72,7 @@ class RelationshipTest extends TestCase
         $this->assertTrue($relationship->ofContact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_reverse_relationship()
     {
         $account = factory(Account::class)->create();
@@ -118,7 +118,7 @@ class RelationshipTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_not_gets_the_reverse_relationship()
     {
         $account = factory(Account::class)->create();

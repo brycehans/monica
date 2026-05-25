@@ -11,7 +11,7 @@ class LocaleHelperTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_locale_returns_english_by_default()
     {
         $this->assertEquals(
@@ -20,7 +20,7 @@ class LocaleHelperTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_locale_returns_right_locale_if_user_logged()
     {
         $user = $this->signIn();
@@ -33,7 +33,7 @@ class LocaleHelperTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_direction_default()
     {
         $this->assertEquals(
@@ -42,7 +42,7 @@ class LocaleHelperTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_direction_french()
     {
         App::setLocale('fr');
@@ -53,7 +53,7 @@ class LocaleHelperTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_direction_hebrew()
     {
         App::setLocale('he');
@@ -64,7 +64,7 @@ class LocaleHelperTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function format_telephone_by_iso()
     {
         $tel = LocaleHelper::formatTelephoneNumberByISO('202-555-0191', 'gb');
@@ -75,9 +75,7 @@ class LocaleHelperTest extends FeatureTestCase
         );
     }
 
-    /**
-     * @dataProvider localeHelperGetLangProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('localeHelperGetLangProvider')]
     public function test_locale_get_lang($locale, $expect)
     {
         $lang = LocaleHelper::getLang($locale);
@@ -102,9 +100,7 @@ class LocaleHelperTest extends FeatureTestCase
         ];
     }
 
-    /**
-     * @dataProvider localeHelperGetCountryProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('localeHelperGetCountryProvider')]
     public function test_locale_get_country($locale, $expect)
     {
         $country = LocaleHelper::getCountry($locale);
@@ -127,9 +123,7 @@ class LocaleHelperTest extends FeatureTestCase
         ];
     }
 
-    /**
-     * @dataProvider localeHelperExtractCountryProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('localeHelperExtractCountryProvider')]
     public function test_locale_extract_country($locale, $expect)
     {
         $country = LocaleHelper::extractCountry($locale);

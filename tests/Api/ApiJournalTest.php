@@ -22,7 +22,7 @@ class ApiJournalTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_journal_entries()
     {
         $user = $this->signin();
@@ -49,7 +49,7 @@ class ApiJournalTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_one_journal_entry()
     {
         $user = $this->signin();
@@ -76,7 +76,7 @@ class ApiJournalTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_get_a_journal_entry_with_an_invalid_id()
     {
         $user = $this->signin();
@@ -86,7 +86,7 @@ class ApiJournalTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_a_journal_entry()
     {
         $user = $this->signin();
@@ -117,7 +117,7 @@ class ApiJournalTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_create_a_journal_entry_with_missing_parameters()
     {
         $user = $this->signin();
@@ -130,7 +130,7 @@ class ApiJournalTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_journal_entry()
     {
         $user = $this->signin();
@@ -166,7 +166,7 @@ class ApiJournalTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_update_a_journal_entry_with_missing_parameters()
     {
         $user = $this->signin();
@@ -182,7 +182,7 @@ class ApiJournalTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_deletes_a_journal_entry()
     {
         $user = $this->signin();
@@ -203,7 +203,7 @@ class ApiJournalTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_delete_a_journal_entry_with_an_invalid_id()
     {
         $user = $this->signin();

@@ -10,21 +10,21 @@ class AddressTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $address = factory(Address::class)->create([]);
         $this->assertTrue($address->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact()
     {
         $address = factory(Address::class)->create([]);
         $this->assertTrue($address->contact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_place()
     {
         $address = factory(Address::class)->create([]);

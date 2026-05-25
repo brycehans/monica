@@ -15,7 +15,7 @@ class ResetAccountTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_resets_an_account()
     {
         // populate the account with fake contacts and activities
@@ -56,7 +56,7 @@ class ResetAccountTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [];

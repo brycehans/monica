@@ -16,7 +16,7 @@ class ScheduleStayInTouchTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_dispatches_an_email()
     {
         NotificationFacade::fake();
@@ -57,7 +57,7 @@ class ScheduleStayInTouchTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_dispatches_an_email_if_free_account()
     {
         NotificationFacade::fake();
@@ -91,7 +91,7 @@ class ScheduleStayInTouchTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_reschedule_missed_stayintouch()
     {
         NotificationFacade::fake();

@@ -19,6 +19,7 @@
 .deploy.json
 .DS_Store
 .idea
+.phpunit.cache
 .phpunit.result.cache
 .sentry-release
 cypress.env.json

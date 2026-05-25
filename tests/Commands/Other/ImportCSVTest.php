@@ -12,7 +12,7 @@ class ImportCSVTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function csv_import_contacts()
     {
         Storage::fake('public');
@@ -50,7 +50,7 @@ class ImportCSVTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function csv_import_validates_user()
     {
         $path = base_path('tests/stubs/single_contact_stub.csv');
@@ -64,7 +64,7 @@ class ImportCSVTest extends TestCase
             ->run();
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function csv_import_validates_file()
     {
         $user = $this->getUser();

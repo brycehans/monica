@@ -13,7 +13,7 @@ class SynchronizeAddressBooksTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_run_synchronize()
     {
         Carbon::setTestNow(Carbon::create(2021, 9, 1, 10, 0, 0));

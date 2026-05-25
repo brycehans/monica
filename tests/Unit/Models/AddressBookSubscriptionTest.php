@@ -13,7 +13,7 @@ class AddressBookSubscriptionTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create();
@@ -26,7 +26,7 @@ class AddressBookSubscriptionTest extends TestCase
         $this->assertTrue($addressBookSubscription->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_user()
     {
         $user = factory(User::class)->create();
@@ -37,7 +37,7 @@ class AddressBookSubscriptionTest extends TestCase
         $this->assertTrue($addressBookSubscription->user()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_addressbook()
     {
         $addressBook = AddressBook::factory()->create();
@@ -48,7 +48,7 @@ class AddressBookSubscriptionTest extends TestCase
         $this->assertTrue($addressBookSubscription->addressBook()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_saves_capabilities()
     {
         $addressBookSubscription = new AddressBookSubscription();
@@ -63,7 +63,7 @@ class AddressBookSubscriptionTest extends TestCase
         ], $addressBookSubscription->capabilities);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_saves_password()
     {
         $addressBookSubscription = new AddressBookSubscription();

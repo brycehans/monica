@@ -12,9 +12,7 @@ class VEventBirthdayTest extends ApiTestCase
 {
     use DatabaseTransactions, CardEtag, PHPUnitAssertions;
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_caldav_get_one_birthday()
     {
         $user = $this->signin();

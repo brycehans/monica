@@ -12,7 +12,7 @@ class ComplianceHelperTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_checks_if_the_user_has_signed_the_given_term()
     {
         $user = factory(User::class)->create([]);
@@ -25,7 +25,7 @@ class ComplianceHelperTest extends TestCase
         $this->assertTrue(ComplianceHelper::hasSignedGivenTerm($user, $term));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_checks_if_the_user_has_signed_the_latest_term()
     {
         $user = factory(User::class)->create([]);

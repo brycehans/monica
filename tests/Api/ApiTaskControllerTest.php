@@ -29,7 +29,7 @@ class ApiTaskControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_tasks()
     {
         $user = $this->signin();
@@ -64,7 +64,7 @@ class ApiTaskControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_tasks_of_a_contact()
     {
         $user = $this->signin();
@@ -99,7 +99,7 @@ class ApiTaskControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_get_the_tasks_of_a_contact_with_an_invalid_id()
     {
         $user = $this->signin();
@@ -109,7 +109,7 @@ class ApiTaskControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_specific_task()
     {
         $user = $this->signin();
@@ -141,7 +141,7 @@ class ApiTaskControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_get_a_task_with_an_invalid_id()
     {
         $user = $this->signin();
@@ -151,7 +151,7 @@ class ApiTaskControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_create_a_task_associated_to_a_contact()
     {
         $user = $this->signin();
@@ -186,7 +186,7 @@ class ApiTaskControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_create_a_task_not_associated_to_a_contact()
     {
         $user = $this->signin();
@@ -221,7 +221,7 @@ class ApiTaskControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function creating_a_task_triggers_invalid_parameter_error()
     {
         $user = $this->signin();
@@ -238,7 +238,7 @@ class ApiTaskControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function creating_a_task_with_a_wrong_account_id_triggers_an_error()
     {
         $user = $this->signin();
@@ -257,7 +257,7 @@ class ApiTaskControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_task()
     {
         $user = $this->signin();
@@ -296,7 +296,7 @@ class ApiTaskControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function updating_a_task_with_missing_parameters_triggers_an_error()
     {
         $user = $this->signin();
@@ -314,7 +314,7 @@ class ApiTaskControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function updating_a_task_with_wrong_account_triggers_an_error()
     {
         $user = $this->signin();
@@ -334,7 +334,7 @@ class ApiTaskControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_deletes_a_task()
     {
         $user = $this->signin();
@@ -357,7 +357,7 @@ class ApiTaskControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_delete_a_task_if_wrong_task_id()
     {
         $user = $this->signin();

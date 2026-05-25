@@ -14,7 +14,7 @@ class PopulateModulesTableTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -35,7 +35,7 @@ class PopulateModulesTableTest extends TestCase
         app(PopulateModulesTable::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_populate_modules_tables()
     {
         $account = factory(Account::class)->create([]);
@@ -67,7 +67,7 @@ class PopulateModulesTableTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_only_populates_module_tables_partially()
     {
         $account = factory(Account::class)->create([]);

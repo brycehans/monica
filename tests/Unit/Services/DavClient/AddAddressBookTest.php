@@ -16,7 +16,7 @@ class AddAddressBookTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_an_addressbook()
     {
         $user = factory(User::class)->create([]);
@@ -65,7 +65,7 @@ class AddAddressBookTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_next_addressbook()
     {
         $user = factory(User::class)->create([]);

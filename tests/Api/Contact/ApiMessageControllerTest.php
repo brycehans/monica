@@ -66,7 +66,7 @@ class ApiMessageControllerTest extends ApiTestCase
         return $message;
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_adds_a_message_to_a_conversation()
     {
         $user = $this->signin();
@@ -86,7 +86,7 @@ class ApiMessageControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_message()
     {
         $user = $this->signin();
@@ -107,7 +107,7 @@ class ApiMessageControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_message()
     {
         $user = $this->signin();

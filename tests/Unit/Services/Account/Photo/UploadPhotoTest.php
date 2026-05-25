@@ -15,7 +15,7 @@ class UploadPhotoTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_uploads_a_photo()
     {
         Storage::fake('photos');
@@ -44,7 +44,7 @@ class UploadPhotoTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -56,7 +56,7 @@ class UploadPhotoTest extends TestCase
         app(UploadPhoto::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_account_does_not_exist()
     {
         Storage::fake('photos');

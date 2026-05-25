@@ -14,7 +14,7 @@ class DestroyAddressTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_an_address()
     {
         $address = factory(Address::class)->create([]);
@@ -31,7 +31,7 @@ class DestroyAddressTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_account_is_not_linked_to_address()
     {
         $contact = factory(Contact::class)->create([]);
@@ -46,7 +46,7 @@ class DestroyAddressTest extends TestCase
         app(DestroyAddress::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_ids_do_not_exist()
     {
         $request = [
@@ -58,7 +58,7 @@ class DestroyAddressTest extends TestCase
         app(DestroyAddress::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_contact_is_archived()
     {
         $contact = factory(Contact::class)->state('archived')->create();

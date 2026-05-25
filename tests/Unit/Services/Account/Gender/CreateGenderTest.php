@@ -13,7 +13,7 @@ class CreateGenderTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_gender()
     {
         $account = factory(Account::class)->create([]);
@@ -39,7 +39,7 @@ class CreateGenderTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $account = factory(Account::class)->create([]);

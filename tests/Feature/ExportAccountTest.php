@@ -11,7 +11,7 @@ class ExportAccountTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_create_export_job_json()
     {
         config(['queue.default' => 'database']);
@@ -30,7 +30,7 @@ class ExportAccountTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_create_export_job_sql()
     {
         config(['queue.default' => 'database']);
@@ -49,7 +49,7 @@ class ExportAccountTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_delete_old_export()
     {
         config(['queue.default' => 'database']);

@@ -12,7 +12,7 @@ class ContactFieldTypeTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_conversations()
     {
         $contactFieldType = factory(ContactFieldType::class)->create([]);
@@ -24,7 +24,7 @@ class ContactFieldTypeTest extends FeatureTestCase
         $this->assertTrue($contactFieldType->conversations()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);

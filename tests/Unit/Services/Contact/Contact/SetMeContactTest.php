@@ -14,7 +14,7 @@ class SetMeContactTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_set_me_as_a_a_contact()
     {
         $user = factory(User::class)->create();
@@ -37,7 +37,7 @@ class SetMeContactTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $user = factory(User::class)->create();
@@ -55,7 +55,7 @@ class SetMeContactTest extends TestCase
         app(SetMeContact::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_contact_not_found()
     {
         $user = factory(User::class)->create();

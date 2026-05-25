@@ -11,7 +11,7 @@ class SetupFrontEndTestUserTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_create_a_test_user()
     {
         $accountCount = Account::count();

@@ -10,7 +10,7 @@ class ContactUpdateDtoTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_create_dto_string()
     {
         $dto = new ContactUpdateDto('uri', 'etag', 'card');
@@ -19,7 +19,7 @@ class ContactUpdateDtoTest extends TestCase
         $this->assertEquals('card', $dto->card);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_create_dto_resource()
     {
         $resource = fopen(__DIR__.'/stub.vcf', 'r');

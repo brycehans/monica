@@ -14,7 +14,7 @@ class DestroyContactTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_contact()
     {
         $contact = factory(Contact::class)->create([]);
@@ -32,7 +32,7 @@ class DestroyContactTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_contact_is_archived()
     {
         $contact = factory(Contact::class)->state('archived')->create([]);
@@ -46,7 +46,7 @@ class DestroyContactTest extends TestCase
         app(DestroyContact::class)->handle($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contact = factory(Contact::class)->create([]);
@@ -59,7 +59,7 @@ class DestroyContactTest extends TestCase
         app(DestroyContact::class)->handle($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_contact_doesnt_exist()
     {
         $account = factory(Account::class)->create();

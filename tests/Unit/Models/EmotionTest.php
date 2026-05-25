@@ -12,7 +12,7 @@ class EmotionTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function emotion_belongs_to_a_primary_emotion()
     {
         $emotion = factory(Emotion::class)->create([]);
@@ -22,7 +22,7 @@ class EmotionTest extends TestCase
         $this->assertTrue($emotion->secondary->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function secondary_emotion_belongs_to_a_primary_emotion()
     {
         $secondaryEmotion = factory(SecondaryEmotion::class)->create([]);
@@ -30,7 +30,7 @@ class EmotionTest extends TestCase
         $this->assertTrue($secondaryEmotion->primary->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function a_primary_emotion_has_multiple_emotions()
     {
         $primaryEmotion = factory(PrimaryEmotion::class)->create([]);

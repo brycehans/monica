@@ -29,7 +29,7 @@ class ApiAvatarControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_the_photo_avatar()
     {
         Storage::fake();
@@ -74,7 +74,7 @@ class ApiAvatarControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_the_gravatar_avatar()
     {
         $user = $this->signin();
@@ -99,7 +99,7 @@ class ApiAvatarControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_the_default_avatar()
     {
         $user = $this->signin();
@@ -123,7 +123,7 @@ class ApiAvatarControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function avatar_update_gets_an_error_if_fields_are_missing()
     {
         $user = $this->signin();
@@ -140,7 +140,7 @@ class ApiAvatarControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function avatar_update_gets_an_error_if_contact_is_not_linked_to_user()
     {
         $user = $this->signin();

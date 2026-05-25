@@ -21,10 +21,8 @@ class PushVCardTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    /**
-     * @test
-     * @dataProvider modes
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('modes')]
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_push_card($mode, $ifmatch)
     {
         $fake = Bus::fake();

@@ -11,7 +11,7 @@ use Stevebauman\Location\Facades\Location;
 
 class RequestHelperTest extends TestCase
 {
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_cf_ip()
     {
         Request::instance()->headers->set('Cf-Connecting-Ip', '1.2.3.4');
@@ -22,7 +22,7 @@ class RequestHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_server_ip()
     {
         Request::instance()->server->set('REMOTE_ADDR', '1.2.3.4');
@@ -33,7 +33,7 @@ class RequestHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_country_from_cf()
     {
         Request::instance()->headers->set('Cf-Ipcountry', 'XX');
@@ -44,7 +44,7 @@ class RequestHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_country_from_ip()
     {
         $driver = $this->mock(\Stevebauman\Location\Drivers\Driver::class, function (MockInterface $mock) {
@@ -64,7 +64,7 @@ class RequestHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_infos_from_ip()
     {
         config(['location.ipdata.token' => 'test']);
@@ -84,7 +84,7 @@ class RequestHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_infos_from_ip_fail()
     {
         config(['location.ipdata.token' => 'test']);

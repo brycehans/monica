@@ -24,7 +24,7 @@ class ApiAuditLogControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_audit_logs()
     {
         $user = $this->signin();

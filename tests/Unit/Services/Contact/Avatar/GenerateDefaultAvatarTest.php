@@ -13,7 +13,7 @@ class GenerateDefaultAvatarTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_generates_a_default_avatar()
     {
         $contact = factory(Contact::class)->create([
@@ -32,7 +32,7 @@ class GenerateDefaultAvatarTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [];
@@ -41,7 +41,7 @@ class GenerateDefaultAvatarTest extends TestCase
         app(GenerateDefaultAvatar::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_replaces_existing_default_avatar()
     {
         $file = UploadedFile::fake()->image('image.png');

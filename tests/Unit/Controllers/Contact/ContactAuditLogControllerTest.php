@@ -10,7 +10,7 @@ class ContactAuditLogControllerTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_list_of_audit_logs_for_the_contact()
     {
         $user = $this->signin();

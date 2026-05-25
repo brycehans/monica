@@ -16,7 +16,7 @@ class GetWeatherInformationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_run_job_weather_information()
     {
         $fake = Bus::fake();

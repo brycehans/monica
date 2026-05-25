@@ -13,7 +13,7 @@ class PetTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -26,7 +26,7 @@ class PetTest extends TestCase
         $this->assertTrue($pet->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact()
     {
         $contact = factory(Contact::class)->create([]);
@@ -38,7 +38,7 @@ class PetTest extends TestCase
         $this->assertTrue($pet->contact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_pet_category()
     {
         $petCategory = factory(PetCategory::class)->create([]);
@@ -49,7 +49,7 @@ class PetTest extends TestCase
         $this->assertTrue($pet->petCategory()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sets_name()
     {
         $pet = new Pet;

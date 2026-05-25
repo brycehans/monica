@@ -13,9 +13,7 @@ class CalDAVBirthdaysTest extends ApiTestCase
 {
     use DatabaseTransactions, CardEtag;
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_caldav_birthdays_propfind()
     {
         $user = $this->signin();
@@ -65,9 +63,7 @@ class CalDAVBirthdaysTest extends ApiTestCase
         '</d:multistatus', false);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_caldav_birthdays_propfind_one_birthday()
     {
         $user = $this->signin();

@@ -13,7 +13,7 @@ class StorageHelperTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_calculates_the_account_storage_size(): void
     {
         $account = factory(Account::class)->create([]);
@@ -34,7 +34,7 @@ class StorageHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_tests_account_storage_limit(): void
     {
         config(['monica.requires_subscription' => true]);

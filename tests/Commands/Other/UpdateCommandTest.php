@@ -10,7 +10,7 @@ class UpdateCommandTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function update_command_default()
     {
         /** @var \Tests\Helpers\CommandCallerFake */
@@ -30,7 +30,7 @@ class UpdateCommandTest extends TestCase
         $this->assertCommandContains($fake->buffer[8], 'Maintenance mode: off', 'php artisan up');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function update_command_composer()
     {
         /** @var \Tests\Helpers\CommandCallerFake */

@@ -16,7 +16,7 @@ class ActivityStatisticServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_activities_since_a_given_number_of_months()
     {
         $service = new ActivityStatisticService;
@@ -41,7 +41,7 @@ class ActivityStatisticServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_an_empty_list_of_activities()
     {
         $service = new ActivityStatisticService;
@@ -61,7 +61,7 @@ class ActivityStatisticServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_unique_activity_types()
     {
         $service = new ActivityStatisticService;
@@ -125,7 +125,7 @@ class ActivityStatisticServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_breakdown_of_activities_per_year()
     {
         $service = new ActivityStatisticService;
@@ -187,7 +187,7 @@ class ActivityStatisticServiceTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_activities_per_month_for_given_year()
     {
         $service = new ActivityStatisticService;

@@ -14,7 +14,7 @@ class DestroyTaskTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_task()
     {
         $task = factory(Task::class)->create([]);
@@ -35,7 +35,7 @@ class DestroyTaskTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -47,7 +47,7 @@ class DestroyTaskTest extends TestCase
         app(DestroyTask::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_a_task_doesnt_exist()
     {
         $task = factory(Task::class)->create([]);

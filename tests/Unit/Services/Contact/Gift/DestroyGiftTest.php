@@ -14,7 +14,7 @@ class DestroyGiftTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_gift()
     {
         $gift = factory(Gift::class)->create();
@@ -35,7 +35,7 @@ class DestroyGiftTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $this->expectException(ValidationException::class);
@@ -45,7 +45,7 @@ class DestroyGiftTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_gift_is_wrong_account()
     {
         $account = factory(Account::class)->create();

@@ -14,9 +14,7 @@ class VTodoTaskTest extends ApiTestCase
 {
     use DatabaseTransactions, CardEtag, PHPUnitAssertions;
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_caldav_get_one_task()
     {
         $user = $this->signin();
@@ -35,9 +33,7 @@ class VTodoTaskTest extends ApiTestCase
         $this->assertVObjectEqualsVObject($this->getVTodo($task, true), $response->getContent() ?: $response->streamedContent());
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_caldav_put_one_task()
     {
         $user = $this->signin();
@@ -69,9 +65,7 @@ END:VCALENDAR
         ]);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_caldav_update_existing_task()
     {
         $user = $this->signin();
@@ -104,9 +98,7 @@ END:VCALENDAR
         ]);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_caldav_update_task_complete()
     {
         $user = $this->signin();

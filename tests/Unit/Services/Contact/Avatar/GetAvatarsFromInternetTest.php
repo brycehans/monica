@@ -14,7 +14,7 @@ class GetAvatarsFromInternetTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_a_contact_object_with_avatars()
     {
         $contact = factory(Contact::class)->create([]);
@@ -44,7 +44,7 @@ class GetAvatarsFromInternetTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gravatar_is_null_if_contact_doesnt_have_an_email()
     {
         $contact = factory(Contact::class)->create([]);
@@ -60,7 +60,7 @@ class GetAvatarsFromInternetTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function avatar_source_falls_back_to_default_if_gravatar_doesnt_exist_anymore()
     {
         $contact = factory(Contact::class)->create([
@@ -96,7 +96,7 @@ class GetAvatarsFromInternetTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [

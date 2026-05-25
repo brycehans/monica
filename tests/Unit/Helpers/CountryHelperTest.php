@@ -7,9 +7,7 @@ use App\Helpers\CountriesHelper;
 
 class CountryHelperTest extends FeatureTestCase
 {
-    /**
-     * @dataProvider countryDefaultCountryFromLocaleProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('countryDefaultCountryFromLocaleProvider')]
     public function test_country_getDefaultCountryFromLocale($locale, $expect)
     {
         $reflection = new \ReflectionClass(CountriesHelper::class);
@@ -46,9 +44,7 @@ class CountryHelperTest extends FeatureTestCase
         ];
     }
 
-    /**
-     * @dataProvider countryCountryFromLocaleProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('countryCountryFromLocaleProvider')]
     public function test_country_getCountryFromLocale($locale, $expect)
     {
         $country = CountriesHelper::getCountryFromLocale($locale);
@@ -86,10 +82,8 @@ class CountryHelperTest extends FeatureTestCase
         ];
     }
 
-    /**
-     * @dataProvider timezoneFromLocaleProvider
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('timezoneFromLocaleProvider')]
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_get_default_timezone($locale, $expect)
     {
         $country = CountriesHelper::getCountryFromLocale($locale);

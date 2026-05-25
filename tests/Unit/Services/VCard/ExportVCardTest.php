@@ -26,7 +26,7 @@ class ExportVCardTest extends TestCase
     /** @var int */
     const defaultPropsCount = 3;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_names()
     {
         $account = factory(Account::class)->create();
@@ -46,7 +46,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('N:Doe;John;;;', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_nickname()
     {
         $account = factory(Account::class)->create();
@@ -68,7 +68,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('NICKNAME:the nickname', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_gender()
     {
         $account = factory(Account::class)->create();
@@ -87,7 +87,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('GENDER:M', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_gender_female()
     {
         $account = factory(Account::class)->create();
@@ -112,7 +112,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('GENDER:F', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_gender_unknown()
     {
         $account = factory(Account::class)->create();
@@ -136,7 +136,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('GENDER:U', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_gender_type_null()
     {
         $account = factory(Account::class)->create();
@@ -161,7 +161,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('GENDER:O', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_gender_type_null_male()
     {
         $account = factory(Account::class)->create();
@@ -186,7 +186,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('GENDER:O', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_gender_type_null_female()
     {
         $account = factory(Account::class)->create();
@@ -211,7 +211,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('GENDER:F', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_photo()
     {
         $account = factory(Account::class)->create();
@@ -231,7 +231,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('PHOTO;VALUE=URI:gravatar', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_work_org()
     {
         $account = factory(Account::class)->create();
@@ -251,7 +251,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('ORG:the company', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_work_title()
     {
         $account = factory(Account::class)->create();
@@ -271,7 +271,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('TITLE:job position', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_work_information()
     {
         $account = factory(Account::class)->create();
@@ -293,7 +293,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('TITLE:job position', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_birthday()
     {
         $account = factory(Account::class)->create();
@@ -311,7 +311,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('BDAY:20001005', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_birthday_with_unknown_year()
     {
         $account = factory(Account::class)->create();
@@ -329,7 +329,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('BDAY:--1005', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_contact_fields_empty()
     {
         $account = factory(Account::class)->create();
@@ -345,7 +345,7 @@ class ExportVCardTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_contact_fields()
     {
         $account = factory(Account::class)->create();
@@ -369,7 +369,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('EMAIL:john@doe.com', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_contact_fields_email_labels()
     {
         $account = factory(Account::class)->create();
@@ -397,7 +397,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('EMAIL;TYPE=WORK:john@doe.com', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_contact_fields_tel_labels()
     {
         $account = factory(Account::class)->create();
@@ -429,7 +429,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('TEL;TYPE=WORK:0123456789', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_contact_fields_personal_labels()
     {
         $account = factory(Account::class)->create();
@@ -457,10 +457,8 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('EMAIL;TYPE=Something:john@doe.com', $vCard->serialize());
     }
 
-    /**
-     * @test
-     * @dataProvider socialProfileProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('socialProfileProvider')]
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_social_profile($name, $type, $data, $result)
     {
         $account = factory(Account::class)->create();
@@ -500,10 +498,8 @@ class ExportVCardTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider contactUrlProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('contactUrlProvider')]
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_contact_url($name, $protocol, $data, $result)
     {
         $account = factory(Account::class)->create();
@@ -536,7 +532,7 @@ class ExportVCardTest extends TestCase
         ];
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_addresses_empty()
     {
         $account = factory(Account::class)->create();
@@ -552,7 +548,7 @@ class ExportVCardTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_addresses()
     {
         $account = factory(Account::class)->create();
@@ -581,7 +577,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('ADR:;;12;beverly hills;;90210;US', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_add_addresses_with_labels()
     {
         $account = factory(Account::class)->create();
@@ -609,7 +605,7 @@ class ExportVCardTest extends TestCase
         $this->assertStringContainsString('ADR;TYPE=WORK:;;12;beverly hills;;90210;US', $vCard->serialize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_prepares_an_almost_empty_vcard()
     {
         $account = factory(Account::class)->create();
@@ -626,7 +622,7 @@ class ExportVCardTest extends TestCase
         $this->assertVObjectEqualsVObject($this->getCard($contact), $vCard);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_prepares_a_complete_vcard()
     {
         $account = factory(Account::class)->create();
@@ -663,7 +659,7 @@ class ExportVCardTest extends TestCase
         $this->assertVObjectEqualsVObject($this->getCard($contact), $vCard);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function vcard_with_tags()
     {
         $account = factory(Account::class)->create();

@@ -11,7 +11,7 @@ class ApiContactTagControllerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function tags_are_required_to_associate_tags_to_a_contact()
     {
         $user = $this->signin();
@@ -25,7 +25,7 @@ class ApiContactTagControllerTest extends ApiTestCase
         $this->expectDataError($response, ['The tags field is required.']);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_associates_tags_to_a_contact()
     {
         $user = $this->signin();
@@ -67,7 +67,7 @@ class ApiContactTagControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function tags_ignore_empty_tags()
     {
         $user = $this->signin();
@@ -113,7 +113,7 @@ class ApiContactTagControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function a_list_of_tags_are_required_to_remove_a_tag_from_a_contact()
     {
         $user = $this->signin();
@@ -127,7 +127,7 @@ class ApiContactTagControllerTest extends ApiTestCase
         $this->expectDataError($response, ['The tags field is required.']);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_removes_one_tag_from_a_contact()
     {
         $user = $this->signin();
@@ -181,7 +181,7 @@ class ApiContactTagControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_removes_multiple_tags_from_a_contact()
     {
         $user = $this->signin();
@@ -246,7 +246,7 @@ class ApiContactTagControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_removes_all_tags_from_a_contact()
     {
         $user = $this->signin();

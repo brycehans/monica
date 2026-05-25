@@ -10,7 +10,7 @@ class SearchableTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function testSearchContactsReturnsCollection()
     {
         $contact = factory(Contact::class)->make();
@@ -20,7 +20,7 @@ class SearchableTest extends TestCase
         $this->assertInstanceOf('Illuminate\Pagination\LengthAwarePaginator', $searchResults);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function testSearchContactsThroughFirstNameAndResultContainsContact()
     {
         $contact = factory(Contact::class)->create(['first_name' => 'FirstName']);
@@ -30,7 +30,7 @@ class SearchableTest extends TestCase
         $this->assertTrue($searchResults->contains($contact));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function testSearchContactsThroughMiddleNameAndResultContainsContact()
     {
         $contact = factory(Contact::class)->create(['middle_name' => 'MiddleName']);
@@ -40,7 +40,7 @@ class SearchableTest extends TestCase
         $this->assertTrue($searchResults->contains($contact));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function testSearchContactsThroughLastNameAndResultContainsContact()
     {
         $contact = factory(Contact::class)->create(['last_name' => 'LastName']);
@@ -51,9 +51,9 @@ class SearchableTest extends TestCase
     }
 
     /**
-     * @test
      * @psalm-suppress UndefinedFunction
      */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function testFailingSearchContacts()
     {
         $contact = factory(Contact::class)->create(['first_name' => 'TestShouldFail']);

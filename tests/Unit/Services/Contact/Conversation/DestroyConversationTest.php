@@ -15,7 +15,7 @@ class DestroyConversationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_conversation()
     {
         $conversation = factory(Conversation::class)->create([
@@ -38,7 +38,7 @@ class DestroyConversationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function destroying_a_conversation_destroys_corresponding_messages()
     {
         $conversation = factory(Conversation::class)->create([
@@ -70,7 +70,7 @@ class DestroyConversationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $conversation = factory(Conversation::class)->create([
@@ -86,7 +86,7 @@ class DestroyConversationTest extends TestCase
         app(DestroyConversation::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_conversation_doesnt_exist()
     {
         $account = factory(Account::class)->create();

@@ -14,7 +14,7 @@ class PopulateLifeEventsTableTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -34,7 +34,7 @@ class PopulateLifeEventsTableTest extends TestCase
         app(PopulateLifeEventsTable::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_populate_life_event_tables()
     {
         $account = factory(Account::class)->create([]);
@@ -73,7 +73,7 @@ class PopulateLifeEventsTableTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_refuses_to_populate_table_if_account_doesnt_have_locale()
     {
         $account = factory(Account::class)->create([]);
@@ -86,7 +86,7 @@ class PopulateLifeEventsTableTest extends TestCase
         $this->assertFalse(app(PopulateLifeEventsTable::class)->execute($request));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_only_populates_life_event_tables_partially()
     {
         $account = factory(Account::class)->create([]);

@@ -10,7 +10,7 @@ class LifeEventsControllerTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_list_of_life_events_for_the_contact()
     {
         $user = $this->signin();

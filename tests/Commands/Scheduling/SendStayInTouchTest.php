@@ -14,7 +14,7 @@ class SendStayInTouchTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_schedules_a_stay_in_touch_job()
     {
         Bus::fake();
@@ -33,7 +33,7 @@ class SendStayInTouchTest extends TestCase
         Bus::assertDispatched(ScheduleStayInTouch::class);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_schedule_stay_in_touch_jobs_if_no_date_is_found()
     {
         Bus::fake();

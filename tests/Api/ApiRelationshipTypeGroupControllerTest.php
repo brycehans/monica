@@ -10,7 +10,7 @@ class ApiRelationshipTypeGroupControllerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_right_number_of_relationship_type_groups()
     {
         $user = $this->signin();
@@ -30,7 +30,7 @@ class ApiRelationshipTypeGroupControllerTest extends ApiTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_list_of_relationship_type_groups()
     {
         $user = $this->signin();
@@ -58,7 +58,7 @@ class ApiRelationshipTypeGroupControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_specific_relationship_type_group()
     {
         $user = $this->signin();

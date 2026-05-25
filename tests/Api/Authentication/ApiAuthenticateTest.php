@@ -6,7 +6,7 @@ use Tests\ApiTestCase;
 
 class ApiAuthenticateTest extends ApiTestCase
 {
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function guest_is_rejected()
     {
         $response = $this->json('GET', '/api/contacts');

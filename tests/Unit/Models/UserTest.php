@@ -30,7 +30,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_account()
     {
         $account = factory(Account::class)->create([]);
@@ -39,7 +39,7 @@ class UserTest extends TestCase
         $this->assertTrue($user->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_many_terms()
     {
         $account = factory(Account::class)->create([]);
@@ -54,7 +54,7 @@ class UserTest extends TestCase
         $this->assertTrue($user->terms()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function name_accessor_returns_name_in_the_user_preferred_way()
     {
         $user = new User;
@@ -75,7 +75,7 @@ class UserTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_2fa_secret_attribute()
     {
         $user = new User;
@@ -90,7 +90,7 @@ class UserTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_fluid_layout()
     {
         $user = new User;
@@ -109,7 +109,7 @@ class UserTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_locale()
     {
         $user = new User;
@@ -121,7 +121,7 @@ class UserTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function user_should_not_be_reminded_because_dates_are_different()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1));
@@ -135,7 +135,7 @@ class UserTest extends TestCase
         $this->assertFalse($user->isTheRightTimeToBeReminded($reminder->initial_date));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function user_should_not_be_reminded_because_hours_are_different()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1, 7, 0, 0));
@@ -149,7 +149,7 @@ class UserTest extends TestCase
         $this->assertFalse($user->isTheRightTimeToBeReminded($reminder->initial_date));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function user_should_not_be_reminded_because_timezone_is_different()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1, 7, 0, 0));
@@ -166,7 +166,7 @@ class UserTest extends TestCase
         $this->assertFalse($user->isTheRightTimeToBeReminded($reminder->initial_date));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function user_should_be_reminded()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1, 7, 32, 12));
@@ -180,7 +180,7 @@ class UserTest extends TestCase
         $this->assertTrue($user->isTheRightTimeToBeReminded($reminder->initial_date));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_en()
     {
         App::setLocale('en');
@@ -202,7 +202,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_fr()
     {
         App::setLocale('fr');
@@ -224,7 +224,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_cs()
     {
         App::setLocale('cs');
@@ -246,7 +246,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_de()
     {
         App::setLocale('de');
@@ -268,7 +268,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_es()
     {
         App::setLocale('es');
@@ -290,7 +290,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_he()
     {
         App::setLocale('he');
@@ -312,7 +312,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_it()
     {
         App::setLocale('it');
@@ -334,7 +334,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_nl()
     {
         App::setLocale('nl');
@@ -356,7 +356,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_pt()
     {
         App::setLocale('pt');
@@ -378,7 +378,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_ru()
     {
         App::setLocale('ru');
@@ -400,7 +400,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_default_user_zh()
     {
         App::setLocale('zh');
@@ -422,7 +422,7 @@ class UserTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sends_a_verification_email()
     {
         config(['monica.signup_double_optin' => true]);
@@ -439,7 +439,7 @@ class UserTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_send_a_verification_email_if_the_double_optin_is_disabled_at_the_instance_level()
     {
         config(['monica.signup_double_optin' => false]);

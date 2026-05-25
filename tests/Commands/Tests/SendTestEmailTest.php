@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Mail;
 
 class SendTestEmailTest extends TestCase
 {
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function error_for_bad_email()
     {
         $exampleEmail = 'no.at.symbol';
@@ -18,7 +18,7 @@ class SendTestEmailTest extends TestCase
             ->run();
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function command_prompts_for_email()
     {
         $exampleEmail = 'no.at.symbol';
@@ -30,9 +30,7 @@ class SendTestEmailTest extends TestCase
             ->run();
     }
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function command_attempts_to_send_email()
     {
         $exampleEmail = 'test@example.org';

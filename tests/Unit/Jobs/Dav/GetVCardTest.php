@@ -21,7 +21,7 @@ class GetVCardTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_get_card()
     {
         $fake = Bus::fake();

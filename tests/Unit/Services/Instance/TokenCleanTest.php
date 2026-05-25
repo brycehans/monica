@@ -15,7 +15,7 @@ class TokenCleanTest extends TestCase
     use DatabaseTransactions,
         PHPUnitAssertions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function tokenclean_left_one_token()
     {
         $account = factory(Account::class)->create();
@@ -38,7 +38,7 @@ class TokenCleanTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function tokenclean_left_all_token()
     {
         $account = factory(Account::class)->create();

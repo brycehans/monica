@@ -11,7 +11,7 @@ class FormHelperTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_name_order_for_a_form()
     {
         $user = factory(User::class)->create([]);

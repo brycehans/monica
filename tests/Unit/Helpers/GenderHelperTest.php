@@ -10,7 +10,7 @@ use App\Models\Contact\Contact;
 
 class GenderHelperTest extends FeatureTestCase
 {
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_gender_inputs()
     {
         $this->signIn();
@@ -24,7 +24,7 @@ class GenderHelperTest extends FeatureTestCase
         ], $genders[0]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_replaces_gender_with_another_gender()
     {
         $account = factory(Account::class)->create();

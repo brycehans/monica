@@ -9,7 +9,7 @@ class ServiceQueueTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_run_a_service_ok(): void
     {
         config(['queue.default' => 'sync']);
@@ -20,7 +20,7 @@ class ServiceQueueTest extends TestCase
         $this->assertFalse(ServiceQueueTester::$failed);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_run_a_service_sync(): void
     {
         ServiceQueueTester::dispatchSync();
@@ -29,7 +29,7 @@ class ServiceQueueTest extends TestCase
         $this->assertFalse(ServiceQueueTester::$failed);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_run_a_service_which_failed(): void
     {
         $this->expectException(\Exception::class);
@@ -41,7 +41,7 @@ class ServiceQueueTest extends TestCase
         }
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function service_is_not_run_if_queue_set(): void
     {
         config(['queue.default' => 'database']);

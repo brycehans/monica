@@ -13,7 +13,7 @@ class SpecialDateTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -24,7 +24,7 @@ class SpecialDateTest extends FeatureTestCase
         $this->assertTrue($specialDate->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact()
     {
         $account = factory(Account::class)->create([]);
@@ -39,14 +39,14 @@ class SpecialDateTest extends FeatureTestCase
         $this->assertTrue($specialDate->contact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_age_returns_null_if_no_date_is_set()
     {
         $specialDate = new SpecialDate;
         $this->assertNull($specialDate->getAge());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_age_returns_null_if_year_is_unknown()
     {
         $specialDate = factory(SpecialDate::class)->make();
@@ -56,7 +56,7 @@ class SpecialDateTest extends FeatureTestCase
         $this->assertNull($specialDate->getAge());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_age_returns_age()
     {
         Carbon::setTestNow(Carbon::create(2020, 2, 17, 17, 0, 0));
@@ -72,7 +72,7 @@ class SpecialDateTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function create_from_age_sets_the_right_date()
     {
         $specialDate = factory(SpecialDate::class)->make();
@@ -94,7 +94,7 @@ class SpecialDateTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function create_from_date_creates_an_approximate_date()
     {
         $specialDate = factory(SpecialDate::class)->make();
@@ -121,7 +121,7 @@ class SpecialDateTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function create_from_date_creates_an_exact_date()
     {
         $specialDate = factory(SpecialDate::class)->make();
@@ -148,7 +148,7 @@ class SpecialDateTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function set_contact_sets_the_contact_information()
     {
         $specialDate = factory(SpecialDate::class)->make();
@@ -168,7 +168,7 @@ class SpecialDateTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function to_short_string_returns_date_with_year()
     {
         $specialDate = new SpecialDate;
@@ -181,7 +181,7 @@ class SpecialDateTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function to_short_string_returns_date_without_year()
     {
         $specialDate = new SpecialDate;

@@ -13,7 +13,7 @@ class AddressBookGetterTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_get_address_book_data()
     {
         $tester = (new DavTester())
@@ -41,7 +41,7 @@ class AddressBookGetterTest extends TestCase
         ], $result);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_on_server_not_compliant()
     {
         $tester = (new DavTester())
@@ -56,7 +56,7 @@ class AddressBookGetterTest extends TestCase
             ->execute($client);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_no_userprincipal()
     {
         $tester = (new DavTester())
@@ -72,7 +72,7 @@ class AddressBookGetterTest extends TestCase
             ->execute($client);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_no_addressbook()
     {
         $tester = (new DavTester())
@@ -89,7 +89,7 @@ class AddressBookGetterTest extends TestCase
             ->execute($client);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_no_addressbook_url()
     {
         $tester = (new DavTester())

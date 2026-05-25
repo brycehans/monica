@@ -12,7 +12,7 @@ class CreateTagTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_a_tag()
     {
         $tag = factory(Tag::class)->create([]);
@@ -36,7 +36,7 @@ class CreateTagTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
