@@ -111,7 +111,7 @@ class InstanceHelperTest extends TestCase
         $subscription->shouldReceive('asStripeSubscription')
             ->andReturn($stripeSubscription);
         $subscription->shouldReceive('getAttribute')
-            ->with('name')
+            ->with('type')
             ->andReturn('Monthly');
 
         $this->assertEquals(

@@ -67,7 +67,7 @@ class InstanceHelper
         if (is_null($stripeSubscription) || is_null($plan)) {
             return [
                 'type' => $subscription->stripe_price,
-                'name' => $subscription->name,
+                'name' => $subscription->type,
                 'id' => $subscription->stripe_id,
                 'price' => '?',
                 'friendlyPrice' => '?',
@@ -80,7 +80,7 @@ class InstanceHelper
 
         return [
             'type' => $plan->interval === 'month' ? 'monthly' : 'annual',
-            'name' => $subscription->name,
+            'name' => $subscription->type,
             'id' => $plan->id,
             'price' => $plan->amount,
             'friendlyPrice' => $amount,
