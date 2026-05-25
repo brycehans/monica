@@ -170,7 +170,7 @@ class AccountSubscriptionTest extends FeatureTestCase
 
         factory(Subscription::class)->create([
             'account_id' => $user->account_id,
-            'name' => 'Annual',
+            'type' => 'Annual',
             'stripe_price' => 'annual',
             'stripe_id' => 'test',
             'quantity' => 1,
@@ -185,7 +185,7 @@ class AccountSubscriptionTest extends FeatureTestCase
 
         factory(Subscription::class)->create([
             'account_id' => $user->account_id,
-            'name' => 'Annual',
+            'type' => 'Annual',
             'stripe_price' => 'annual',
             'stripe_id' => 'test',
             'quantity' => 1,
@@ -201,7 +201,7 @@ class AccountSubscriptionTest extends FeatureTestCase
 
         factory(Subscription::class)->create([
             'account_id' => $user->account_id,
-            'name' => 'Annual',
+            'type' => 'Annual',
             'stripe_price' => 'annual',
             'stripe_id' => 'sub_X',
             'quantity' => 1,
