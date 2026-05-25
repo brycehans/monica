@@ -4,13 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Contact\Contact;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Str;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Subscription;
-use Stripe\Exception\ApiErrorException;
-use Stripe\Plan;
-use Stripe\Product;
-use Stripe\Stripe;
+use Tests\Concerns\HasStripeMockFixtures;
 use Tests\FeatureTestCase;
 
 /**
@@ -18,40 +14,13 @@ use Tests\FeatureTestCase;
  * historically had no coverage. Keeps the Cashier-direct surface in
  * AccountSubscriptionTest distinct from the route-handler surface here.
  *
- * The Product/Plan fixture scaffolding mirrors AccountSubscriptionTest:
- * each class instantiates its own per-run Product+Plan IDs in stripe-mock
- * so the two suites don't interfere (Option A from the Task 5 brief).
+ * The shared Product/Plan + Stripe-statics scaffolding lives in
+ * Tests\Concerns\HasStripeMockFixtures.
  */
 class SubscriptionsControllerTest extends FeatureTestCase
 {
     use DatabaseTransactions;
-
-    private const STRIPE_MOCK_KEY = 'sk_test_stripemockkey';
-    private const STRIPE_MOCK_BASE = 'http://stripe-mock:12111';
-
-    /**
-     * @var string
-     */
-    protected static $stripePrefix = 'cashier-test-';
-
-    /**
-     * @var string
-     */
-    protected static $productId;
-
-    /**
-     * @var string
-     */
-    protected static $monthlyPlanId;
-
-    /**
-     * @var string
-     */
-    protected static $annualPlanId;
-
-    private static ?string $originalApiBase = null;
-    private static ?string $originalApiKey = null;
-    private static ?string $originalApiVersion = null;
+    use HasStripeMockFixtures;
 
     protected function setUp(): void
     {
@@ -67,88 +36,6 @@ class SubscriptionsControllerTest extends FeatureTestCase
             'monica.paid_plan_annual_id' => static::$annualPlanId,
             'monica.paid_plan_annual_price' => 500,
         ]);
-    }
-
-    public static function setUpBeforeClass(): void
-    {
-        // phpunit.xml sets backupStaticProperties="false", so snapshot the
-        // Stripe SDK statics ourselves and restore them in tearDownAfterClass —
-        // otherwise this class leaks the stripe-mock pointer to anything else
-        // that touches \Stripe\Stripe directly later in the run.
-        self::$originalApiBase = Stripe::$apiBase;
-        self::$originalApiKey = Stripe::getApiKey();
-        self::$originalApiVersion = Stripe::getApiVersion();
-
-        Stripe::setApiKey(self::STRIPE_MOCK_KEY);
-        Stripe::$apiBase = env('STRIPE_API_BASE', self::STRIPE_MOCK_BASE);
-        Stripe::setApiVersion('2024-12-18.acacia');
-
-        static::$productId = static::$stripePrefix.'product-'.Str::random(10);
-        static::$monthlyPlanId = static::$stripePrefix.'monthly-'.Str::random(10);
-        static::$annualPlanId = static::$stripePrefix.'annual-'.Str::random(10);
-
-        Product::create([
-            'id' => static::$productId,
-            'name' => 'Monica Test Product',
-        ]);
-
-        Plan::create([
-            'id' => static::$monthlyPlanId,
-            'nickname' => 'Monthly',
-            'currency' => 'USD',
-            'interval' => 'month',
-            'billing_scheme' => 'per_unit',
-            'amount' => 100,
-            'product' => static::$productId,
-        ]);
-        Plan::create([
-            'id' => static::$annualPlanId,
-            'nickname' => 'Annual',
-            'currency' => 'USD',
-            'interval' => 'year',
-            'billing_scheme' => 'per_unit',
-            'amount' => 500,
-            'product' => static::$productId,
-        ]);
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        parent::tearDownAfterClass();
-
-        if (static::$monthlyPlanId) {
-            static::deleteStripeResource(new Plan(static::$monthlyPlanId));
-            static::$monthlyPlanId = null;
-        }
-        if (static::$annualPlanId) {
-            static::deleteStripeResource(new Plan(static::$annualPlanId));
-            static::$annualPlanId = null;
-        }
-        if (static::$productId) {
-            static::deleteStripeResource(new Product(static::$productId));
-            static::$productId = null;
-        }
-
-        if (self::$originalApiBase !== null) {
-            Stripe::$apiBase = self::$originalApiBase;
-        }
-        if (self::$originalApiKey !== null) {
-            Stripe::setApiKey(self::$originalApiKey);
-        }
-        if (self::$originalApiVersion !== null) {
-            Stripe::setApiVersion(self::$originalApiVersion);
-        }
-    }
-
-    protected static function deleteStripeResource($resource)
-    {
-        try {
-            if (method_exists($resource, 'delete')) {
-                $resource->delete();
-            }
-        } catch (ApiErrorException $e) {
-            //
-        }
     }
 
     public function test_confirm_payment_returns_errors_when_stripe_call_fails(): void
