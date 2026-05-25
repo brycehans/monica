@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\LifeEvent\LifeEventType;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\LifeEventType;
@@ -15,7 +16,7 @@ class CreateLifeEventTypeTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_life_event_type()
     {
         $account = factory(Account::class)->create([]);
@@ -44,7 +45,7 @@ class CreateLifeEventTypeTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -55,7 +56,7 @@ class CreateLifeEventTypeTest extends TestCase
         app(CreateLifeEventType::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_life_event_category_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create([]);

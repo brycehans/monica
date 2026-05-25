@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Relationship;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -14,7 +15,7 @@ class CreateRelationshipTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_relationship()
     {
         $account = factory(Account::class)->create();
@@ -46,7 +47,7 @@ class CreateRelationshipTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_adding_relationship_when_relationship_type_is_unknown()
     {
         $account = factory(Account::class)->create();
@@ -70,7 +71,7 @@ class CreateRelationshipTest extends TestCase
         app(CreateRelationship::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();
@@ -93,7 +94,7 @@ class CreateRelationshipTest extends TestCase
         app(CreateRelationship::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_other_contact_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();
@@ -117,7 +118,7 @@ class CreateRelationshipTest extends TestCase
         app(CreateRelationship::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_a_relationship_and_reverse()
     {
         $account = factory(Account::class)->create();

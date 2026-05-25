@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\Place;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Place;
 use App\Models\Account\Account;
@@ -14,7 +15,7 @@ class CreatePlaceTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_place_without_fetching_geolocation_information()
     {
         $account = factory(Account::class)->create([]);
@@ -45,7 +46,7 @@ class CreatePlaceTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_place_and_fetch_geolocation_information()
     {
         config(['monica.enable_geolocation' => true]);
@@ -80,7 +81,7 @@ class CreatePlaceTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         factory(Account::class)->create([]);

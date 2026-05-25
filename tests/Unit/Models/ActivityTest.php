@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Models\Account\Activity;
@@ -12,7 +13,7 @@ class ActivityTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_the_happened_at()
     {
         $activity = factory(Activity::class)->make();
@@ -23,7 +24,7 @@ class ActivityTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_a_title()
     {
         $type = factory(ActivityType::class)->create();
@@ -38,7 +39,7 @@ class ActivityTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_info_for_journal_entry()
     {
         $activity = factory(Activity::class)->create();

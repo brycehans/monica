@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\DavClient\Utils;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use Tests\Api\DAV\CardEtag;
@@ -21,7 +22,7 @@ class AddressBookContactsUpdaterMissedTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sync_changes_missed()
     {
         $subscription = AddressBookSubscription::factory()->create();

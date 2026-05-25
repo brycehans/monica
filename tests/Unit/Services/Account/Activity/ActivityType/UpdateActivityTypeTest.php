@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\Activity\ActivityType;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Account\ActivityType;
@@ -15,7 +16,7 @@ class UpdateActivityTypeTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_an_activity_type()
     {
         $activityType = factory(ActivityType::class)->create([]);
@@ -47,7 +48,7 @@ class UpdateActivityTypeTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $activityType = factory(ActivityType::class)->create([]);
@@ -66,7 +67,7 @@ class UpdateActivityTypeTest extends TestCase
         app(UpdateActivityType::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_activity_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create([]);

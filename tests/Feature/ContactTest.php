@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Helpers\DateHelper;
 use App\Models\Contact\Tag;
@@ -685,7 +686,7 @@ class ContactTest extends FeatureTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_value()
     {
         $user = $this->signin();

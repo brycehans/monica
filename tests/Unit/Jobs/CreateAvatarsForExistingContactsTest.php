@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Contact;
 use Illuminate\Support\Facades\Queue;
@@ -14,7 +15,7 @@ class CreateAvatarsForExistingContactsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_jobs_for_avatars_migration()
     {
         Queue::fake();

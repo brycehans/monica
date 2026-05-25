@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\DavClient\Utils;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use App\Jobs\Dav\PushVCard;
@@ -22,7 +23,7 @@ class AddressBookContactsPushMissedTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_push_contacts_missed()
     {
         $subscription = AddressBookSubscription::factory()->create();

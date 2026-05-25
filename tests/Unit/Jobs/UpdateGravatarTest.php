@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Contact;
 use App\Models\Contact\ContactField;
@@ -13,7 +14,7 @@ class UpdateGravatarTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_update_gravatar()
     {
         $contact = factory(Contact::class)->create();

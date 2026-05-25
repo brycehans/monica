@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use PHPUnit\Framework\Attributes\BeforeClass;
 use Tests\Traits\SignIn;
 use App\Models\User\User;
 use Laravel\Dusk\Browser;
@@ -30,7 +31,7 @@ abstract class DuskTestCase extends BaseTestCase
      *
      * @return void
      */
-    #[\PHPUnit\Framework\Attributes\BeforeClass]
+    #[BeforeClass]
     public static function prepare()
     {
         if (! static::runningInSail()) {

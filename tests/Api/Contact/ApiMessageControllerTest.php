@@ -2,6 +2,7 @@
 
 namespace Tests\Api\Contact;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\User\User;
 use App\Models\Contact\Contact;
@@ -66,7 +67,7 @@ class ApiMessageControllerTest extends ApiTestCase
         return $message;
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_adds_a_message_to_a_conversation()
     {
         $user = $this->signin();
@@ -86,7 +87,7 @@ class ApiMessageControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_message()
     {
         $user = $this->signin();
@@ -107,7 +108,7 @@ class ApiMessageControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_message()
     {
         $user = $this->signin();

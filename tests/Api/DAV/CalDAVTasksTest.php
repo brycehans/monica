@@ -2,6 +2,7 @@
 
 namespace Tests\Api\DAV;
 
+use PHPUnit\Framework\Attributes\Group;
 use Carbon\Carbon;
 use Tests\ApiTestCase;
 use App\Models\Contact\Task;
@@ -13,7 +14,7 @@ class CalDAVTasksTest extends ApiTestCase
 {
     use DatabaseTransactions, CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_caldav_tasks_propfind()
     {
         $user = $this->signin();
@@ -64,7 +65,7 @@ class CalDAVTasksTest extends ApiTestCase
         '</d:multistatus', false);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_caldav_tasks_propfind_one_task()
     {
         $user = $this->signin();

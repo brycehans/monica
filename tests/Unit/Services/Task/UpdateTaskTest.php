@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Task;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Task;
 use App\Models\Account\Account;
@@ -15,7 +16,7 @@ class UpdateTaskTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_task_associated_with_a_contact()
     {
         $task = factory(Task::class)->create([]);
@@ -45,7 +46,7 @@ class UpdateTaskTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_a_task_associated_without_a_contact()
     {
         $task = factory(Task::class)->create([
@@ -76,7 +77,7 @@ class UpdateTaskTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $task = factory(Task::class)->create([]);
@@ -93,7 +94,7 @@ class UpdateTaskTest extends TestCase
         app(UpdateTask::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();
@@ -114,7 +115,7 @@ class UpdateTaskTest extends TestCase
         app(UpdateTask::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_task_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();

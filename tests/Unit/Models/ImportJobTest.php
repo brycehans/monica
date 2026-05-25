@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\Account\Account;
@@ -44,7 +45,7 @@ ADR:;;17 Shakespeare Ave.;Southampton;;SO17 2HB;United Kingdom
 END:VCARD
 ';
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_a_user()
     {
         $importJob = factory(ImportJob::class)->create();
@@ -52,7 +53,7 @@ END:VCARD
         $this->assertTrue($importJob->user()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -67,7 +68,7 @@ END:VCARD
         $this->assertTrue($importJob->account()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_many_reports()
     {
         $account = factory(Account::class)->create([]);
@@ -87,7 +88,7 @@ END:VCARD
         $this->assertTrue($importJob->importJobReports()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_initiates_the_job()
     {
         $importJob = factory(ImportJob::class)->make([]);
@@ -99,7 +100,7 @@ END:VCARD
         $this->assertNotNull($importJob->started_at);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_finalizes_the_job()
     {
         $importJob = factory(ImportJob::class)->make([]);
@@ -111,7 +112,7 @@ END:VCARD
         $this->assertNotNull($importJob->ended_at);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_and_throws_an_exception()
     {
         $importJob = factory(ImportJob::class)->create([]);
@@ -126,7 +127,7 @@ END:VCARD
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_physical_file()
     {
         Storage::fake('public');
@@ -147,7 +148,7 @@ END:VCARD
         $this->assertIsResource($importJob->physicalFile);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_file_doesnt_exist()
     {
         Storage::fake('public', [
@@ -165,7 +166,7 @@ END:VCARD
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_deletes_the_file()
     {
         Storage::fake('public');
@@ -183,7 +184,7 @@ END:VCARD
         Storage::disk('public')->assertMissing($importJob->filename);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_calculates_how_many_entries_there_are_and_populate_the_entries_array()
     {
         Storage::fake('public');
@@ -206,7 +207,7 @@ END:VCARD
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_doesnt_process_an_entry_if_import_is_not_feasible()
     {
         $importJob = $this->createImportJob();
@@ -225,7 +226,7 @@ END:VCARD
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_doesnt_process_an_entry_if_contact_already_exists()
     {
         $importJob = $this->createImportJob();
@@ -256,7 +257,7 @@ END:VCARD
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function skipping_entries_increments_counter_and_file_job_report()
     {
         $importJob = $this->createImportJob();
@@ -276,7 +277,7 @@ END:VCARD
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_files_an_import_job_report()
     {
         $importJob = $this->createImportJob();

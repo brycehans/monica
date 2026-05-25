@@ -2,6 +2,7 @@
 
 namespace Tests\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Relationship\RelationshipType;
 use App\Models\Relationship\RelationshipTypeGroup;
@@ -11,7 +12,7 @@ class ApiRelationshipTypeControllerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_right_number_of_relationship_types()
     {
         $user = $this->signin();
@@ -31,7 +32,7 @@ class ApiRelationshipTypeControllerTest extends ApiTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_list_of_relationship_types()
     {
         $user = $this->signin();
@@ -67,7 +68,7 @@ class ApiRelationshipTypeControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_specific_relationship_type_group()
     {
         $user = $this->signin();

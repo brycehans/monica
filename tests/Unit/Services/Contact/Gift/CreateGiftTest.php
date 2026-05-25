@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Gift;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Gift;
 use App\Models\Account\Account;
@@ -15,7 +16,7 @@ class CreateGiftTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_a_gift()
     {
         $contact = factory(Contact::class)->create();
@@ -41,7 +42,7 @@ class CreateGiftTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $this->expectException(ValidationException::class);
@@ -54,7 +55,7 @@ class CreateGiftTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_contact_is_wrong_account()
     {
         $account = factory(Account::class)->create();

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\DavClient;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use App\Models\User\SyncToken;
@@ -14,7 +15,7 @@ class UpdateSubscriptionLocalSyncTokenTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_update_token()
     {
         $subscription = AddressBookSubscription::factory()->create([
@@ -48,7 +49,7 @@ class UpdateSubscriptionLocalSyncTokenTest extends TestCase
         $this->assertEquals($token->id, $subscription->localSyncToken);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_wont_update_null_token()
     {
         $subscription = AddressBookSubscription::factory()->create([

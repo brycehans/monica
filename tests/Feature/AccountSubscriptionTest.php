@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use Stripe\Exception\ApiErrorException;
+use App\Exceptions\StripeException;
 use Stripe\Plan;
 use Stripe\Stripe;
 use Stripe\Product;
@@ -117,7 +119,7 @@ class AccountSubscriptionTest extends FeatureTestCase
             if (method_exists($resource, 'delete')) {
                 $resource->delete();
             }
-        } catch (\Stripe\Exception\ApiErrorException $e) {
+        } catch (ApiErrorException $e) {
             //
         }
     }
@@ -128,7 +130,7 @@ class AccountSubscriptionTest extends FeatureTestCase
         $user->email = 'test_it_throw_an_error_on_subscribe@monica-test.com';
         $user->save();
 
-        $this->expectException(\App\Exceptions\StripeException::class);
+        $this->expectException(StripeException::class);
         $user->account->subscribe('xxx', 'annual');
     }
 
@@ -168,7 +170,7 @@ class AccountSubscriptionTest extends FeatureTestCase
             'quantity' => 1,
         ]);
 
-        $this->expectException(\App\Exceptions\StripeException::class);
+        $this->expectException(StripeException::class);
         $user->account->subscriptionCancel();
     }
 
@@ -250,7 +252,7 @@ class AccountSubscriptionTest extends FeatureTestCase
 
         try {
             $user->account->subscribe('pm_card_chargeDeclined', 'annual');
-        } catch (\App\Exceptions\StripeException $e) {
+        } catch (StripeException $e) {
             $this->assertEquals('Your card was declined. Decline message is: Your card was declined.', $e->getMessage());
 
             return;

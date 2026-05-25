@@ -2,6 +2,7 @@
 
 namespace Tests\Api;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Contact\Gift;
 use App\Models\Account\Account;
@@ -32,7 +33,7 @@ class ApiGiftsTest extends ApiTestCase
         'updated_at',
     ];
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_all_the_gifts()
     {
         $user = $this->signin();
@@ -67,7 +68,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_all_the_gifts_of_a_contact()
     {
         $user = $this->signin();
@@ -102,7 +103,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_cant_get_all_the_gifts_of_an_invalid_contact()
     {
         $user = $this->signin();
@@ -112,7 +113,7 @@ class ApiGiftsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_one_gift()
     {
         $user = $this->signin();
@@ -144,7 +145,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_cant_get_a_gift_with_an_invalid_id()
     {
         $user = $this->signin();
@@ -154,7 +155,7 @@ class ApiGiftsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_create_a_gift()
     {
         $user = $this->signin();
@@ -187,7 +188,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_create_is_for()
     {
         $user = $this->signin();
@@ -225,7 +226,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_create_is_for_bad_account()
     {
         $user = $this->signin();
@@ -248,7 +249,7 @@ class ApiGiftsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_create_error()
     {
         $user = $this->signin();
@@ -266,7 +267,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_create_error_bad_account()
     {
         $user = $this->signin();
@@ -285,7 +286,7 @@ class ApiGiftsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_update()
     {
         $user = $this->signin();
@@ -325,7 +326,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_update_is_for()
     {
         $user = $this->signin();
@@ -370,7 +371,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_update_error()
     {
         $user = $this->signin();
@@ -388,7 +389,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_update_error_bad_account()
     {
         $user = $this->signin();
@@ -412,7 +413,7 @@ class ApiGiftsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_delete()
     {
         $user = $this->signin();
@@ -444,7 +445,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_delete_error()
     {
         $user = $this->signin();
@@ -454,7 +455,7 @@ class ApiGiftsTest extends ApiTestCase
         $response->assertStatus(422);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function gifts_delete_wrong_account()
     {
         $user = $this->signin();

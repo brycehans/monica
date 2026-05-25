@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Helpers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Helpers\WeatherHelper;
 use App\Jobs\GetGPSCoordinate;
@@ -16,14 +17,14 @@ class WeatherHelperTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_null_if_address_is_not_set()
     {
         $contact = factory(Contact::class)->create([]);
         $this->assertNull(WeatherHelper::getWeatherForAddress($contact->addresses()->first()));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_dispatch_batch_with_get_coordinates()
     {
         config(['monica.enable_geolocation' => true]);

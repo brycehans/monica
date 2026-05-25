@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Scheduling;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Jobs\SynchronizeAddressBooks;
 use Illuminate\Support\Facades\Queue;
@@ -12,7 +13,7 @@ class DavClientsUpdateTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_dispatch_subscription_update()
     {
         Queue::fake();

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Avatar;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Photo;
 use App\Models\Account\Account;
@@ -15,7 +16,7 @@ class UpdateAvatarTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_the_avatar_with_gravatar()
     {
         $contact = factory(Contact::class)->create([]);
@@ -39,7 +40,7 @@ class UpdateAvatarTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_the_avatar_with_default_avatar()
     {
         $contact = factory(Contact::class)->create([]);
@@ -63,7 +64,7 @@ class UpdateAvatarTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_the_avatar_with_existing_photo()
     {
         $contact = factory(Contact::class)->create([]);
@@ -92,7 +93,7 @@ class UpdateAvatarTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contact = factory(Contact::class)->create([]);
@@ -106,7 +107,7 @@ class UpdateAvatarTest extends TestCase
         app(UpdateAvatar::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_contact_is_archived()
     {
         $contact = factory(Contact::class)->state('archived')->create([]);
@@ -121,7 +122,7 @@ class UpdateAvatarTest extends TestCase
         app(UpdateAvatar::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_not_linked_to_account()
     {
         $account = factory(Account::class)->create([]);
@@ -137,7 +138,7 @@ class UpdateAvatarTest extends TestCase
         app(UpdateAvatar::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_photo_not_linked_to_account()
     {
         // Case: photo doesn't exist

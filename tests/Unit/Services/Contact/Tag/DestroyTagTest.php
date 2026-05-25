@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Tag;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Tag;
 use App\Models\Account\Account;
@@ -15,7 +16,7 @@ class DestroyTagTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_tag()
     {
         $contact = factory(Contact::class)->create([]);
@@ -55,7 +56,7 @@ class DestroyTagTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -67,7 +68,7 @@ class DestroyTagTest extends TestCase
         app(DestroyTag::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_tag_does_not_exist()
     {
         $account = factory(Account::class)->create();

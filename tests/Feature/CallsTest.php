@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Helpers\DateHelper;
 use App\Models\Contact\Call;
@@ -59,7 +60,7 @@ class CallsTest extends FeatureTestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_last_talked_to()
     {
         $user = $this->signin();
@@ -87,7 +88,7 @@ class CallsTest extends FeatureTestCase
         $this->assertEquals($response->json('last_talked_to'), DateHelper::getShortDate($referenceDate));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_empty_last_talked_to()
     {
         $user = $this->signin();

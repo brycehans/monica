@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Contact;
 use App\Jobs\Avatars\UpdateGravatar;
@@ -13,7 +14,7 @@ class UpdateAllGravatarsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_creates_jobs_for_update_gravatars()
     {
         Queue::fake();

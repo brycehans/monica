@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Other;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Console\Commands\Helpers\Command;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -10,7 +11,7 @@ class UpdateCommandTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function update_command_default()
     {
         /** @var \Tests\Helpers\CommandCallerFake */
@@ -30,7 +31,7 @@ class UpdateCommandTest extends TestCase
         $this->assertCommandContains($fake->buffer[8], 'Maintenance mode: off', 'php artisan up');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function update_command_composer()
     {
         /** @var \Tests\Helpers\CommandCallerFake */

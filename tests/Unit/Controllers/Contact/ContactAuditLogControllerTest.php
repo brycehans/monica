@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Controllers\Contact;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Models\Contact\Contact;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -10,7 +11,7 @@ class ContactAuditLogControllerTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_list_of_audit_logs_for_the_contact()
     {
         $user = $this->signin();

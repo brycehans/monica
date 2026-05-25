@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use Illuminate\Support\Carbon;
 use App\Models\Account\ExportJob;
@@ -11,7 +12,7 @@ class ExportAccountTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_create_export_job_json()
     {
         config(['queue.default' => 'database']);
@@ -30,7 +31,7 @@ class ExportAccountTest extends FeatureTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_create_export_job_sql()
     {
         config(['queue.default' => 'database']);
@@ -49,7 +50,7 @@ class ExportAccountTest extends FeatureTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_delete_old_export()
     {
         config(['queue.default' => 'database']);

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use App\Models\Contact\Contact;
 use App\Models\Contact\Gender;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +49,7 @@ class SmokeRoutesTest extends FeatureTestCase
         $this->assertNotAnErrorPage($response, '/dashboard');
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('authenticatedGetRoutes')]
+    #[DataProvider('authenticatedGetRoutes')]
     public function test_authenticated_user_can_load_route(string $url): void
     {
         $this->signIn();

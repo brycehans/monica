@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Scheduling;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Models\Account\Account;
@@ -14,7 +15,7 @@ class SendStayInTouchTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_schedules_a_stay_in_touch_job()
     {
         Bus::fake();
@@ -33,7 +34,7 @@ class SendStayInTouchTest extends TestCase
         Bus::assertDispatched(ScheduleStayInTouch::class);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_doesnt_schedule_stay_in_touch_jobs_if_no_date_is_found()
     {
         Bus::fake();

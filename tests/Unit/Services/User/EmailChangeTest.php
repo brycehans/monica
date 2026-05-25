@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\User;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\Account\Account;
@@ -16,7 +17,7 @@ class EmailChangeTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_user_email()
     {
         NotificationFacade::fake();
@@ -47,7 +48,7 @@ class EmailChangeTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $user = factory(User::class)->create([]);
@@ -61,7 +62,7 @@ class EmailChangeTest extends TestCase
         app(EmailChange::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_user_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();
@@ -78,7 +79,7 @@ class EmailChangeTest extends TestCase
         app(EmailChange::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_user_email_and_send_confirmation()
     {
         NotificationFacade::fake();
@@ -111,7 +112,7 @@ class EmailChangeTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sends_confirmation_email()
     {
         NotificationFacade::fake();

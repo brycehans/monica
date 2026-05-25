@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Helpers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Photo;
 use App\Helpers\StorageHelper;
@@ -13,7 +14,7 @@ class StorageHelperTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_calculates_the_account_storage_size(): void
     {
         $account = factory(Account::class)->create([]);
@@ -34,7 +35,7 @@ class StorageHelperTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_tests_account_storage_limit(): void
     {
         config(['monica.requires_subscription' => true]);

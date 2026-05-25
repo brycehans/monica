@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Helpers\AccountHelper;
 use App\Models\Contact\Contact;
@@ -11,7 +12,7 @@ class ContactsControllerTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_cant_unarchive_contact_if_limited_account()
     {
         config(['monica.requires_subscription' => true]);
@@ -33,7 +34,7 @@ class ContactsControllerTest extends FeatureTestCase
         $response->assertStatus(402);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stays_in_touch()
     {
         $user = $this->signin();

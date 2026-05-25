@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Address;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Address;
@@ -15,7 +16,7 @@ class UpdateAddressTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_an_address()
     {
         $address = factory(Address::class)->create([]);
@@ -53,7 +54,7 @@ class UpdateAddressTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $address = factory(Address::class)->create([]);
@@ -66,7 +67,7 @@ class UpdateAddressTest extends TestCase
         app(UpdateAddress::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_contact_is_archived()
     {
         $contact = factory(Contact::class)->state('archived')->create();
@@ -93,7 +94,7 @@ class UpdateAddressTest extends TestCase
         app(UpdateAddress::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_address_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create([]);

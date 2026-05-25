@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Occupation;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Occupation;
 use App\Services\Contact\Occupation\DestroyOccupation;
@@ -11,7 +12,7 @@ class DestroyOccupationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_occupation()
     {
         $occupation = factory(Occupation::class)->create([]);

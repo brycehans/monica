@@ -2,6 +2,7 @@
 
 namespace Tests\Api\Contact;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Contact\Contact;
 use App\Models\Instance\AuditLog;
@@ -24,7 +25,7 @@ class ApiAuditLogControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_list_of_audit_logs()
     {
         $user = $this->signin();

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs\Dav;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use Tests\Api\DAV\CardEtag;
@@ -19,7 +20,7 @@ class UpdateVCardTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_create_a_contact()
     {
         $fake = Bus::fake();

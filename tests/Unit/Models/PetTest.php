@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Pet;
 use App\Models\Account\Account;
@@ -13,7 +14,7 @@ class PetTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -26,7 +27,7 @@ class PetTest extends TestCase
         $this->assertTrue($pet->account()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_a_contact()
     {
         $contact = factory(Contact::class)->create([]);
@@ -38,7 +39,7 @@ class PetTest extends TestCase
         $this->assertTrue($pet->contact()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_a_pet_category()
     {
         $petCategory = factory(PetCategory::class)->create([]);
@@ -49,7 +50,7 @@ class PetTest extends TestCase
         $this->assertTrue($pet->petCategory()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sets_name()
     {
         $pet = new Pet;

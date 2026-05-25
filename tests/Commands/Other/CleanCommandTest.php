@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Other;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\User\SyncToken;
@@ -12,7 +13,7 @@ class CleanCommandTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function clean_command_left_one_token()
     {
         $account = factory(Account::class)->create();
@@ -36,7 +37,7 @@ class CleanCommandTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function clean_command_left_all_token()
     {
         $account = factory(Account::class)->create();
@@ -69,7 +70,7 @@ class CleanCommandTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function clean_command_dryrun()
     {
         $account = factory(Account::class)->create();

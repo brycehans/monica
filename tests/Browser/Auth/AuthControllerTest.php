@@ -2,6 +2,7 @@
 
 namespace Tests\Browser\Auth;
 
+use GuzzleHttp\Exception\RequestException;
 use Tests\TestCase;
 use GuzzleHttp\Client;
 use App\Models\User\User;
@@ -223,7 +224,7 @@ class AuthControllerTest extends TestCase
             $response = $http->post($path, [
                 'form_params' => $param,
             ]);
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
+        } catch (RequestException $e) {
             $response = $e->getResponse();
         }
 

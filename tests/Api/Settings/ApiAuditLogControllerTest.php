@@ -2,6 +2,7 @@
 
 namespace Tests\Api\Settings;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Instance\AuditLog;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -23,7 +24,7 @@ class ApiAuditLogControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_list_of_audit_logs()
     {
         $user = $this->signin();
@@ -50,7 +51,7 @@ class ApiAuditLogControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_is_possible_to_get_audit_logs_and_limit_query_and_paginate()
     {
         $user = $this->signin();

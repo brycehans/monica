@@ -11,4 +11,10 @@ return RectorConfig::configure()
     ])
     ->withSets([
         PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
-    ]);
+    ])
+    ->withImportNames(
+        importNames: true,
+        importDocBlockNames: false,
+        importShortClasses: false,
+        removeUnusedImports: false,
+    );

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\DavClient\Utils;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Tests\Helpers\DavTester;
 use App\Services\DavClient\Utils\AddressBookGetter;
@@ -13,7 +14,7 @@ class AddressBookGetterTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_get_address_book_data()
     {
         $tester = (new DavTester())
@@ -41,7 +42,7 @@ class AddressBookGetterTest extends TestCase
         ], $result);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_on_server_not_compliant()
     {
         $tester = (new DavTester())
@@ -56,7 +57,7 @@ class AddressBookGetterTest extends TestCase
             ->execute($client);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_no_userprincipal()
     {
         $tester = (new DavTester())
@@ -72,7 +73,7 @@ class AddressBookGetterTest extends TestCase
             ->execute($client);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_no_addressbook()
     {
         $tester = (new DavTester())
@@ -89,7 +90,7 @@ class AddressBookGetterTest extends TestCase
             ->execute($client);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_no_addressbook_url()
     {
         $tester = (new DavTester())

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\ActivityType;
 use App\Models\Account\ActivityTypeCategory;
@@ -11,7 +12,7 @@ class ActivityTypeCategoryTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_account()
     {
         $activityTypeCategory = factory(ActivityTypeCategory::class)->create([]);
@@ -19,7 +20,7 @@ class ActivityTypeCategoryTest extends TestCase
         $this->assertTrue($activityTypeCategory->account()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_has_many_activity_types()
     {
         $activityTypeCategory = factory(ActivityTypeCategory::class)->create([]);
@@ -30,7 +31,7 @@ class ActivityTypeCategoryTest extends TestCase
         $this->assertTrue($activityTypeCategory->activityTypes()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_name_attribute()
     {
         $activityTypeCategory = factory(ActivityTypeCategory::class)->create([

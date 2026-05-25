@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\Gender;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Gender;
 use App\Models\Account\Account;
@@ -14,7 +15,7 @@ class DestroyGenderTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroys_a_gender()
     {
         $gender = factory(Gender::class)->create([]);
@@ -31,7 +32,7 @@ class DestroyGenderTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_account_is_not_linked_to_gender()
     {
         $account = factory(Account::class)->create([]);
@@ -46,7 +47,7 @@ class DestroyGenderTest extends TestCase
         app(DestroyGender::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_ids_do_not_exist()
     {
         $request = [

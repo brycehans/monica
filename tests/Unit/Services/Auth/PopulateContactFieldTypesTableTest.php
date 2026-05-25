@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Auth;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\Account\Account;
@@ -14,7 +15,7 @@ class PopulateContactFieldTypesTableTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -32,7 +33,7 @@ class PopulateContactFieldTypesTableTest extends TestCase
         app(PopulateContactFieldTypesTable::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_populate_contact_field_types_tables()
     {
         $account = factory(Account::class)->create([]);
@@ -61,7 +62,7 @@ class PopulateContactFieldTypesTableTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_only_populates_partially()
     {
         $account = factory(Account::class)->create([]);

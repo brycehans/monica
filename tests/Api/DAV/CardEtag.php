@@ -2,6 +2,7 @@
 
 namespace Tests\Api\DAV;
 
+use Sabre\VObject\Version;
 use App\Models\Contact\Task;
 use App\Models\Contact\Contact;
 use App\Models\Instance\SpecialDate;
@@ -32,7 +33,7 @@ trait CardEtag
     {
         $contact = $contact->refresh();
         $url = route('people.show', $contact);
-        $sabreversion = \Sabre\VObject\Version::VERSION;
+        $sabreversion = Version::VERSION;
         $timestamp = $contact->updated_at->format('Ymd\THis\Z');
 
         $data = "BEGIN:VCARD
@@ -103,7 +104,7 @@ N:{$contact->last_name};{$contact->first_name};{$contact->middle_name};;
         $description1 = mb_substr($description, 0, 61);
         $description2 = mb_substr($description, 61);
 
-        $sabreversion = \Sabre\VObject\Version::VERSION;
+        $sabreversion = Version::VERSION;
         $timestamp = $specialDate->created_at->format('Ymd\THis\Z');
 
         $start = $specialDate->date->format('Ymd');
@@ -140,7 +141,7 @@ END:VCALENDAR
 
     protected function getVTodo(Task $task, bool $realFormat = false): string
     {
-        $sabreversion = \Sabre\VObject\Version::VERSION;
+        $sabreversion = Version::VERSION;
         $timestamp = $task->created_at->format('Ymd\THis\Z');
         $contact = $task->contact;
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Jobs;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Jobs\SynchronizeAddressBooks;
@@ -13,7 +14,7 @@ class SynchronizeAddressBooksTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_run_synchronize()
     {
         Carbon::setTestNow(Carbon::create(2021, 9, 1, 10, 0, 0));

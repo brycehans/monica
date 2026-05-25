@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Helpers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Carbon\Carbon;
 use Tests\TestCase;
 use App\Models\User\User;
@@ -19,7 +20,7 @@ class AccountHelperTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function user_has_limitations_if_not_subscribed_or_exempted_of_subscriptions(): void
     {
         $account = factory(Account::class)->make([
@@ -38,7 +39,7 @@ class AccountHelperTest extends TestCase
         $this->assertFalse(AccountHelper::hasLimitations($account));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function account_has_reached_contact_limit_on_free_plan(): void
     {
         $account = factory(Account::class)->create();
@@ -77,7 +78,7 @@ class AccountHelperTest extends TestCase
         $this->assertTrue(AccountHelper::isBelowContactLimit($account));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function user_can_downgrade_with_only_one_user_and_no_pending_invitations_and_under_contact_limit(): void
     {
         config(['monica.number_of_allowed_contacts_free_account' => 1]);
@@ -90,7 +91,7 @@ class AccountHelperTest extends TestCase
         $this->assertTrue(AccountHelper::canDowngrade($contact->account));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function user_cant_downgrade_with_two_users(): void
     {
         $contact = factory(Contact::class)->create();
@@ -102,7 +103,7 @@ class AccountHelperTest extends TestCase
         $this->assertFalse(AccountHelper::canDowngrade($contact->account));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function user_cant_downgrade_with_pending_invitations(): void
     {
         $account = factory(Account::class)->create();
@@ -114,7 +115,7 @@ class AccountHelperTest extends TestCase
         $this->assertFalse(AccountHelper::canDowngrade($account));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function user_cant_downgrade_with_too_many_contacts(): void
     {
         config(['monica.number_of_allowed_contacts_free_account' => 1]);
@@ -127,7 +128,7 @@ class AccountHelperTest extends TestCase
         $this->assertFalse(AccountHelper::canDowngrade($account));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_default_gender_for_the_account(): void
     {
         $account = factory(Account::class)->create();
@@ -143,7 +144,7 @@ class AccountHelperTest extends TestCase
         $this->assertEquals($gender->type, AccountHelper::getDefaultGender($account));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_reminders_for_month_returns_no_reminders(): void
     {
         $account = factory(Account::class)->create();
@@ -160,7 +161,7 @@ class AccountHelperTest extends TestCase
         $this->actingAs($user)->assertCount(0, AccountHelper::getUpcomingRemindersForMonth($account, 3));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_reminders_for_month_returns_reminders_for_given_month(): void
     {
         $account = factory(Account::class)->create();
@@ -183,7 +184,7 @@ class AccountHelperTest extends TestCase
         $this->actingAs($user)->assertCount(3, AccountHelper::getUpcomingRemindersForMonth($account, 2));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_reminders_for_month_returns_reminders_for_current_user_only(): void
     {
         $account = factory(Account::class)->create();
@@ -210,7 +211,7 @@ class AccountHelperTest extends TestCase
         $this->actingAs($user1)->assertCount(3, AccountHelper::getUpcomingRemindersForMonth($account, 2));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_retrieves_yearly_activities_statistics(): void
     {
         $account = factory(Account::class)->create();
@@ -235,7 +236,7 @@ class AccountHelperTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_retrieves_yearly_call_statistics(): void
     {
         $contact = factory(Contact::class)->create();

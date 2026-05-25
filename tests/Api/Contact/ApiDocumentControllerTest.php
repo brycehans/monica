@@ -2,6 +2,7 @@
 
 namespace Tests\Api\Contact;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\User\User;
 use App\Models\Contact\Contact;
@@ -48,7 +49,7 @@ class ApiDocumentControllerTest extends ApiTestCase
         return $document;
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_list_of_documents()
     {
         $user = $this->signin();
@@ -78,7 +79,7 @@ class ApiDocumentControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_applies_the_limit_parameter_in_search()
     {
         $user = $this->signin();
@@ -106,7 +107,7 @@ class ApiDocumentControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_document()
     {
         $user = $this->signin();
@@ -122,7 +123,7 @@ class ApiDocumentControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function document_show_gets_an_error_if_document_is_not_linked_to_account()
     {
         $user = $this->signin();
@@ -138,7 +139,7 @@ class ApiDocumentControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_a_document_for_a_specific_contact()
     {
         $user = $this->signin();
@@ -163,7 +164,7 @@ class ApiDocumentControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_store_a_document_for_a_specific_contact()
     {
         Storage::fake();
@@ -193,7 +194,7 @@ class ApiDocumentControllerTest extends ApiTestCase
         Storage::disk('public')->assertExists($response->json('data.new_filename'));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function document_store_gets_an_error_if_fields_are_missing()
     {
         $user = $this->signin();
@@ -206,7 +207,7 @@ class ApiDocumentControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function document_store_gets_an_error_if_contact_is_not_linked_to_user()
     {
         $user = $this->signin();
@@ -221,7 +222,7 @@ class ApiDocumentControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_destroy_a_document()
     {
         $user = $this->signin();
@@ -238,7 +239,7 @@ class ApiDocumentControllerTest extends ApiTestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function document_destroy_gets_an_error_if_document_is_not_linked_to_user()
     {
         $user = $this->signin();

@@ -2,6 +2,7 @@
 
 namespace Tests\Api\DAV;
 
+use PHPUnit\Framework\Attributes\Group;
 use Carbon\Carbon;
 use Tests\ApiTestCase;
 use App\Models\User\SyncToken;
@@ -12,7 +13,7 @@ class CardDAVTest extends ApiTestCase
 {
     use DatabaseTransactions, CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_propfind_addressbooks()
     {
         $user = $this->signin();
@@ -26,7 +27,7 @@ class CardDAVTest extends ApiTestCase
         $response->assertSee("<d:response><d:href>/dav/addressbooks/{$user->email}/</d:href>", false);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_propfind_addressbooks_user()
     {
         $user = $this->signin();
@@ -40,7 +41,7 @@ class CardDAVTest extends ApiTestCase
         $response->assertSee("<d:response><d:href>/dav/addressbooks/{$user->email}/contacts/</d:href>", false);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_propfind_contacts()
     {
         $user = $this->signin();
@@ -89,7 +90,7 @@ class CardDAVTest extends ApiTestCase
         '</d:multistatus', false);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_propfind_one_contact()
     {
         $user = $this->signin();
@@ -105,7 +106,7 @@ class CardDAVTest extends ApiTestCase
         $response->assertSee("<d:response><d:href>/dav/addressbooks/{$user->email}/contacts/{$contact->uuid}.vcf</d:href>", false);
     }
 
-    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[Group('dav')]
     public function test_carddav_propfind_one_contact_without_extension()
     {
         $user = $this->signin();

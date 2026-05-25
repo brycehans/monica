@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\Account\Account;
@@ -13,7 +14,7 @@ class AddressBookSubscriptionTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create();
@@ -26,7 +27,7 @@ class AddressBookSubscriptionTest extends TestCase
         $this->assertTrue($addressBookSubscription->account()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_a_user()
     {
         $user = factory(User::class)->create();
@@ -37,7 +38,7 @@ class AddressBookSubscriptionTest extends TestCase
         $this->assertTrue($addressBookSubscription->user()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_addressbook()
     {
         $addressBook = AddressBook::factory()->create();
@@ -48,7 +49,7 @@ class AddressBookSubscriptionTest extends TestCase
         $this->assertTrue($addressBookSubscription->addressBook()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_saves_capabilities()
     {
         $addressBookSubscription = new AddressBookSubscription();
@@ -63,7 +64,7 @@ class AddressBookSubscriptionTest extends TestCase
         ], $addressBookSubscription->capabilities);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_saves_password()
     {
         $addressBookSubscription = new AddressBookSubscription();

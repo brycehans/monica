@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Task;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Task;
 use App\Models\Account\Account;
@@ -15,7 +16,7 @@ class CreateTaskTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_task()
     {
         $contact = factory(Contact::class)->create([]);
@@ -42,7 +43,7 @@ class CreateTaskTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_task_without_contact_id()
     {
         $contact = factory(Contact::class)->create([]);
@@ -68,7 +69,7 @@ class CreateTaskTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_stores_a_task_without_description()
     {
         $contact = factory(Contact::class)->create([]);
@@ -94,7 +95,7 @@ class CreateTaskTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contact = factory(Contact::class)->create([]);
@@ -109,7 +110,7 @@ class CreateTaskTest extends TestCase
         app(CreateTask::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();

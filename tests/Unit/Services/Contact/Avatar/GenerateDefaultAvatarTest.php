@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Avatar;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Contact;
 use Illuminate\Http\UploadedFile;
@@ -13,7 +14,7 @@ class GenerateDefaultAvatarTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_generates_a_default_avatar()
     {
         $contact = factory(Contact::class)->create([
@@ -32,7 +33,7 @@ class GenerateDefaultAvatarTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [];
@@ -41,7 +42,7 @@ class GenerateDefaultAvatarTest extends TestCase
         app(GenerateDefaultAvatar::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_replaces_existing_default_avatar()
     {
         $file = UploadedFile::fake()->image('image.png');

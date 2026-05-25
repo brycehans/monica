@@ -2,6 +2,7 @@
 
 namespace Tests\Commands\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Console\Commands\Helpers\Command;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -10,7 +11,7 @@ class SetupTestCommandTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_completes_non_interactively_with_skip_seed()
     {
         /** @var \Tests\Helpers\CommandCallerFake */
@@ -25,7 +26,7 @@ class SetupTestCommandTest extends TestCase
         $fake->assertContainsMessage('✓ Symlink the storage folder');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_accepts_contacts_option_to_set_seed_count()
     {
         /** @var \Tests\Helpers\CommandCallerFake */
@@ -40,7 +41,7 @@ class SetupTestCommandTest extends TestCase
         $fake->assertContainsMessage('✓ Performing migrations');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_prompts_for_confirmation_when_interactive()
     {
         /** @var \Tests\Helpers\CommandCallerFake */
@@ -57,7 +58,7 @@ class SetupTestCommandTest extends TestCase
         $fake->assertContainsMessage('✓ Performing migrations');
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_when_user_declines_confirmation()
     {
         /** @var \Tests\Helpers\CommandCallerFake */

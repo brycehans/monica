@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\ApiTestCase;
 use App\Models\Contact\Contact;
 use App\Models\Instance\AuditLog;
@@ -11,21 +12,21 @@ class AuditLogTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_account(): void
     {
         $auditLog = factory(AuditLog::class)->create([]);
         $this->assertTrue($auditLog->account()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_a_user(): void
     {
         $auditLog = factory(AuditLog::class)->create([]);
         $this->assertTrue($auditLog->author()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_a_contact(): void
     {
         $contact = factory(Contact::class)->create([]);
@@ -35,7 +36,7 @@ class AuditLogTest extends ApiTestCase
         $this->assertTrue($auditLog->contact()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_returns_the_object_attribute(): void
     {
         $auditLog = factory(AuditLog::class)->create([]);

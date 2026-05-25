@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\DavClient\Utils;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Jobs\Dav\GetVCard;
 use Mockery\MockInterface;
@@ -25,7 +26,7 @@ class AddressBookContactsUpdaterTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sync_changes_multiget()
     {
         $subscription = AddressBookSubscription::factory()->create();
@@ -71,7 +72,7 @@ class AddressBookContactsUpdaterTest extends TestCase
         $this->assertEquals(['https://test/dav/uuid2'], $hrefs);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sync_deleted_multiget()
     {
         $subscription = AddressBookSubscription::factory()->create();
@@ -103,7 +104,7 @@ class AddressBookContactsUpdaterTest extends TestCase
         $this->assertEquals(['https://test/dav/uuid2'], $hrefs);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sync_changes_simple()
     {
         $subscription = AddressBookSubscription::factory()->create([
@@ -169,7 +170,7 @@ class AddressBookContactsUpdaterTest extends TestCase
         $this->assertEquals('https://test/dav/uuid2', $dto->uri);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sync_deleted_simple()
     {
         $subscription = AddressBookSubscription::factory()->create([

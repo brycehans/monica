@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Contact\Contact;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Contact;
 use App\Models\Contact\Reminder;
@@ -14,7 +15,7 @@ class UpdateDeceasedInformationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sets_contact_as_not_deceased()
     {
         // first we are going to update a contact and set it as deceased,
@@ -57,7 +58,7 @@ class UpdateDeceasedInformationTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sets_a_complete_date()
     {
         $contact = factory(Contact::class)->create([]);
@@ -91,7 +92,7 @@ class UpdateDeceasedInformationTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sets_a_complete_date_with_unknown_year()
     {
         $contact = factory(Contact::class)->create([]);
@@ -125,7 +126,7 @@ class UpdateDeceasedInformationTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sets_a_complete_date_and_sets_a_reminder()
     {
         $contact = factory(Contact::class)->create([]);
@@ -154,7 +155,7 @@ class UpdateDeceasedInformationTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $contact = factory(Contact::class)->create([]);
@@ -173,7 +174,7 @@ class UpdateDeceasedInformationTest extends TestCase
         app(UpdateDeceasedInformation::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_and_account_are_not_linked()
     {
         $contact = factory(Contact::class)->create([]);
@@ -193,7 +194,7 @@ class UpdateDeceasedInformationTest extends TestCase
         app(UpdateDeceasedInformation::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_removes_deceased_reminder()
     {
         $reminder = factory(Reminder::class)->create([]);
@@ -220,7 +221,7 @@ class UpdateDeceasedInformationTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_removes_deceased_special_date()
     {
         $special_date = factory(SpecialDate::class)->create();

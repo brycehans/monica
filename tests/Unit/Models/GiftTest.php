@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\User\User;
 use App\Models\Contact\Gift;
@@ -12,7 +13,7 @@ class GiftTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function has_particular_recipient_returns_false_if_it_s_for_no_specific_recipient()
     {
         $gift = factory(Gift::class)->make();
@@ -22,7 +23,7 @@ class GiftTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function has_particular_recipient_returns_true_if_it_s_for_a_specific_recipient()
     {
         $gift = factory(Gift::class)->make([
@@ -34,7 +35,7 @@ class GiftTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_sets_is_for_attribute()
     {
         $gift = factory(Gift::class)->make([
@@ -47,7 +48,7 @@ class GiftTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_recipient_name()
     {
         $contact = factory(Contact::class)->create(['first_name' => 'Regis']);
@@ -63,7 +64,7 @@ class GiftTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_gift_name()
     {
         $gift = factory(Gift::class)->make([
@@ -76,7 +77,7 @@ class GiftTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_gift_url()
     {
         $gift = factory(Gift::class)->make([
@@ -89,7 +90,7 @@ class GiftTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_comment()
     {
         $gift = factory(Gift::class)->make([
@@ -102,7 +103,7 @@ class GiftTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_value()
     {
         $user = factory(User::class)->create();

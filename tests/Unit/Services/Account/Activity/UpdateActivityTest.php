@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services\Account\Activity;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Account\Account;
 use App\Models\Contact\Contact;
@@ -15,7 +16,7 @@ class UpdateActivityTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_updates_an_activity()
     {
         $activity = factory(Activity::class)->create([]);
@@ -48,7 +49,7 @@ class UpdateActivityTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_removes_old_associated_contacts()
     {
         $activity = factory(Activity::class)->create();
@@ -99,7 +100,7 @@ class UpdateActivityTest extends TestCase
         }
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_removes_old_associated_contacts_and_keep_previous_one()
     {
         $activity = factory(Activity::class)->create();
@@ -149,7 +150,7 @@ class UpdateActivityTest extends TestCase
         ]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $activity = factory(Activity::class)->create([]);
@@ -166,7 +167,7 @@ class UpdateActivityTest extends TestCase
         app(UpdateActivity::class)->execute($request);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_throws_an_exception_if_contact_is_not_linked_to_account()
     {
         $activity = factory(Activity::class)->create([]);

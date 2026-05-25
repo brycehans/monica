@@ -2,6 +2,9 @@
 
 namespace Tests\Unit\Helpers;
 
+use PHPUnit\Framework\Attributes\Test;
+use Stevebauman\Location\Drivers\Driver;
+use Stevebauman\Location\Position;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use App\Helpers\RequestHelper;
@@ -11,7 +14,7 @@ use Stevebauman\Location\Facades\Location;
 
 class RequestHelperTest extends TestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_cf_ip()
     {
         Request::instance()->headers->set('Cf-Connecting-Ip', '1.2.3.4');
@@ -22,7 +25,7 @@ class RequestHelperTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_server_ip()
     {
         Request::instance()->server->set('REMOTE_ADDR', '1.2.3.4');
@@ -33,7 +36,7 @@ class RequestHelperTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_country_from_cf()
     {
         Request::instance()->headers->set('Cf-Ipcountry', 'XX');
@@ -44,13 +47,13 @@ class RequestHelperTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_country_from_ip()
     {
-        $driver = $this->mock(\Stevebauman\Location\Drivers\Driver::class, function (MockInterface $mock) {
+        $driver = $this->mock(Driver::class, function (MockInterface $mock) {
             $mock->shouldReceive('get')
                 ->with(\Mockery::on(fn ($request) => $request instanceof \Stevebauman\Location\Request && $request->getIp() === '123.45.67.89'))
-                ->andReturn(tap(new \Stevebauman\Location\Position(), function ($position) {
+                ->andReturn(tap(new Position(), function ($position) {
                     $position->countryCode = 'TEST';
                 }));
         });
@@ -64,7 +67,7 @@ class RequestHelperTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_infos_from_ip()
     {
         config(['location.ipdata.token' => 'test']);
@@ -84,7 +87,7 @@ class RequestHelperTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function get_infos_from_ip_fail()
     {
         config(['location.ipdata.token' => 'test']);

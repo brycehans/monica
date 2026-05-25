@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Helpers;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Helpers\GenderHelper;
 use App\Models\Contact\Gender;
@@ -10,7 +11,7 @@ use App\Models\Contact\Contact;
 
 class GenderHelperTest extends FeatureTestCase
 {
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_all_the_gender_inputs()
     {
         $this->signIn();
@@ -24,7 +25,7 @@ class GenderHelperTest extends FeatureTestCase
         ], $genders[0]);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_replaces_gender_with_another_gender()
     {
         $account = factory(Account::class)->create();

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Models\Contact\Gender;
 use App\Models\Account\Account;
@@ -12,7 +13,7 @@ class GenderTest extends TestCase
 {
     use DatabaseTransactions;
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -23,7 +24,7 @@ class GenderTest extends TestCase
         $this->assertTrue($gender->account()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_belongs_to_many_contacts()
     {
         $account = factory(Account::class)->create([]);
@@ -36,7 +37,7 @@ class GenderTest extends TestCase
         $this->assertTrue($gender->contacts()->exists());
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_gender_name()
     {
         $gender = new Gender;
@@ -48,7 +49,7 @@ class GenderTest extends TestCase
         );
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_gets_the_default_gender()
     {
         $account = factory(Account::class)->create();

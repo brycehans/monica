@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Events;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\FeatureTestCase;
 use App\Events\RecoveryLogin;
 use Illuminate\Auth\AuthManager;
@@ -27,7 +28,7 @@ class Google2faEventListenerTest extends FeatureTestCase
         app('pragmarx.google2fa')->setStateless(false);
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_listens_recovery_event()
     {
         $user = $this->signIn();
@@ -38,7 +39,7 @@ class Google2faEventListenerTest extends FeatureTestCase
         $this->assertTrue($this->app['session']->get('google2fa.auth_passed'));
     }
 
-    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
     public function it_listens_login_remember_event()
     {
         $user = $this->signIn();
