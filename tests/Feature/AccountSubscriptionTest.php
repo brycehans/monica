@@ -40,30 +40,23 @@ class AccountSubscriptionTest extends FeatureTestCase
     {
         parent::setUp();
 
-        if (! static::$productId) {
-            $this->markTestSkipped('Set STRIPE_SECRET to run this test.');
-        } else {
-            config([
-                'services.stripe.secret' => env('STRIPE_SECRET'),
-                'monica.requires_subscription' => true,
-                'monica.paid_plan_monthly_friendly_name' => 'Monthly',
-                'monica.paid_plan_monthly_id' => 'monthly',
-                'monica.paid_plan_monthly_price' => 100,
-                'monica.paid_plan_annual_friendly_name' => 'Annual',
-                'monica.paid_plan_annual_id' => 'annual',
-                'monica.paid_plan_annual_price' => 500,
-            ]);
-        }
+        config([
+            'services.stripe.secret' => 'sk_test_stripemockkey',
+            'monica.requires_subscription' => true,
+            'monica.paid_plan_monthly_friendly_name' => 'Monthly',
+            'monica.paid_plan_monthly_id' => static::$monthlyPlanId,
+            'monica.paid_plan_monthly_price' => 100,
+            'monica.paid_plan_annual_friendly_name' => 'Annual',
+            'monica.paid_plan_annual_id' => static::$annualPlanId,
+            'monica.paid_plan_annual_price' => 500,
+        ]);
     }
 
     public static function setUpBeforeClass(): void
     {
-        if (empty(env('STRIPE_SECRET'))) {
-            return;
-        }
-
-        Stripe::setApiVersion('2019-03-14');
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey('sk_test_stripemockkey');
+        Stripe::$apiBase = env('STRIPE_API_BASE', 'http://stripe-mock:12111');
+        Stripe::setApiVersion('2024-12-18.acacia');
 
         static::$productId = static::$stripePrefix.'product-'.Str::random(10);
         static::$monthlyPlanId = static::$stripePrefix.'monthly-'.Str::random(10);
@@ -72,7 +65,6 @@ class AccountSubscriptionTest extends FeatureTestCase
         Product::create([
             'id' => static::$productId,
             'name' => 'Monica Test Product',
-            'type' => 'service',
         ]);
 
         Plan::create([
