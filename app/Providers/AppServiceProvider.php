@@ -93,7 +93,13 @@ class AppServiceProvider extends ServiceProvider
         // STRIPE_API_BASE env var. Without an override, Cashier talks to the
         // real Stripe API. See tests/playwright/specs/subscription-flow.spec.ts
         // and docker-compose.dev.yml for the matching plumbing.
-        if ($base = env('STRIPE_API_BASE')) {
+        //
+        // The non-production guard is a safety belt: if STRIPE_API_BASE ever
+        // leaks into a production .env (or survives a stale `php artisan
+        // config:cache` from a misconfigured deploy), we still won't silently
+        // reroute real billing traffic at a sidecar. Production stays on the
+        // Cashier default.
+        if (! $this->app->environment('production') && ($base = env('STRIPE_API_BASE'))) {
             Cashier::$apiBaseUrl = $base;
         }
 

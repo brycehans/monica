@@ -8,7 +8,7 @@
     "smoke:headed": "playwright test --headed",
     "smoke:debug": "PWDEBUG=1 playwright test",
     "smoke:report": "playwright show-report",
-    "subscription": "playwright test subscription-flow.spec.ts"
+    "smoke:subscription": "playwright test subscription-flow.spec.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.52.0"
