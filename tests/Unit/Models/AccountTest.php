@@ -418,6 +418,8 @@ class AccountTest extends FeatureTestCase
     #[Test]
     public function update_subscription_returns_same_subscription_when_plan_unchanged()
     {
+        // realistic config setup, mirroring production; not load-bearing for this
+        // test, since getPlanInformationFromConfig('annual') is non-null regardless.
         config([
             'monica.paid_plan_annual_friendly_name' => 'Annual',
             'monica.paid_plan_annual_id' => 'annual',
