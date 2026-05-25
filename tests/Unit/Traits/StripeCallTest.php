@@ -97,6 +97,8 @@ class StripeCallTest extends TestCase
         $this->expectException(StripeException::class);
 
         $this->caller->stripeCall(function () {
+            // ApiErrorException is abstract; UnknownApiErrorException is the concrete
+            // subclass Stripe itself instantiates for un-typed errors. Same catch arm.
             throw UnknownApiErrorException::factory('Unknown error', 500, null, ['error' => ['message' => 'oops']]);
         });
     }
