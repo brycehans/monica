@@ -157,7 +157,7 @@ class CreateContact extends BaseService
         $contact->setAvatarColor();
         $contact->save();
 
-        // populate the avatar from Adorable and grab the Gravatar
+        // grab the Gravatar if available
         GetAvatarsFromInternet::dispatch($contact);
 
         // also generate the default avatar

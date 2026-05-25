@@ -28,7 +28,6 @@ use App\Models\Relationship\Relationship;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Prunable;
 use App\Models\ModelBindingHasher as Model;
-use LaravelAdorable\Facades\LaravelAdorable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -40,8 +39,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 /**
- * @method static \Illuminate\Database\Eloquent\Builder search()
- * @property \App\Models\Instance\SpecialDate|null $birthdate
  * @property int $id
  * @property int $account_id
  * @property int|null $address_book_id
@@ -73,8 +70,6 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
  * @property string|null $food_preferences
  * @property string $avatar_source
  * @property string|null $avatar_gravatar_url
- * @property string|null $avatar_adorable_uuid
- * @property string|null $avatar_adorable_url
  * @property string|null $avatar_default_url
  * @property int|null $avatar_photo_id
  * @property bool $has_avatar
@@ -100,6 +95,7 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Address> $addresses
  * @property-read int|null $addresses_count
  * @property-read Photo|null $avatarPhoto
+ * @property-read SpecialDate|null $birthdate
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Call> $calls
  * @property-read int|null $calls_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\ContactField> $contactFields
@@ -115,7 +111,6 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
  * @property-read int|null $entries_count
  * @property-read SpecialDate|null $firstMetDate
  * @property-read \App\Models\Contact\Gender|null $gender
- * @property-read string|null $avatar_adorable_data_url
  * @property-read string $initials
  * @property-read string $name
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contact\Gift> $gifts
@@ -157,12 +152,11 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
  * @method static Builder<static>|Contact orderByUserPreference()
  * @method static Builder<static>|Contact query()
  * @method static Builder<static>|Contact real()
+ * @method static Builder<static>|Contact search(string $needle, int $accountId, string $orderByColumn, string $orderByDirection = 'asc', ?string $sortOrder = null)
  * @method static Builder<static>|Contact sortedBy(string $criteria)
  * @method static Builder<static>|Contact tags($tags)
  * @method static Builder<static>|Contact whereAccountId($value)
  * @method static Builder<static>|Contact whereAddressBookId($value)
- * @method static Builder<static>|Contact whereAvatarAdorableUrl($value)
- * @method static Builder<static>|Contact whereAvatarAdorableUuid($value)
  * @method static Builder<static>|Contact whereAvatarDefaultUrl($value)
  * @method static Builder<static>|Contact whereAvatarExternalUrl($value)
  * @method static Builder<static>|Contact whereAvatarFileName($value)
@@ -250,7 +244,6 @@ class Contact extends Model
         'is_partial',
         'is_starred',
         'avatar_source',
-        'avatar_adorable_uuid',
         'avatar_gravatar_url',
         'avatar_default_url',
         'avatar_photo_id',
@@ -1294,25 +1287,9 @@ class Contact extends Model
     }
 
     /**
-     * Get the adorable avatar URL.
-     *
-     * @param  string|null  $value
-     * @return string|null
-     */
-    public function getAvatarAdorableDataUrlAttribute(?string $value): ?string
-    {
-        if (isset($this->avatar_adorable_uuid) && $this->avatar_adorable_uuid !== '') {
-            return LaravelAdorable::get(config('monica.avatar_size'), $this->avatar_adorable_uuid);
-        }
-
-        return null;
-    }
-
-    /**
      * Returns the URL of the avatar, properly sized.
-     * The avatar can come from 4 sources:
+     * The avatar can come from 3 sources:
      *  - default,
-     *  - Adorable avatar,
      *  - Gravatar
      *  - or a photo that has been uploaded.
      *
@@ -1323,9 +1300,6 @@ class Contact extends Model
         $avatarURL = '';
 
         switch ($this->avatar_source) {
-            case 'adorable':
-                $avatarURL = $this->avatar_adorable_data_url;
-                break;
             case 'gravatar':
                 $avatarURL = $this->avatar_gravatar_url;
                 break;

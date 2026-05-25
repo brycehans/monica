@@ -20,7 +20,7 @@ class CreateAvatarsForExistingContactsTest extends TestCase
         Queue::fake();
 
         $contact = factory(Contact::class)->create([
-            'avatar_adorable_url' => null,
+            'avatar_default_url' => null,
         ]);
 
         (new CreateAvatarsForExistingContacts)->handle();

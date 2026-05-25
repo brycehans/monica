@@ -15,7 +15,6 @@
         "ext-gmp": "*",
         "ext-intl": "*",
         "ext-redis": "*",
-        "asbiin/laravel-adorable": "^1.0",
         "asbiin/laravel-webauthn": "^4.6",
         "bacon/bacon-qr-code": "^2.0",
         "creativeorange/gravatar": "^1.0",

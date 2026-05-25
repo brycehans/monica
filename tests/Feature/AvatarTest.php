@@ -64,25 +64,6 @@ class AvatarTest extends FeatureTestCase
         Storage::disk('public')->assertExists('photos/'.$file->hashName());
     }
 
-    public function test_user_can_add_an_avatar_as_adorable()
-    {
-        [$user, $contact] = $this->fetchUser();
-
-        $params = [
-            'avatar' => 'adorable',
-        ];
-
-        $response = $this->post('/people/'.$contact->hashID().'/avatar', $params);
-
-        $response->assertStatus(302);
-
-        $this->assertDatabaseHas('contacts', [
-            'id' => $contact->id,
-            'account_id' => $user->account_id,
-            'avatar_source' => 'adorable',
-        ]);
-    }
-
     public function test_user_can_associate_an_avatar_as_photo()
     {
         [$user, $contact] = $this->fetchUser();
