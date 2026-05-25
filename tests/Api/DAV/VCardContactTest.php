@@ -8,7 +8,7 @@ use App\Models\Account\Photo;
 use App\Models\Contact\Contact;
 use Illuminate\Http\UploadedFile;
 use Sabre\VObject\PHPUnitAssertions;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
@@ -68,7 +68,7 @@ class VCardContactTest extends ApiTestCase
 
         $user = $this->signin();
 
-        $image = Image::canvas(1, 1, '#fff')->encode('data-url');
+        $image = ImageManager::gd()->create(1, 1)->fill('#fff')->toPng()->toDataUri();
 
         $response = $this->call('PUT', "/dav/addressbooks/{$user->email}/contacts/single_vcard_stub.vcf", [], [], [],
             ['content-type' => 'application/xml; charset=utf-8'],
@@ -110,7 +110,7 @@ class VCardContactTest extends ApiTestCase
             'uuid' => Str::uuid()->toString(),
         ]);
 
-        $image = Image::canvas(1, 1, '#fff')->encode('data-url');
+        $image = ImageManager::gd()->create(1, 1)->fill('#fff')->toPng()->toDataUri();
 
         $response = $this->call('PUT', "/dav/addressbooks/{$user->email}/contacts/{$contact->uuid}.vcf", [], [], [],
             ['content-type' => 'application/xml; charset=utf-8'],
@@ -138,7 +138,7 @@ class VCardContactTest extends ApiTestCase
 
         $user = $this->signin();
 
-        $image = base64_encode(Image::canvas(1, 1, '#fff')->encode('jpg'));
+        $image = base64_encode((string) ImageManager::gd()->create(1, 1)->fill('#fff')->toJpeg());
 
         $response = $this->call('PUT', "/dav/addressbooks/{$user->email}/contacts/single_vcard_stub.vcf", [], [], [],
             ['content-type' => 'application/xml; charset=utf-8'],

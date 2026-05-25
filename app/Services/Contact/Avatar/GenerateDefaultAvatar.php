@@ -77,24 +77,17 @@ class GenerateDefaultAvatar extends BaseService
      */
     private function createNewAvatar(Contact $contact)
     {
-        $img = null;
-        try {
-            $img = Avatar::create($contact->name)
-                ->setBackground($contact->default_avatar_color)
-                ->getImageObject()
-                ->encode('jpg');
+        $img = Avatar::create($contact->name)
+            ->setBackground($contact->default_avatar_color)
+            ->getImageObject()
+            ->toJpeg();
 
-            $filename = 'avatars/'.$contact->uuid.'.jpg';
-            Storage::disk(config('filesystems.default'))
-                ->put($filename, $img, config('filesystems.default_visibility'));
+        $filename = 'avatars/'.$contact->uuid.'.jpg';
+        Storage::disk(config('filesystems.default'))
+            ->put($filename, (string) $img, config('filesystems.default_visibility'));
 
-            // This will force the browser to reload the new avatar
-            return $filename.'?'.now()->format('U');
-        } finally {
-            if ($img) {
-                $img->destroy();
-            }
-        }
+        // This will force the browser to reload the new avatar
+        return $filename.'?'.now()->format('U');
     }
 
     /**

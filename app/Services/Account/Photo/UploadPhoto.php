@@ -11,10 +11,10 @@ use function Safe\preg_match;
 use App\Helpers\StorageHelper;
 use App\Models\Contact\Contact;
 use function Safe\base64_decode;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Intervention\Image\Exception\NotReadableException;
+use Intervention\Image\Exceptions\DecoderException;
 
 class UploadPhoto extends BaseService
 {
@@ -103,18 +103,16 @@ class UploadPhoto extends BaseService
         $filename = Str::random(40);
 
         try {
-            $image = Image::make($data['data']);
-        } catch (NotReadableException $e) {
+            $image = ImageManager::gd()->read($data['data']);
+        } catch (DecoderException $e) {
             return null;
         }
 
-        $tempfile = $this->storeImage('local', $image, 'temp/'.$filename);
+        $encoded = $image->encode();
+        $tempfile = $this->storeImage('local', $encoded, 'temp/'.$filename);
 
         try {
-            $storagePath = StorageHelper::disk('local')->path($tempfile);
-            // This sets the basePath to get the filesize later
-            $image = $image->setFileInfoFromPath($storagePath);
-            $extension = (new \Mimey\MimeTypes)->getExtension($image->mime());
+            $extension = (new \Mimey\MimeTypes)->getExtension($encoded->mediaType());
             if (empty($extension)) {
                 $extension = str_replace(' ', '', Arr::get($data, 'extension'));
             }
@@ -125,11 +123,11 @@ class UploadPhoto extends BaseService
             $array = [
                 'account_id' => $data['account_id'],
                 'original_filename' => $filename,
-                'filesize' => $image->filesize(),
-                'mime_type' => $image->mime(),
+                'filesize' => $encoded->size(),
+                'mime_type' => $encoded->mediaType(),
             ];
 
-            $array['new_filename'] = $this->storeImage(config('filesystems.default'), $image, 'photos/'.$filename);
+            $array['new_filename'] = $this->storeImage(config('filesystems.default'), $encoded, 'photos/'.$filename);
         } finally {
             $storage = Storage::disk('local');
             if ($storage->exists($tempfile)) {
@@ -141,17 +139,17 @@ class UploadPhoto extends BaseService
     }
 
     /**
-     * Store the decoded image in the temp file.
+     * Store the encoded image in the temp file.
      *
      * @param  string  $disk
-     * @param  \Intervention\Image\Image  $image
+     * @param  \Intervention\Image\Interfaces\EncodedImageInterface  $encoded
      * @param  string  $filename
      * @return string|null
      */
-    private function storeImage(string $disk, $image, string $filename): ?string
+    private function storeImage(string $disk, $encoded, string $filename): ?string
     {
         $result = Storage::disk($disk)
-            ->put($path = $filename, (string) $image->stream(), config('filesystems.default_visibility'));
+            ->put($path = $filename, (string) $encoded, config('filesystems.default_visibility'));
 
         return $result ? $path : null;
     }

@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
 use App\Models\Contact\Contact;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Queue\InteractsWithQueue;
@@ -60,9 +60,9 @@ class ResizeAvatars implements ShouldQueue
     {
         $avatarFileName = 'avatars/'.$filename.'_'.$size.'.'.$extension;
 
-        $avatar = Image::make($avatarFile);
-        $avatar->fit($size);
+        $avatar = ImageManager::gd()->read($avatarFile);
+        $avatar->cover($size, $size);
 
-        $storage->put($avatarFileName, (string) $avatar->stream(), config('filesystems.default_visibility'));
+        $storage->put($avatarFileName, (string) $avatar->encode(), config('filesystems.default_visibility'));
     }
 }
