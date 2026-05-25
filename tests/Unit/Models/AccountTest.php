@@ -408,6 +408,53 @@ class AccountTest extends FeatureTestCase
     }
 
     #[Test]
+    public function get_subscribed_plan_id_returns_empty_string_when_not_subscribed()
+    {
+        $account = factory(Account::class)->create();
+
+        $this->assertSame('', $account->getSubscribedPlanId());
+    }
+
+    #[Test]
+    public function update_subscription_returns_same_subscription_when_plan_unchanged()
+    {
+        config([
+            'monica.paid_plan_annual_friendly_name' => 'Annual',
+            'monica.paid_plan_annual_id' => 'annual',
+        ]);
+
+        $user = $this->signIn();
+        $sub = factory(Subscription::class)->create([
+            'account_id' => $user->account_id,
+            'stripe_price' => 'annual',
+            'stripe_id' => 'sub_X',
+            'type' => 'Annual',
+            'quantity' => 1,
+        ]);
+
+        $result = $user->account->updateSubscription('annual', $sub);
+
+        $this->assertSame($sub->id, $result->id);
+    }
+
+    #[Test]
+    public function update_subscription_aborts_404_for_unknown_plan()
+    {
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class);
+
+        $user = $this->signIn();
+        $sub = factory(Subscription::class)->create([
+            'account_id' => $user->account_id,
+            'stripe_price' => 'annual',
+            'stripe_id' => 'sub_X',
+            'type' => 'Annual',
+            'quantity' => 1,
+        ]);
+
+        $user->account->updateSubscription('not-a-real-plan', $sub);
+    }
+
+    #[Test]
     public function it_populates_the_account_with_three_default_genders()
     {
         $account = factory(Account::class)->create();
