@@ -10,7 +10,7 @@ class PetCategoryTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_only_common_pets()
     {
         $petCategory = new PetCategory;
@@ -21,7 +21,7 @@ class PetCategoryTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_pet_category_name()
     {
         $petCategory = new PetCategory;

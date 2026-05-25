@@ -16,7 +16,7 @@ class SetPersonalDescriptionTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sets_a_personal_description(): void
     {
         Queue::fake();
@@ -59,7 +59,7 @@ class SetPersonalDescriptionTest extends TestCase
         });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given(): void
     {
         $request = [

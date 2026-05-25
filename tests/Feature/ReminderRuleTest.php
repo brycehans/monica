@@ -25,7 +25,7 @@ class ReminderRuleTest extends FeatureTestCase
         return [$user, $reminderRule];
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function reminder_rule_index()
     {
         [$user, $reminderRule] = $this->fetchUser();
@@ -38,7 +38,7 @@ class ReminderRuleTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function reminder_rule_toggle()
     {
         [$user, $reminderRule] = $this->fetchUser();

@@ -10,7 +10,7 @@ class ApiMeControllerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sets_me_contact()
     {
         $user = $this->signin();
@@ -28,7 +28,7 @@ class ApiMeControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_error_if_wrong_account_on_sets_me_contact()
     {
         $this->signin();
@@ -39,7 +39,7 @@ class ApiMeControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_error_if_account_not_exists_on_sets_me_contact()
     {
         $this->signin();
@@ -51,7 +51,7 @@ class ApiMeControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_removes_me_contact()
     {
         $user = $this->signin();

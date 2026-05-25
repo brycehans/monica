@@ -12,7 +12,7 @@ class ActivityTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_the_happened_at()
     {
         $activity = factory(Activity::class)->make();
@@ -23,7 +23,7 @@ class ActivityTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_a_title()
     {
         $type = factory(ActivityType::class)->create();
@@ -38,7 +38,7 @@ class ActivityTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_info_for_journal_entry()
     {
         $activity = factory(Activity::class)->create();

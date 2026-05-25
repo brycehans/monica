@@ -97,7 +97,7 @@ class ApiActivitiesTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_get_all()
     {
         $user = $this->signin();
@@ -124,7 +124,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_get_contact_all()
     {
         $user = $this->signin();
@@ -160,7 +160,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_get_contact_all_error()
     {
         $this->signin();
@@ -170,7 +170,7 @@ class ApiActivitiesTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_get_contact_all_error_wrong_account()
     {
         $this->signin();
@@ -181,7 +181,7 @@ class ApiActivitiesTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_get_one()
     {
         $user = $this->signin();
@@ -208,7 +208,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_get_one_error()
     {
         $this->signin();
@@ -218,7 +218,7 @@ class ApiActivitiesTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_get_one_error_wrong_account()
     {
         $this->signin();
@@ -229,7 +229,7 @@ class ApiActivitiesTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_create()
     {
         $user = $this->signin();
@@ -273,7 +273,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_create_error_wrong_parameter()
     {
         $user = $this->signin();
@@ -291,7 +291,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_create_error_bad_account()
     {
         $this->signin();
@@ -308,7 +308,7 @@ class ApiActivitiesTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_create_error_bad_account2()
     {
         $user = $this->signin();
@@ -329,7 +329,7 @@ class ApiActivitiesTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update()
     {
         $user = $this->signin();
@@ -372,7 +372,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update_category()
     {
         $user = $this->signin();
@@ -427,7 +427,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update_existing()
     {
         $user = $this->signin();
@@ -494,7 +494,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update_error_wrong_parameter()
     {
         $user = $this->signin();
@@ -510,7 +510,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update_error_wrong_account_for_activity()
     {
         $user = $this->signin();
@@ -530,7 +530,7 @@ class ApiActivitiesTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_update_error_wrong_account_for_contacts()
     {
         $user = $this->signin();
@@ -550,7 +550,7 @@ class ApiActivitiesTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_delete()
     {
         $user = $this->signin();
@@ -570,7 +570,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_delete_error()
     {
         $this->signin();
@@ -582,7 +582,7 @@ class ApiActivitiesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function activities_delete_with_wrong_account()
     {
         $this->signin();

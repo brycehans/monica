@@ -12,7 +12,7 @@ class DavClientsUpdateTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_dispatch_subscription_update()
     {
         Queue::fake();

@@ -13,7 +13,7 @@ class SqlExportAccountTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_exports_account_information()
     {
         Storage::fake('local');
@@ -32,7 +32,7 @@ class SqlExportAccountTest extends TestCase
         Storage::disk('local')->assertExists($filename);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [];

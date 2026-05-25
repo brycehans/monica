@@ -26,7 +26,7 @@ class AddressBookSynchronizerTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sync_empty_changes()
     {
         Bus::fake();
@@ -50,7 +50,7 @@ class AddressBookSynchronizerTest extends TestCase
         $tester->assert();
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sync_no_changes()
     {
         Bus::fake();
@@ -76,7 +76,7 @@ class AddressBookSynchronizerTest extends TestCase
         $tester->assert();
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sync_changes_added_local_contact()
     {
         Bus::fake();
@@ -116,7 +116,7 @@ class AddressBookSynchronizerTest extends TestCase
         $tester->assert();
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sync_changes_added_local_contact_batched()
     {
         Bus::fake();
@@ -153,7 +153,7 @@ class AddressBookSynchronizerTest extends TestCase
         });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sync_changes_deleted_contact_batched()
     {
         Bus::fake();
@@ -194,7 +194,7 @@ class AddressBookSynchronizerTest extends TestCase
         });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_forcesync_changes_added_local_contact()
     {
         Bus::fake();
@@ -255,7 +255,7 @@ class AddressBookSynchronizerTest extends TestCase
         $tester->assert();
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_forcesync_changes_added_local_contact_batched()
     {
         Bus::fake();
@@ -307,7 +307,7 @@ class AddressBookSynchronizerTest extends TestCase
         });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_forcesync_changes_deleted_contact_batched()
     {
         Bus::fake();

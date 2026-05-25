@@ -14,7 +14,7 @@ class PopulateContactFieldTypesTableTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -32,7 +32,7 @@ class PopulateContactFieldTypesTableTest extends TestCase
         app(PopulateContactFieldTypesTable::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_populate_contact_field_types_tables()
     {
         $account = factory(Account::class)->create([]);
@@ -61,7 +61,7 @@ class PopulateContactFieldTypesTableTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_only_populates_partially()
     {
         $account = factory(Account::class)->create([]);

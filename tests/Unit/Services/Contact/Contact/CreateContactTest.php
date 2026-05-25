@@ -19,7 +19,7 @@ class CreateContactTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_contact()
     {
         $account = factory(Account::class)->create([]);
@@ -63,7 +63,7 @@ class CreateContactTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_contact_with_email()
     {
         $account = factory(Account::class)->create([]);
@@ -103,7 +103,7 @@ class CreateContactTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_contact_and_triggers_an_audit_log()
     {
         Queue::fake();
@@ -144,7 +144,7 @@ class CreateContactTest extends TestCase
         });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_contact_without_gender()
     {
         $account = factory(Account::class)->create([]);
@@ -183,7 +183,7 @@ class CreateContactTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $account = factory(Account::class)->create([]);
@@ -207,7 +207,7 @@ class CreateContactTest extends TestCase
         app(CreateContact::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_account_doesnt_exist()
     {
         $gender = factory(Gender::class)->create([]);

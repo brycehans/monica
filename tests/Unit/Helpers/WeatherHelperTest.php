@@ -16,14 +16,14 @@ class WeatherHelperTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_null_if_address_is_not_set()
     {
         $contact = factory(Contact::class)->create([]);
         $this->assertNull(WeatherHelper::getWeatherForAddress($contact->addresses()->first()));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_dispatch_batch_with_get_coordinates()
     {
         config(['monica.enable_geolocation' => true]);

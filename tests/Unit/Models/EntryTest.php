@@ -10,7 +10,7 @@ class EntryTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_info_for_journal_entry()
     {
         $entry = factory(Entry::class)->make([

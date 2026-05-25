@@ -13,7 +13,7 @@ class OccupationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -24,7 +24,7 @@ class OccupationTest extends TestCase
         $this->assertTrue($occupation->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact()
     {
         $contact = factory(Contact::class)->create([]);
@@ -34,7 +34,7 @@ class OccupationTest extends TestCase
         $this->assertTrue($occupation->contact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_company()
     {
         $company = factory(Company::class)->create([]);

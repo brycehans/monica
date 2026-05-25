@@ -15,7 +15,7 @@ class GetGPSCoordinateTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_null_if_geolocation_is_disabled()
     {
         config(['monica.enable_geolocation' => false]);
@@ -31,7 +31,7 @@ class GetGPSCoordinateTest extends TestCase
         app(GetGPSCoordinate::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_gps_coordinates()
     {
         config(['monica.enable_geolocation' => true]);
@@ -61,7 +61,7 @@ class GetGPSCoordinateTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_null_if_address_is_garbage()
     {
         config(['monica.enable_geolocation' => true]);
@@ -89,7 +89,7 @@ class GetGPSCoordinateTest extends TestCase
         $this->assertNull($place);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         config(['monica.enable_geolocation' => true]);
@@ -104,7 +104,7 @@ class GetGPSCoordinateTest extends TestCase
         app(GetGPSCoordinate::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_release_the_job_if_rate_limited_second()
     {
         config(['monica.enable_geolocation' => true]);

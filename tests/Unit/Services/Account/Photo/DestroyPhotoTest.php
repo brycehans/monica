@@ -18,7 +18,7 @@ class DestroyPhotoTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_photo()
     {
         $contact = factory(Contact::class)->create([]);
@@ -42,7 +42,7 @@ class DestroyPhotoTest extends TestCase
         Storage::disk('photos')->assertMissing('photo.png');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -54,7 +54,7 @@ class DestroyPhotoTest extends TestCase
         app(DestroyPhoto::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_a_photo_doesnt_exist()
     {
         $account = factory(Account::class)->create([]);

@@ -11,7 +11,7 @@ class WeatherTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -21,14 +21,14 @@ class WeatherTest extends TestCase
         $this->assertTrue($weather->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_place()
     {
         $weather = factory(Weather::class)->create([]);
         $this->assertTrue($weather->place()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_current_temperature()
     {
         $weather = factory(Weather::class)->create();
@@ -39,7 +39,7 @@ class WeatherTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_current_temperature_in_celsius()
     {
         $weather = factory(Weather::class)->create();
@@ -50,7 +50,7 @@ class WeatherTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_current_temperature_in_fahrenheit()
     {
         $weather = factory(Weather::class)->create();
@@ -61,7 +61,7 @@ class WeatherTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_current_summary()
     {
         $weather = factory(Weather::class)->create();
@@ -72,7 +72,7 @@ class WeatherTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_current_code()
     {
         $weather = factory(Weather::class)->create();
@@ -83,7 +83,7 @@ class WeatherTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_weather_emoji()
     {
         $weather = factory(Weather::class)->create();

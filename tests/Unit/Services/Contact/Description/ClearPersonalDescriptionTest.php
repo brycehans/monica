@@ -16,7 +16,7 @@ class ClearPersonalDescriptionTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_clears_a_personal_description(): void
     {
         Queue::fake();
@@ -58,7 +58,7 @@ class ClearPersonalDescriptionTest extends TestCase
         });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given(): void
     {
         $request = [

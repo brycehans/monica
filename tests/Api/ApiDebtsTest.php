@@ -31,7 +31,7 @@ class ApiDebtsTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_debts()
     {
         $user = $this->signin();
@@ -66,7 +66,7 @@ class ApiDebtsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_debts_for_a_given_contact()
     {
         $user = $this->signin();
@@ -101,7 +101,7 @@ class ApiDebtsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_get_debts_from_an_invalid_contact()
     {
         $user = $this->signin();
@@ -111,7 +111,7 @@ class ApiDebtsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_one_debt()
     {
         $user = $this->signin();
@@ -143,7 +143,7 @@ class ApiDebtsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_get_a_debt_with_an_invalid_id()
     {
         $user = $this->signin();
@@ -153,7 +153,7 @@ class ApiDebtsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_a_debt()
     {
         $user = $this->signin();
@@ -204,7 +204,7 @@ class ApiDebtsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_create_a_debt_if_fields_are_missing()
     {
         $user = $this->signin();
@@ -223,7 +223,7 @@ class ApiDebtsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_create_a_debt_with_a_bad_account()
     {
         $user = $this->signin();
@@ -244,7 +244,7 @@ class ApiDebtsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_debt()
     {
         $user = $this->signin();
@@ -294,7 +294,7 @@ class ApiDebtsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_update_a_debt_with_missing_parameters()
     {
         $user = $this->signin();
@@ -313,7 +313,7 @@ class ApiDebtsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_update_a_debt_with_a_wrong_account()
     {
         $user = $this->signin();
@@ -338,7 +338,7 @@ class ApiDebtsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_deletes_a_debt()
     {
         $user = $this->signin();
@@ -365,7 +365,7 @@ class ApiDebtsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_delete_a_debt_with_an_invalid_id()
     {
         $user = $this->signin();

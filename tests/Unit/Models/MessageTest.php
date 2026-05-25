@@ -13,7 +13,7 @@ class MessageTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -24,7 +24,7 @@ class MessageTest extends TestCase
         $this->assertTrue($message->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact()
     {
         $contact = factory(Contact::class)->create();
@@ -35,7 +35,7 @@ class MessageTest extends TestCase
         $this->assertTrue($message->contact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_conversation()
     {
         $conversation = factory(Conversation::class)->create();
@@ -46,7 +46,7 @@ class MessageTest extends TestCase
         $this->assertTrue($message->conversation()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_content_attribute()
     {
         $message = factory(Message::class)->create([

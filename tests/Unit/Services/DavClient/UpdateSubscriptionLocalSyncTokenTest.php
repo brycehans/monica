@@ -14,7 +14,7 @@ class UpdateSubscriptionLocalSyncTokenTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_update_token()
     {
         $subscription = AddressBookSubscription::factory()->create([
@@ -48,7 +48,7 @@ class UpdateSubscriptionLocalSyncTokenTest extends TestCase
         $this->assertEquals($token->id, $subscription->localSyncToken);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_wont_update_null_token()
     {
         $subscription = AddressBookSubscription::factory()->create([

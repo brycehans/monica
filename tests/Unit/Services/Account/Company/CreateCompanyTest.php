@@ -17,7 +17,7 @@ class CreateCompanyTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_company()
     {
         Queue::fake();
@@ -61,7 +61,7 @@ class CreateCompanyTest extends TestCase
         });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $account = factory(Account::class)->create([]);

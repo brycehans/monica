@@ -11,7 +11,7 @@ class DestroyOccupationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_occupation()
     {
         $occupation = factory(Occupation::class)->create([]);

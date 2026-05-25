@@ -14,7 +14,7 @@ class AssociateGiftToPhotoTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_associates_a_photo_to_a_gift()
     {
         $gift = factory(Gift::class)->create();
@@ -37,7 +37,7 @@ class AssociateGiftToPhotoTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $this->expectException(ValidationException::class);
@@ -49,7 +49,7 @@ class AssociateGiftToPhotoTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_photo_is_wrong_account()
     {
         $gift = factory(Gift::class)->create();

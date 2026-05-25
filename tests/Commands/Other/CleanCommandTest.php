@@ -12,7 +12,7 @@ class CleanCommandTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function clean_command_left_one_token()
     {
         $account = factory(Account::class)->create();
@@ -36,7 +36,7 @@ class CleanCommandTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function clean_command_left_all_token()
     {
         $account = factory(Account::class)->create();
@@ -69,7 +69,7 @@ class CleanCommandTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function clean_command_dryrun()
     {
         $account = factory(Account::class)->create();

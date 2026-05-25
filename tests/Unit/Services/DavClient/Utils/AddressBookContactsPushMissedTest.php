@@ -22,7 +22,7 @@ class AddressBookContactsPushMissedTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_push_contacts_missed()
     {
         $subscription = AddressBookSubscription::factory()->create();

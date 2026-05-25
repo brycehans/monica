@@ -16,7 +16,7 @@ class ReminderTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -27,7 +27,7 @@ class ReminderTest extends TestCase
         $this->assertTrue($reminder->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact()
     {
         $contact = factory(Contact::class)->create([]);
@@ -38,7 +38,7 @@ class ReminderTest extends TestCase
         $this->assertTrue($reminder->contact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_reminder_outbox()
     {
         $user = factory(User::class)->create([]);
@@ -52,7 +52,7 @@ class ReminderTest extends TestCase
         $this->assertTrue($reminder->reminderOutboxes()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_title_attribute()
     {
         $reminder = factory(Reminder::class)->create([
@@ -65,7 +65,7 @@ class ReminderTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_description_attribute()
     {
         $reminder = factory(Reminder::class)->create([
@@ -78,7 +78,7 @@ class ReminderTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_calculates_next_expected_date()
     {
         $timezone = 'UTC';
@@ -132,7 +132,7 @@ class ReminderTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_calculates_next_expected_date_in_timezone()
     {
         config(['app.timezone' => 'Europe/Paris']);
@@ -155,7 +155,7 @@ class ReminderTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_schedules_a_reminder_for_one_user()
     {
         Carbon::setTestNow(Carbon::create(2017, 2, 1));
@@ -177,7 +177,7 @@ class ReminderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function scheduling_a_reminder_also_schedules_notifications_for_one_user()
     {
         Carbon::setTestNow(Carbon::create(2017, 2, 1));
@@ -222,7 +222,7 @@ class ReminderTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_schedule_a_notification_if_date_is_too_close_to_present_date()
     {
         Carbon::setTestNow(Carbon::create(2017, 2, 1));

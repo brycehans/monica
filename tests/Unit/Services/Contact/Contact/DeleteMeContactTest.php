@@ -15,7 +15,7 @@ class DeleteMeContactTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_set_me_as_a_a_contact()
     {
         $user = factory(User::class)->create();
@@ -39,7 +39,7 @@ class DeleteMeContactTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $account = factory(Account::class)->create();
@@ -53,7 +53,7 @@ class DeleteMeContactTest extends TestCase
         app(DeleteMeContact::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_contact_not_found()
     {
         $account = factory(Account::class)->create();

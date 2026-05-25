@@ -15,7 +15,7 @@ class DestroyAllDocumentsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_all_documents()
     {
         Storage::fake();
@@ -42,7 +42,7 @@ class DestroyAllDocumentsTest extends TestCase
         }
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [

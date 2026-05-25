@@ -17,7 +17,7 @@ class SendRemindersTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_schedules_a_reminder_email_job()
     {
         Bus::fake();
@@ -45,7 +45,7 @@ class SendRemindersTest extends TestCase
         Bus::assertDispatched(NotifyUserAboutReminder::class);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_schedule_a_notification_if_it_is_not_the_right_time()
     {
         Bus::fake();

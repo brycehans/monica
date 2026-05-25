@@ -12,7 +12,7 @@ class CreateAddressBookSubscriptionTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_add_addressbook()
     {
         $user = factory(User::class)->create();

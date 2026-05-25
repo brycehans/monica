@@ -24,7 +24,7 @@ class GendersControllerTest extends FeatureTestCase
         'name',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_list_of_genders()
     {
         $user = $this->signin();
@@ -43,7 +43,7 @@ class GendersControllerTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_list_of_genderTypes()
     {
         $user = $this->signin();
@@ -62,7 +62,7 @@ class GendersControllerTest extends FeatureTestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_new_gender()
     {
         $user = $this->signin();
@@ -82,7 +82,7 @@ class GendersControllerTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_new_default_gender()
     {
         $user = $this->signin();
@@ -98,7 +98,7 @@ class GendersControllerTest extends FeatureTestCase
         $this->assertEquals($response->getData()->id, $user->account->default_gender_id);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_gender()
     {
         $user = $this->signin();
@@ -120,7 +120,7 @@ class GendersControllerTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_replaces_a_gender()
     {
         $user = $this->signin();
@@ -149,7 +149,7 @@ class GendersControllerTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_replaces_a_gender_with_error()
     {
         $user = $this->signin();
@@ -166,7 +166,7 @@ class GendersControllerTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_gender()
     {
         $user = $this->signin();
@@ -183,7 +183,7 @@ class GendersControllerTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_the_default_gender()
     {
         $user = $this->signin();

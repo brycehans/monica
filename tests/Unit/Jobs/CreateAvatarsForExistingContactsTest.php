@@ -14,7 +14,7 @@ class CreateAvatarsForExistingContactsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_jobs_for_avatars_migration()
     {
         Queue::fake();

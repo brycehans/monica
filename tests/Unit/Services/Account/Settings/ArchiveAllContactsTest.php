@@ -14,7 +14,7 @@ class ArchiveAllContactsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_archives_all_the_contacts_in_an_account()
     {
         $user = factory(User::class)->create([]);
@@ -35,7 +35,7 @@ class ArchiveAllContactsTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [];

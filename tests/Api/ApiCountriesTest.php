@@ -16,7 +16,7 @@ class ApiCountriesTest extends ApiTestCase
         'object',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_list_of_countries()
     {
         $user = $this->signin();
@@ -37,7 +37,7 @@ class ApiCountriesTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_specific_country_in_a_specific_locale()
     {
         $user = $this->signin();

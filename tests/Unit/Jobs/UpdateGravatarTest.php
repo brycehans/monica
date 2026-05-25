@@ -13,7 +13,7 @@ class UpdateGravatarTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_update_gravatar()
     {
         $contact = factory(Contact::class)->create();

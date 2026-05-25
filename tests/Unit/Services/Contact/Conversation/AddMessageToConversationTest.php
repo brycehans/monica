@@ -16,7 +16,7 @@ class AddMessageToConversationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [
@@ -29,7 +29,7 @@ class AddMessageToConversationTest extends TestCase
         app(AddMessageToConversation::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_message()
     {
         $conversation = factory(Conversation::class)->create([]);
@@ -60,7 +60,7 @@ class AddMessageToConversationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_contact_is_not_found()
     {
         $account = factory(Account::class)->create();
@@ -84,7 +84,7 @@ class AddMessageToConversationTest extends TestCase
         app(AddMessageToConversation::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_conversation_is_not_found2()
     {
         $account = factory(Account::class)->create();

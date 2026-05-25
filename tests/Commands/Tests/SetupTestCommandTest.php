@@ -10,7 +10,7 @@ class SetupTestCommandTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_completes_non_interactively_with_skip_seed()
     {
         /** @var \Tests\Helpers\CommandCallerFake */
@@ -25,7 +25,7 @@ class SetupTestCommandTest extends TestCase
         $fake->assertContainsMessage('✓ Symlink the storage folder');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_accepts_contacts_option_to_set_seed_count()
     {
         /** @var \Tests\Helpers\CommandCallerFake */
@@ -40,7 +40,7 @@ class SetupTestCommandTest extends TestCase
         $fake->assertContainsMessage('✓ Performing migrations');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_prompts_for_confirmation_when_interactive()
     {
         /** @var \Tests\Helpers\CommandCallerFake */
@@ -57,7 +57,7 @@ class SetupTestCommandTest extends TestCase
         $fake->assertContainsMessage('✓ Performing migrations');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_when_user_declines_confirmation()
     {
         /** @var \Tests\Helpers\CommandCallerFake */

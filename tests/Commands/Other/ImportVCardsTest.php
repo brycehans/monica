@@ -12,7 +12,7 @@ class ImportVCardsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_user()
     {
         $path = base_path('tests/stubs/vcard_stub.vcf');
@@ -23,7 +23,7 @@ class ImportVCardsTest extends TestCase
             ->run();
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_file()
     {
         $user = $this->getUser();
@@ -34,7 +34,7 @@ class ImportVCardsTest extends TestCase
             ->run();
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_imports_contacts()
     {
         Storage::fake('public');

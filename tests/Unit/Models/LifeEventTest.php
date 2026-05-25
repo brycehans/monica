@@ -11,7 +11,7 @@ class LifeEventTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $lifeEvent = factory(LifeEvent::class)->create([]);
@@ -19,7 +19,7 @@ class LifeEventTest extends TestCase
         $this->assertTrue($lifeEvent->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_contact()
     {
         $lifeEvent = factory(LifeEvent::class)->create([]);
@@ -27,7 +27,7 @@ class LifeEventTest extends TestCase
         $this->assertTrue($lifeEvent->contact()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_type()
     {
         $lifeEvent = factory(LifeEvent::class)->create([]);
@@ -35,7 +35,7 @@ class LifeEventTest extends TestCase
         $this->assertTrue($lifeEvent->lifeEventType()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_a_reminder()
     {
         $lifeEvent = factory(LifeEvent::class)->create([]);
@@ -48,7 +48,7 @@ class LifeEventTest extends TestCase
         $this->assertTrue($lifeEvent->reminder()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_name_attribute()
     {
         $lifeEvent = factory(LifeEvent::class)->create([
@@ -61,7 +61,7 @@ class LifeEventTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_note_attribute()
     {
         $lifeEvent = factory(LifeEvent::class)->create([

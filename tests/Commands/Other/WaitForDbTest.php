@@ -9,7 +9,7 @@ class WaitForDbTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_runs_wait_for_db_command()
     {
         $this->artisan('waitfordb')

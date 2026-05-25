@@ -14,7 +14,7 @@ class CreateRelationshipTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_relationship()
     {
         $account = factory(Account::class)->create();
@@ -46,7 +46,7 @@ class CreateRelationshipTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_adding_relationship_when_relationship_type_is_unknown()
     {
         $account = factory(Account::class)->create();
@@ -70,7 +70,7 @@ class CreateRelationshipTest extends TestCase
         app(CreateRelationship::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_contact_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();
@@ -93,7 +93,7 @@ class CreateRelationshipTest extends TestCase
         app(CreateRelationship::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_other_contact_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();
@@ -117,7 +117,7 @@ class CreateRelationshipTest extends TestCase
         app(CreateRelationship::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_a_relationship_and_reverse()
     {
         $account = factory(Account::class)->create();

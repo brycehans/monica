@@ -21,7 +21,7 @@ class ApiComplianceControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_terms()
     {
         $term = factory(Term::class, 10)->create([
@@ -52,7 +52,7 @@ class ApiComplianceControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_single_term()
     {
         $term = factory(Term::class)->create([
@@ -76,7 +76,7 @@ class ApiComplianceControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_get_a_single_term()
     {
         $response = $this->json('GET', '/api/compliance/3');

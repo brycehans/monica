@@ -25,7 +25,7 @@ class AddressBookContactsUpdaterTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sync_changes_multiget()
     {
         $subscription = AddressBookSubscription::factory()->create();
@@ -71,7 +71,7 @@ class AddressBookContactsUpdaterTest extends TestCase
         $this->assertEquals(['https://test/dav/uuid2'], $hrefs);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sync_deleted_multiget()
     {
         $subscription = AddressBookSubscription::factory()->create();
@@ -103,7 +103,7 @@ class AddressBookContactsUpdaterTest extends TestCase
         $this->assertEquals(['https://test/dav/uuid2'], $hrefs);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sync_changes_simple()
     {
         $subscription = AddressBookSubscription::factory()->create([
@@ -169,7 +169,7 @@ class AddressBookContactsUpdaterTest extends TestCase
         $this->assertEquals('https://test/dav/uuid2', $dto->uri);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sync_deleted_simple()
     {
         $subscription = AddressBookSubscription::factory()->create([

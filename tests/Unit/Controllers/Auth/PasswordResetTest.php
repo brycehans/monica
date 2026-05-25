@@ -12,7 +12,7 @@ class PasswordResetTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sends_password_reset_email()
     {
         NotificationFacade::fake();

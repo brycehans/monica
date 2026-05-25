@@ -19,7 +19,7 @@ class UpdateVCardTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_create_a_contact()
     {
         $fake = Bus::fake();

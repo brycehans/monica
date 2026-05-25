@@ -33,7 +33,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_addresses()
     {
         $user = $this->signin();
@@ -62,7 +62,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_applies_the_limit_parameter_in_search()
     {
         $user = $this->signin();
@@ -96,7 +96,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_addresses_for_a_specific_contact()
     {
         $user = $this->signin();
@@ -117,7 +117,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function calling_addresses_gets_an_error_if_contact_doesnt_exist()
     {
         $user = $this->signin();
@@ -127,7 +127,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_specific_address()
     {
         $user = $this->signin();
@@ -153,7 +153,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_an_address()
     {
         $user = $this->signin();
@@ -192,7 +192,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         $this->assertGreaterThan(0, $addressId);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function create_addresses_gets_an_error_if_fields_are_missing()
     {
         $user = $this->signin();
@@ -206,7 +206,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function create_addresses_gets_an_error_if_contact_is_not_linked_to_user()
     {
         $user = $this->signin();
@@ -227,7 +227,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_an_address()
     {
         $user = $this->signin();
@@ -268,7 +268,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function updating_address_generates_an_error()
     {
         $user = $this->signin();
@@ -283,7 +283,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_update_an_address_if_account_is_not_linked_to_address()
     {
         $user = $this->signin();
@@ -300,7 +300,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_deletes_an_address()
     {
         $user = $this->signin();
@@ -326,7 +326,7 @@ class ApiAdressesControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function address_delete_error()
     {
         $user = $this->signin();

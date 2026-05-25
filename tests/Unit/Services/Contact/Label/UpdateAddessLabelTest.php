@@ -15,7 +15,7 @@ class UpdateAddessLabelTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_contact_field_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -45,7 +45,7 @@ class UpdateAddessLabelTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_creates_contact_field_multiple_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -101,7 +101,7 @@ class UpdateAddessLabelTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_adds_contact_field_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -142,7 +142,7 @@ class UpdateAddessLabelTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_removes_contact_field_labels()
     {
         $account = factory(Account::class)->create([]);
@@ -183,7 +183,7 @@ class UpdateAddessLabelTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_account_doesnt_exist()
     {
         $address = factory(Address::class)->create();
@@ -197,7 +197,7 @@ class UpdateAddessLabelTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_contact_field_doesnt_exist()
     {
         $account = factory(Account::class)->create([]);
@@ -211,7 +211,7 @@ class UpdateAddessLabelTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_contact_field_is_wrong_account()
     {
         $account = factory(Account::class)->create([]);

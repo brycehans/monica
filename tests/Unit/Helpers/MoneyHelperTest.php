@@ -13,7 +13,7 @@ class MoneyHelperTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_the_amount_with_the_currency_symbol()
     {
         $currency = new Currency();
@@ -27,7 +27,7 @@ class MoneyHelperTest extends TestCase
         $this->assertEquals(5038.29, MoneyHelper::exchangeValue(503829, $currency));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_the_amount_with_the_currency_symbol_in_the_right_locale()
     {
         App::setLocale('fr');
@@ -43,7 +43,7 @@ class MoneyHelperTest extends TestCase
         $this->assertEquals(5038.29, MoneyHelper::exchangeValue(503829, $currency));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_the_amount_with_the_currency_symbol_with_the_right_punctuation()
     {
         $currency = new Currency();
@@ -57,7 +57,7 @@ class MoneyHelperTest extends TestCase
         $this->assertEquals(5038, MoneyHelper::exchangeValue(5038, $currency));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_formats_the_currency_with_the_right_locale()
     {
         $currency = Currency::where('iso', 'GBP')->first();
@@ -74,20 +74,20 @@ class MoneyHelperTest extends TestCase
         $this->assertEquals(2734.12, MoneyHelper::exchangeValue(273412, $currency));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_the_amount_without_the_currency_symbol_if_not_provided()
     {
         $this->assertEquals('500', MoneyHelper::format(500));
         $this->assertEquals('5,000', MoneyHelper::format(5000));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_zero_if_amount_is_null()
     {
         $this->assertEquals('0', MoneyHelper::format(null));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_covers_brazilian_currency()
     {
         $currency = Currency::where('iso', 'BRL')->first();
@@ -102,7 +102,7 @@ class MoneyHelperTest extends TestCase
         $this->assertEquals(12345.67, MoneyHelper::exchangeValue(1234567, $currency));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_parse_an_input_value()
     {
         $currency = new Currency();

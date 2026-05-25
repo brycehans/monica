@@ -14,7 +14,7 @@ class DestroyReminderTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_a_reminder()
     {
         $reminder = factory(Reminder::class)->create([
@@ -41,7 +41,7 @@ class DestroyReminderTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_destroys_scheduled_reminders()
     {
         // prepare a reminder and schedule some notifications

@@ -15,7 +15,7 @@ class CreateOccupationTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_an_occupation()
     {
         $account = factory(Account::class)->create([]);
@@ -48,7 +48,7 @@ class CreateOccupationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $account = factory(Account::class)->create([]);

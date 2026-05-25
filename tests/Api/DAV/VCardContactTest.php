@@ -16,9 +16,7 @@ class VCardContactTest extends ApiTestCase
 {
     use DatabaseTransactions, CardEtag, PHPUnitAssertions;
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_get_one_contact()
     {
         $user = $this->signin();
@@ -36,9 +34,7 @@ class VCardContactTest extends ApiTestCase
         $this->assertVObjectEqualsVObject($this->getCard($contact, true), $response->getContent());
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_put_one_contact()
     {
         $user = $this->signin();
@@ -59,9 +55,7 @@ class VCardContactTest extends ApiTestCase
         ]);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_put_one_contact_with_photo()
     {
         Storage::fake();
@@ -93,9 +87,7 @@ class VCardContactTest extends ApiTestCase
         Storage::disk('public')->assertExists($photo->new_filename);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_put_one_contact_with_photo_already_set()
     {
         $user = $this->signin();
@@ -129,9 +121,7 @@ class VCardContactTest extends ApiTestCase
         ]);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_put_one_contact_with_photo_and_attributes()
     {
         Storage::fake();
@@ -163,9 +153,7 @@ class VCardContactTest extends ApiTestCase
         Storage::disk('public')->assertExists($photo->new_filename);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_update_existing_contact()
     {
         $user = $this->signin();
@@ -189,9 +177,7 @@ class VCardContactTest extends ApiTestCase
         ]);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_update_existing_contact_if_modified()
     {
         $user = $this->signin();
@@ -219,9 +205,7 @@ class VCardContactTest extends ApiTestCase
         ]);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_update_existing_contact_if_modified_not_modified()
     {
         $user = $this->signin();
@@ -249,9 +233,7 @@ class VCardContactTest extends ApiTestCase
         $response->assertHeaderMissing('ETag');
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_update_existing_contact_if_unmodified()
     {
         $user = $this->signin();
@@ -279,9 +261,7 @@ class VCardContactTest extends ApiTestCase
         ]);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_update_existing_contact_if_unmodified_error()
     {
         $user = $this->signin();
@@ -310,9 +290,7 @@ class VCardContactTest extends ApiTestCase
   <s:message>An If-Unmodified-Since header was specified, but the entity has been changed since the specified date.</s:message>", false);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_update_existing_contact_no_modify()
     {
         $user = $this->signin();
@@ -468,10 +446,8 @@ class VCardContactTest extends ApiTestCase
           '</d:multistatus>', false);
     }
 
-    /**
-     * @group dav
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
+    #[\PHPUnit\Framework\Attributes\Test]
     public function carddav_delete_one_contact()
     {
         $user = $this->signin();

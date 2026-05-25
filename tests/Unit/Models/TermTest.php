@@ -12,7 +12,7 @@ class TermTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_many_users()
     {
         $account = factory(Account::class)->create([]);

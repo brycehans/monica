@@ -13,7 +13,7 @@ class SynchronizeAddressBookTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_runs_sync()
     {
         $this->mock(AddressBookSynchronizer::class, function (MockInterface $mock) {
@@ -36,7 +36,7 @@ class SynchronizeAddressBookTest extends TestCase
         (new SynchronizeAddressBook())->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_runs_sync_force()
     {
         $this->mock(AddressBookSynchronizer::class, function (MockInterface $mock) {

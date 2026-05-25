@@ -13,7 +13,7 @@ class Google2FATest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_tests_a_wrong_key_for_Google2fa()
     {
         $google2fa = app('pragmarx.google2fa');
@@ -25,7 +25,7 @@ class Google2FATest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_tests_a_correct_key_for_Google2fa()
     {
         $google2fa = app('pragmarx.google2fa');
@@ -38,7 +38,7 @@ class Google2FATest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_logs_in_with_Google2Fa()
     {
         config(['google2fa.enabled' => true]);

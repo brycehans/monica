@@ -15,7 +15,7 @@ class LogAccountActionTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_logs_an_action(): void
     {
         $michael = factory(User::class)->create([]);
@@ -51,7 +51,7 @@ class LogAccountActionTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_logs_an_action_about_a_contact(): void
     {
         $michael = factory(User::class)->create([]);
@@ -91,7 +91,7 @@ class LogAccountActionTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given(): void
     {
         $request = [

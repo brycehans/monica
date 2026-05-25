@@ -10,7 +10,7 @@ class MeTest extends FeatureTestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_me()
     {
         $user = $this->signin();
@@ -33,7 +33,7 @@ class MeTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_error_wrong_parameter()
     {
         $this->signin();
@@ -48,7 +48,7 @@ class MeTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_error_bad_account()
     {
         $this->signin();
@@ -65,7 +65,7 @@ class MeTest extends FeatureTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_deletes_me()
     {
         $user = $this->signin();

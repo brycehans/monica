@@ -14,7 +14,7 @@ class InstanceHelperTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_number_of_paid_subscribers()
     {
         factory(Account::class)->create(['stripe_id' => 'id292839']);
@@ -27,7 +27,7 @@ class InstanceHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fetches_the_monthly_plan_information()
     {
         config(['monica.paid_plan_monthly_friendly_name' => 'Monthly']);
@@ -60,7 +60,7 @@ class InstanceHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fetches_the_annually_plan_information()
     {
         config(['monica.paid_plan_annual_friendly_name' => 'Annual']);
@@ -93,7 +93,7 @@ class InstanceHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fetches_subscription_information()
     {
         $stripeSubscription = (object) [
@@ -139,7 +139,7 @@ class InstanceHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_null_when_fetching_an_unknown_plan_information()
     {
         $account = new Account;
@@ -149,7 +149,7 @@ class InstanceHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_latest_changelog_entries()
     {
         $json = public_path('changelog.json');
@@ -167,7 +167,7 @@ class InstanceHelperTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_checks_if_the_instance_has_at_least_one_account()
     {
         DB::table('accounts')->delete();

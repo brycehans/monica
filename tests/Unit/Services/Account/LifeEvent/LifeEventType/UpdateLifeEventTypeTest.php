@@ -15,7 +15,7 @@ class UpdateLifeEventTypeTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_life_event_type()
     {
         $lifeEventType = factory(LifeEventType::class)->create([]);
@@ -45,7 +45,7 @@ class UpdateLifeEventTypeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $lifeEventType = factory(LifeEventType::class)->create([]);
@@ -63,7 +63,7 @@ class UpdateLifeEventTypeTest extends TestCase
         app(UpdateLifeEventType::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_life_event_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create([]);

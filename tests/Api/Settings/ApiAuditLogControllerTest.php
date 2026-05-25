@@ -23,7 +23,7 @@ class ApiAuditLogControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_audit_logs()
     {
         $user = $this->signin();
@@ -50,7 +50,7 @@ class ApiAuditLogControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_is_possible_to_get_audit_logs_and_limit_query_and_paginate()
     {
         $user = $this->signin();

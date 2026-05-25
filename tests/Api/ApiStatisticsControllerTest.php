@@ -18,7 +18,7 @@ class ApiStatisticsControllerTest extends ApiTestCase
         'number_of_new_users_last_week',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_right_structure_of_the_public_statistics()
     {
         config(['monica.allow_statistics_through_public_api_access' => true]);
@@ -34,7 +34,7 @@ class ApiStatisticsControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_an_error_if_public_statistics_are_not_available()
     {
         config(['monica.allow_statistics_through_public_api_access' => false]);

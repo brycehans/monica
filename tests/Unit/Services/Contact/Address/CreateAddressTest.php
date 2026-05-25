@@ -15,7 +15,7 @@ class CreateAddressTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_an_address()
     {
         $contact = factory(Contact::class)->create([]);
@@ -52,7 +52,7 @@ class CreateAddressTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $account = factory(Account::class)->create([]);
@@ -65,7 +65,7 @@ class CreateAddressTest extends TestCase
         app(CreateAddress::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_contact_is_archived()
     {
         $contact = factory(Contact::class)->state('archived')->create();
@@ -87,7 +87,7 @@ class CreateAddressTest extends TestCase
         app(CreateAddress::class)->execute($request);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_throws_an_exception_if_contact_is_not_linked_to_account()
     {
         $account = factory(Account::class)->create();

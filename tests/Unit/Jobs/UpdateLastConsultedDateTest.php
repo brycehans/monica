@@ -12,7 +12,7 @@ class UpdateLastConsultedDateTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_the_last_consulted_at_field_for_the_given_contact()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1, 7, 0, 0));

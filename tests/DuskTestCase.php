@@ -27,10 +27,10 @@ abstract class DuskTestCase extends BaseTestCase
     /**
      * Prepare for Dusk test execution.
      *
-     * @beforeClass
      *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\BeforeClass]
     public static function prepare()
     {
         if (! static::runningInSail()) {

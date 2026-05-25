@@ -8,7 +8,7 @@ use Sabre\VObject\Component\VCard;
 
 class VCardHelperTest extends FeatureTestCase
 {
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_get_country_by_sabre_vcard()
     {
         $vcard = new VCard([

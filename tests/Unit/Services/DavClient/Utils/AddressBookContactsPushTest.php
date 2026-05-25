@@ -24,7 +24,7 @@ class AddressBookContactsPushTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_push_contacts_added()
     {
         $subscription = AddressBookSubscription::factory()->create();
@@ -86,7 +86,7 @@ class AddressBookContactsPushTest extends TestCase
         $this->assertEquals(ContactPushDto::MODE_MATCH_NONE, $dto->mode);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_push_contacts_modified()
     {
         $subscription = AddressBookSubscription::factory()->create();
@@ -150,7 +150,7 @@ class AddressBookContactsPushTest extends TestCase
         $this->assertEquals(1, $dto->mode);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_delete_contacts_removed()
     {
         $subscription = AddressBookSubscription::factory()->create();

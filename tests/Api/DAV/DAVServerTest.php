@@ -9,9 +9,7 @@ class DAVServerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_dav_propfind_base()
     {
         $user = $this->signin();
@@ -27,9 +25,7 @@ class DAVServerTest extends ApiTestCase
         $response->assertSee('<d:response><d:href>/dav/calendars/</d:href>', false);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_dav_propfind_principals()
     {
         $user = $this->signin();
@@ -43,9 +39,7 @@ class DAVServerTest extends ApiTestCase
         $response->assertSee("<d:response><d:href>/dav/principals/{$user->email}/</d:href>", false);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_dav_propfind_principals_user()
     {
         $user = $this->signin();
@@ -58,9 +52,7 @@ class DAVServerTest extends ApiTestCase
         $response->assertSee("<d:response><d:href>/dav/principals/{$user->email}/</d:href>", false);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_dav_ensure_browser_plugin_not_enabled()
     {
         $user = $this->signin();
@@ -72,9 +64,7 @@ class DAVServerTest extends ApiTestCase
         $response->assertHeader('Location', route('settings.dav'));
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_propfind_groupmemberset()
     {
         $user = $this->signin();
@@ -114,9 +104,7 @@ class DAVServerTest extends ApiTestCase
         '</d:multistatus>', false);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_carddav_report_propertysearch()
     {
         $user = $this->signin();
@@ -155,9 +143,7 @@ class DAVServerTest extends ApiTestCase
         '</d:multistatus>', false);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_caldav_propfind()
     {
         $user = $this->signin();
@@ -171,9 +157,7 @@ class DAVServerTest extends ApiTestCase
         $response->assertSee("<d:response><d:href>/dav/calendars/{$user->email}/</d:href>", false);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_caldav_propfind_calendars_user()
     {
         $user = $this->signin();
@@ -188,9 +172,7 @@ class DAVServerTest extends ApiTestCase
         $response->assertSee("<d:response><d:href>/dav/calendars/{$user->email}/tasks/</d:href>", false);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_dav_limit_users_unauthorized()
     {
         $user = $this->signin();
@@ -202,9 +184,7 @@ class DAVServerTest extends ApiTestCase
         $response->assertStatus(403);
     }
 
-    /**
-     * @group dav
-     */
+    #[\PHPUnit\Framework\Attributes\Group('dav')]
     public function test_dav_limit_users_authorized()
     {
         $user = $this->signin();

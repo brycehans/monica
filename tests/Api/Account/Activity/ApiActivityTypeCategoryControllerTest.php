@@ -21,7 +21,7 @@ class ApiActivityTypeCategoryControllerTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_list_of_activity_type_categories()
     {
         $user = $this->signin();
@@ -39,7 +39,7 @@ class ApiActivityTypeCategoryControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_applies_limit_parameter()
     {
         $user = $this->signin();
@@ -67,7 +67,7 @@ class ApiActivityTypeCategoryControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_stores_a_activity_type_category()
     {
         $user = $this->signin();
@@ -87,7 +87,7 @@ class ApiActivityTypeCategoryControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_updates_a_activity_type_category()
     {
         $user = $this->signin();
@@ -111,7 +111,7 @@ class ApiActivityTypeCategoryControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_update_if_custom_field_not_found()
     {
         $user = $this->signin();
@@ -127,7 +127,7 @@ class ApiActivityTypeCategoryControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_deletes_a_activity_type_category()
     {
         $user = $this->signin();
@@ -151,7 +151,7 @@ class ApiActivityTypeCategoryControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_doesnt_delete_the_custom_field_if_not_found()
     {
         $user = $this->signin();
@@ -165,7 +165,7 @@ class ApiActivityTypeCategoryControllerTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_a_single_activity_type_category()
     {
         $user = $this->signin();

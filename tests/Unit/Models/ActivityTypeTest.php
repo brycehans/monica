@@ -12,7 +12,7 @@ class ActivityTypeTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $activityType = factory(ActivityType::class)->create([]);
@@ -20,7 +20,7 @@ class ActivityTypeTest extends TestCase
         $this->assertTrue($activityType->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_a_category()
     {
         $activityType = factory(ActivityType::class)->create([]);
@@ -28,7 +28,7 @@ class ActivityTypeTest extends TestCase
         $this->assertTrue($activityType->category()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_many_activities()
     {
         $account = factory(Account::class)->create();
@@ -43,7 +43,7 @@ class ActivityTypeTest extends TestCase
         $this->assertTrue($account->activities()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_name_attribute()
     {
         $activityType = factory(ActivityType::class)->create([
@@ -67,7 +67,7 @@ class ActivityTypeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_resets_the_associated_activities()
     {
         $activityType = factory(ActivityType::class)->create([]);

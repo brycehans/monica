@@ -32,7 +32,7 @@ class ApiGiftsTest extends ApiTestCase
         'updated_at',
     ];
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_gifts()
     {
         $user = $this->signin();
@@ -67,7 +67,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_all_the_gifts_of_a_contact()
     {
         $user = $this->signin();
@@ -102,7 +102,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_get_all_the_gifts_of_an_invalid_contact()
     {
         $user = $this->signin();
@@ -112,7 +112,7 @@ class ApiGiftsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_one_gift()
     {
         $user = $this->signin();
@@ -144,7 +144,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_cant_get_a_gift_with_an_invalid_id()
     {
         $user = $this->signin();
@@ -154,7 +154,7 @@ class ApiGiftsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_create_a_gift()
     {
         $user = $this->signin();
@@ -187,7 +187,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_create_is_for()
     {
         $user = $this->signin();
@@ -225,7 +225,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_create_is_for_bad_account()
     {
         $user = $this->signin();
@@ -248,7 +248,7 @@ class ApiGiftsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_create_error()
     {
         $user = $this->signin();
@@ -266,7 +266,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_create_error_bad_account()
     {
         $user = $this->signin();
@@ -285,7 +285,7 @@ class ApiGiftsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_update()
     {
         $user = $this->signin();
@@ -325,7 +325,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_update_is_for()
     {
         $user = $this->signin();
@@ -370,7 +370,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_update_error()
     {
         $user = $this->signin();
@@ -388,7 +388,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_update_error_bad_account()
     {
         $user = $this->signin();
@@ -412,7 +412,7 @@ class ApiGiftsTest extends ApiTestCase
         $this->expectNotFound($response);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_delete()
     {
         $user = $this->signin();
@@ -444,7 +444,7 @@ class ApiGiftsTest extends ApiTestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_delete_error()
     {
         $user = $this->signin();
@@ -454,7 +454,7 @@ class ApiGiftsTest extends ApiTestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gifts_delete_wrong_account()
     {
         $user = $this->signin();

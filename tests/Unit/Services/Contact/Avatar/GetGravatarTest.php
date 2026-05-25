@@ -15,7 +15,7 @@ class GetGravatarTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_get_gravatar_url()
     {
         $contact = factory(Contact::class)->create();
@@ -40,7 +40,7 @@ class GetGravatarTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_get_gravatar_of_real_email()
     {
         $contact = factory(Contact::class)->create();
@@ -71,7 +71,7 @@ class GetGravatarTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_an_url()
     {
         $request = [
@@ -87,7 +87,7 @@ class GetGravatarTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_an_url_with_a_small_avatar_size()
     {
         $request = [
@@ -103,7 +103,7 @@ class GetGravatarTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_an_url_with_a_default_avatar_size()
     {
         $request = [
@@ -119,7 +119,7 @@ class GetGravatarTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_null_if_no_avatar_is_found()
     {
         $request = [
@@ -132,7 +132,7 @@ class GetGravatarTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fails_if_wrong_parameters_are_given()
     {
         $request = [

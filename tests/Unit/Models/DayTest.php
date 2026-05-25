@@ -11,7 +11,7 @@ class DayTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_info_for_journal_entry_that_doesnt_happen_today()
     {
         $day = factory(Day::class)->make();
@@ -42,7 +42,7 @@ class DayTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_info_for_journal_entry_that_happen_today()
     {
         $date = now();

@@ -21,7 +21,7 @@ class AddressBookContactsUpdaterMissedTest extends TestCase
     use DatabaseTransactions;
     use CardEtag;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_sync_changes_missed()
     {
         $subscription = AddressBookSubscription::factory()->create();

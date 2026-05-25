@@ -11,7 +11,7 @@ class PingVersionServerTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_send_ping()
     {
         config(['monica.weekly_ping_server_url' => 'https://version.test/ping']);
@@ -43,7 +43,7 @@ class PingVersionServerTest extends TestCase
         $this->assertEquals(2, $instance->number_of_versions_since_current_version);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_clear_instance()
     {
         config(['monica.weekly_ping_server_url' => 'https://version.test/ping']);

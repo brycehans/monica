@@ -14,7 +14,7 @@ class JournalEntryTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -25,7 +25,7 @@ class JournalEntryTest extends TestCase
         $this->assertTrue($task->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_polymorphic_relations()
     {
         $activity = factory(Activity::class)->create();
@@ -38,7 +38,7 @@ class JournalEntryTest extends TestCase
         $this->assertEquals($journalEntry->id, $activity->journalEntry->id);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_has_polymorphic_relations2()
     {
         $entry = factory(Entry::class)->create();
@@ -52,7 +52,7 @@ class JournalEntryTest extends TestCase
         $this->assertEquals($journalEntry->id, $entry->journalEntry->id);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_add_adds_data_of_the_right_type()
     {
         $activity = factory(Activity::class)->create();
@@ -68,7 +68,7 @@ class JournalEntryTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_object_data_returns_an_object()
     {
         $activity = factory(Activity::class)->create();
@@ -95,7 +95,7 @@ class JournalEntryTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function get_edit_journal_entry()
     {
         Carbon::setTestNow(Carbon::create(2017, 1, 1, 0, 0, 0));

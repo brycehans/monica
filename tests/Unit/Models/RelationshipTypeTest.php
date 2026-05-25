@@ -13,7 +13,7 @@ class RelationshipTypeTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_account()
     {
         $account = factory(Account::class)->create([]);
@@ -24,7 +24,7 @@ class RelationshipTypeTest extends TestCase
         $this->assertTrue($relationshipType->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_belongs_to_an_relationship_type_group()
     {
         $account = factory(Account::class)->create([]);
@@ -35,7 +35,7 @@ class RelationshipTypeTest extends TestCase
         $this->assertTrue($relationshipTypeGroup->account()->exists());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_masculine_short_name_of_the_relationship_type()
     {
         $account = factory(Account::class)->create([]);
@@ -51,7 +51,7 @@ class RelationshipTypeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_feminine_short_name_of_the_relationship_type()
     {
         $account = factory(Account::class)->create([]);
@@ -67,7 +67,7 @@ class RelationshipTypeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_masculine_name_of_the_relationship_type_with_the_name_of_the_contact()
     {
         $account = factory(Account::class)->create([]);
@@ -88,7 +88,7 @@ class RelationshipTypeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_feminine_name_of_the_relationship_type_with_the_name_of_the_contact()
     {
         $account = factory(Account::class)->create([]);
@@ -109,7 +109,7 @@ class RelationshipTypeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_both_names_of_the_relationship_type_with_the_name_of_the_contact_and_the_opposite_version()
     {
         $account = factory(Account::class)->create([]);
@@ -130,7 +130,7 @@ class RelationshipTypeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_only_one_name_of_the_relationship_type_if_name_and_name_reverse_are_similar()
     {
         $account = factory(Account::class)->create([]);
@@ -151,7 +151,7 @@ class RelationshipTypeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_gets_the_reverse_relationship_type()
     {
         $account = factory(Account::class)->create([]);

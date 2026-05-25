@@ -10,7 +10,7 @@ class ContactFieldTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_fetches_data_field()
     {
         $contactField = new ContactField;

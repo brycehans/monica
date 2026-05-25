@@ -48,9 +48,7 @@ class SmokeRoutesTest extends FeatureTestCase
         $this->assertNotAnErrorPage($response, '/dashboard');
     }
 
-    /**
-     * @dataProvider authenticatedGetRoutes
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('authenticatedGetRoutes')]
     public function test_authenticated_user_can_load_route(string $url): void
     {
         $this->signIn();
