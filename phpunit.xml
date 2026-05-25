@@ -65,7 +65,7 @@
     <env name="APP_DEFAULT_LOCALE" value="en"/>
     <env name="LOG_CHANNEL" value="testing"/>
     <env name="DAV_ENABLED" value="true"/>
-    <env name="REQUIRES_SUBSCRIPTION" value="false"/>
+    <env name="REQUIRES_SUBSCRIPTION" value="false" force="true"/>
     <env name="MAIL_HOST" value=""/>
     <env name="MAIL_PORT" value=""/>
     <env name="MAIL_ENCRYPTION" value=""/>
