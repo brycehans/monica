@@ -70,7 +70,6 @@ function mountSetAvatar(propsData = {}) {
   const baseProps = {
     avatar: '',
     defaultUrl: '/default.png',
-    adorableUrl: '/adorable.png',
     gravatarUrl: '',
     photoUrl: '',
     hasReachedAccountStorageLimit: false,
@@ -85,7 +84,6 @@ function mountSetAvatar(propsData = {}) {
         <SetAvatar ref="setAvatar"
           :avatar="hostProps.avatar"
           :default-url="hostProps.defaultUrl"
-          :adorable-url="hostProps.adorableUrl"
           :gravatar-url="hostProps.gravatarUrl"
           :photo-url="hostProps.photoUrl"
           :has-reached-account-storage-limit="hostProps.hasReachedAccountStorageLimit"
@@ -137,9 +135,9 @@ describe('SetAvatar.vue regression coverage', () => {
   it('updates selectedAvatar when the avatar prop changes', () => {
     mountSetAvatar({ avatar: 'default' });
     cy.get('@mounted').then(async ({ wrapper }) => {
-      await wrapper.setData({ hostProps: { ...wrapper.vm.hostProps, avatar: 'adorable' } });
+      await wrapper.setData({ hostProps: { ...wrapper.vm.hostProps, avatar: 'gravatar' } });
       await wrapper.vm.$nextTick();
-      expect(wrapper.vm.$refs.setAvatar.selectedAvatar).to.equal('adorable');
+      expect(wrapper.vm.$refs.setAvatar.selectedAvatar).to.equal('gravatar');
     });
   });
 

@@ -40,10 +40,6 @@ class GetAvatarsFromInternetTest extends TestCase
         );
 
         $this->assertNotNull(
-            $contact->avatar_adorable_url
-        );
-
-        $this->assertNotNull(
             $contact->avatar_gravatar_url
         );
     }
@@ -65,7 +61,7 @@ class GetAvatarsFromInternetTest extends TestCase
     }
 
     /** @test */
-    public function avatar_source_is_reset_and_set_to_adorable_if_gravatar_doesnt_exist_anymore()
+    public function avatar_source_falls_back_to_default_if_gravatar_doesnt_exist_anymore()
     {
         $contact = factory(Contact::class)->create([
             'avatar_source' => 'gravatar',
@@ -95,7 +91,7 @@ class GetAvatarsFromInternetTest extends TestCase
         );
 
         $this->assertEquals(
-            'adorable',
+            'default',
             $contact->avatar_source
         );
     }

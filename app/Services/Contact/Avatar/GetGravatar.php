@@ -102,7 +102,7 @@ class GetGravatar extends BaseService
             $contact->avatar_gravatar_url = null;
 
             if ($contact->avatar_source == 'gravatar') {
-                $contact->avatar_source = 'adorable';
+                $contact->avatar_source = 'default';
             }
         }
 

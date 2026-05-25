@@ -64,30 +64,6 @@ class UpdateAvatarTest extends TestCase
     }
 
     /** @test */
-    public function it_updates_the_avatar_with_adorable()
-    {
-        $contact = factory(Contact::class)->create([]);
-
-        $request = [
-            'account_id' => $contact->account_id,
-            'contact_id' => $contact->id,
-            'source' => 'adorable',
-        ];
-
-        $contact = app(UpdateAvatar::class)->execute($request);
-
-        $this->assertDatabaseHas('contacts', [
-            'id' => $contact->id,
-            'avatar_source' => 'adorable',
-        ]);
-
-        $this->assertInstanceOf(
-            Contact::class,
-            $contact
-        );
-    }
-
-    /** @test */
     public function it_updates_the_avatar_with_existing_photo()
     {
         $contact = factory(Contact::class)->create([]);
@@ -154,7 +130,7 @@ class UpdateAvatarTest extends TestCase
         $request = [
             'account_id' => $account->id,
             'contact_id' => $contact->id,
-            'source' => 'adorable',
+            'source' => 'gravatar',
         ];
 
         $this->expectException(ModelNotFoundException::class);

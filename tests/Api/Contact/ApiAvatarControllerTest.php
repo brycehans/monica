@@ -100,30 +100,6 @@ class ApiAvatarControllerTest extends ApiTestCase
     }
 
     /** @test */
-    public function it_updates_the_adorable_avatar()
-    {
-        $user = $this->signin();
-        $contact = factory(Contact::class)->create([
-            'account_id' => $user->account_id,
-        ]);
-
-        $response = $this->json('PUT', '/api/contacts/'.$contact->id.'/avatar', [
-            'source' => 'adorable',
-        ]);
-
-        $response->assertStatus(200);
-
-        $response->assertJsonStructure([
-            '*' => $this->jsonDatas,
-        ]);
-
-        $this->assertDatabaseHas('contacts', [
-            'id' => $contact->id,
-            'avatar_source' => 'adorable',
-        ]);
-    }
-
-    /** @test */
     public function it_updates_the_default_avatar()
     {
         $user = $this->signin();

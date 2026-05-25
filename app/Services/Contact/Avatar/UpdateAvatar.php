@@ -26,7 +26,6 @@ class UpdateAvatar extends BaseService
                 'required',
                 Rule::in([
                     'default',
-                    'adorable',
                     'gravatar',
                     'photo',
                 ]),

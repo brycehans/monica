@@ -480,8 +480,6 @@ SET FOREIGN_KEY_CHECKS=0;
             'food_preferences',
             'avatar_source',
             'avatar_gravatar_url',
-            'avatar_adorable_uuid',
-            'avatar_adorable_url',
             'avatar_default_url',
             'avatar_photo_id',
             'has_avatar',

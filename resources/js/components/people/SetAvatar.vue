@@ -18,22 +18,6 @@
         </div>
       </form-radio>
 
-      <!-- Adorable avatar -->
-      <form-radio
-        v-model="selectedAvatar"
-        :name="'avatar'"
-        :value="'adorable'"
-        :dclass="'flex mb1'"
-        :iclass="dirltr ? 'mr2' : 'ml2'"
-      >
-        <template slot="label">
-          {{ $t('people.avatar_adorable_avatar') }}
-        </template>
-        <div slot="extra">
-          <img class="mb4 pa2 ba b--gray-monica br3" style="width: 150px" :src="adorableUrl" alt="" />
-        </div>
-      </form-radio>
-
       <!-- Gravatar -->
       <form-radio
         v-if="gravatarUrl"
@@ -138,10 +122,6 @@ export default {
       default: '',
     },
     defaultUrl: {
-      type: String,
-      default: '',
-    },
-    adorableUrl: {
       type: String,
       default: '',
     },

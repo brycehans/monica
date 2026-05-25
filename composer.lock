@@ -4,81 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ce7fa2856888b35c6f7261f7392ed6c2",
+    "content-hash": "8fa11e3f732f33d0f3e081fa74b05b05",
     "packages": [
-        {
-            "name": "asbiin/laravel-adorable",
-            "version": "1.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/asbiin/laravel-adorable.git",
-                "reference": "fabfa239bacbce8895e9e1017c16465b8efef5f9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/asbiin/laravel-adorable/zipball/fabfa239bacbce8895e9e1017c16465b8efef5f9",
-                "reference": "fabfa239bacbce8895e9e1017c16465b8efef5f9",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0",
-                "intervention/image": "^2.7",
-                "php": "^7.4 || ^8.0"
-            },
-            "require-dev": {
-                "larastan/larastan": "^1.0 || ^2.0",
-                "mockery/mockery": "^1.4",
-                "orchestra/testbench": "^6.0 || ^7.0 || ^8.0 || ^9.0",
-                "phpstan/phpstan-strict-rules": "^1.1",
-                "phpunit/phpunit": "^9.5 || ^10.0 || ^11.0",
-                "psalm/plugin-laravel": "^2.0",
-                "vimeo/psalm": "^4.0 || ^5.6"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "LaravelAdorable": "LaravelAdorable\\Facades\\LaravelAdorable"
-                    },
-                    "providers": [
-                        "LaravelAdorable\\LaravelAdorableServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "LaravelAdorable\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Alexis Saettler",
-                    "email": "alexis@saettler.org"
-                }
-            ],
-            "description": "Generate an Adorable Avatar for Laravel",
-            "keywords": [
-                "adorable",
-                "avatar",
-                "laravel",
-                "php"
-            ],
-            "support": {
-                "issues": "https://github.com/monicahq/laravel-adorable/issues",
-                "source": "https://github.com/monicahq/laravel-adorable"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/asbiin",
-                    "type": "github"
-                }
-            ],
-            "time": "2024-03-13T19:55:01+00:00"
-        },
         {
             "name": "asbiin/laravel-webauthn",
             "version": "4.6.1",

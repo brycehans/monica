@@ -75,7 +75,7 @@ class PhotosController extends Controller
             app(UpdateAvatar::class)->execute([
                 'account_id' => auth()->user()->account_id,
                 'contact_id' => $contact->id,
-                'source' => 'adorable',
+                'source' => 'default',
             ]);
         }
 
