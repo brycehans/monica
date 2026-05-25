@@ -130,6 +130,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Stripe API base URL override
+    |--------------------------------------------------------------------------
+    |
+    | Set this to point Cashier at a non-default Stripe API endpoint — used by
+    | the dev compose stack to route at a local stripe-mock sidecar. Leave
+    | unset in production; AppServiceProvider::boot() also guards against
+    | accidental production overrides as a safety belt.
+    |
+    */
+    'stripe_api_base' => env('STRIPE_API_BASE'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Paid plan settings
     |--------------------------------------------------------------------------
     |

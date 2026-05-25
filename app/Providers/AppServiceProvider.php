@@ -99,7 +99,7 @@ class AppServiceProvider extends ServiceProvider
         // config:cache` from a misconfigured deploy), we still won't silently
         // reroute real billing traffic at a sidecar. Production stays on the
         // Cashier default.
-        if (! $this->app->environment('production') && ($base = env('STRIPE_API_BASE'))) {
+        if (! $this->app->environment('production') && ($base = config('monica.stripe_api_base'))) {
             Cashier::$apiBaseUrl = $base;
         }
 
