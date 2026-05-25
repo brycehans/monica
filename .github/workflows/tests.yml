@@ -34,6 +34,12 @@ jobs:
         connection: [mysql]
         testsuite: [Api, Feature, Commands-Other, Commands-Scheduling, Unit-Models, Unit-Services]
 
+    services:
+      stripe-mock:
+        image: stripe/stripe-mock:latest
+        ports:
+          - 12111:12111
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

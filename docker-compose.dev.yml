@@ -38,6 +38,11 @@ services:
     volumes:
       - /var/lib/mysql
 
+  stripe-mock:
+    image: stripe/stripe-mock:latest
+    ports:
+      - "12111:12111"
+
   phpmyadmin:
     image: phpmyadmin:5.2
     depends_on:
