@@ -6,7 +6,7 @@ use App\Traits\HasUuid;
 use App\Helpers\StorageHelper;
 use App\Models\Contact\Contact;
 use App\Models\ModelBinding as Model;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -112,7 +112,7 @@ class Photo extends Model
             $url = $this->new_filename;
             $file = StorageHelper::disk(config('filesystems.default'))->get($url);
 
-            return (string) Image::make($file)->encode('data-url');
+            return ImageManager::gd()->read($file)->encode()->toDataUri();
         } catch (FileNotFoundException $e) {
             return null;
         }
