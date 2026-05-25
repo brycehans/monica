@@ -39,9 +39,9 @@ services:
       - /var/lib/mysql
 
   stripe-mock:
-    image: stripe/stripe-mock:latest
+    image: stripe/stripe-mock:v0.199.0
     ports:
-      - "12111:12111"
+      - 12111:12111
 
   phpmyadmin:
     image: phpmyadmin:5.2
