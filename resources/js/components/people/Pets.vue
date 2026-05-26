@@ -204,7 +204,7 @@ export default {
     },
 
     toggleEdit(pet) {
-      Vue.set(pet, 'edit', !pet.edit);
+      this.$set(pet, 'edit', !pet.edit);
       this.updateForm.id = pet.id;
       this.updateForm.name = pet.name;
       this.updateForm.pet_category_id = pet.pet_category_id;
@@ -213,10 +213,10 @@ export default {
     update(pet) {
       axios.put('people/' + this.hash + '/pets/' + pet.id, this.updateForm)
         .then(response => {
-          Vue.set(pet, 'edit', !pet.edit);
-          Vue.set(pet, 'name', response.data.name);
-          Vue.set(pet, 'pet_category_id', response.data.pet_category_id);
-          Vue.set(pet, 'category_name', response.data.category_name);
+          this.$set(pet, 'edit', !pet.edit);
+          this.$set(pet, 'name', response.data.name);
+          this.$set(pet, 'pet_category_id', response.data.pet_category_id);
+          this.$set(pet, 'category_name', response.data.category_name);
 
           this.$notify({
             group: 'main',
