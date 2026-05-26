@@ -149,7 +149,7 @@ class SetupTest extends Command
             // a meaningful account without tripping abort(402) when REQUIRES_SUBSCRIPTION=true
             // (which docker-compose.dev.yml pins for the Stripe upgrade-flow smoke). Direct
             // attribute assignment because the flag isn't in Account::$fillable.
-            $this->account->legacy_free_plan_unlimited_contacts = true;
+            $this->account->legacy_free_plan_unlimited_contacts = 1;
             $this->account->save();
 
             // set default admin account to confirmed
@@ -213,7 +213,7 @@ class SetupTest extends Command
         // create the second test, blank account
         if (! User::where('email', 'blank@blank.com')->exists()) {
             $blankAccount = Account::createDefault('Blank', 'State', 'blank@blank.com', 'blank0');
-            $blankAccount->legacy_free_plan_unlimited_contacts = true;
+            $blankAccount->legacy_free_plan_unlimited_contacts = 1;
             $blankAccount->save();
             $blankUser = $blankAccount->users()->first();
             $this->confirmUser($blankUser);
