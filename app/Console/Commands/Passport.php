@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
-use Laravel\Passport\PersonalAccessClient;
+use Laravel\Passport\Client;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Passport extends Command
@@ -62,7 +62,14 @@ class Passport extends Command
     {
         $this->info('Checking Personal Access Client...', OutputInterface::VERBOSITY_VERBOSE);
 
-        if (PersonalAccessClient::count() > 0) {
+        // Check both the legacy boolean column AND the new grant_types JSON.
+        // Passport 13's ClientRepository writes both for fresh clients, but on
+        // upgraded installs a client created post-migration may have only one
+        // signal set depending on the creation path. Either is sufficient.
+        $hasPersonalAccessClient = Client::where('personal_access_client', true)->exists()
+            || Client::where('grant_types', 'like', '%"personal_access"%')->exists();
+
+        if ($hasPersonalAccessClient) {
             $this->info('✓ Personal Access Client already created.', OutputInterface::VERBOSITY_VERBOSE);
 
             return;

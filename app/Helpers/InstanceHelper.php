@@ -78,13 +78,17 @@ class InstanceHelper
         $currency = Currency::where('iso', strtoupper($plan->currency))->first();
         $amount = MoneyHelper::format($plan->amount, $currency);
 
+        // Use cashier's currentPeriodEnd() accessor instead of reading $stripeSubscription->items->data[0]->current_period_end:
+        // stripe-php 17 moved current_period_end off the subscription onto each item, and cashier 16 added this helper which guards empty items, picks the latest end across multi-item subs, and returns a CarbonInterface directly.
+        $currentPeriodEnd = $subscription->currentPeriodEnd();
+
         return [
             'type' => $plan->interval === 'month' ? 'monthly' : 'annual',
             'name' => $subscription->type,
             'id' => $plan->id,
             'price' => $plan->amount,
             'friendlyPrice' => $amount,
-            'nextBillingDate' => DateHelper::getFullDate(Carbon::createFromTimestamp($stripeSubscription->current_period_end)),
+            'nextBillingDate' => $currentPeriodEnd ? DateHelper::getFullDate(Carbon::instance($currentPeriodEnd)) : '',
         ];
     }
 
