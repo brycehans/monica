@@ -3,6 +3,7 @@
 namespace Tests\Unit\Helpers;
 
 use PHPUnit\Framework\Attributes\Test;
+use Carbon\Carbon;
 use Mockery;
 use Tests\TestCase;
 use function Safe\json_decode;
@@ -104,16 +105,13 @@ class InstanceHelperTest extends TestCase
                 'interval' => 'month',
                 'id' => 'monthly',
             ],
-            'items' => (object) [
-                'data' => [
-                    (object) ['current_period_end' => 1629976560],
-                ],
-            ],
         ];
 
         $subscription = Mockery::mock('\Laravel\Cashier\Subscription');
         $subscription->shouldReceive('asStripeSubscription')
             ->andReturn($stripeSubscription);
+        $subscription->shouldReceive('currentPeriodEnd')
+            ->andReturn(Carbon::createFromTimestamp(1629976560));
         $subscription->shouldReceive('getAttribute')
             ->with('type')
             ->andReturn('Monthly');
