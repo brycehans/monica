@@ -71,7 +71,7 @@
     <env name="MAIL_ENCRYPTION" value=""/>
     <env name="APP_EMAIL_NEW_USERS_NOTIFICATION" value=""/>
     <env name="LARAVEL_CLOUDFLARE_ENABLED" value="false"/>
-    <env name="STRIPE_API_BASE" value="http://stripe-mock:12111" force="true"/>
+    <env name="STRIPE_API_BASE" value="http://stripe-mock:12111"/>
     <env name="STRIPE_SECRET" value="sk_test_stripemockkey" force="true"/>
     <env name="STRIPE_KEY" value="pk_test_stripemockkey" force="true"/>
   </php>

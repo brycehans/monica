@@ -121,6 +121,10 @@ jobs:
         run: vendor/bin/phpunit -c phpunit.xml --testsuite ${{ matrix.testsuite }} --log-junit ./results/junit/results${{ matrix.testsuite }}.xml
         env:
           DB_CONNECTION: ${{ matrix.connection }}
+          # stripe-mock is a GH Actions service container on the runner host;
+          # reach it via localhost (the published port), not the service-name
+          # DNS that only resolves inside container-based jobs.
+          STRIPE_API_BASE: http://localhost:12111
 
       - name: Fix results files
         run: sed -i -e "s%$GITHUB_WORKSPACE/%%g" **/*.xml
