@@ -145,6 +145,13 @@ class SetupTest extends Command
         } else {
             $this->account = Account::createDefault('John', 'Doe', 'admin@admin.com', 'admin0');
 
+            // dev seeder must outlive the free-plan contact ceiling so the loop below can populate
+            // a meaningful account without tripping abort(402) when REQUIRES_SUBSCRIPTION=true
+            // (which docker-compose.dev.yml pins for the Stripe upgrade-flow smoke). Direct
+            // attribute assignment because the flag isn't in Account::$fillable.
+            $this->account->legacy_free_plan_unlimited_contacts = true;
+            $this->account->save();
+
             // set default admin account to confirmed
             /** @var User */
             $adminUser = $this->account->users()->first();
@@ -206,6 +213,8 @@ class SetupTest extends Command
         // create the second test, blank account
         if (! User::where('email', 'blank@blank.com')->exists()) {
             $blankAccount = Account::createDefault('Blank', 'State', 'blank@blank.com', 'blank0');
+            $blankAccount->legacy_free_plan_unlimited_contacts = true;
+            $blankAccount->save();
             $blankUser = $blankAccount->users()->first();
             $this->confirmUser($blankUser);
         }
