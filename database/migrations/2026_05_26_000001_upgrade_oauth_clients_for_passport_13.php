@@ -49,13 +49,17 @@ return new class extends Migration
         if (Schema::hasColumn('oauth_clients', 'user_id')) {
             DB::table('oauth_clients')->whereNotNull('user_id')->update([
                 'owner_id' => DB::raw('user_id'),
+                // Hard-coded class string (not User::class import): per CLAUDE.md,
+                // migrations must not depend on Eloquent models. A class-string is
+                // the necessary minimum for the polymorphic owner_type column.
                 'owner_type' => 'App\\Models\\User\\User',
             ]);
         }
 
         if (Schema::hasColumn('oauth_clients', 'redirect')) {
-            // Wrap each existing redirect string into a JSON array.
-            // Use the database's JSON_ARRAY function for portability.
+            // MySQL-only: monica targets MySQL exclusively (CLAUDE.md). JSON_ARRAY
+            // here composes the new redirect_uris column from the old single-string
+            // redirect value. Not portable to Postgres/SQLite, which is fine.
             DB::table('oauth_clients')
                 ->whereNotNull('redirect')
                 ->update([
@@ -78,6 +82,9 @@ return new class extends Migration
             ->update(['grant_types' => json_encode(['authorization_code', 'refresh_token'])]);
 
         // Drop the old columns now that data has been migrated.
+        // No transaction wrap: MySQL implicitly commits DDL on every ALTER TABLE,
+        // so wrapping would give false safety. Rerun-safety comes from the
+        // Schema::hasColumn() guards above.
         Schema::table('oauth_clients', function (Blueprint $table) {
             if (Schema::hasColumn('oauth_clients', 'user_id')) {
                 $table->dropColumn('user_id');
@@ -100,6 +107,9 @@ return new class extends Migration
 
     public function down(): void
     {
+        // down() is best-effort: password_client boolean values were dropped in up()
+        // and cannot be recovered. Non-User owner_type morphs (none exist today)
+        // would also be orphaned on revert.
         Schema::table('oauth_clients', function (Blueprint $table) {
             if (! Schema::hasColumn('oauth_clients', 'user_id')) {
                 $table->unsignedBigInteger('user_id')->nullable()->after('id');
