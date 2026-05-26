@@ -49,11 +49,9 @@ fi
 echo "Waiting modifications:"
 echo $status
 
-# Add files
-git add public/mix-manifest.json
-git add public/js/*
-git add public/css/*
-git add public/fonts/*
+# Add files (Vite emits everything under public/build/)
+git add public/build/manifest.json
+git add public/build/assets/*
 
 # Commit
 if [ -z "${ASSETS_USERNAME:-}" ]; then

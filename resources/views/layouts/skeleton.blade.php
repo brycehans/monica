@@ -14,10 +14,10 @@
 
     <link rel="manifest" href="manifest.webmanifest">
 
-    <link rel="stylesheet" href="{{ asset(mix('css/app-'.htmldir().'.css')) }}">
+    @vite(['resources/sass/app-' . htmldir() . '.scss'])
     {{-- Required only for the Upgrade account page --}}
     @if (Route::currentRouteName() == 'settings.subscriptions.upgrade' || Route::currentRouteName() == 'settings.subscriptions.confirm')
-      <link rel="stylesheet" href="{{ asset(mix('css/stripe.css')) }}">
+      @vite(['resources/sass/stripe.scss', 'resources/js/stripe.js'])
     @endif
 
     <link rel="shortcut icon" href="img/favicon.png">
@@ -53,16 +53,11 @@
       @include('partials.footer')
     @endif
 
-    {{-- THE JS FILE OF THE APP --}}
-    @push('scripts')
-      <script src="{{ asset(mix('js/manifest.js')) }}"></script>
-      <script src="{{ asset(mix('js/vendor.js')) }}"></script>
-    @endpush
-
-    {{-- Load everywhere except on the Upgrade account page --}}
+    {{-- Load app JS everywhere except on the Upgrade and Confirm subscription pages
+         (those load stripe.js via the @vite() call in <head> instead). --}}
     @if (Route::currentRouteName() != 'settings.subscriptions.upgrade' && Route::currentRouteName() != 'settings.subscriptions.confirm')
       @push('scripts')
-        <script src="{{ asset(mix('js/app.js')) }}"></script>
+        @vite(['resources/js/app.js'])
       @endpush
     @endif
 

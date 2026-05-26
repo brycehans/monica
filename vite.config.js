@@ -2,15 +2,14 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue2';
 import purgecss from '@fullhuman/postcss-purgecss';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 import path from 'node:path';
 
-// Mix → Vite phase 3 PR-V₁: additive only. Mix still owns production builds
-// and Blade @asset(mix(...)) calls. Vite outputs to public/build/ in parallel
-// so we can smoke the toolchain before cutover (PR-V₄). See
-// docs/plans/2026-05-26-mix-to-vite-scope.md.
+// Vite drives production builds (phase 3 PR-V₄, Mix → Vite cutover).
 //
-// Vue 2 ceiling: @vitejs/plugin-vue2 is archived (2025-10-04, vitejs/vite-plugin-vue2)
-// and peers vite ^3–^7. Pin vite to ~7 until Vue 3 migration lifts the cap.
+// Vue 2 ceiling: @vitejs/plugin-vue2 is archived (2025-10-04,
+// vitejs/vite-plugin-vue2) and peers vite ^3–^7. Pin vite to ~7 until the
+// Vue 3 migration lifts the cap.
 export default defineConfig(({ mode }) => ({
   plugins: [
     laravel({
@@ -25,21 +24,26 @@ export default defineConfig(({ mode }) => ({
     }),
     vue({
       template: {
-        // SFC templates reference public assets like <img src="/img/foo.svg"> that
-        // Laravel serves from public/. Don't try to resolve them as bundled modules.
-        // The Blade <base href="..."> tag handles URL resolution at runtime.
+        // SFC templates reference public assets like <img src="/img/foo.svg">
+        // that Laravel serves from public/. Don't try to resolve them as
+        // bundled modules. The Blade <base href="..."> tag handles URL
+        // resolution at runtime.
         transformAssetUrls: false,
       },
+    }),
+    // Font-awesome 4 ships its webfonts in node_modules. Copy them into the
+    // build output so the URLs emitted by font-awesome's SCSS (rebased onto
+    // /build/assets via $fa-font-path in resources/sass/app-ltr.scss) resolve.
+    viteStaticCopy({
+      targets: [
+        { src: 'node_modules/font-awesome/fonts/*', dest: 'assets' },
+      ],
     }),
   ],
   resolve: {
     alias: [
-      // Runtime + template compiler build (templates are compiled at runtime, mirroring
-      // webpack.mix.js .alias({ vue$: 'vue/dist/vue.esm.js' })).
+      // Runtime + template compiler build (templates are compiled at runtime).
       { find: /^vue$/, replacement: path.resolve(__dirname, 'node_modules/vue/dist/vue.esm.js') },
-      // Webpack-style ~package/path imports in SCSS. Removed wholesale in PR-V₄'s
-      // cutover when webpack.mix.js is deleted and SCSS tildes go with it.
-      { find: /^~(.+)$/, replacement: path.resolve(__dirname, 'node_modules/$1') },
     ],
     // Match webpack/Mix's default: resolve .vue imports without explicit extension.
     extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.vue'],
@@ -48,11 +52,9 @@ export default defineConfig(({ mode }) => ({
     sourcemap: true,
   },
   css: {
-    // PurgeCSS wired via Vite's css.postcss option rather than a postcss.config.js
-    // at the project root — that file would also be picked up by Mix's
-    // postcss-loader and double-purge. Production builds only; dev builds keep
-    // every selector for fast iteration. Safelist ported verbatim from
-    // webpack.mix.js. Removed in PR-V₄ when laravel-mix-purgecss exits.
+    // PurgeCSS wired via Vite's css.postcss option rather than a project-root
+    // postcss.config.js so the safelist lives next to the bundler config that
+    // depends on it. Production builds only; dev builds keep every selector.
     postcss: {
       plugins: mode === 'production' ? [
         purgecss({

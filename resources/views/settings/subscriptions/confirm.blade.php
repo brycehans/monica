@@ -32,5 +32,6 @@
 
 @push('scripts')
   <script src="https://js.stripe.com/v3/"></script>
-  <script src="{{ asset(mix('js/stripe.js')) }}"></script>
+  {{-- stripe.js + stripe.scss are loaded by layouts/skeleton.blade.php on
+       subscription routes via @vite(). --}}
 @endpush

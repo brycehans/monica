@@ -8,7 +8,7 @@
     <title>@yield('title', trans('app.application_title'))</title>
     <link rel="manifest" href="manifest.webmanifest">
 
-    <link rel="stylesheet" href="{{ asset(mix('css/app-'.htmldir().'.css')) }}">
+    @vite(['resources/sass/app-' . htmldir() . '.scss', 'resources/js/app.js'])
     <link rel="shortcut icon" href="img/favicon.png">
     <script>
       window.Laravel = {!! \Safe\json_encode([
@@ -23,11 +23,6 @@
       <div id="app">
         @yield('content')
       </div>
-
-    {{-- THE JS FILE OF THE APP --}}
-      <script src="{{ asset(mix('js/manifest.js')) }}"></script>
-      <script src="{{ asset(mix('js/vendor.js')) }}"></script>
-      <script src="{{ asset(mix('js/app.js')) }}"></script>
 
     @stack('scripts')
 

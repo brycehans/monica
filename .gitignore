@@ -2,12 +2,9 @@
 /node_modules
 /persist
 /public/build
-/public/css
-/public/fonts
 /public/hot
 /public/js
 /public/storage
-/public/mix-manifest.json
 /resources/vendor
 /results
 /storage/oauth-private.key
