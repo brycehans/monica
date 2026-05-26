@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue2';
+import purgecss from '@fullhuman/postcss-purgecss';
 import path from 'node:path';
 
 // Mix → Vite phase 3 PR-V₁: additive only. Mix still owns production builds
@@ -10,7 +11,7 @@ import path from 'node:path';
 //
 // Vue 2 ceiling: @vitejs/plugin-vue2 is archived (2025-10-04, vitejs/vite-plugin-vue2)
 // and peers vite ^3–^7. Pin vite to ~7 until Vue 3 migration lifts the cap.
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     laravel({
       input: [
@@ -46,4 +47,46 @@ export default defineConfig({
   build: {
     sourcemap: true,
   },
-});
+  css: {
+    // PurgeCSS wired via Vite's css.postcss option rather than a postcss.config.js
+    // at the project root — that file would also be picked up by Mix's
+    // postcss-loader and double-purge. Production builds only; dev builds keep
+    // every selector for fast iteration. Safelist ported verbatim from
+    // webpack.mix.js. Removed in PR-V₄ when laravel-mix-purgecss exits.
+    postcss: {
+      plugins: mode === 'production' ? [
+        purgecss({
+          content: [
+            './resources/views/**/*.blade.php',
+            './resources/js/**/*.vue',
+            './resources/js/**/*.js',
+            './app/**/*.php',
+          ],
+          safelist: {
+            standard: [
+              /^autosuggest/,
+              /^fa-/,
+              /^vdp-datepicker/,
+              /^StripeElement/,
+              /^vgt/,
+              /^vue-tooltip/,
+              /^pretty/,
+              /^sweet-/,
+              /^vuejs-clipper-basic/,
+              /^vs__/,
+              /^sr-only/,
+            ],
+            deep: [
+              /^vdp-datepicker/,
+              /^vgt/,
+              /^vue-tooltip/,
+              /^pretty/,
+              /^sweet-/,
+              /^vs-/,
+            ],
+          },
+        }),
+      ] : [],
+    },
+  },
+}));
