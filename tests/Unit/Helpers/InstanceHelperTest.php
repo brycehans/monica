@@ -104,7 +104,11 @@ class InstanceHelperTest extends TestCase
                 'interval' => 'month',
                 'id' => 'monthly',
             ],
-            'current_period_end' => 1629976560,
+            'items' => (object) [
+                'data' => [
+                    (object) ['current_period_end' => 1629976560],
+                ],
+            ],
         ];
 
         $subscription = Mockery::mock('\Laravel\Cashier\Subscription');

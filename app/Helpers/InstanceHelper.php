@@ -84,7 +84,7 @@ class InstanceHelper
             'id' => $plan->id,
             'price' => $plan->amount,
             'friendlyPrice' => $amount,
-            'nextBillingDate' => DateHelper::getFullDate(Carbon::createFromTimestamp($stripeSubscription->current_period_end)),
+            'nextBillingDate' => DateHelper::getFullDate(Carbon::createFromTimestamp($stripeSubscription->items->data[0]->current_period_end)),
         ];
     }
 
