@@ -29,7 +29,8 @@ export default defineConfig({
       // Runtime + template compiler build (templates are compiled at runtime, mirroring
       // webpack.mix.js .alias({ vue$: 'vue/dist/vue.esm.js' })).
       { find: /^vue$/, replacement: path.resolve(__dirname, 'node_modules/vue/dist/vue.esm.js') },
-      // Webpack-style ~package/path imports in SCSS. Removed wholesale in PR-V₃.
+      // Webpack-style ~package/path imports in SCSS. Removed wholesale in PR-V₄'s
+      // cutover when webpack.mix.js is deleted and SCSS tildes go with it.
       { find: /^~(.+)$/, replacement: path.resolve(__dirname, 'node_modules/$1') },
     ],
   },
