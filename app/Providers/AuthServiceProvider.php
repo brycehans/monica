@@ -26,6 +26,12 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        // Passport 13 switched to UUID primary keys for oauth_clients by default.
+        // We keep bigint IDs so existing client/token rows stay valid through
+        // the upgrade (see database/migrations/2026_05_26_000001_upgrade_oauth_clients_for_passport_13.php
+        // and vendor/laravel/passport/UPGRADE.md#identify-clients-by-uuids).
+        Passport::$clientUuids = false;
+
         Passport::ignoreCsrfToken(in_array($request->method(), ['HEAD', 'GET', 'OPTIONS']));
     }
 }
