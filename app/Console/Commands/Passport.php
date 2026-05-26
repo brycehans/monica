@@ -62,7 +62,14 @@ class Passport extends Command
     {
         $this->info('Checking Personal Access Client...', OutputInterface::VERBOSITY_VERBOSE);
 
-        if (Client::where('personal_access_client', true)->exists()) {
+        // Check both the legacy boolean column AND the new grant_types JSON.
+        // Passport 13's ClientRepository writes both for fresh clients, but on
+        // upgraded installs a client created post-migration may have only one
+        // signal set depending on the creation path. Either is sufficient.
+        $hasPersonalAccessClient = Client::where('personal_access_client', true)->exists()
+            || Client::where('grant_types', 'like', '%"personal_access"%')->exists();
+
+        if ($hasPersonalAccessClient) {
             $this->info('✓ Personal Access Client already created.', OutputInterface::VERBOSITY_VERBOSE);
 
             return;

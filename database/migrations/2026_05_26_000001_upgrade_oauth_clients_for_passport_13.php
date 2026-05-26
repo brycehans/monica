@@ -44,8 +44,15 @@ return new class extends Migration
             }
         });
 
-        // Migrate existing data: user_id → owner_id (morph to User model),
-        // redirect → redirect_uris (wrapped in JSON list).
+        // Defensive defaults on the booleans that survive into the Passport 13 shape.
+        // The original 2016 migration created `personal_access_client` and `revoked`
+        // as NOT NULL with no default. Passport 13's ClientFactory writes them
+        // explicitly, but `passport:client` / direct SQL inserts may not, and the
+        // missing default would surface as `Field doesn't have a default value`.
+        DB::statement('ALTER TABLE oauth_clients MODIFY personal_access_client TINYINT(1) NOT NULL DEFAULT 0');
+        DB::statement('ALTER TABLE oauth_clients MODIFY revoked TINYINT(1) NOT NULL DEFAULT 0');
+
+        // Migrate existing data: user_id → owner_id (morph to User model).
         if (Schema::hasColumn('oauth_clients', 'user_id')) {
             DB::table('oauth_clients')->whereNotNull('user_id')->update([
                 'owner_id' => DB::raw('user_id'),
@@ -56,28 +63,49 @@ return new class extends Migration
             ]);
         }
 
+        // Migrate legacy `redirect` (comma-separated string) → `redirect_uris`
+        // (JSON array of separate elements). Passport historically allowed
+        // multiple redirect URIs concatenated with commas; Passport 13 expects
+        // them as discrete JSON array entries. JSON_ARRAY(`redirect`) would
+        // wrap the whole string as one bogus element — split per-row in PHP.
         if (Schema::hasColumn('oauth_clients', 'redirect')) {
-            // MySQL-only: monica targets MySQL exclusively (CLAUDE.md). JSON_ARRAY
-            // here composes the new redirect_uris column from the old single-string
-            // redirect value. Not portable to Postgres/SQLite, which is fine.
             DB::table('oauth_clients')
+                ->select(['id', 'redirect'])
                 ->whereNotNull('redirect')
-                ->update([
-                    'redirect_uris' => DB::raw('JSON_ARRAY(`redirect`)'),
-                ]);
+                ->orderBy('id')
+                ->each(function ($row) {
+                    $uris = array_values(array_filter(array_map('trim', explode(',', $row->redirect))));
+                    DB::table('oauth_clients')->where('id', $row->id)->update([
+                        'redirect_uris' => json_encode($uris),
+                    ]);
+                });
         }
 
-        // Default grant_types for any existing row that lacks one.
-        // The closest analog to the previous behaviour is authorization_code
-        // + refresh_token for non-personal clients; personal-access clients
-        // get 'personal_access' to match the Factory.
+        // Default grant_types for existing rows that lack one.
+        // Order matters — apply most specific first:
+        //   1. personal-access clients → ['personal_access']
+        //   2. password-grant clients (NOT personal-access) → ['password', 'refresh_token']
+        //   3. everything else → ['authorization_code', 'refresh_token']
+        //
+        // The password-grant path is load-bearing: monica's API/mobile login uses
+        // `password_grant_client` via OAuthController::proxy() (POSTs grant_type=password).
+        // Lumping password clients into authorization_code+refresh_token would silently
+        // break OAuth login on upgraded installs, because `password_client` is dropped
+        // below and the original signal is lost.
         DB::table('oauth_clients')
             ->where('personal_access_client', true)
             ->whereNull('grant_types')
             ->update(['grant_types' => json_encode(['personal_access'])]);
 
+        if (Schema::hasColumn('oauth_clients', 'password_client')) {
+            DB::table('oauth_clients')
+                ->where('password_client', true)
+                ->where('personal_access_client', false)
+                ->whereNull('grant_types')
+                ->update(['grant_types' => json_encode(['password', 'refresh_token'])]);
+        }
+
         DB::table('oauth_clients')
-            ->where('personal_access_client', false)
             ->whereNull('grant_types')
             ->update(['grant_types' => json_encode(['authorization_code', 'refresh_token'])]);
 
