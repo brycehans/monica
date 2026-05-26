@@ -34,6 +34,16 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
         echo "! Please be careful to backup $MONICADIR/storage/oauth-public.key and $MONICADIR/storage/oauth-private.key files !"
     fi
 
+    # Passport 13 / oauth2-server 9 enforce tight permissions on key files
+    # (600 or 660). The earlier `chmod -R g+rw` above leaves them at 664
+    # which trips the CryptKey permissions check.
+    if [ -f "${STORAGE}/oauth-private.key" ]; then
+        chmod 600 "${STORAGE}/oauth-private.key"
+    fi
+    if [ -f "${STORAGE}/oauth-public.key" ]; then
+        chmod 600 "${STORAGE}/oauth-public.key"
+    fi
+
 fi
 
 exec "$@"
