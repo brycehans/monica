@@ -19,7 +19,7 @@ services:
       - mysql
       - stripe-mock
     ports:
-      - 8082:80
+      - ${APP_PORT:-8082}:80
     env_file: .env.dev
     environment:
       # Route all Stripe SDK / Cashier traffic at the stripe-mock sidecar so the
@@ -66,7 +66,7 @@ services:
   stripe-mock:
     image: stripe/stripe-mock:v0.199.0
     ports:
-      - 12111:12111
+      - ${STRIPE_MOCK_PORT:-12111}:12111
 
   phpmyadmin:
     image: phpmyadmin:5.2
@@ -78,13 +78,12 @@ services:
       PMA_PASSWORD: sekret_root_password
     restart: always
     ports:
-      - 3000:80
+      - ${PHPMYADMIN_PORT:-3000}:80
     volumes:
       - /sessions
 
   mail:
-    container_name: fake_mail
     image: mailhog/mailhog:v1.0.1
     ports:
-      - 8025:8025
-      - 1025:1025
+      - ${MAILHOG_UI_PORT:-8025}:8025
+      - ${MAILHOG_SMTP_PORT:-1025}:1025
