@@ -5,7 +5,7 @@ namespace Tests\Commands\Tests;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use App\Console\Commands\Helpers\Command;
-use Laravel\Passport\PersonalAccessClient;
+use Laravel\Passport\Client;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class PassportCommandTest extends TestCase
@@ -20,7 +20,7 @@ class PassportCommandTest extends TestCase
             $this->markTestSkipped('Run "php artisan key:generate" before executing these tests.');
         }
 
-        foreach (PersonalAccessClient::all() as $client) {
+        foreach (Client::where('personal_access_client', true)->get() as $client) {
             $client->delete();
         }
     }
@@ -43,7 +43,7 @@ class PassportCommandTest extends TestCase
         /** @var \Tests\Helpers\CommandCallerFake */
         $fake = Command::fake();
 
-        PersonalAccessClient::create();
+        Client::factory()->create(['personal_access_client' => true]);
 
         $this->artisan('monica:passport')->run();
 

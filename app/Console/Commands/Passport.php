@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
-use Laravel\Passport\PersonalAccessClient;
+use Laravel\Passport\Client;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Passport extends Command
@@ -62,7 +62,7 @@ class Passport extends Command
     {
         $this->info('Checking Personal Access Client...', OutputInterface::VERBOSITY_VERBOSE);
 
-        if (PersonalAccessClient::count() > 0) {
+        if (Client::where('personal_access_client', true)->exists()) {
             $this->info('✓ Personal Access Client already created.', OutputInterface::VERBOSITY_VERBOSE);
 
             return;
