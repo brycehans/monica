@@ -65,11 +65,14 @@
     <env name="APP_DEFAULT_LOCALE" value="en"/>
     <env name="LOG_CHANNEL" value="testing"/>
     <env name="DAV_ENABLED" value="true"/>
-    <env name="REQUIRES_SUBSCRIPTION" value="false"/>
+    <env name="REQUIRES_SUBSCRIPTION" value="false" force="true"/>
     <env name="MAIL_HOST" value=""/>
     <env name="MAIL_PORT" value=""/>
     <env name="MAIL_ENCRYPTION" value=""/>
     <env name="APP_EMAIL_NEW_USERS_NOTIFICATION" value=""/>
     <env name="LARAVEL_CLOUDFLARE_ENABLED" value="false"/>
+    <env name="STRIPE_API_BASE" value="http://stripe-mock:12111"/>
+    <env name="STRIPE_SECRET" value="sk_test_stripemockkey" force="true"/>
+    <env name="STRIPE_KEY" value="pk_test_stripemockkey" force="true"/>
   </php>
 </phpunit>

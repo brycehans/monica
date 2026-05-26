@@ -13,6 +13,8 @@
 /storage/oauth-public.key
 /tests/cypress/screenshots
 /tests/cypress/videos
+test-results/
+playwright-report/
 /vendor
 .composer
 .env

@@ -17,9 +17,34 @@ services:
     user: www-data
     depends_on:
       - mysql
+      - stripe-mock
     ports:
       - 8082:80
     env_file: .env.dev
+    environment:
+      # Route all Stripe SDK / Cashier traffic at the stripe-mock sidecar so the
+      # Playwright subscription-flow smoke (tests/playwright/specs/subscription-flow.spec.ts)
+      # can exercise upgrade pages without hitting the real Stripe API. Keys must
+      # be underscore-free — stripe-mock v0.199.0 rejects underscored test keys.
+      # AppServiceProvider::boot() reads STRIPE_API_BASE and overrides Cashier::$apiBaseUrl.
+      - CASHIER_KEY=pk_test_stripemockkey
+      - CASHIER_SECRET=sk_test_stripemockkey
+      - STRIPE_KEY=pk_test_stripemockkey
+      - STRIPE_SECRET=sk_test_stripemockkey
+      - STRIPE_API_BASE=http://stripe-mock:12111
+      # Enable the /settings/subscriptions/* surface so the smoke can reach the
+      # upgrade pages (the controller redirects to /settings when this is false).
+      - REQUIRES_SUBSCRIPTION=true
+      # Minimal plan config so getPlanInformationFromConfig('annual'|'monthly')
+      # returns a non-null array instead of aborting 404 from the upgrade route.
+      # Values don't have to map to real Stripe price IDs — stripe-mock generates
+      # whatever PaymentIntent/SetupIntent the upgrade view requests.
+      - PAID_PLAN_MONTHLY_FRIENDLY_NAME=Monthly plan
+      - PAID_PLAN_MONTHLY_ID=price_monthly_test
+      - PAID_PLAN_MONTHLY_PRICE=500
+      - PAID_PLAN_ANNUAL_FRIENDLY_NAME=Annual plan
+      - PAID_PLAN_ANNUAL_ID=price_annual_test
+      - PAID_PLAN_ANNUAL_PRICE=5000
     volumes:
       - /var/www/html/storage
       - ./app:/var/www/html/app
@@ -37,6 +62,11 @@ services:
       - MYSQL_PASSWORD=secret
     volumes:
       - /var/lib/mysql
+
+  stripe-mock:
+    image: stripe/stripe-mock:v0.199.0
+    ports:
+      - 12111:12111
 
   phpmyadmin:
     image: phpmyadmin:5.2

@@ -88,6 +88,21 @@ class AppServiceProvider extends ServiceProvider
 
         Cashier::useCustomerModel(\App\Models\Account\Account::class);
 
+        // Allow the dev compose stack (and any other smoke-test environment) to
+        // route Stripe SDK calls at a local stripe-mock sidecar by setting the
+        // STRIPE_API_BASE env var. Without an override, Cashier talks to the
+        // real Stripe API. See tests/playwright/specs/subscription-flow.spec.ts
+        // and docker-compose.dev.yml for the matching plumbing.
+        //
+        // The non-production guard is a safety belt: if STRIPE_API_BASE ever
+        // leaks into a production .env (or survives a stale `php artisan
+        // config:cache` from a misconfigured deploy), we still won't silently
+        // reroute real billing traffic at a sidecar. Production stays on the
+        // Cashier default.
+        if (! $this->app->environment('production') && ($base = config('monica.stripe_api_base'))) {
+            Cashier::$apiBaseUrl = $base;
+        }
+
         VerifyEmail::toMailUsing(function ($user, $verificationUrl) {
             return EmailMessaging::verifyEmailMail($user, $verificationUrl);
         });
