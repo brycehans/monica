@@ -362,7 +362,7 @@ export default {
     toggleEditExcept(contactAddressId) {
       _.forEach(_.filter(this.contactAddresses, function (a) {
         return a.id !== contactAddressId;}
-      ), function (a) {
+      ), (a) => {
         this.$set(a, 'edit', false);
       });
     },
