@@ -45,7 +45,7 @@ class ContactField extends Model implements LabelInterface
     /**
      * The attributes that aren't mass assignable.
      *
-     * @var array<string>|bool
+     * @var array<string>
      */
     protected $guarded = ['id'];
 

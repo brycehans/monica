@@ -40,7 +40,7 @@ class ImportJobReport extends Model
     /**
      * The attributes that aren't mass assignable.
      *
-     * @var array<string>|bool
+     * @var array<string>
      */
     protected $guarded = ['id'];
 
