@@ -1,6 +1,7 @@
 .scannerwork/
 /node_modules
 /persist
+/public/build
 /public/css
 /public/fonts
 /public/hot
