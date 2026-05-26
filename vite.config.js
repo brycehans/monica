@@ -22,7 +22,14 @@ export default defineConfig({
       ],
       refresh: true,
     }),
-    vue(),
+    vue({
+      template: {
+        // SFC templates reference public assets like <img src="/img/foo.svg"> that
+        // Laravel serves from public/. Don't try to resolve them as bundled modules.
+        // The Blade <base href="..."> tag handles URL resolution at runtime.
+        transformAssetUrls: false,
+      },
+    }),
   ],
   resolve: {
     alias: [
@@ -33,6 +40,8 @@ export default defineConfig({
       // cutover when webpack.mix.js is deleted and SCSS tildes go with it.
       { find: /^~(.+)$/, replacement: path.resolve(__dirname, 'node_modules/$1') },
     ],
+    // Match webpack/Mix's default: resolve .vue imports without explicit extension.
+    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.vue'],
   },
   build: {
     sourcemap: true,

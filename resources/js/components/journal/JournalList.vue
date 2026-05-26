@@ -83,7 +83,7 @@
            class="br3 ba b--gray-monica bg-white pr3 pb3 pt3 mb3 tc"
       >
         <div class="tc mb4">
-          <img src="img/journal/blank.svg" :alt="$t('journal.journal_empty')" />
+          <img src="/img/journal/blank.svg" :alt="$t('journal.journal_empty')" />
         </div>
         <h3>
           {{ $t('journal.journal_blank_cta') }}

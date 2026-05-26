@@ -70,6 +70,7 @@
 <script>
 
 import { SweetModal } from 'sweet-modal-vue';
+import moment from 'moment-timezone';
 
 export default {
 
@@ -106,7 +107,6 @@ export default {
     },
 
     formatDate(dateAsString) {
-      const moment = require('moment-timezone');
       moment.locale(this._i18n.locale);
       moment.tz.setDefault('UTC');
 

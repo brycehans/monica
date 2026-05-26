@@ -219,7 +219,7 @@ export default {
     updateList(activity) {
       this.displayLogActivity = false;
       const index = this.activities.indexOf(this.activities.find(item => item.id === activity.id));
-      Vue.set(this.activities, index >= 0 ? index : this.activities.length, activity);
+      this.$set(this.activities, index >= 0 ? index : this.activities.length, activity);
     },
 
     showDestroyActivity(activity) {

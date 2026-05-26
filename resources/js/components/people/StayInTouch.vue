@@ -171,6 +171,7 @@ import { SweetModal } from 'sweet-modal-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 import { validationMixin } from 'vuelidate';
 import { required, numeric } from 'vuelidate/lib/validators';
+import moment from 'moment-timezone';
 import StayInTouchLabel from './StayInTouchLabel';
 
 export default {
@@ -246,7 +247,6 @@ export default {
     },
 
     formatDate(dateAsString) {
-      const moment = require('moment-timezone');
       moment.locale(this._i18n.locale);
       moment.tz.setDefault('UTC');
       var date = moment.tz(moment(dateAsString), this.$root.timezone);

@@ -175,6 +175,7 @@
 
 <script>
 import { SweetModal } from 'sweet-modal-vue';
+import moment from 'moment-timezone';
 import * as WebAuthn from '../../../../vendor/asbiin/laravel-webauthn/resources/js/webauthn.js';
 
 export default {
@@ -379,7 +380,6 @@ export default {
     },
 
     formatTime(value) {
-      var moment = require('moment-timezone');
       moment.locale(this._i18n.locale);
       moment.tz.setDefault('UTC');
 

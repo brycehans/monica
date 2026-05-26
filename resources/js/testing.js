@@ -3,6 +3,8 @@
  * These are only active on local or testing environment.
  */
 
+import Vue from 'vue';
+
 function testingDirective(el, binding, vnode) {
   if (window.Laravel.env != 'production') {
     var value = '';
