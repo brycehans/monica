@@ -10,41 +10,9 @@ import path from 'node:path';
 // Vue 2 ceiling: @vitejs/plugin-vue2 is archived (2025-10-04,
 // vitejs/vite-plugin-vue2) and peers vite ^3–^7. Pin vite to ~7 until the
 // Vue 3 migration lifts the cap.
-// STOPGAP — retires when #710 lands.
-//
-// asbiin/laravel-webauthn ships its browser client as a UMD file
-// (vendor/asbiin/laravel-webauthn/resources/js/webauthn.js) — the WebAuthn
-// constructor is exposed through `!function(e,t){...module.exports=t...}(this, WebAuthn)`.
-// Rollup's static analysis can't trace that into a default export from outside
-// node_modules, so `import WebAuthn from '...'` fails to build. This plugin
-// strips the UMD wrapper and appends an explicit ESM default export, scoped
-// to that one file path only.
-//
-// This is debt. The proper fix is #710: drop the vendored UMD client entirely
-// and use @simplewebauthn/browser (ESM-native, maintained, ~10KB). The
-// virtual-authenticator Playwright test in dependency-upgrade-smoke.spec.ts
-// (search "WebAuthn registration baseline") locks the registration flow's
-// behaviour so the swap PR can verify equivalence.
-//
-// See #707 (root regression), #709 (this stopgap), #710 (proper swap).
-const webauthnUmdToEsm = {
-  name: 'fork:webauthn-umd-to-esm',
-  enforce: 'pre',
-  transform(code, id) {
-    if (!id.endsWith('/asbiin/laravel-webauthn/resources/js/webauthn.js')) return null;
-    return {
-      code: code.replace(
-        /!function\(e,t\)\{[^}]+\}\(this,\s*WebAuthn\);?\s*$/,
-        '\nexport default WebAuthn;\n',
-      ),
-      map: null,
-    };
-  },
-};
 
 export default defineConfig(({ mode }) => ({
   plugins: [
-    webauthnUmdToEsm,
     laravel({
       input: [
         'resources/js/app.js',
