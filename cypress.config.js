@@ -25,8 +25,7 @@ module.exports = defineConfig({
   component: {
     devServer: {
       framework: 'vue',
-      bundler: 'webpack',
-      webpackConfig: require('./tests/cypress/support/component.webpack.config.js'),
+      bundler: 'vite',
     },
     supportFile: 'tests/cypress/support/component.js',
     specPattern: 'tests/cypress/component/**/*.cy.js',

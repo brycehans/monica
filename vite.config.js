@@ -51,6 +51,16 @@ export default defineConfig(({ mode }) => ({
   build: {
     sourcemap: true,
   },
+  optimizeDeps: {
+    // sweet-modal-vue's `module` field points at raw src/ with extension-less
+    // .vue imports (`import SweetModal from './components/SweetModal'`).
+    // Production `vite build` resolves those via plugin-vue2 + the .vue
+    // extension in resolve.extensions, but the dev-server's esbuild
+    // dep-pre-bundling step doesn't honour that list. Skipping pre-bundling
+    // lets plugin-vue2 handle the imports lazily. Affects `vite` dev server
+    // and @cypress/vite-dev-server; `vite build` (Rollup) is unaffected.
+    exclude: ['sweet-modal-vue'],
+  },
   css: {
     // PurgeCSS wired via Vite's css.postcss option rather than a project-root
     // postcss.config.js so the safelist lives next to the bundler config that

@@ -34,8 +34,8 @@
     "yarn": "1.22.x"
   },
   "devDependencies": {
+    "@cypress/vite-dev-server": "^7.3.3",
     "@cypress/vue2": "^2.1.1",
-    "@cypress/webpack-dev-server": "^5.6.1",
     "@faker-js/faker": "^10.0.0",
     "@fullhuman/postcss-purgecss": "^8.0.0",
     "@snyk/protect": "^1.1305.0",
