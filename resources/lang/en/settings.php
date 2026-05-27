@@ -368,6 +368,8 @@ return [
     'api_oauth_create' => 'Create Client',
     'api_oauth_redirecturl' => 'Redirect URL',
     'api_oauth_redirecturl_help' => 'Your application’s authorization callback URL.',
+    'api_oauth_secret_title' => 'Client Secret',
+    'api_oauth_secret_help' => 'Here is the client secret for the OAuth client you just created. Copy it now — for security, this is the only time it will be shown.',
 
     'api_authorized_clients' => 'List of authorized clients',
     'api_authorized_clients_desc' => 'This section lists all the clients you’ve authorized to access your application data. You can revoke this authorization at anytime.',

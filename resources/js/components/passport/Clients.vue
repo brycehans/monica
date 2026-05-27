@@ -1,3 +1,18 @@
+<style scoped>
+    .access-key {
+        border: 1px solid #cacaca;
+        border-radius: 3px;
+        padding: 10px 10px 0;
+        background-color: #fafafa;
+    }
+
+    pre {
+        font-size: 12px;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+</style>
+
 <template>
   <div>
     <notifications group="passport-clients" position="top middle" :duration="5000" width="400" />
@@ -136,6 +151,35 @@
         </a>
       </div>
     </sweet-modal>
+
+    <!--
+      Client Secret Modal — surfaces the plain secret once on creation.
+      Passport v13 hashes oauth_clients.secret at insertion, so plain_secret
+      only exists in the create response. Mirrors the PersonalAccessTokens
+      access-token one-shot pattern.
+    -->
+    <sweet-modal ref="modalClientSecret" overlay-theme="dark" tabindex="-1" role="dialog"
+                 :title="$t('settings.api_oauth_secret_title')"
+    >
+      <p>{{ $t('settings.api_oauth_secret_help') }}</p>
+
+      <div class="flex-auto access-key overflow-y-scroll" cy-name="client-secret-display"
+           style="max-height: 400px;" @click.prevent="copyIntoClipboard(clientSecret)"
+      >
+        <pre><code>{{ clientSecret }}</code></pre>
+      </div>
+
+      <div slot="button">
+        <a class="btn btn-primary" :title="$t('settings.dav_copy_help')" href=""
+           @click.prevent="copyIntoClipboard(clientSecret)"
+        >
+          {{ $t('app.copy') }}
+        </a>
+        <a class="btn" href="" @click.prevent="closeSecretModal">
+          {{ $t('app.close') }}
+        </a>
+      </div>
+    </sweet-modal>
   </div>
 </template>
 
@@ -157,6 +201,7 @@ export default {
   data() {
     return {
       clients: [],
+      clientSecret: null,
 
       form: {
         errors: [],
@@ -248,15 +293,27 @@ export default {
 
     /**
      * Persist the client to storage using the given form.
+     *
+     * On create, the response carries `secret` = the plain client secret
+     * (Passport v13 hashes it at insertion, so it's only available here).
+     * Push the new client into the in-memory list so the row appears, and
+     * surface the plain secret in a one-shot modal — same pattern as
+     * PersonalAccessTokens.vue. On update, refetch the list as before
+     * (no secret in the response).
      */
     persistClient(method, uri, form) {
+      const isCreate = method === 'post';
       form.errors = [];
 
       axios[method](uri, form)
         .then(response => {
-          this.getClients();
-
-          this.closeModal();
+          if (isCreate) {
+            this.clients.push(response.data);
+            this.showClientSecret(response.data.secret);
+          } else {
+            this.getClients();
+            this.closeModal();
+          }
         })
         .catch(error => {
           if (typeof error.response.data === 'object') {
@@ -265,6 +322,24 @@ export default {
             form.errors = [this.$t('app.error_try_again')];
           }
         });
+    },
+
+    /**
+     * Show the plain client secret in a one-shot modal after create.
+     */
+    showClientSecret(secret) {
+      this.$refs.modalClient.close();
+      this.clientSecret = secret;
+      this.$refs.modalClientSecret.open();
+    },
+
+    /**
+     * Close the secret modal and clear in-memory state.
+     */
+    closeSecretModal() {
+      this.$refs.modalClientSecret.close();
+      this.clientSecret = null;
+      this.resetField();
     },
 
     /**
