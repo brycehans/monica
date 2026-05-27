@@ -82,17 +82,18 @@ jobs:
         run: |
           cp scripts/ci/.env.${{ matrix.connection }} .env
           touch config/.version config/.release config/.commit
-          mkdir -p public/js public/css results/coverage
-          {\
-            echo "{"; \
-            for f in app.js manifest.js vendor.js app-ltr.css app-rtl.css stripe.js stripe.css; do \
-              [[ $first == 1 ]] && echo -n "," || first=1; \
-              k=${f##*.}/$f; \
-              echo "\"/$k\": \"/$k\""; \
-              echo '' > public/$k; \
-            done; \
-            echo "}"; \
-          } | tee public/mix-manifest.json
+          mkdir -p public/build/assets results/coverage
+          # Stub Vite manifest so @vite() directives in Blade resolve. Tests
+          # never load these assets — the files don't need to exist on disk.
+          cat > public/build/manifest.json <<'JSON'
+          {
+            "resources/js/app.js":        {"file": "assets/app.js",        "src": "resources/js/app.js",        "isEntry": true, "name": "app"},
+            "resources/js/stripe.js":     {"file": "assets/stripe.js",     "src": "resources/js/stripe.js",     "isEntry": true, "name": "stripe"},
+            "resources/sass/app-ltr.scss":{"file": "assets/app-ltr.css",   "src": "resources/sass/app-ltr.scss","isEntry": true, "name": "app-ltr"},
+            "resources/sass/app-rtl.scss":{"file": "assets/app-rtl.css",   "src": "resources/sass/app-rtl.scss","isEntry": true, "name": "app-rtl"},
+            "resources/sass/stripe.scss": {"file": "assets/stripe.css",    "src": "resources/sass/stripe.scss", "isEntry": true, "name": "stripe-css"}
+          }
+          JSON
 
       - name: Generate key
         run: php artisan key:generate

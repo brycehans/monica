@@ -191,7 +191,7 @@ RUN set -ex; \
     apt-get install -y nodejs; \
     npm install -g yarn; \
     yarn run inst; \
-    yarn run dev; \
+    yarn run production; \
     \
     rm -rf /var/lib/apt/lists/*
 

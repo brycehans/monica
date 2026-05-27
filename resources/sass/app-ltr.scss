@@ -1,32 +1,39 @@
 $htmldir: ltr !default;
 
+// font-awesome 4 ships its webfonts in node_modules/font-awesome/fonts/.
+// Vite's static-copy plugin (see vite.config.js) lands them in
+// public/build/assets/, so override the SCSS variable to point there
+// before importing font-awesome. The default ($fa-font-path: "../fonts")
+// would emit unresolvable /build/fonts/ paths after cutover.
+$fa-font-path: "/build/assets";
+
 // Variables
 @import "variables";
 
 // Bootstrap
 @import "custom_bootstrap";
 
-@import "~hint.css/hint.min";
+@import "hint.css/hint.min";
 
-@import "~tachyons/css/tachyons.min";
+@import "tachyons/css/tachyons.min";
 
 // For the datatables
 @import "_datatable.min";
 
 // Icon fonts
-@import "~font-awesome/scss/font-awesome";
+@import "font-awesome/scss/font-awesome";
 
 // Tooltip
-@import "~vue-directive-tooltip/src/css/index.scss";
+@import "vue-directive-tooltip/src/css/index.scss";
 
 // Radio button
-@import "~pretty-checkbox/src/pretty-checkbox";
+@import "pretty-checkbox/src/pretty-checkbox";
 
 // datepicker
-@import "~@hokify/vuejs-datepicker/dist/vuejs-datepicker.css";
+@import "@hokify/vuejs-datepicker/dist/vuejs-datepicker.css";
 
 // Tables
-@import "~vue-good-table/dist/vue-good-table.css";
+@import "vue-good-table/dist/vue-good-table.css";
 
 @import "buttons";
 @import "header";

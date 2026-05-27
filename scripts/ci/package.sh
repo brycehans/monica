@@ -50,7 +50,7 @@ ln -s $ROOT/package.json $package/
 ln -s $ROOT/Procfile $package/
 ln -s $ROOT/README.md $package/
 ln -s $ROOT/server.php $package/
-ln -s $ROOT/webpack.mix.js $package/
+ln -s $ROOT/vite.config.js $package/
 ln -s $ROOT/yarn.lock $package/
 ln -s $ROOT/app $package/
 ln -s $ROOT/bootstrap $package/
@@ -80,10 +80,7 @@ echo "package=$package.tar.bz2" >> $GITHUB_OUTPUT
 # ASSETS
 assets=monica-assets-$version
 mkdir -p $assets/public
-ln -s $ROOT/public/mix-manifest.json $assets/public/
-ln -s $ROOT/public/js $assets/public/
-ln -s $ROOT/public/css $assets/public/
-ln -s $ROOT/public/fonts $assets/public/
+ln -s $ROOT/public/build $assets/public/
 
 tar chfj $assets.tar.bz2 --exclude .gitignore --exclude .gitkeep $assets
 sha512sum "$assets.tar.bz2" > "$assets.tar.bz2.sha512"
