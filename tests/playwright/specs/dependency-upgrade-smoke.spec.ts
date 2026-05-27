@@ -281,6 +281,48 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     expect(Array.isArray(listJson.contacts)).toBe(true);
   });
 
+  test('oauth client create flow: secret modal surfaces the plain secret once', async ({ page }) => {
+    // Locks down the #703 fix: Clients.vue captures the create-response,
+    // pushes the new client into the list locally, and opens a one-shot
+    // <sweet-modal> showing the plain secret. v13 hashes secrets at
+    // insertion so the plain value is only available in that response —
+    // the previous "refetch the index" path silently dropped it.
+    await login(page);
+    await page.goto('/settings/api');
+
+    const marker = `smoke client ${Date.now()}`;
+
+    // Open the Create Client modal.
+    await page.getByRole('link', { name: 'Create New Client' }).click();
+    const createModal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Create Client' });
+    await expect(createModal).toBeVisible();
+
+    // Fill name + redirect, submit.
+    await createModal.locator('input[name="client-name"]').fill(marker);
+    await createModal.locator('input[name="redirect-url"]').fill('https://example.com/oauth/cb');
+    await createModal.getByRole('link', { name: 'Create', exact: true }).click();
+
+    // Create modal closes, Client Secret modal opens with the plain value.
+    await expect(createModal).toBeHidden();
+    const secretModal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Client Secret' });
+    await expect(secretModal).toBeVisible();
+
+    const secretText = (await secretModal.locator('[cy-name="client-secret-display"] code').textContent())?.trim() ?? '';
+    expect(secretText.length).toBeGreaterThanOrEqual(40);
+    // Passport generates Str::random(40) for the secret — alphanumeric only.
+    expect(secretText).toMatch(/^[A-Za-z0-9]+$/);
+
+    // Close the secret modal. The new client should still be in the list.
+    await secretModal.getByRole('link', { name: 'Close', exact: true }).click();
+    await expect(secretModal).toBeHidden();
+    await expect(page.locator('body')).toContainText(marker);
+
+    // Cleanup so the dev DB doesn't accumulate clients across smoke runs.
+    const row = page.locator('.dt-row', { hasText: marker });
+    await row.locator('em.fa-trash-o').click();
+    await expect(page.locator('.dt-row', { hasText: marker })).toHaveCount(0);
+  });
+
   test('logout clears session', async ({ page }) => {
     await login(page);
     await page.goto('/logout');
