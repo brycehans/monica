@@ -16,6 +16,16 @@
 #     must be able to run this job
 #   - no Docker layer cache — the whole point is to catch drift, and a stale
 #     cache can mask exactly the kind of regression this guard exists for
+#   - always triggers on every PR to 4.x (no workflow-level `paths-ignore`).
+#     The job ("Build dev docker image") is a required status check on the
+#     4.x branch protection rule; if the workflow itself is skipped, the
+#     check never appears and the PR is unmergeable (this happened to docs
+#     PR #696 — required check stayed pending forever and the PR had to be
+#     admin-merged). To preserve the original intent of skipping the
+#     expensive build on docs/tests/markdown/migration-only changes, the
+#     skip is now done at the *step* level inside this always-running job.
+#     The job still reports success on docs-only PRs; only the docker
+#     build step is gated.
 #
 # Scope: only the dev image (scripts/docker/Dockerfile via docker-compose.dev.yml).
 # Related: issue #584, discussion #581, PR #561, milestone "OOTB buildability".
@@ -27,19 +37,9 @@ on:
     branches:
       - 4.x
     types: [opened, synchronize, reopened]
-    paths-ignore:
-      - 'docs/**'
-      - 'tests/**'
-      - '*.md'
-      - '.migration/**'
   push:
     branches:
       - 4.x
-    paths-ignore:
-      - 'docs/**'
-      - 'tests/**'
-      - '*.md'
-      - '.migration/**'
 
 concurrency:
   group: OOTB Docker build ${{ github.ref }}
@@ -53,6 +53,54 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
+        with:
+          # Full history so the diff step below can resolve the base SHA on
+          # both pull_request and push events without surprises.
+          fetch-depth: 0
+
+      - name: Detect docker-relevant changes
+        id: changes
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+            head="${{ github.event.pull_request.head.sha }}"
+          else
+            base="${{ github.event.before }}"
+            head="${{ github.event.after }}"
+          fi
+
+          # First-push / branch-create may have no usable base. Err on the
+          # side of running the real build rather than silently passing.
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            echo "No base SHA available — running build."
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Pathspec exclusions mirror the previous workflow-level
+          # paths-ignore set. ':(exclude,glob)' enables ** glob semantics so
+          # '**/*.md' matches markdown at any depth (including the root).
+          changed=$(git diff --name-only "$base" "$head" -- \
+            ':(exclude,glob)**/*.md' \
+            ':(exclude,glob)docs/**' \
+            ':(exclude,glob)tests/**' \
+            ':(exclude,glob).migration/**')
+
+          if [ -n "$changed" ]; then
+            echo "Docker-relevant changes detected:"
+            echo "$changed"
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Only docs / tests / markdown / .migration changes — skipping build."
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build dev compose image
+        if: steps.changes.outputs.relevant == 'true'
         run: docker compose -f docker-compose.dev.yml build app
+
+      - name: Skipped (no docker-relevant changes)
+        if: steps.changes.outputs.relevant != 'true'
+        run: echo "No files outside the skip set changed — reporting success without rebuilding."
