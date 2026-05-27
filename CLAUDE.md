@@ -4,17 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A community maintenance fork of Monica v4 (Laravel 9 + Vue 2.6 personal CRM). The default branch is `4.x`, pinned to the upstream v4.1.2 release (`32028ce`) plus a small number of follow-on fixes. See `README.md` for the full posture; the short version is: **stability is the feature, no new features, no rewrite, no Vue 3 migration.**
+A community maintenance fork of Monica v4 (Laravel 12 + Vue 2.7 personal CRM, with a Vue 3 migration on the modernization ladder). The default branch is `4.x`, pinned to the upstream v4.1.2 release (`32028ce`) plus a small number of follow-on fixes. See `README.md` for the full posture; the short version is: **stability is the feature, no new features, no rewrite, no UI redesign.**
 
 If `CLAUDE.local.md` and `.migration/` exist in your working tree, they hold fork-local context that isn't checked in — read them first when present. The triage workbench in `.migration/triage.db` is a SQLite mirror of the upstream issue tracker; it's where decisions about the imported backlog live before anything is applied to the fork on GitHub.
 
 ## Stack
 
-- **PHP 8.1**, **Laravel 9**, **Composer** — see `.tool-versions`, `composer.json`.
-- **Node 20**, **Yarn 1.22**, **Laravel Mix 6** — see `package.json`.
-- **Vue 2.6** (intentional — do not upgrade), Bootstrap 4 + Tachyons, vue-i18n.
+- **PHP 8.4**, **Laravel 12**, **Composer** — see `.tool-versions`, `composer.json`.
+- **Node 20**, **Yarn 1.22**, **Vite ~7** + **@vitejs/plugin-vue2** — see `package.json`. (`vitejs/vite-plugin-vue2` is archived upstream; the v8 ceiling on Vite is what keeps us at vite ~7. Vue 3 migration lifts that.)
+- **Vue 2.7** (current line; Vue 3 migration is a planned ladder rung — see "Fork-specific scope"), Bootstrap 4 + Tachyons, vue-i18n.
 - **MySQL** is the only supported database. Postgres/SQLite are not tested.
-- Static analysis: **PHPStan** (`phpstan.neon`) and **Psalm** (`psalm.xml`) — both run after the PHPUnit suite via `yarn run test`.
+- Static analysis: **PHPStan** (`phpstan.neon`) runs after the PHPUnit suite via `yarn run test` (the `posttest` hook). Psalm is currently removed from `require-dev` — see `composer.json` `extra.fork-notes.psalm-removed-on-php84` for why (it crashes on PHP 8.4); the re-add path is psalm ^6 once `thecodingmachine/safe ^3` is unblocked. `psalm.xml` lingers in the tree but is unused.
 - E2E: **Cypress** (`cypress.json`, `tests/cypress/`) and Laravel **Dusk** (`tests/Browser/`).
 
 ## Common commands
@@ -45,12 +45,11 @@ php artisan ide-helper:models --write  # refresh @property/@method blocks on Elo
 
 Tests:
 ```
-yarn run test                # full suite: migrate testing DB → phpunit → phpstan → psalm
+yarn run test                # full suite: migrate testing DB → phpunit → phpstan
 vendor/bin/phpunit           # phpunit only, skips the pre/post hooks
 vendor/bin/phpunit --filter SomeTest                           # single test class
 vendor/bin/phpunit tests/Unit/Services/Contact/SomeServiceTest.php  # single file
 vendor/bin/phpstan analyse
-vendor/bin/psalm
 php artisan dusk             # browser tests (needs Chrome + a running app)
 yarn run e2e                 # cypress headless
 yarn run e2e-gui             # cypress interactive
@@ -100,7 +99,7 @@ Standard Laravel + Vue monolith. Worth knowing before changing things:
 
 **`spatie/ray` and `spatie/laravel-ray` are explicitly suppressed.** They were stowaway transitive deps (zero callers anywhere in `vendor/`) pulled in via `psalm/plugin-laravel → orchestra/testbench → orchestra/workbench`. The root `composer.json` declares them in `replace`, and `composer.lock` has been hand-pruned to drop them and their now-orphaned transitive deps (`rector/rector`, the `zbateson/*` chain, `pimple/pimple`, `symfony/polyfill-iconv`).
 
-If `composer update` ever reintroduces them, **fresh installs will fail** (composer correctly refuses to let the root project coexist with a package it replaces). That's intentional — it's the visible alarm that says the suppression has slipped. To unwind cleanly: drop the `replace` block, or upgrade `psalm/plugin-laravel` to `>= 2.10.1` (which dropped the orchestra chain entirely, but requires Laravel ^10.48 — blocked on the Laravel 9 → 10 modernization).
+If `composer update` ever reintroduces them, **fresh installs will fail** (composer correctly refuses to let the root project coexist with a package it replaces). That's intentional — it's the visible alarm that says the suppression has slipped. The original trigger (`psalm/plugin-laravel` pulling `orchestra/workbench → spatie/laravel-ray → spatie/ray`) is currently moot because psalm itself is removed from `require-dev` (see `extra.fork-notes.psalm-removed-on-php84`); the `replace` block stays as defense-in-depth in case psalm comes back via the same chain. Unwind cleanly by either dropping the `replace` block once psalm is confirmed not to return via that path, or by holding the line until `psalm/plugin-laravel >= 2.10.1` (which dropped the orchestra dep entirely — now reachable on the current Laravel 12 line) ends up in the lock alongside `psalm ^6`.
 
 Full root cause: see `composer.json` `extra.fork-notes.replace-spatie-ray` and issue #613. The proximate trigger was `spatie/ray/src/helpers.php` registering a shutdown handler that called `class_exists()` on a class whose file composer had just deleted, fatalling `composer install --no-dev` runs inside live dev containers.
 
@@ -108,20 +107,23 @@ Full root cause: see `composer.json` `extra.fork-notes.replace-spatie-ray` and i
 
 Anything not on the modernization ladder is out of scope. The ladder, in rough priority order (from `README.md`):
 
-1. PHP 8.4 compatibility
-2. Modern Laravel (current supported version)
-3. Modern Node / build chain with `npm audit` clean
-4. Security patches against the current dependency graph
-5. Triage of the imported issue and PR queue
+1. Vue 3 migration
+2. Continued security patches against the current dependency graph (`composer audit` / `yarn audit` reduction)
+3. Triage of the imported issue and PR queue
+
+Already landed (kept here as context for older docs that may still list these as "things we plan to do"):
+
+- PHP 8.4 compatibility
+- Modern Laravel (currently 12.x)
+- Modern Node / build chain (Vite + plugin-vue2; `yarn audit` reduction ongoing)
 
 Hard constraints carried in from the README and `CLAUDE.local.md`:
 
-- **No Vue 3 migration.** Vue 2.6 is intentional.
 - **No new features.** Stability is the feature.
 - **No architectural refactors.** Match upstream's structure.
 - **No UI redesigns.**
 
-If you're being asked to do something that doesn't fit one of those five rungs, stop and confirm with the user before proceeding.
+If you're being asked to do something that doesn't fit one of those rungs, stop and confirm with the user before proceeding.
 
 ## Triage workbench
 
