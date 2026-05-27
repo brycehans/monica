@@ -1,5 +1,5 @@
 <script>
-const input = require('./PInput').default;
+import input from './PInput';
 
 const radio = {
   name: 'radio',

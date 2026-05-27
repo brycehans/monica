@@ -149,7 +149,7 @@ export default {
     },
 
     toggleEditMode(note) {
-      Vue.set(note, 'edit', !note.edit);
+      this.$set(note, 'edit', !note.edit);
     },
 
     getNotes() {
@@ -185,7 +185,7 @@ export default {
     update(note) {
       axios.put('people/' + this.hash + '/notes/' + note.id, note)
         .then(response => {
-          Vue.set(note, 'edit', false);
+          this.$set(note, 'edit', false);
 
           this.$notify({
             group: 'main',

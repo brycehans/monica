@@ -34,7 +34,7 @@
         <h3 class="mb4 mt3">
           {{ $t('people.photo_list_blank_desc') }}
         </h3>
-        <img src="img/people/photos/photos_empty.svg" :alt="$t('people.photo_title')" class="w-50 center" />
+        <img src="/img/people/photos/photos_empty.svg" :alt="$t('people.photo_title')" class="w-50 center" />
       </div>
     </div>
 

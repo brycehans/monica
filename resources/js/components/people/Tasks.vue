@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <img src="img/people/tasks.svg" :alt="$t('people.tasks_title')" class="icon-section icon-tasks" />
+      <img src="/img/people/tasks.svg" :alt="$t('people.tasks_title')" class="icon-section icon-tasks" />
       <h3>
         {{ $t('people.section_personal_tasks') }}
 
@@ -145,6 +145,8 @@
 </template>
 
 <script>
+import moment from 'moment-timezone';
+
 export default {
 
   props: {
@@ -210,7 +212,7 @@ export default {
     },
 
     toggleEditMode(task) {
-      Vue.set(task, 'edit', !task.edit);
+      this.$set(task, 'edit', !task.edit);
     },
 
     index() {
@@ -239,7 +241,7 @@ export default {
 
     toggleComplete(task) {
       this.updateMode = true;
-      Vue.set(task, 'disabled', true);
+      this.$set(task, 'disabled', true);
       this.update(task, false);
     },
 
@@ -247,8 +249,8 @@ export default {
       axios.put('tasks/' + task.id, task)
         .then(response => {
           this.updateMode = false;
-          Vue.set(task, 'disabled', false);
-          Vue.set(task, 'completed_at', response.data.completed_at ? this.formatDate(response.data.completed_at): null);
+          this.$set(task, 'disabled', false);
+          this.$set(task, 'completed_at', response.data.completed_at ? this.formatDate(response.data.completed_at): null);
           if (toggleEdit) {
             this.toggleEditMode(task);
           }
@@ -262,7 +264,6 @@ export default {
     },
 
     formatDate(dateAsString) {
-      const moment = require('moment-timezone');
       moment.locale(this._i18n.locale);
       moment.tz.setDefault('UTC');
 

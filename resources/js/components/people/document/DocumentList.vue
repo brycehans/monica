@@ -231,6 +231,8 @@
 </template>
 
 <script>
+import moment from 'moment-timezone';
+
 export default {
 
   props: {
@@ -291,7 +293,6 @@ export default {
     },
 
     formatTime(dateAsString) {
-      var moment = require('moment-timezone');
       moment.locale(this._i18n.locale);
 
       var date = moment(dateAsString);

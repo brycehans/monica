@@ -3,6 +3,10 @@
 // axios
 import axios from 'axios';
 
+// Vue (imported explicitly rather than relying on window.Vue — modules are
+// singletons, so this is the same instance app.js/stripe.js use.)
+import Vue from 'vue';
+
 // i18n
 import VueI18n from 'vue-i18n';
 Vue.use(VueI18n);

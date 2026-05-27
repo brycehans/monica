@@ -5,7 +5,7 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-require('./bootstrap');
+import './bootstrap';
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -14,30 +14,24 @@ require('./bootstrap');
  */
 
 import Vue from 'vue';
+import Notifications from 'vue-notification';
+import StripeSubscription from './components/settings/Subscription.vue';
+import FormInput from './components/partials/form/Input.vue';
+import ContactSearch from './components/people/ContactSearch.vue';
+import common from './common';
+
 window.Vue = Vue;
 
 // Notifications
-import Notifications from 'vue-notification';
 Vue.use(Notifications);
 
 // Custom components
-Vue.component(
-  'StripeSubscription',
-  require('./components/settings/Subscription.vue').default
-);
+Vue.component('StripeSubscription', StripeSubscription);
 
 // Form elements
-Vue.component(
-  'FormInput',
-  require('./components/partials/form/Input.vue').default
-);
+Vue.component('FormInput', FormInput);
 
-Vue.component(
-  'ContactSearch',
-  require('./components/people/ContactSearch.vue').default
-);
-
-var common = require('./common').default;
+Vue.component('ContactSearch', ContactSearch);
 
 common.loadLanguage(window.Laravel.locale, true).then((i18n) => {
   // the Vue appplication

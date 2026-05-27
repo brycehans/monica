@@ -4,7 +4,7 @@
 
     <!-- Title -->
     <div>
-      <img src="img/people/gifts.svg" :alt="$t('people.gifts_title')" class="icon-section icon-tasks" />
+      <img src="/img/people/gifts.svg" :alt="$t('people.gifts_title')" class="icon-section icon-tasks" />
       <h3>
         {{ $t('people.gifts_title') }}
         <a v-cy-name="'add-gift-button'" href="" class="btn f6 pt2" :class="[ dirltr ? 'fr' : 'fl' ]"
@@ -212,8 +212,8 @@ export default {
       gift.contact_id = this.contactId;
       axios.put(`people/${this.hash}/gifts/${gift.id}`, gift)
         .then(response => {
-          Vue.set(gift, 'status', response.data.data.status);
-          Vue.set(gift, 'date', response.data.data.date);
+          this.$set(gift, 'status', response.data.data.status);
+          this.$set(gift, 'date', response.data.data.date);
         });
     },
 
