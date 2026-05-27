@@ -299,6 +299,25 @@ Route::middleware(['auth', 'verified', 'mfa'])->group(function () {
         });
 
         Route::get('/settings/api', 'SettingsController@api')->name('api');
+
+        // /settings/api Vue UI back-end. Re-implements the legacy
+        // Passport::routes() endpoints that v11+ removed; see #703.
+        Route::name('passport.')->group(function () {
+            Route::get('/oauth/personal-access-tokens', 'Passport\\PersonalAccessTokenController@forUser')->name('personal-access-tokens.index');
+            Route::post('/oauth/personal-access-tokens', 'Passport\\PersonalAccessTokenController@store')->name('personal-access-tokens.store');
+            Route::delete('/oauth/personal-access-tokens/{token_id}', 'Passport\\PersonalAccessTokenController@destroy')->name('personal-access-tokens.destroy');
+
+            Route::get('/oauth/clients', 'Passport\\ClientController@forUser')->name('clients.index');
+            Route::post('/oauth/clients', 'Passport\\ClientController@store')->name('clients.store');
+            Route::put('/oauth/clients/{client_id}', 'Passport\\ClientController@update')->name('clients.update');
+            Route::delete('/oauth/clients/{client_id}', 'Passport\\ClientController@destroy')->name('clients.destroy');
+
+            Route::get('/oauth/tokens', 'Passport\\AuthorizedAccessTokenController@forUser')->name('tokens.index');
+            Route::delete('/oauth/tokens/{token_id}', 'Passport\\AuthorizedAccessTokenController@destroy')->name('tokens.destroy');
+
+            Route::get('/oauth/scopes', 'Passport\\ScopeController@all')->name('scopes.index');
+        });
+
         Route::get('/settings/dav', 'SettingsController@dav')->name('dav');
 
         Route::post('/settings/updateDefaultProfileView', 'SettingsController@updateDefaultProfileView');
