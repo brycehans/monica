@@ -47,7 +47,7 @@
     "laravel-vite-plugin": "~2.1",
     "postcss": "^8.5.15",
     "vite": "~7",
-    "vite-plugin-static-copy": "^2"
+    "vite-plugin-static-copy": "^3"
   },
   "dependencies": {
     "@hokify/vuejs-datepicker": "^2.0",
