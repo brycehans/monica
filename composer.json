@@ -39,7 +39,7 @@
         "monicahq/laravel-sabre": "^1.10",
         "ok/ipstack-client": "^2.0",
         "phar-io/version": "^3.1",
-        "pragmarx/google2fa": "^8.0",
+        "pragmarx/google2fa": "^9.0",
         "pragmarx/google2fa-laravel": "^2.0",
         "pragmarx/random": "^0",
         "predis/predis": "^2.0",
