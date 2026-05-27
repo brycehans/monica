@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "@hokify/vuejs-datepicker": "^2.0",
+    "@simplewebauthn/browser": "^13.3.0",
     "animate.css": "^4.1",
     "axios": "^1.16",
     "bootstrap": "^4.6",

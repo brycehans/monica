@@ -69,6 +69,18 @@ async function login(page: Page): Promise<void> {
   await page.waitForURL('**/dashboard');
 }
 
+// Base64url-no-padding decode. The PHP server (web-auth/webauthn-lib) decodes
+// `clientDataJSON` and `id` via ParagonIE\ConstantTime\Base64UrlSafe::decodeNoPadding,
+// which is strict — it only accepts the base64url charset (`-`, `_`) and rejects
+// any string ending in `=`. Mirroring that exact contract here lets the test
+// fail loudly if the client ever regresses to plain base64.
+function decodeBase64UrlNoPadding(value: string): Uint8Array {
+  if (/[^A-Za-z0-9_-]/.test(value)) throw new Error(`not base64url: ${value.slice(0, 32)}…`);
+  if (value.endsWith('=')) throw new Error('base64url-no-padding required, got padding');
+  const pad = value.length % 4 === 0 ? '' : '='.repeat(4 - (value.length % 4));
+  return Uint8Array.from(Buffer.from(value.replace(/-/g, '+').replace(/_/g, '/') + pad, 'base64'));
+}
+
 test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
   test('login lands on dashboard with expected nav', async ({ page }) => {
     const { unknown } = attachConsoleCapture(page);
@@ -560,28 +572,32 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     assertNoUnknownConsoleErrors(unknown, '/settings/security');
   });
 
-  test('webauthn registration baseline: virtual authenticator drives the register wire shape (pre-swap contract for #710)', async ({ page, context }) => {
-    // BASELINE — locks in the current (post-#709 stopgap) JS client's wire
-    // shape so the @simplewebauthn/browser swap (#710) can verify it produces
-    // the same request body. The swap PR keeps this test green as its contract.
+  test('webauthn registration: virtual authenticator drives the register wire shape (swap contract for #710)', async ({ page, context }) => {
+    // SWAP CONTRACT — locks in @simplewebauthn/browser's POST /webauthn/keys
+    // wire shape against what web-auth/webauthn-lib's PHP server expects.
     //
     // What this exercises:
     //   1. POST /webauthn/keys/options  (server generates challenge + opts) → 200
     //   2. navigator.credentials.create() via a CDP-supplied virtual authenticator
     //   3. POST /webauthn/keys           (registration request body)
     //
-    // We deliberately do NOT assert /webauthn/keys returns 201 — the dev stack
-    // is HTTP, and `web-auth/webauthn-lib`'s CheckOrigin rejects non-HTTPS
-    // origins unless `localhost` is in `securedRelyingPartyId`. asbiin/laravel-webauthn
-    // doesn't expose that knob (the wire-up is commented out in its service
-    // provider). So the request body — not the response status — is the
-    // swap contract: id, rawId, response (with attestationObject + clientDataJSON),
-    // type, and the user-supplied name field. Those are the fields
-    // WebauthnKeyController::store($request->only([...])) consumes.
+    // Semantic asserts below mirror the server's decoder chain:
+    //   - id            → Base64UrlSafe::decodeNoPadding   (strict)
+    //   - rawId         → Util\Base64::decode              (tolerant)
+    //   - clientDataJSON → Base64UrlSafe::decodeNoPadding  (strict; then JSON parse)
+    //   - attestationObject → Util\Base64::decode          (tolerant; then CBOR)
     //
-    // If/when a dev-side localhost RP override lands, this test can flip its
-    // assertion to a 201 check without changing the swap contract — the
-    // request-body shape is independent of server-side validation.
+    // The "strict" decoder rejects `+`/`/` (plain-base64) characters and any
+    // string ending in `=`. SimpleWebAuthn always emits base64url-no-padding,
+    // which round-trips cleanly through both paths.
+    //
+    // We deliberately do NOT assert /webauthn/keys returns 201 — the dev stack
+    // is HTTP and web-auth/webauthn-lib's CheckOrigin step rejects non-HTTPS
+    // origins unless `localhost` is in `securedRelyingPartyId`, a knob
+    // asbiin/laravel-webauthn doesn't expose. The wire shape IS the contract;
+    // server-side acceptance is gated independently. If/when a dev-side
+    // localhost RP override lands (e.g. #711), this test can flip the final
+    // assertion to a 201 check without touching the semantic checks.
     const cdp = await context.newCDPSession(page);
     await cdp.send('WebAuthn.enable');
     const { authenticatorId } = await cdp.send('WebAuthn.addVirtualAuthenticator', {
@@ -620,21 +636,44 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
       await modal.getByRole('link', { name: 'Next' }).click();
 
-      expect((await optionsResp).status()).toBe(200);
+      const optionsResponse = await optionsResp;
+      expect(optionsResponse.status()).toBe(200);
+      const optionsBody = await optionsResponse.json();
+      const serverChallenge = optionsBody.publicKey.challenge;
+      expect(typeof serverChallenge).toBe('string');
 
-      // The swap contract: the client must POST these exact fields to
-      // /webauthn/keys. WebauthnKeyController::store does
-      // $request->only(['id', 'rawId', 'response', 'type']) plus
-      // $request->input('name'), so any drift in field names or nesting
-      // here will silently break registration after the swap.
       const requestBody = JSON.parse((await storeReq).postData() ?? '{}');
+
+      // Field presence + the keyName the user typed.
       expect(requestBody.name).toBe(keyName);
+      expect(requestBody.type).toBe('public-key');
       expect(typeof requestBody.id).toBe('string');
       expect(typeof requestBody.rawId).toBe('string');
-      expect(requestBody.type).toBe('public-key');
-      expect(requestBody.response).toBeTruthy();
-      expect(typeof requestBody.response.attestationObject).toBe('string');
-      expect(typeof requestBody.response.clientDataJSON).toBe('string');
+      expect(typeof requestBody.response?.attestationObject).toBe('string');
+      expect(typeof requestBody.response?.clientDataJSON).toBe('string');
+
+      // Strict-base64url contract for the two fields the server decodes strictly.
+      const idBytes = decodeBase64UrlNoPadding(requestBody.id);
+      const rawIdBytes = decodeBase64UrlNoPadding(requestBody.rawId);
+      // W3C spec: PublicKeyCredential.id is base64url(rawId).
+      expect(Buffer.from(idBytes).equals(Buffer.from(rawIdBytes))).toBe(true);
+
+      // clientDataJSON: decode + parse + verify type/challenge/origin all line up.
+      const clientDataBytes = decodeBase64UrlNoPadding(requestBody.response.clientDataJSON);
+      const clientData = JSON.parse(new TextDecoder().decode(clientDataBytes));
+      expect(clientData.type).toBe('webauthn.create');
+      expect(clientData.challenge).toBe(serverChallenge);
+      const expectedOrigin = new URL(optionsResponse.url()).origin;
+      expect(clientData.origin).toBe(expectedOrigin);
+
+      // attestationObject: decodes as base64url AND begins with a CBOR map
+      // tag. web-auth's AttestationObjectDenormalizer feeds this into a CBOR
+      // decoder expecting `{fmt, attStmt, authData}` — so the top-level byte
+      // must be a major-type-5 (map) marker (0xa0–0xb7 short form, or 0xb8
+      // followed by a length byte).
+      const attBytes = decodeBase64UrlNoPadding(requestBody.response.attestationObject);
+      const major = attBytes[0] >> 5;
+      expect(major).toBe(5);
     } finally {
       // Detach the virtual authenticator. (No DB row to clean up because the
       // server rejects the registration with 422 — see note above.)

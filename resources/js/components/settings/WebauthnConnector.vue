@@ -176,7 +176,7 @@
 <script>
 import { SweetModal } from 'sweet-modal-vue';
 import moment from 'moment-timezone';
-import WebAuthn from '../../../../vendor/asbiin/laravel-webauthn/resources/js/webauthn.js';
+import { startRegistration, startAuthentication, browserSupportsWebAuthn } from '@simplewebauthn/browser';
 
 export default {
 
@@ -219,8 +219,6 @@ export default {
       keyToTrash: '',
       keyName: '',
       registerTab: '',
-      data: null,
-      webauthn: null,
     };
   },
 
@@ -232,11 +230,7 @@ export default {
   methods: {
     prepareComponent() {
       this.currentkeys = this.keys;
-      this.data = this.registerdata;
-
-      this.webauthn = new WebAuthn((name, message) => {
-        this.errorMessage = this._errorMessage(name, message);
-      });
+      this.isSupported = browserSupportsWebAuthn();
     },
 
     _errorMessage(name, message) {
@@ -251,32 +245,27 @@ export default {
     },
 
     notSupportedMessage() {
-      return this.$t('settings.webauthn_'+this.webauthn.notSupportedMessage());
+      if (! window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        return this.$t('settings.webauthn_not_secured');
+      }
+      return this.$t('settings.webauthn_not_supported');
     },
 
     start() {
-      var self = this;
       this.errorMessage = '';
 
-      if (! this.webauthn.webAuthnSupport()) {
+      if (! browserSupportsWebAuthn()) {
         this.isSupported = false;
         this.errorMessage = this.notSupportedMessage();
+        return;
       }
 
       switch(this.method) {
       case 'register':
-        setTimeout(function () {
-          self.webauthn.register(
-            self.publicKey,
-            function (datas) { self.webauthnRegisterCallback(datas, true); }
-          );
-        }, 10);
+        setTimeout(() => this.doRegister(this.publicKey, true), 10);
         break;
       case 'login':
-        this.webauthn.sign(
-          this.publicKey,
-          function (data) { self.webauthnLoginCallback(data); }
-        );
+        this.doLogin(this.publicKey);
         break;
       }
     },
@@ -295,21 +284,14 @@ export default {
     },
 
     startRegister() {
-      var self = this;
       this.errorMessage = '';
       axios.post('webauthn/keys/options')
         .then(response => {
-          if (self.registerTab === '2') {
-            var data = response.data.publicKey;
-            setTimeout(function () {
-              self.webauthn.register(
-                data,
-                function (datas) { self.webauthnRegisterCallback(datas, false); }
-              );
-            }, 10);
+          if (this.registerTab === '2') {
+            setTimeout(() => this.doRegister(response.data.publicKey, false), 10);
           }
         }).catch(error => {
-          self.notify(error.response.data.message, false);
+          this.notify(error.response?.data?.message ?? error.message, false);
         });
     },
 
@@ -318,43 +300,51 @@ export default {
       this.showRegisterModalTab('');
     },
 
-    webauthnRegisterCallback(data, redirect) {
-      var self = this;
-      axios.post('webauthn/keys', {
-        ...data,
-        name: self.keyName,
-      }).then(response => {
-        self.success = true;
-        self.notify(self.$t('settings.webauthn_success'), true);
-        self.currentkeys.push({
-          id: response.result.id,
-          name: response.result.name,
+    async doRegister(publicKey, redirect) {
+      let attResp;
+      try {
+        attResp = await startRegistration({ optionsJSON: publicKey });
+      } catch (error) {
+        this.errorMessage = this._errorMessage(error.name, error.message);
+        return;
+      }
+      try {
+        const response = await axios.post('webauthn/keys', {
+          ...attResp,
+          name: this.keyName,
         });
-      }).then(response => {
+        this.success = true;
+        this.notify(this.$t('settings.webauthn_success'), true);
+        this.currentkeys.push({
+          id: response.data.result.id,
+          name: response.data.result.name,
+        });
         if (redirect) {
-          setTimeout(function () {
-            window.location = response.data.callback;
-          }, 100);
+          setTimeout(() => { window.location = response.data.callback; }, 100);
         } else {
-          self.closeRegisterModal();
+          this.closeRegisterModal();
         }
-      }).catch(error => {
-        self.errorMessage = error.message ? error.message : error.response.data.message;
-      });
+      } catch (error) {
+        this.errorMessage = error.message ? error.message : error.response.data.message;
+      }
     },
 
-    webauthnLoginCallback(data) {
-      var self = this;
-      axios.post('webauthn/auth', {
-        ...data
-      }).then(response => {
-        self.success = true;
-        self.notify(self.$t('settings.webauthn_success'), true);
-
+    async doLogin(publicKey) {
+      let assertionResp;
+      try {
+        assertionResp = await startAuthentication({ optionsJSON: publicKey });
+      } catch (error) {
+        this.errorMessage = this._errorMessage(error.name, error.message);
+        return;
+      }
+      try {
+        const response = await axios.post('webauthn/auth', { ...assertionResp });
+        this.success = true;
+        this.notify(this.$t('settings.webauthn_success'), true);
         window.location = response.data.callback;
-      }).catch(error => {
-        self.errorMessage = error.message ? error.message : error.response.data.message;
-      });
+      } catch (error) {
+        this.errorMessage = error.message ? error.message : error.response.data.message;
+      }
     },
 
     webauthnRemove(id) {
