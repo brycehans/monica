@@ -10,8 +10,33 @@ import path from 'node:path';
 // Vue 2 ceiling: @vitejs/plugin-vue2 is archived (2025-10-04,
 // vitejs/vite-plugin-vue2) and peers vite ^3–^7. Pin vite to ~7 until the
 // Vue 3 migration lifts the cap.
+// asbiin/laravel-webauthn ships its browser client as a UMD file
+// (vendor/asbiin/laravel-webauthn/resources/js/webauthn.js) — the `WebAuthn`
+// constructor is exposed through `!function(e,t){...module.exports=t...}(this, WebAuthn)`.
+// Rollup's static analysis can't trace that into a default export from outside
+// node_modules, so `import WebAuthn from '...'` fails to build. Strip the UMD
+// wrapper and append an explicit ESM default export only for this one file —
+// pulling in @rollup/plugin-commonjs would do the same job but globally, and
+// the surface area isn't worth it for a single 220-line vendor script.
+// See #707 for the regression history.
+const webauthnUmdToEsm = {
+  name: 'fork:webauthn-umd-to-esm',
+  enforce: 'pre',
+  transform(code, id) {
+    if (!id.endsWith('/asbiin/laravel-webauthn/resources/js/webauthn.js')) return null;
+    return {
+      code: code.replace(
+        /!function\(e,t\)\{[^}]+\}\(this,\s*WebAuthn\);?\s*$/,
+        '\nexport default WebAuthn;\n',
+      ),
+      map: null,
+    };
+  },
+};
+
 export default defineConfig(({ mode }) => ({
   plugins: [
+    webauthnUmdToEsm,
     laravel({
       input: [
         'resources/js/app.js',

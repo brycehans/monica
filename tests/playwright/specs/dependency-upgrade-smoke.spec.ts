@@ -33,8 +33,6 @@ const KNOWN_CONSOLE_NOISE: { match: RegExp; issue: string }[] = [
   { match: /Unknown custom element: <error>/, issue: '#625' },
   // #626 — PWA manifest missing url/id in related_applications
   { match: /Manifest: one of 'url' or 'id' is required/, issue: '#626' },
-  // #707 — WebauthnConnector: `import * as WebAuthn` against UMD module breaks under Vite
-  { match: /TypeError: WebAuthn\$1 is not a constructor/, issue: '#707' },
 ];
 
 type UnknownConsole = { type: string; text: string; url: string };
