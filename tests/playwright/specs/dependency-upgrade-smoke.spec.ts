@@ -33,6 +33,8 @@ const KNOWN_CONSOLE_NOISE: { match: RegExp; issue: string }[] = [
   { match: /Unknown custom element: <error>/, issue: '#625' },
   // #626 — PWA manifest missing url/id in related_applications
   { match: /Manifest: one of 'url' or 'id' is required/, issue: '#626' },
+  // #707 — WebauthnConnector: `import * as WebAuthn` against UMD module breaks under Vite
+  { match: /TypeError: WebAuthn\$1 is not a constructor/, issue: '#707' },
 ];
 
 type UnknownConsole = { type: string; text: string; url: string };
@@ -529,5 +531,206 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // After logout we end up at root with a login link visible.
     await expect(page).toHaveURL(/\/(login)?$/);
     await expect(page.locator('body')).toContainText(/Login|Sign in/i);
+  });
+
+  // -------------------------------------------------------------------------
+  // pr-t2: Vue mount coverage for surfaces no prior smoke exercised.
+  //
+  // The bug pattern we're guarding against is "Vue component mounts but
+  // renders nothing" — what bit /settings/api before #703/#705. Each test
+  // asserts a piece of text or DOM that ONLY the inner Vue template renders
+  // (not the surrounding Blade), so a silent mount failure fails the test
+  // instead of being invisible. Visiting the contact detail page transitively
+  // mounts ~10 components already exercised by earlier tests; the cases below
+  // close the remaining gaps.
+  // -------------------------------------------------------------------------
+
+  test('settings/security mounts recovery-codes, mfa-activate, webauthn-connector', async ({ page }) => {
+    // All three are gated by config('google2fa.enabled'). webauthn-connector
+    // additionally requires config('webauthn.enable'). Both default on in
+    // the dev compose stack. Each component renders its own <h3> from inside
+    // the Vue template, so a silent mount failure means the heading is absent.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/settings/security');
+
+    await expect(page.getByRole('heading', { name: 'Recovery codes' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Two Factor Authentication mobile application' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Security key — WebAuthn protocol' })).toBeVisible();
+
+    assertNoUnknownConsoleErrors(unknown, '/settings/security');
+  });
+
+  test('settings/dav mounts dav-resources with the base URL input', async ({ page }) => {
+    // DavResources renders the WebDAV / CardDAV / CalDAV headings + the
+    // base-URL readonly input populated from the dav-route prop. If the
+    // component fails to mount, the heading is supplied by the Vue
+    // template (not Blade), so it disappears entirely.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/settings/dav');
+
+    await expect(page.getByRole('heading', { name: 'WebDAV' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'CardDAV' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'CalDAV' })).toBeVisible();
+
+    // The component receives the dav-route prop and binds it to the input
+    // value; an empty value would mean the prop wiring broke.
+    const baseUrlInput = page.locator('input#dav_url_base');
+    await expect(baseUrlInput).toBeVisible();
+    const baseUrl = await baseUrlInput.inputValue();
+    expect(baseUrl).toMatch(/\/dav\/?$/);
+
+    assertNoUnknownConsoleErrors(unknown, '/settings/dav');
+  });
+
+  test('settings/personalization mounts contact-field-types, reminder-rules, activity-types, life-event-types, modules', async ({ page }) => {
+    // Genders is already covered by the existing create-modal test. The
+    // remaining five components on this page have never been asserted.
+    // Each renders its own <h3> heading from the Vue template.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/settings/personalization');
+
+    for (const heading of [
+      'Reminder rules',
+      'Contact field types',
+      'Activity type categories',
+      'Life event categories',
+      'Features',
+    ]) {
+      await expect(page.getByRole('heading', { name: heading })).toBeVisible();
+    }
+
+    assertNoUnknownConsoleErrors(unknown, '/settings/personalization');
+  });
+
+  test('settings/api mounts passport-authorized-clients with empty state', async ({ page }) => {
+    // PassportAuthorizedClients is the third Vue component on /settings/api
+    // (alongside PassportClients and PassportPersonalAccessTokens, both
+    // covered above). It only renders content rows when the user has
+    // authorized a third-party client — the seeded admin has not, so the
+    // expected state is the empty-state copy from the Vue template.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/settings/api');
+
+    await expect(page.getByRole('heading', { name: 'List of authorized clients' })).toBeVisible();
+    await expect(page.locator('body')).toContainText('There are no authorized clients yet.');
+
+    assertNoUnknownConsoleErrors(unknown, '/settings/api (authorized clients)');
+  });
+
+  test('contact detail sidebar mounts contact-information, contact-address, pet', async ({ page }) => {
+    // The existing contact-detail test asserts headings rendered by Blade
+    // wrappers (Conversations / Phone calls / etc). The sidebar components
+    // are different: their <h3> comes from inside the Vue template, gated
+    // only by the module being enabled (default-on in the seed). These have
+    // never been asserted on the contact-detail surface.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    await page.locator('a[href*="/people/h:"]').first().click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+
+    await expect(page.getByRole('heading', { name: 'Contact information' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Addresses' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Pets' })).toBeVisible();
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (sidebar mounts)');
+  });
+
+  test('contact detail tasks section mounts contact-task component', async ({ page }) => {
+    // ContactTask renders its own "Tasks" <h3> from people.section_personal_tasks
+    // — the surrounding Blade has no heading for this section, so a missing
+    // <h3> means the Vue component didn't render.
+    //
+    // ContactTask only renders inside the "Notes, reminders, …" tab
+    // (global_profile_default_view === 'notes'). Earlier tests in this file
+    // (or any prior smoke run) may have left the saved preference on
+    // 'photos' or 'life-events' via /settings/updateDefaultProfileView,
+    // so we click the Notes tab explicitly rather than trusting the
+    // server-side default. The heading name is exact ("Tasks") so we use
+    // a regex to allow the trailing edit/done link text inside the same h3.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    await page.locator('a[href*="/people/h:"]').first().click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+
+    await page.locator('span').filter({ hasText: /Notes, reminders/ }).first().click();
+
+    await expect(page.getByRole('heading', { name: /^Tasks/ })).toBeVisible();
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (tasks mount)');
+  });
+
+  test('contact detail photos tab mounts photo-list', async ({ page }) => {
+    // PhotoList only renders when global_profile_default_view === 'photos'.
+    // Clicking the Photos tab POSTs /settings/updateDefaultProfileView and
+    // toggles the v-if; the PhotoList template then renders its "Related
+    // photos" heading.
+    //
+    // The tab click persists server-side (per-user preference), so any
+    // earlier-in-file tests that assume the notes tab would break on the
+    // next smoke run if we didn't restore. Same try/finally pattern as
+    // the locale-switch test above.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    await page.locator('a[href*="/people/h:"]').first().click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+
+    try {
+      // The Photos tab is a <span @click="updateDefaultProfileView('photos')">.
+      // No role/aria — just visible text "Photos" inside the tab strip.
+      await page.locator('span').filter({ hasText: /^Photos$/ }).click();
+
+      await expect(page.getByRole('heading', { name: 'Related photos' })).toBeVisible();
+    } finally {
+      // Restore notes tab — other tests in this file (and any future smoke run)
+      // assume Conversations/Activities/Phone calls/etc are visible on the
+      // contact detail, which only renders inside the notes tab.
+      await page.locator('span').filter({ hasText: /Notes, reminders/ }).first().click();
+    }
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (photos tab)');
+  });
+
+  test('contact detail life-events tab mounts life-event-list', async ({ page }) => {
+    // LifeEventList only renders when global_profile_default_view ===
+    // 'life-events'. Same tab-click mechanism as the photos test. The
+    // blank-state SVG is the stable cross-i18n indicator the component
+    // rendered. Same try/finally restoration as the photos test — the tab
+    // click persists per-user, and earlier tests in the file assume notes.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    await page.locator('a[href*="/people/h:"]').first().click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+
+    try {
+      await page.locator('span').filter({ hasText: /Life events/ }).first().click();
+
+      // LifeEventList renders an inline SVG width=337 height=249 in its blank
+      // state. Seeds without life events take this branch; if the seed had any,
+      // the .life-event-list-icon class would appear instead — we accept either
+      // by checking the wrapper has rendered child content beyond the tab strip.
+      const blankSvg = page.locator('svg[width="337"][height="249"]');
+      const populatedRow = page.locator('.life-event-list-icon');
+      await expect(blankSvg.or(populatedRow).first()).toBeVisible();
+    } finally {
+      await page.locator('span').filter({ hasText: /Notes, reminders/ }).first().click();
+    }
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (life-events tab)');
   });
 });
