@@ -39,12 +39,19 @@ already rely on it. No rewrite. No new vision. No competing roadmap.
 
 In rough priority order, the things we plan to do:
 
-1. PHP 8.4 compatibility
-2. Modern Laravel (current supported version)
-3. Modern Node / build chain with `npm audit` clean
-4. Security patches against the current dependency graph
-5. Triage of the imported issue and PR queue, cherry-picking valuable
+1. Vue 3 migration (the v4 frontend is on Vue 2.7; Vue 2 reaches end-of-life and
+   blocks the rest of the JS toolchain at older majors)
+2. Continued security patches against the current dependency graph
+   (`composer audit` and `yarn audit` reduction)
+3. Triage of the imported issue and PR queue, cherry-picking valuable
    community contributions that were never merged upstream
+
+Already landed in the modernization ladder:
+
+- PHP 8.4 compatibility
+- Modern Laravel (currently 12.x)
+- Modern Node / build chain (Vite + `@vitejs/plugin-vue2`; `yarn audit`
+  reduction is ongoing)
 
 Things we will not do:
 
