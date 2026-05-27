@@ -18,7 +18,6 @@
         "asbiin/laravel-webauthn": "^5.0",
         "bacon/bacon-qr-code": "^3.0",
         "creativeorange/gravatar": "^1.0",
-        "doctrine/dbal": "^4.0",
         "erusev/parsedown": "^1.7",
         "giggsey/libphonenumber-for-php": "^8.9",
         "guzzlehttp/guzzle": "^7.2",
