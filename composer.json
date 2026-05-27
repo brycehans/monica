@@ -16,7 +16,7 @@
         "ext-intl": "*",
         "ext-redis": "*",
         "asbiin/laravel-webauthn": "^5.0",
-        "bacon/bacon-qr-code": "^2.0",
+        "bacon/bacon-qr-code": "^3.0",
         "creativeorange/gravatar": "^1.0",
         "doctrine/dbal": "^4.0",
         "erusev/parsedown": "^1.7",
