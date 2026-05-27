@@ -176,7 +176,7 @@
 <script>
 import { SweetModal } from 'sweet-modal-vue';
 import moment from 'moment-timezone';
-import * as WebAuthn from '../../../../vendor/asbiin/laravel-webauthn/resources/js/webauthn.js';
+import WebAuthn from '../../../../vendor/asbiin/laravel-webauthn/resources/js/webauthn.js';
 
 export default {
 

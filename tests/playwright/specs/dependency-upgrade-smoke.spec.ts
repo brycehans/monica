@@ -33,8 +33,6 @@ const KNOWN_CONSOLE_NOISE: { match: RegExp; issue: string }[] = [
   { match: /Unknown custom element: <error>/, issue: '#625' },
   // #626 — PWA manifest missing url/id in related_applications
   { match: /Manifest: one of 'url' or 'id' is required/, issue: '#626' },
-  // #707 — WebauthnConnector: `import * as WebAuthn` against UMD module breaks under Vite
-  { match: /TypeError: WebAuthn\$1 is not a constructor/, issue: '#707' },
 ];
 
 type UnknownConsole = { type: string; text: string; url: string };
@@ -560,6 +558,89 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await expect(page.getByRole('heading', { name: 'Security key — WebAuthn protocol' })).toBeVisible();
 
     assertNoUnknownConsoleErrors(unknown, '/settings/security');
+  });
+
+  test('webauthn registration baseline: virtual authenticator drives the register wire shape (pre-swap contract for #710)', async ({ page, context }) => {
+    // BASELINE — locks in the current (post-#709 stopgap) JS client's wire
+    // shape so the @simplewebauthn/browser swap (#710) can verify it produces
+    // the same request body. The swap PR keeps this test green as its contract.
+    //
+    // What this exercises:
+    //   1. POST /webauthn/keys/options  (server generates challenge + opts) → 200
+    //   2. navigator.credentials.create() via a CDP-supplied virtual authenticator
+    //   3. POST /webauthn/keys           (registration request body)
+    //
+    // We deliberately do NOT assert /webauthn/keys returns 201 — the dev stack
+    // is HTTP, and `web-auth/webauthn-lib`'s CheckOrigin rejects non-HTTPS
+    // origins unless `localhost` is in `securedRelyingPartyId`. asbiin/laravel-webauthn
+    // doesn't expose that knob (the wire-up is commented out in its service
+    // provider). So the request body — not the response status — is the
+    // swap contract: id, rawId, response (with attestationObject + clientDataJSON),
+    // type, and the user-supplied name field. Those are the fields
+    // WebauthnKeyController::store($request->only([...])) consumes.
+    //
+    // If/when a dev-side localhost RP override lands, this test can flip its
+    // assertion to a 201 check without changing the swap contract — the
+    // request-body shape is independent of server-side validation.
+    const cdp = await context.newCDPSession(page);
+    await cdp.send('WebAuthn.enable');
+    const { authenticatorId } = await cdp.send('WebAuthn.addVirtualAuthenticator', {
+      options: {
+        protocol: 'ctap2',
+        transport: 'internal',
+        hasResidentKey: true,
+        hasUserVerification: true,
+        isUserVerified: true,
+        automaticPresenceSimulation: true,
+      },
+    });
+
+    try {
+      await login(page);
+      await page.goto('/settings/security');
+
+      await page.getByRole('link', { name: 'Add a new security key' }).click();
+
+      // The modal is a <sweet-modal-overlay>; scope by "Key name" body copy —
+      // the underlying page also has a "Security key …" <h3>, which we'd
+      // rather not collide with.
+      const modal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Key name' }).first();
+      await expect(modal).toBeVisible();
+
+      // form-input wraps the <input>, generating an id like `keyName<n>`
+      // (Vue _uid suffix). Locate by accessible role/label instead.
+      const keyName = `smoke vkey ${Date.now()}`;
+      await modal.getByRole('textbox', { name: /Key name/i }).fill(keyName);
+
+      // Capture the options + register POST round-trips.
+      const optionsResp = page.waitForResponse((r) =>
+        r.url().endsWith('/webauthn/keys/options') && r.request().method() === 'POST');
+      const storeReq = page.waitForRequest((r) =>
+        /\/webauthn\/keys$/.test(r.url()) && r.method() === 'POST');
+
+      await modal.getByRole('link', { name: 'Next' }).click();
+
+      expect((await optionsResp).status()).toBe(200);
+
+      // The swap contract: the client must POST these exact fields to
+      // /webauthn/keys. WebauthnKeyController::store does
+      // $request->only(['id', 'rawId', 'response', 'type']) plus
+      // $request->input('name'), so any drift in field names or nesting
+      // here will silently break registration after the swap.
+      const requestBody = JSON.parse((await storeReq).postData() ?? '{}');
+      expect(requestBody.name).toBe(keyName);
+      expect(typeof requestBody.id).toBe('string');
+      expect(typeof requestBody.rawId).toBe('string');
+      expect(requestBody.type).toBe('public-key');
+      expect(requestBody.response).toBeTruthy();
+      expect(typeof requestBody.response.attestationObject).toBe('string');
+      expect(typeof requestBody.response.clientDataJSON).toBe('string');
+    } finally {
+      // Detach the virtual authenticator. (No DB row to clean up because the
+      // server rejects the registration with 422 — see note above.)
+      await cdp.send('WebAuthn.removeVirtualAuthenticator', { authenticatorId });
+      await cdp.detach();
+    }
   });
 
   test('settings/dav mounts dav-resources with the base URL input', async ({ page }) => {
