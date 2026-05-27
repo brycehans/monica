@@ -109,11 +109,13 @@
 </template>
 
 <script>
+import { VueGoodTable } from 'vue-good-table';
 import ContactItem from './partials/ContactItem.vue';
 
 export default {
 
   components: {
+    VueGoodTable,
     ContactItem,
   },
 
@@ -234,9 +236,11 @@ export default {
     _loadNewItems(urlParam, after) {
       axios.get('people/list'+urlParam)
         .then(response => {
+          const contacts = response.data.contacts.data || response.data.contacts;
+
           if (_.isFunction(after)) {
             after(
-              _.uniqBy(response.data.contacts, entry => _.uniqueId()),
+              _.uniqBy(contacts, entry => _.uniqueId()),
               response.data.totalRecords
             );
           }

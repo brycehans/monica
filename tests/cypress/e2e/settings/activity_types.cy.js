@@ -2,7 +2,7 @@ var _ = require('lodash');
 
 describe('Settings: activity types', function () {
   afterEach(function () {
-    cy.clearCachedConfig();
+    cy.setRequiresSubscription(false);
   });
 
   it('doesn\'t let you manage activity types if user is not premium', function () {
@@ -14,6 +14,7 @@ describe('Settings: activity types', function () {
   });
 
   it('lets you manage an activity type category and activity type', function () {
+    cy.setRequiresSubscription(true);
     cy.login();
     cy.visit('/');
 
@@ -91,6 +92,7 @@ describe('Settings: activity types', function () {
   });
 
   it('lets you add an activity type and use it', function () {
+    cy.setRequiresSubscription(true);
     cy.login();
     cy.visit('/');
 
