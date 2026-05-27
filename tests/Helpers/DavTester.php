@@ -2,14 +2,14 @@
 
 namespace Tests\Helpers;
 
-use Tests\TestCase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Promise\PromiseInterface;
+use PHPUnit\Framework\Assert;
 use App\Services\DavClient\Utils\Dav\DavClient;
 
-class DavTester extends TestCase
+class DavTester
 {
     /**
      * @var array
@@ -54,15 +54,15 @@ class DavTester extends TestCase
         Http::assertSentInOrder(array_map(function ($data) {
             return function (Request $request, Response $response) use ($data) {
                 $srequest = $request->method().' '.$request->url();
-                $this->assertEquals($data['method'], $request->method(), "method for request $srequest differs");
-                $this->assertEquals($data['uri'], $request->url(), "uri for request $srequest differs");
+                Assert::assertEquals($data['method'], $request->method(), "method for request $srequest differs");
+                Assert::assertEquals($data['uri'], $request->url(), "uri for request $srequest differs");
                 if (isset($data['body'])) {
-                    $this->assertEquals($data['body'], $request->body(), "body for request $srequest differs");
+                    Assert::assertEquals($data['body'], $request->body(), "body for request $srequest differs");
                 }
                 if (isset($data['headers'])) {
                     foreach ($data['headers'] as $key => $value) {
-                        $this->assertArrayHasKey($key, $request->headers(), "header $key for request $srequest is missing");
-                        $this->assertEquals($value, $request->header($key), "header $key for request $srequest differs");
+                        Assert::assertArrayHasKey($key, $request->headers(), "header $key for request $srequest is missing");
+                        Assert::assertEquals($value, $request->header($key), "header $key for request $srequest differs");
                     }
                 }
 
