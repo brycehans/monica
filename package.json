@@ -17,7 +17,7 @@
     "cy:verify": "cypress verify",
     "cy:version": "cypress version",
     "inst": "yarn install --frozen-lockfile",
-    "lint": "eslint --ext .js,.vue *.js .*.js resources/js/",
+    "lint": "eslint *.js 'resources/js/**/*.{js,vue}'",
     "lint:fix": "yarn run lint --fix",
     "snyk-protect": "snyk-protect",
     "prepublish": "yarn run snyk-protect",
@@ -42,12 +42,14 @@
     "@vitejs/plugin-vue2": "~2.3",
     "cross-env": "^10.1.0",
     "cypress": "^15.0.0",
-    "eslint": "^8.57.1",
-    "eslint-plugin-vue": "^9.33.0",
+    "eslint": "^9",
+    "eslint-plugin-vue": "^10",
+    "globals": "^17.6.0",
     "laravel-vite-plugin": "~2.1",
     "postcss": "^8.5.15",
     "vite": "~7",
-    "vite-plugin-static-copy": "^3"
+    "vite-plugin-static-copy": "^3",
+    "vue-eslint-parser": "^10"
   },
   "dependencies": {
     "@hokify/vuejs-datepicker": "^2.0",
