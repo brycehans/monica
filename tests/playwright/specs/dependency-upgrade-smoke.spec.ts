@@ -323,6 +323,205 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await expect(page.locator('.dt-row', { hasText: marker })).toHaveCount(0);
   });
 
+  // -------------------------------------------------------------------------
+  // Vue 3 migration cutover guards (issue #702, pr-t1).
+  //
+  // Each scenario below exercises a user-observable surface that the cutover
+  // swaps a vue-2-only library for a vue-3-compatible one. Assertions track
+  // behaviour (a row count changes, a modal appears, a translated string is
+  // rendered), not implementation, so they survive the plugin swap and act as
+  // a contract the cutover PR has to honour.
+  // -------------------------------------------------------------------------
+
+  test('contact list table renders with pagination footer and search filtering', async ({ page }) => {
+    // Guards the vue-good-table → vue-good-table-next swap in pr-v.
+    // ContactList.vue is server-paginated; the dev seed only generates ~20
+    // contacts (one page), so we don't assert that the next-page button does
+    // something — only that the pagination footer is rendered, and that the
+    // global search filters rows on the server round-trip.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+
+    // Initial rows
+    const rows = page.locator('table.vgt-table tbody tr');
+    await expect(rows.first()).toBeVisible();
+    const initialRowCount = await rows.count();
+    expect(initialRowCount).toBeGreaterThan(0);
+
+    // Pagination footer is rendered (single-page or multi-page; just guard the widget renders)
+    await expect(page.locator('.vgt-wrap__footer')).toBeVisible();
+
+    // Search filters via the server. Use a string with no matches in the seed.
+    const searchInput = page.locator('.vgt-global-search__input input.vgt-input');
+    await searchInput.fill('zzzz-no-match-marker');
+    await expect(page.locator('table.vgt-table')).toContainText('No results found');
+
+    // Clear and confirm rows return.
+    await searchInput.fill('');
+    await expect(rows.first()).toBeVisible();
+    expect(await rows.count()).toBeGreaterThan(0);
+
+    assertNoUnknownConsoleErrors(unknown, '/people (vgt search)');
+  });
+
+  test('gender personalization modal: create persists into list', async ({ page }) => {
+    // Guards the sweet-modal-vue → vue-final-modal swap (17 files, 32 modals).
+    // The gender create modal is the simplest representative: open → fill →
+    // save → list updates. If the modal can't open, can't render its form,
+    // or the v-model on createForm.name breaks, this fails.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/settings/personalization');
+
+    const newGenderName = `smoke gender ${Date.now()}`;
+
+    // The "Add new gender type" anchor opens the sweet-modal.
+    await page.getByRole('link', { name: 'Add new gender type' }).click();
+
+    // sweet-modal renders inside .sweet-modal-overlay. We scope to that
+    // container so we don't pick up unrelated form-input components on the
+    // page underneath (Genders / Contact field types / etc. all share the
+    // same form-input).
+    const modal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Add gender type' });
+    await expect(modal).toBeVisible();
+
+    // The "Name" field — first text input inside the modal. form-input
+    // generates dynamic IDs (`+_uid`) so we target by position rather than id.
+    await modal.locator('input[type="text"]').first().fill(newGenderName);
+
+    // The "Save" action is an <a class="btn btn-primary"> with text "Save".
+    await modal.getByRole('link', { name: 'Save', exact: true }).click();
+
+    // Modal closes and the new gender appears in the table.
+    await expect(modal).toBeHidden();
+    await expect(page.locator('body')).toContainText(newGenderName);
+
+    assertNoUnknownConsoleErrors(unknown, '/settings/personalization (gender modal)');
+  });
+
+  test('personal access tokens: vuelidate flags empty name', async ({ page }) => {
+    // Guards the vuelidate@0.7 → @vuelidate/core@2 migration (6 files,
+    // $v → v$). The PAT create modal validates the name field with the
+    // `required` rule; submitting empty must surface the inline error and
+    // not POST. If validation breaks silently, the empty-name request would
+    // 422 from the server instead — that's the regression this catches.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/settings/api');
+
+    await page.getByRole('link', { name: 'Create New Token' }).click();
+
+    const modal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Create Token' });
+    await expect(modal).toBeVisible();
+
+    // Click "Create" without filling the name field. The button is an
+    // <a class="btn btn-primary"> with @click.prevent="store"; vuelidate's
+    // $touch() runs, $invalid is true, store() returns early, and the
+    // inline <small class="error"> appears under the Name input.
+    await modal.getByRole('link', { name: 'Create', exact: true }).click();
+
+    await expect(modal.locator('small.error')).toContainText('Token name is required');
+
+    // Confirm the request never fired by checking the modal is still open
+    // (the success path closes it and opens modalAccessToken instead).
+    await expect(modal).toBeVisible();
+
+    assertNoUnknownConsoleErrors(unknown, '/settings/api (vuelidate)');
+  });
+
+  test('conversations create form: datepicker input is interactive', async ({ page }) => {
+    // Guards the @hokify/vuejs-datepicker → @vuepic/vue-datepicker rewrite.
+    // The design issue says "reminders create form" but reminders/form.blade
+    // uses a native <input type="date"> — the only blade surface that mounts
+    // the Vue Date.vue datepicker is conversations/new.blade and journal
+    // edit. We use conversations/new because journal/edit needs an existing
+    // entry to navigate to.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
+    expect(contactHref).toBeTruthy();
+
+    await page.goto(`${contactHref}/conversations/create`);
+
+    // Click the "Another day" radio to expose the typeable date input.
+    await page.locator('input#another').click();
+
+    // form-date renders a visible <input> from the datepicker alongside a
+    // hidden <input name="conversationDate"> that carries the YYYY-MM-DD
+    // exchange value the server-side controller expects. The default-date
+    // prop seeds the hidden input on mount.
+    //
+    // We assert the cross-library invariants only — a visible enabled
+    // input exists, and the hidden input carries today's YYYY-MM-DD —
+    // because the typeable input format and calendar markup differ
+    // between @hokify/vuejs-datepicker and @vuepic/vue-datepicker. The
+    // mount+emit contract is what the cutover PR has to preserve.
+    const hiddenInput = page.locator('input[name="conversationDate"][type="hidden"]');
+    await expect(hiddenInput).toHaveCount(1);
+    await expect(hiddenInput).toHaveValue(/^\d{4}-\d{2}-\d{2}$/);
+
+    // The visible input is somewhere inside the form-date wrapper; we
+    // don't pin its container class. Just confirm at least one enabled
+    // non-hidden input exists in the "Another day" cluster.
+    const visibleInputs = page.locator(
+      'div.di:has(input#another) input:not([type="hidden"]):not([type="radio"])',
+    );
+    expect(await visibleInputs.count()).toBeGreaterThan(0);
+    await expect(visibleInputs.first()).toBeEnabled();
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/conversations/create');
+  });
+
+  test('locale switch to fr renders translated dashboard and reverts', async ({ page }) => {
+    // Guards the vue-i18n@8 → vue-i18n@11 (legacy mode) migration. After
+    // the cutover the locale mutation moves from `i18n.locale = lang` to
+    // `i18n.global.locale = lang` (direct, not `.value` in legacy mode),
+    // and the 7 $tc(...) call sites must be rewritten to $t(key, named,
+    // count). If any of that regresses, switching the account locale and
+    // navigating back to the dashboard would render English strings or
+    // crash a Vue child component.
+    //
+    // The test reverts to English in the same block — if the spec aborts
+    // mid-flight the dev DB is left in fr, which would break the other
+    // English-string assertions in this suite on the next run. Use
+    // setLocale() rather than try/finally because Playwright's afterEach
+    // is per-test and we want the revert inline.
+    const { unknown } = attachConsoleCapture(page);
+
+    const setLocale = async (lang: 'en' | 'fr'): Promise<void> => {
+      await page.goto('/settings');
+      await page.locator('select#locale').selectOption(lang);
+      // The Settings form has multiple submit buttons (Reset, Delete account);
+      // the first one is the General "Save" action.
+      await page.locator('form[action*="/settings"] button[type="submit"]').first().click();
+      await page.waitForURL('**/settings');
+    };
+
+    await login(page);
+    try {
+      await setLocale('fr');
+
+      // The breadcrumb on /dashboard reads "Tableau de bord" in fr.
+      await page.goto('/dashboard');
+      await expect(page.locator('body')).toContainText('Tableau de bord');
+
+      // Revisit the contact list in fr — guards Vue components that pass
+      // translated strings into vue-good-table options (perPage labels etc).
+      await page.goto('/people');
+      await expect(page.locator('table.vgt-table tbody tr').first()).toBeVisible();
+    } finally {
+      await setLocale('en');
+    }
+
+    assertNoUnknownConsoleErrors(unknown, '/settings (locale switch)');
+  });
+
   test('logout clears session', async ({ page }) => {
     await login(page);
     await page.goto('/logout');
