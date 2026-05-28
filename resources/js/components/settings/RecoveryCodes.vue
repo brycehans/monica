@@ -106,10 +106,11 @@ export default {
     },
 
     copyIntoClipboard() {
-      this.$copyText(this.getDataStream())
-        .then(response => {
+      navigator.clipboard.writeText(this.getDataStream())
+        .then(() => {
           this.notify(this.$t('settings.recovery_clipboard'), true);
-        });
+        })
+        .catch(() => { /* silent on permission denial / non-secure context */ });
     },
 
     getDataStream() {
