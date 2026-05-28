@@ -1,21 +1,22 @@
 <template>
   <div :class="dclass">
-    <div>
-      <p-input
+    <div :class="wrapperClass">
+      <input
         ref="input"
-        v-model.lazy="prop"
-        :name="name"
         :type="_type"
-        :class="inputClass"
-        :color="inputColor"
+        :name="name"
         :value="value"
+        :checked="shouldBeChecked"
         :disabled="disabled"
         :required="required"
-        @change="$emit('change', $event)"
-      >
-        <slot></slot>
-        <slot slot="extra" name="inputextra"></slot>
-      </p-input>
+        @change="onChange"
+      />
+      <div :class="stateClass">
+        <slot name="inputextra"></slot>
+        <label>
+          <slot></slot>
+        </label>
+      </div>
     </div>
     <div class="pointer" @click="select()">
       <label v-if="hasSlot('label')" class="pointer">
@@ -27,13 +28,7 @@
 </template>
 
 <script>
-import PInput from 'pretty-checkbox-vue/input';
-
 export default {
-
-  components: {
-    PInput
-  },
 
   model: {
     prop: 'modelValue',
@@ -79,12 +74,6 @@ export default {
     }
   },
 
-  data() {
-    return {
-      prop: null
-    };
-  },
-
   computed: {
     _type() {
       if (this.$options.input_type) {
@@ -98,39 +87,47 @@ export default {
     inputColor() {
       return this.color !== '' ? this.color : 'primary-o';
     },
-  },
-
-  watch: {
-    modelValue(val) {
-      this.prop = val;
+    wrapperClass() {
+      return ['pretty', this.inputClass];
+    },
+    stateClass() {
+      return ['state', `p-${this.inputColor}`];
+    },
+    shouldBeChecked() {
+      if (this._type === 'radio') {
+        return this.modelValue === this.value;
+      }
+      return typeof this.modelValue === 'string' ? this.modelValue !== '' : !!this.modelValue;
     },
   },
 
-  mounted() {
-    this.prop = this.modelValue;
-  },
-
   methods: {
+    onChange(event) {
+      if (this._type === 'radio') {
+        this.$emit('change', this.value);
+        return;
+      }
+      this.$emit('change', event.target.checked);
+    },
     select() {
       if (this.disabled) {
         return;
       }
-      switch (this._type)
-      {
+      switch (this._type) {
       case 'checkbox':
-        this.$refs.input.$refs.input.checked = ! this.$refs.input.$refs.input.checked;
-        this.$emit('change', this.$refs.input.$refs.input.checked);
+        this.$refs.input.checked = ! this.$refs.input.checked;
+        this.$emit('change', this.$refs.input.checked);
         break;
       case 'radio':
-        this.$refs.input.$refs.input.checked = true;
+        this.$refs.input.checked = true;
         this.$emit('change', this.value);
         break;
       case 'input':
-          //this.$refs.input.$refs.input.focus();
+          //this.$refs.input.focus();
       }
     },
     hasSlot (name = 'default') {
-      return !!this.$slots[ name ] || !!this.$scopedSlots[ name ];
+      return !!this.$slots[ name ];
     }
   }
 };
