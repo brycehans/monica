@@ -2796,11 +2796,6 @@ vue-autosuggest@^2.2:
   resolved "https://registry.yarnpkg.com/vue-autosuggest/-/vue-autosuggest-2.2.0.tgz#0202b9aaeeef6a3a4357bf401a73be2ecbe166f1"
   integrity sha512-cHgEakpoRUOaqXXEo8RcRrbSTM3eAaCu9b55ZXiKbaS6IUD8ewqffQrMy/A1DXqHSQbyEEGui4oAsCbRge29Jg==
 
-vue-checkbox-radio@^0.6:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/vue-checkbox-radio/-/vue-checkbox-radio-0.6.0.tgz#616d83aaab60dbcad9ae18ffb7d9d471f4746f76"
-  integrity sha512-qaXzRR9Mji5onbYPvxXbXdCSHkJmauMirCWnHYG4uNLy7xXNoSBJOtetMnuE2KkVL6DbLycFe/uCLmx7LrXoNg==
-
 vue-clipboard2@^0.3:
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/vue-clipboard2/-/vue-clipboard2-0.3.3.tgz#331fec85f9d4f175eb0d4feaef4d77338562af36"
