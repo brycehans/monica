@@ -853,4 +853,182 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (life-events tab)');
   });
+
+  // -------------------------------------------------------------------------
+  // Phase 1 housekeeping guards (vue 3 migration plan, docs/plans/
+  // 2026-05-27-vue3-migration-design.md). Each test below locks in a
+  // user-observable behaviour that a Phase 1 PR is about to refactor on
+  // Vue 2:
+  //
+  //   pr-1a   strip `vue-clipboard2`, swap to `navigator.clipboard.writeText`
+  //   pr-1b   strip `pretty-checkbox-vue` (PInput.vue → native <input>)
+  //   pr-1c   refactor `Vue.filter('formatDate')` + local `filters:` blocks
+  //           into methods/computeds
+  //
+  // Assertions track behaviour (a toast fires, a submit button enables, a
+  // formatted date string appears) so they survive the refactor and act as a
+  // contract each PR has to honour.
+  // -------------------------------------------------------------------------
+
+  test('settings/dav copy button surfaces success toast (pr-1a guard)', async ({ page, context }) => {
+    // Guards the vue-clipboard2 → navigator.clipboard.writeText swap.
+    // DAVResources.vue:111 calls `this.$copyText(text).then(() => this.notify(...))`.
+    // Post-cutover, the same chain must produce the same dav_clipboard_copied
+    // toast. We grant clipboard permissions up-front so the post-cutover code
+    // (which uses navigator.clipboard.writeText — gated on permissions) does
+    // not silently NotAllowedError into the .catch branch and skip the toast.
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/settings/dav');
+
+    // The first Copy anchor sits next to the davRoute (base URL) input. There
+    // are 4 copy buttons on the page; targeting the first is sufficient — they
+    // all share the copyIntoClipboard() handler.
+    const firstCopy = page.getByRole('link', { name: 'Copy', exact: true }).first();
+    await expect(firstCopy).toBeVisible();
+    await firstCopy.click();
+
+    // The dav_clipboard_copied toast renders inside the
+    // <notifications group="dav"> mount on this component. vue-notification
+    // doesn't expose a stable selector, so we match on the string.
+    await expect(page.locator('body')).toContainText('Value copied into your clipboard');
+
+    assertNoUnknownConsoleErrors(unknown, '/settings/dav (copy button)');
+  });
+
+  test('relationship/create: form-checkbox toggles checked state (pr-1b FormCheckbox guard)', async ({ page }) => {
+    // Guards the pretty-checkbox-vue → native <input> swap. The settings/users
+    // create form would be a cleaner target (its FormCheckbox controls a
+    // submit-disabled state), but that route 302s to settings/subscriptions
+    // whenever monica.requires_subscription is true — which it is by default
+    // in dev. Relationship/create works on every account and exposes
+    // <form-checkbox name="realContact" :model-value="true">, so toggling the
+    // input verifies PInput's v-model wiring + slot rendering survive the
+    // refactor.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    await page.locator('a[href*="/people/h:"]').first().click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+    await page.goto(page.url() + '/relationships/create');
+
+    // FormCheckbox renders `<input type="checkbox" name="realContact" value="1">`
+    // through PInput. Initial state derives from :model-value="true" in the
+    // blade, which PInput's mounted() hook flushes into its internal `prop`
+    // and pretty-checkbox-vue's <p-input> reflects as checked.
+    const checkbox = page.locator('input[type="checkbox"][name="realContact"]');
+    await expect(checkbox).toBeVisible();
+    await expect(checkbox).toBeChecked();
+
+    // Click the input directly — avoids depending on pretty-checkbox-vue's
+    // wrapper DOM, which the post-cutover swap will restructure.
+    await checkbox.click();
+    await expect(checkbox).not.toBeChecked();
+
+    // Toggle back to confirm round-trip wiring.
+    await checkbox.click();
+    await expect(checkbox).toBeChecked();
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/relationships/create (form-checkbox toggle)');
+  });
+
+  test('contact detail: log-a-call form persists with LL-formatted date (pr-1b form-radio + pr-1c |moment guard)', async ({ page }) => {
+    // Two guards in one test:
+    //
+    //   pr-1b   the Log Call form mounts <form-radio> (PInput-backed) for
+    //           the "you called / contact called" toggle. We exercise it by
+    //           leaving the default value, but the form rendering still
+    //           depends on PInput's slot/v-model wiring not breaking.
+    //   pr-1c   PhoneCallList.vue has a local `filters: { moment: ... }` block
+    //           that renders `{{ call.called_at | moment }}` in the LL format
+    //           ("Month D, YYYY"). pr-1c lifts this to a method/computed; the
+    //           assertion below verifies that a freshly-saved call still
+    //           renders with an LL date string.
+    //
+    // Cleans up the created call so repeated smoke runs don't accumulate rows.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    await page.locator('a[href*="/people/h:"]').first().click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+
+    // Open the Log Call form. The add-call trigger has v-cy-name="add-call-button".
+    await page.locator('[cy-name="add-call-button"]').click();
+    await expect(page.locator('[cy-name="log-call-form"]')).toBeVisible();
+
+    // Fill content. The form-textarea renders a real <textarea>.
+    const marker = `smoke call ${Date.now()}`;
+    await page.locator('[cy-name="log-call-form"] textarea').first().fill(marker);
+
+    // Save. The button has v-cy-name="save-call-button"; click() bypasses the
+    // <a class="btn">/<button> ambiguity.
+    await page.locator('[cy-name="save-call-button"]').click();
+
+    // The new call appears in the list with `{{ call.called_at | moment }}`
+    // rendering today's date in LL format (e.g. "May 28, 2026"). Scope to the
+    // calls section to avoid matching unrelated dates elsewhere on the page.
+    const callsBody = page.locator('[cy-name="calls-body"]');
+    await expect(callsBody).toContainText(marker);
+    // moment LL = "MMMM D, YYYY" in English. Anchor on the marker's row so we
+    // hit the date span next to the newly-added call.
+    const row = callsBody.locator('div', { hasText: marker }).first();
+    await expect(row).toContainText(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}/);
+
+    // Cleanup: locate the row's delete link, confirm.
+    const callRow = page.locator('[cy-name^="call-body-"]', { hasText: marker });
+    await callRow.locator('[cy-name^="delete-call-button-"]').click();
+    await callRow.locator('[cy-name^="delete-call-confirm-button-"]').click();
+    await expect(page.locator('[cy-name="calls-body"]')).not.toContainText(marker);
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (log-a-call + |moment filter)');
+  });
+
+  test('dashboard debts tab: formatDate filter renders LL date (pr-1c global formatDate guard)', async ({ page }) => {
+    // Guards the global `Vue.filter('formatDate')` registration in
+    // resources/js/common.js. Its only consumer is DashboardLog.vue:118
+    // `{{ debt.created_at | formatDate }}` inside the Debts tab. pr-1c will
+    // lift the global filter to a method/util; this test asserts the LL
+    // formatted date still renders against the dev seed.
+    //
+    // The dev seed (`php artisan setup:test`) populates each of 20 contacts
+    // with 1-6 debts at 1/2 probability — vanishingly small chance of zero
+    // debts in the seed. If the debts tab is empty, the test fails with a
+    // clear hint rather than a confusing assertion miss.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/dashboard');
+
+    // The Debts tab is a <li @click="setActiveTab('debts')">. The rendered
+    // text is whitespace-padded from the blade indentation, so use getByText
+    // with exact: true rather than an anchored hasText regex. setActiveTab
+    // gates getDebts() behind `if (! this.debtsAlreadyLoaded)`; we wait for
+    // the resulting GET /dashboard/debts so the v-if branch settles to its
+    // populated state before assertions.
+    const debtsResponse = page.waitForResponse((r) => r.url().includes('/dashboard/debts') && r.status() === 200);
+    await page.getByText('Debts', { exact: true }).click();
+    await debtsResponse;
+
+    // If the seed produced zero in-progress debts the blank-state copy fires.
+    // Wait briefly for the populated <ul> first; only complain about the seed
+    // if the date never appears.
+    const monthRegex = /(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}/;
+    const debtsRoot = page.locator('div').filter({ hasText: /Debts/ }).first();
+    try {
+      await expect(debtsRoot).toContainText(monthRegex, { timeout: 5_000 });
+    } catch (err) {
+      const blank = page.getByText('logged any debts', { exact: false });
+      if (await blank.isVisible().catch(() => false)) {
+        throw new Error('Dev seed produced no in-progress debts on the dashboard; rerun `php artisan setup:test`.');
+      }
+      throw err;
+    }
+
+    assertNoUnknownConsoleErrors(unknown, '/dashboard (debts tab formatDate)');
+  });
 });
