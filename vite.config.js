@@ -45,6 +45,14 @@ export default defineConfig(({ mode }) => ({
     alias: [
       // Runtime + template compiler build (templates are compiled at runtime).
       { find: /^vue$/, replacement: path.resolve(__dirname, 'node_modules/vue/dist/vue.esm.js') },
+      // Force `import moment from 'moment'` to resolve to the ESM build at
+      // dist/moment.js. The package's main field points at the UMD bundle,
+      // whose UMD wrapper Rollup can't reliably rewrite — locale side-effect
+      // modules then register on a separate (orphan) moment instance and
+      // `moment.locale('fr')` becomes a silent no-op (#718). The ESM build
+      // shares one instance with `moment/dist/locale/*`, so registrations
+      // reach the consumer-facing moment.
+      { find: /^moment$/, replacement: path.resolve(__dirname, 'node_modules/moment/dist/moment.js') },
     ],
     // Match webpack/Mix's default: resolve .vue imports without explicit extension.
     extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.vue'],

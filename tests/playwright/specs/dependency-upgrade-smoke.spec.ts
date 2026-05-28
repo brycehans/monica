@@ -534,6 +534,68 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     assertNoUnknownConsoleErrors(unknown, '/settings (locale switch)');
   });
 
+  test('moment locale registers fr — Vue-rendered dates use French month names under fr (regression guard for #718)', async ({ page }) => {
+    // Guards the Vite-cutover regression where `moment/locale/<lang>` UMD
+    // wrappers landed their `defineLocale(...)` calls on an orphan moment
+    // instance, leaving `moment.locale('fr')` a silent no-op. After the fix
+    // (resolve.alias `moment` → `moment/dist/moment.js` + `moment/dist/locale/*`
+    // imports), the consumer-facing moment shares its instance with the
+    // locale registrations and Vue-rendered dates honour the user's locale.
+    //
+    // We assert the user-visible behaviour: a freshly-added activity renders
+    // its happened_at date with a French month name (e.g. "mai") rather than
+    // an English one ("May"). Probing `moment.locales()` directly would be
+    // bundle-path dependent (the hash changes each build); the DOM assertion
+    // is bundle-agnostic.
+    const { unknown } = attachConsoleCapture(page);
+
+    const setLocale = async (lang: 'en' | 'fr'): Promise<void> => {
+      await page.goto('/settings');
+      await page.locator('select#locale').selectOption(lang);
+      await page.locator('form[action*="/settings"] button[type="submit"]').first().click();
+      await page.waitForURL('**/settings');
+    };
+
+    await login(page);
+    try {
+      await setLocale('fr');
+
+      await page.goto('/people');
+      // vue-good-table mounts the contact list asynchronously — wait for the
+      // first row before clicking. Under fr the perPage strings hydrate
+      // slower than the table chrome, so click-before-wait races.
+      await expect(page.locator('table.vgt-table tbody tr').first()).toBeVisible();
+      await page.locator('table.vgt-table tbody a[href*="/people/h:"]').first().click();
+      await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+
+      // Open Log Activity form (button label is now French, but the cy-name
+      // selector is locale-agnostic).
+      await page.locator('[cy-name="add-activity-button"]').click();
+      const summaryInput = page.locator('input[name="summary"]');
+      await expect(summaryInput).toBeVisible();
+      const marker = `smoke fr activity ${Date.now()}`;
+      await summaryInput.fill(marker);
+      await page.locator('[cy-name="save-activity-button"]').click();
+
+      const activityRow = page.locator('[cy-name^="activity-body-"]').filter({ hasText: marker });
+      await expect(activityRow).toHaveCount(1);
+
+      // moment LL in French = "D MMMM YYYY" e.g. "28 mai 2026". Match on
+      // French month names — if moment.locale('fr') is a no-op the date
+      // renders as "May 28, 2026" and this regex misses.
+      await expect(activityRow).toContainText(/\d{1,2}\s+(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+\d{4}/);
+
+      // Cleanup.
+      await activityRow.locator('[cy-name^="delete-activity-button-"]').click();
+      await activityRow.locator('[cy-name="confirm-delete-activity"]').click();
+      await expect(activityRow).toHaveCount(0);
+    } finally {
+      await setLocale('en');
+    }
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (fr locale moment guard)');
+  });
+
   test('logout clears session', async ({ page }) => {
     await login(page);
     await page.goto('/logout');
