@@ -319,10 +319,11 @@ export default {
      * Copy text into clipboard
      */
     copyIntoClipboard(text) {
-      this.$copyText(text)
-        .then(response => {
+      navigator.clipboard.writeText(text)
+        .then(() => {
           this.notify(this.$t('settings.dav_clipboard_copied'), true);
-        });
+        })
+        .catch(() => { /* silent on permission denial / non-secure context */ });
     },
 
     notify(text, success) {

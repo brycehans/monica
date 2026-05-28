@@ -16,7 +16,6 @@ import './bootstrap';
 import Vue from 'vue';
 import Notifications from 'vue-notification';
 import Tooltip from 'vue-directive-tooltip';
-import VueClipboard from 'vue-clipboard2';
 
 // Custom components — Passport
 import PassportClients from './components/passport/Clients.vue';
@@ -104,10 +103,6 @@ Vue.use(Notifications);
 
 // Tooltip
 Vue.use(Tooltip, { delay: 0 });
-
-// Copy text from clipboard
-VueClipboard.config.autoSetContainer = true;
-Vue.use(VueClipboard);
 
 // Custom components
 Vue.component('PassportClients', PassportClients);
