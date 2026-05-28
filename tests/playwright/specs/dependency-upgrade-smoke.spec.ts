@@ -1017,10 +1017,20 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // If the seed produced zero in-progress debts the blank-state copy fires.
     // Wait briefly for the populated <ul> first; only complain about the seed
     // if the date never appears.
+    //
+    // Scope tightly to the debt-row date span (`<li class="pb2"><span class=
+    // "black-50 mr1 f6">{{ debt.created_at | formatDate }}</span>`). The
+    // surrounding page contains other dashboard widgets (month-reminders,
+    // upcoming events) which can render dates via the PHP DateHelper using `M
+    // d, Y` (e.g. "May 28, 2026") — the same LL-shape — so a broader locator
+    // would match those even when the formatDate filter is broken. The Calls
+    // tab also uses `<li class="pb2">` for its rows, but Vue's v-if/v-else-if
+    // tab switching removes the inactive block from the DOM, leaving only
+    // debt-row spans under the active selector after the tab click.
     const monthRegex = /(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}/;
-    const debtsRoot = page.locator('div').filter({ hasText: /Debts/ }).first();
+    const firstDebtDate = page.locator('li.pb2 span.black-50.mr1.f6').first();
     try {
-      await expect(debtsRoot).toContainText(monthRegex, { timeout: 5_000 });
+      await expect(firstDebtDate).toHaveText(monthRegex, { timeout: 5_000 });
     } catch (err) {
       const blank = page.getByText('logged any debts', { exact: false });
       if (await blank.isVisible().catch(() => false)) {
