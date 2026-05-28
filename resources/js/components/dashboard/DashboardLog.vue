@@ -115,7 +115,7 @@
         <ul v-if="debts.length !== 0">
           <li v-for="debt in debts" :key="debt.id" class="pb2">
             <span class="black-50 mr1 f6">
-              {{ debt.created_at | formatDate }}
+              {{ formatDate(debt.created_at) }}
             </span>
             <span class="mr1 black-50">
               •
@@ -276,6 +276,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import Avatar from '../partials/Avatar.vue';
 
 export default {
@@ -324,6 +325,11 @@ export default {
   methods: {
     prepareComponent() {
       this.setActiveTab(this.defaultActiveTab);
+    },
+
+    formatDate(value) {
+      if (!value) return;
+      return moment(String(value)).format('LL');
     },
 
     setActiveTab(view) {

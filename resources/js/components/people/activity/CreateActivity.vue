@@ -139,12 +139,6 @@ export default {
     Participant,
   },
 
-  filters: {
-    moment: function (date) {
-      return moment.utc(date).format('LL');
-    }
-  },
-
   props: {
     hash: {
       type: String,

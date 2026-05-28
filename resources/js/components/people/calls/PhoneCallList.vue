@@ -209,7 +209,7 @@
         <div class="pa2 cf bt b--black-10 br--bottom f7 lh-copy">
           <div class="w-70" :class="[ dirltr ? 'fl' : 'fr' ]">
             <span :class="[ dirltr ? 'mr3' : 'ml3' ]">
-              {{ call.called_at | moment }}
+              {{ formatMomentLL(call.called_at) }}
             </span>
             <span :class="[ dirltr ? 'mr3' : 'ml3' ]">
               {{ call.contact_called ? $t('people.call_he_called', { name : name }) : $t('people.call_you_called') }}
@@ -263,12 +263,6 @@ export default {
     Emotion,
   },
 
-  filters: {
-    moment: function (date) {
-      return moment.utc(date).format('LL');
-    }
-  },
-
   props: {
     hash: {
       type: String,
@@ -320,6 +314,10 @@ export default {
       this.getCalls();
       this.todayDate = moment().format('YYYY-MM-DD');
       this.newCall.called_at = this.todayDate;
+    },
+
+    formatMomentLL(date) {
+      return moment.utc(date).format('LL');
     },
 
     compiledMarkdown (text) {
