@@ -61,6 +61,9 @@ Things we will not do:
 - UI redesigns
 - Forking the name, the docs, the marketing site, or the hosted product
 
+For specific in/out decisions that aren't obvious from the code (e.g. which
+OAuth grant types are supported), see [`docs/design-decisions.md`](docs/design-decisions.md).
+
 ## Status
 
 **Early-stage. Do not use this fork in production yet.** This README will be
