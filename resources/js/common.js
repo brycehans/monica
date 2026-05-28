@@ -13,30 +13,32 @@ Vue.use(VueI18n);
 
 // Moments
 import moment from 'moment';
-// Register moment locale data. Mix's webpack handled this automatically because
-// it follows moment's dynamic require(), and `moment-locales-webpack-plugin`
-// (now removed) filtered the 138 bundled locales down to the 17 we ship below.
-// Rollup/Vite doesn't follow that dynamic require, so without these explicit
-// side-effect imports the bundle would ship moment + English-only and every
-// `moment.locale(this._i18n.locale)` call would silently no-op. Keep this list
-// in sync with `config/lang.php` / Crowdin and the old Mix allowlist.
-import 'moment/locale/ar';
-import 'moment/locale/de';
-import 'moment/locale/el';
-import 'moment/locale/en-gb';
-import 'moment/locale/es';
-import 'moment/locale/fr';
-import 'moment/locale/he';
-import 'moment/locale/id';
-import 'moment/locale/it';
-import 'moment/locale/nl';
-import 'moment/locale/pt-br';
-import 'moment/locale/ru';
-import 'moment/locale/sv';
-import 'moment/locale/tr';
-import 'moment/locale/vi';
-import 'moment/locale/zh-cn';
-import 'moment/locale/zh-tw';
+// Register moment locale data for the 17 languages we ship (keep in sync with
+// `config/lang.php` / Crowdin). Imports go through `moment/dist/locale/*`,
+// not `moment/locale/*` — the dist/ files are ESM modules whose top-level
+// `moment.defineLocale(...)` call registers against the moment instance from
+// `moment/dist/moment.js`. The vite.config.js alias forces `import moment from
+// 'moment'` to that same ESM build, so the registrations reach the consumer-
+// facing moment. The UMD-wrapped `moment/locale/*.js` files leave Rollup in
+// `factory(global.moment)` fallback mode — the calls execute but land on an
+// orphan moment, which is why #718 happened.
+import 'moment/dist/locale/ar';
+import 'moment/dist/locale/de';
+import 'moment/dist/locale/el';
+import 'moment/dist/locale/en-gb';
+import 'moment/dist/locale/es';
+import 'moment/dist/locale/fr';
+import 'moment/dist/locale/he';
+import 'moment/dist/locale/id';
+import 'moment/dist/locale/it';
+import 'moment/dist/locale/nl';
+import 'moment/dist/locale/pt-br';
+import 'moment/dist/locale/ru';
+import 'moment/dist/locale/sv';
+import 'moment/dist/locale/tr';
+import 'moment/dist/locale/vi';
+import 'moment/dist/locale/zh-cn';
+import 'moment/dist/locale/zh-tw';
 
 // Markdown
 import { marked } from 'marked';
