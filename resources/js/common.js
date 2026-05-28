@@ -38,12 +38,6 @@ import 'moment/locale/vi';
 import 'moment/locale/zh-cn';
 import 'moment/locale/zh-tw';
 
-Vue.filter('formatDate', function(value) {
-  if (value) {
-    return moment(String(value)).format('LL');
-  }
-});
-
 // Markdown
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';

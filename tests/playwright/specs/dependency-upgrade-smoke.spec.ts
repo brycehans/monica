@@ -988,6 +988,58 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (log-a-call + |moment filter)');
   });
 
+  test('contact detail: log-an-activity form persists with LL-formatted date (pr-1c ActivityList |moment guard)', async ({ page }) => {
+    // Guards the `filters: { moment }` block on ActivityList.vue that renders
+    // `{{ activity.happened_at | moment }}` in LL format ("Month D, YYYY").
+    // pr-1c lifts this to a formatMomentLL method; the assertion below
+    // verifies a freshly-saved activity still renders with an LL date string.
+    //
+    // Cleans up the created activity so repeated smoke runs don't accumulate.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    await page.locator('a[href*="/people/h:"]').first().click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+
+    // Open the Log Activity form. ActivityList.vue toggles displayLogActivity
+    // which v-if-mounts CreateActivity.vue. The trigger has v-cy-name="add-activity-button".
+    await page.locator('[cy-name="add-activity-button"]').click();
+
+    // CreateActivity.vue renders a FormInput with id="summary"; FormInput
+    // passes :name="id" through to the underlying <input>, so input[name="summary"]
+    // is a stable selector that survives the FormInput internals.
+    const summaryInput = page.locator('input[name="summary"]');
+    await expect(summaryInput).toBeVisible();
+    const marker = `smoke activity ${Date.now()}`;
+    await summaryInput.fill(marker);
+
+    // Save via v-cy-name="save-activity-button".
+    await page.locator('[cy-name="save-activity-button"]').click();
+
+    // Match the freshly-saved row directly via its cy-name. We deliberately
+    // avoid scoping under `[cy-name="activities-body"]` because ActivityList.vue
+    // has two unkeyed bare-<div> siblings (the blank-state wrapper at line 25
+    // and the activities-body div at line 46). When the activities array
+    // transitions 1 → 0 on cleanup, Vue 2's vdom diff reuses the wrappers and
+    // can leave the `cy-name="activities-body"` attribute attached to two DOM
+    // nodes simultaneously — a Vue 2 quirk unrelated to the filter refactor.
+    // Row-level locators sidestep it cleanly.
+    const activityRow = page.locator('[cy-name^="activity-body-"]').filter({ hasText: marker });
+    await expect(activityRow).toHaveCount(1);
+    // moment LL = "MMMM D, YYYY" in English.
+    await expect(activityRow).toContainText(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}/);
+
+    // Cleanup: click the row's delete button, then the confirm link. The
+    // confirm-delete-activity v-cy-name is not row-suffixed (it's a shared
+    // name with v-show gated per-row), so we scope inside the activity row.
+    await activityRow.locator('[cy-name^="delete-activity-button-"]').click();
+    await activityRow.locator('[cy-name="confirm-delete-activity"]').click();
+    await expect(activityRow).toHaveCount(0);
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (log-an-activity + |moment filter)');
+  });
+
   test('dashboard debts tab: formatDate filter renders LL date (pr-1c global formatDate guard)', async ({ page }) => {
     // Guards the global `Vue.filter('formatDate')` registration in
     // resources/js/common.js. Its only consumer is DashboardLog.vue:118

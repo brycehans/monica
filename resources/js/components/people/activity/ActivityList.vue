@@ -59,7 +59,7 @@
               <ul class="list">
                 <!-- HAPPENED AT -->
                 <li class="di" :class="[ dirltr ? 'mr3' : 'ml3' ]">
-                  {{ activity.happened_at | moment }}
+                  {{ formatMomentLL(activity.happened_at) }}
                 </li>
 
                 <!-- PARTICIPANT LIST -->
@@ -146,12 +146,6 @@ export default {
     CreateActivity
   },
 
-  filters: {
-    moment: function (date) {
-      return moment.utc(date).format('LL');
-    }
-  },
-
   props: {
     hash: {
       type: String,
@@ -200,6 +194,10 @@ export default {
     prepareComponent() {
       this.getActivities();
       this.todayDate = moment().format('YYYY-MM-DD');
+    },
+
+    formatMomentLL(date) {
+      return moment.utc(date).format('LL');
     },
 
     compiledMarkdown (text) {
