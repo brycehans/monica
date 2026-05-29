@@ -1052,6 +1052,77 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/relationships/create (form-checkbox toggle)');
   });
 
+  test('relationship/create: SpecialDate birthdate radio labels render their #label slot content (vue3 slot= → #X guard)', async ({ page }) => {
+    // Guards the slot="X" → #X migration in SpecialDate.vue. Vue 3 dropped
+    // the vue-2 attribute form (`<template slot="label">`) entirely, so any
+    // accidental revert would mount the four birthdate radios as bare
+    // unlabelled circles — the #label slot content gets silently dropped
+    // by PInput's `<slot name="label">`. Asserting the sibling
+    // <label class="pointer"> populated per radio catches that regression.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    await page.locator('a[href*="/people/h:"]').first().click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+    await page.goto(page.url() + '/relationships/create');
+
+    // SpecialDate.vue renders four form-radios named "birthdate" with
+    // values unknown / approximate / almost / exact. Map each to the
+    // expected label text from resources/lang/en/people.php; the curly
+    // apostrophe (’) and ellipsis (…) are intentional —
+    // Crowdin preserves both.
+    const cases: Array<{ value: string; label: string }> = [
+      { value: 'unknown',     label: 'I do not know this person’s age' },
+      { value: 'approximate', label: 'This person is probably…' },
+      { value: 'almost',      label: 'I know the day and month of this person’s birthday, but not the year…' },
+      { value: 'exact',       label: 'I know this person’s exact birthday…' },
+    ];
+
+    for (const { value, label } of cases) {
+      // PInput's dclass on these radios is "flex mb3"; the outer label
+      // is `<label class="pointer">` populated from <slot name="label">.
+      const wrapper = page.locator('div.flex').filter({
+        has: page.locator(`input[name="birthdate"][value="${value}"]`),
+      });
+      await expect(wrapper.locator('label.pointer')).toHaveText(label);
+    }
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/relationships/create (SpecialDate #label slots)');
+  });
+
+  test('contact avatar edit: SetAvatar radio labels render their #label slot content (vue3 slot= → #X guard)', async ({ page }) => {
+    // Same slot="X" → #X guard as the SpecialDate test above, but for
+    // SetAvatar.vue. The avatar page mounts up to four form-radios named
+    // "avatar"; two (default, upload) always render, the other two
+    // (gravatar, photo) are conditional on existing state. Assert only the
+    // always-on pair to keep the test deterministic across seed data.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
+    expect(contactHref).toBeTruthy();
+    await page.goto(`${contactHref}/avatar`);
+
+    const cases: Array<{ value: string; label: string }> = [
+      { value: 'default', label: 'The default avatar' },
+      { value: 'upload',  label: 'From a photo that you upload' },
+    ];
+
+    for (const { value, label } of cases) {
+      const wrapper = page.locator('div.flex').filter({
+        has: page.locator(`input[name="avatar"][value="${value}"]`),
+      });
+      // toContainText (not toHaveText) — the upload radio's #label slot
+      // appends a conditional "Upgrade" link when the account has hit its
+      // storage limit. Substring match keeps the test stable.
+      await expect(wrapper.locator('label.pointer')).toContainText(label);
+    }
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/avatar (SetAvatar #label slots)');
+  });
+
   test('contact detail: log-a-call form persists with LL-formatted date (pr-1b form-radio + pr-1c |moment guard)', async ({ page }) => {
     // Two guards in one test:
     //
