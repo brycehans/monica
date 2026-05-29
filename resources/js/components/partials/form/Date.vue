@@ -1,20 +1,15 @@
 <template>
   <div :class="{ 'form-group-error': validator && validator.$error }">
     <datepicker
-      ref="select"
-      :ref-name="'select'"
-      :value="selectedDate"
+      v-model="selectedDate"
       :format="displayValue"
-      :parse-typed-date="formatTypedValue"
-      :language="locale"
-      :monday-first="mondayFirst"
-      :input-class="inputClass"
-      :typeable="true"
-      :clear-button="true"
-      :show-calendar-on-focus="showCalendarOnFocus"
-      @input="onInput($event)"
-      @selected="onSelected($event)"
-      @clearDate="onSelected('')"
+      :locale="locale"
+      :week-start="mondayFirst ? 1 : 0"
+      :input-class-name="inputClass"
+      :text-input="true"
+      :clearable="true"
+      :enable-time-picker="false"
+      :auto-apply="true"
     />
     <input :name="id" type="hidden" :value="exchange" />
     <small v-if="validator && (validator.$error && validator.required !== undefined && !validator.required)" class="error">
@@ -27,84 +22,50 @@
 </template>
 
 <script>
-import Datepicker from '@hokify/vuejs-datepicker';
+import { VueDatePicker as Datepicker } from '@vuepic/vue-datepicker';
 import moment from 'moment';
 
 export default {
 
   components: {
-    Datepicker
-  },
-
-  model: {
-    prop: 'value',
-    event: 'input'
+    Datepicker,
   },
 
   props: {
-    id: {
-      type: String,
-      default: '',
-    },
-    value: {
-      type: String,
-      default: '',
-    },
-    label: {
-      type: String,
-      default: '',
-    },
-    defaultDate: {
-      type: String,
-      default: '',
-    },
-    locale: {
-      type: String,
-      default: '',
-    },
-    showCalendarOnFocus: {
-      type: Boolean,
-      default: false,
-    },
-    validator: {
-      type: Object,
-      default: null,
-    },
+    id: { type: String, default: '' },
+    modelValue: { type: String, default: '' },
+    label: { type: String, default: '' },
+    defaultDate: { type: String, default: '' },
+    locale: { type: String, default: '' },
+    showCalendarOnFocus: { type: Boolean, default: false },
+    validator: { type: Object, default: null },
   },
+
+  emits: ['update:modelValue'],
 
   data() {
     return {
-      /**
-       * Value of the date in exchange format
-       */
       exchange: '',
-
-      selectedDate: '',
-      mondayFirst: false
+      selectedDate: null,
+      mondayFirst: false,
     };
   },
 
   computed: {
-    /**
-     * Exchange format with controller (moment format type).
-     */
     exchangeFormat() {
       return 'YYYY-MM-DD';
     },
 
-    /**
-     * Display format (moment format type).
-     */
     displayFormat() {
       return 'L';
     },
 
     inputClass() {
-      var c = ['br2 f5 ba b--black-40 pa2 outline-0'];
-      if (this.validator) {
-        c.push({ 'error': this.validator.$error });
+      const classes = ['br2', 'f5', 'ba', 'b--black-40', 'pa2', 'outline-0'];
+      if (this.validator && this.validator.$error) {
+        classes.push('error');
       }
-      return c;
+      return classes.join(' ');
     },
 
     requiredMessage() {
@@ -114,51 +75,45 @@ export default {
     beforeMessage() {
       return this.$t('validation.vue.max.numeric', {
         field: this.label,
-        max: this.displayValue(this.validator.$params.before.date)
+        max: this.displayValue(this.validator.$params.before.date),
       });
     },
   },
 
   watch: {
-    value: function (newValue) {
+    modelValue(newValue) {
       this.updateExchange(newValue);
-    }
+    },
+
+    selectedDate(newValue) {
+      if (this.validator) {
+        this.validator.$touch();
+      }
+      this.update(newValue);
+      this.$emit('update:modelValue', this.exchangeValue(newValue));
+    },
   },
 
   mounted() {
-    this.updateExchange(this.value === '' ? this.defaultDate : this.value);
+    this.updateExchange(this.modelValue === '' ? this.defaultDate : this.modelValue);
     this.mondayFirst = moment.localeData().firstDayOfWeek() === 1;
   },
 
   methods: {
-    /**
-     * Format date for display it.
-     * @param date string in locale format
-     * @return string date in display format
-     */
     displayValue(date) {
       return date !== '' && date !== null ? moment(date).format(this.displayFormat) : '';
     },
 
-    /**
-     * Format date for save it.
-     * @param date string in locale format
-     * @return string date in exchange format
-     */
     exchangeValue(date) {
       return date !== '' && date !== null ? moment(date).format(this.exchangeFormat) : '';
     },
 
-    /**
-     * Update the value of hidden input.
-     * Store it in exchange format value.
-     */
     update(date) {
       if (date === '' || date === null) {
         this.exchange = '';
       } else {
-        var mdate = moment(date);
-        if (! mdate.isValid()) {
+        let mdate = moment(date);
+        if (!mdate.isValid()) {
           mdate = moment();
         }
         this.exchange = mdate.format(this.exchangeFormat);
@@ -168,39 +123,23 @@ export default {
     updateExchange(date) {
       this.exchange = date;
       if (this.exchange !== '') {
-        var mdate = moment(this.exchange, this.exchangeFormat);
-        if (! mdate.isValid()) {
+        let mdate = moment(this.exchange, this.exchangeFormat);
+        if (!mdate.isValid()) {
           mdate = moment();
         }
         this.selectedDate = mdate.toDate();
+      } else {
+        this.selectedDate = null;
       }
       this.update(this.selectedDate);
     },
 
-    /**
-     * Format the typed value with the locale specification.
-     * @param date string in locale format
-     * @return date value
-     */
-    formatTypedValue(date) {
-      return date !== '' && date !== null ? moment(date, this.displayFormat).toDate() : '';
-    },
-
     focus() {
-      this.$refs.select.$children[0].$refs.select.focus();
+      // @vuepic/vue-datepicker opens its menu on input focus by default;
+      // callers that previously did `$refs.dateField.focus()` to surface
+      // the picker should continue to work because focus on the visible
+      // <input> triggers the menu open.
     },
-
-    onInput(event) {
-      if (this.validator) {
-        this.validator.$touch();
-      }
-      this.$emit('input', this.exchangeValue(event));
-    },
-
-    onSelected(event) {
-      this.update(event);
-      this.onInput(event);
-    }
-  }
+  },
 };
 </script>

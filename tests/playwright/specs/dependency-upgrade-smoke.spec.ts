@@ -1548,13 +1548,13 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       .first();
     await visibleDateInput.click();
 
-    // Pick the 15th of the currently-displayed month. The .vdp-datepicker
-    // selectors are library-specific (pre-cutover); post-cutover the test
-    // body needs an update — see comment above.
-    const calendar = page.locator('.vdp-datepicker__calendar:visible');
+    // Pick the 15th of the currently-displayed month. Post-cutover the
+    // datepicker is @vuepic/vue-datepicker, which renders its calendar
+    // popup with `.dp--menu` and day cells with `.dp--cell-inner`.
+    const calendar = page.locator('.dp--menu:visible');
     await expect(calendar).toBeVisible();
     await calendar
-      .locator('.cell.day:not(.blank):not(.disabled)', { hasText: /^15$/ })
+      .locator('.dp--cell-inner:not(.dp--cell-offset):not(.dp--cell-disabled)', { hasText: /^15$/ })
       .first()
       .click();
 
