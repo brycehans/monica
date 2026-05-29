@@ -84,7 +84,7 @@
         </div>
       </form-radio>
     </div>
-    <sweet-modal ref="cropModal" :title="$t('people.avatar_crop_new_avatar_photo')" :blocking="true" :hide-close-button="true">
+    <monica-modal v-model="showCropModal" :title="$t('people.avatar_crop_new_avatar_photo')">
       <vue-cropper v-if="uploadedImgUrl"
                    ref="clipper"
                    :key="uploadedImgUrl"
@@ -93,28 +93,25 @@
                    :auto-crop-area="1"
                    :view-mode="1"
       />
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="cancelCrop">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="setCroppedImg">
           {{ $t('app.done') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
 import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
-import { SweetModal } from 'sweet-modal-vue';
-
 export default {
 
   components: {
     VueCropper,
-    SweetModal
   },
   props: {
     avatar: {
@@ -149,6 +146,7 @@ export default {
       initialAvatar: '',
       uploadedImgUrl: '',
       croppedImgUrl: '',
+      showCropModal: false,
     };
   },
 
@@ -176,7 +174,7 @@ export default {
           URL.revokeObjectURL(this.uploadedImgUrl);
         }
         this.uploadedImgUrl = window.URL.createObjectURL(e.target.files[0]);
-        this.$refs.cropModal.open();
+        this.showCropModal = true;
       }
     },
 
@@ -193,14 +191,14 @@ export default {
         this.croppedImgUrl = window.URL.createObjectURL(blob);
       }, 'image/jpeg', 1);
 
-      this.$refs.cropModal.close();
+      this.showCropModal = false;
     },
 
     cancelCrop() {
       const dataTransfer = new DataTransfer();
       this.$refs.uploadedImg.files = dataTransfer.files;
       this.croppedImgUrl = '';
-      this.$refs.cropModal.close();
+      this.showCropModal = false;
     },
   },
 };

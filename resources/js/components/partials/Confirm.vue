@@ -5,32 +5,27 @@
       </slot>
     </a>
 
-    <sweet-modal ref="modal" tabindex="-1" role="dialog">
+    <monica-modal v-model="show">
       <div>
         {{ message }}
       </div>
 
-      <!-- Modal Actions -->
-      <div slot="button" class="flex-ns justify-between">
-        <a class="btn mt2" href="" @click.prevent="close">
-          {{ $t('app.cancel') }}
-        </a>
-        <button v-cy-name="'confirm-' + name" class="btn btn-primary w-auto-ns w100 mt2 pb0-ns" @click="confirm($event)">
-          {{ $t('app.confirm') }}
-        </button>
-      </div>
-    </sweet-modal>
+      <template #button>
+        <div class="flex-ns justify-between">
+          <a class="btn mt2" href="" @click.prevent="close">
+            {{ $t('app.cancel') }}
+          </a>
+          <button v-cy-name="'confirm-' + name" class="btn btn-primary w-auto-ns w100 mt2 pb0-ns" @click="confirm($event)">
+            {{ $t('app.confirm') }}
+          </button>
+        </div>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
-
 export default {
-
-  components: {
-    SweetModal,
-  },
 
   props: {
     name: {
@@ -51,6 +46,12 @@ export default {
     },
   },
 
+  data() {
+    return {
+      show: false,
+    };
+  },
+
   computed: {
     lclass() {
       return this.linkClass === '' ? 'pointer' : this.linkClass;
@@ -59,10 +60,10 @@ export default {
 
   methods: {
     open() {
-      this.$refs.modal.open();
+      this.show = true;
     },
     close() {
-      this.$refs.modal.close();
+      this.show = false;
     },
     confirm(event) {
       this.close();

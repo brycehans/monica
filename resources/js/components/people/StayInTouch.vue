@@ -35,7 +35,7 @@
       </a>
     </div>
 
-    <sweet-modal ref="updateModal" overlay-theme="dark" :title="$t('people.stay_in_touch_modal_title')">
+    <monica-modal v-model="showUpdateModal" :title="$t('people.stay_in_touch_modal_title')">
       <div class="tc mw-100">
         <svg viewBox="0 0 423 74" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <defs />
@@ -154,20 +154,21 @@
           </div>
         </div>
       </form>
-      <div slot="button" class="tc">
-        <a class="btn" href="" @click.prevent="closeModal()">
-          {{ $t('app.cancel') }}
-        </a>
-        <a class="btn btn-primary" href="" @click.prevent="update()">
-          {{ $t('app.save') }}
-        </a>
-      </div>
-    </sweet-modal>
+      <template #button>
+        <div class="tc">
+          <a class="btn" href="" @click.prevent="closeModal()">
+            {{ $t('app.cancel') }}
+          </a>
+          <a class="btn btn-primary" href="" @click.prevent="update()">
+            {{ $t('app.save') }}
+          </a>
+        </div>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
 import { useVuelidate } from '@vuelidate/core';
 import { required, numeric } from '@vuelidate/validators';
@@ -177,7 +178,6 @@ import StayInTouchLabel from './StayInTouchLabel';
 export default {
 
   components: {
-    SweetModal,
     ToggleButton,
     StayInTouchLabel,
   },
@@ -213,6 +213,7 @@ export default {
         required,
         numeric,
       },
+      showUpdateModal: false,
     };
   },
 
@@ -257,11 +258,11 @@ export default {
 
     showUpdate() {
       this.errorMessage = '';
-      this.$refs.updateModal.open();
+      this.showUpdateModal = true;
     },
 
     closeModal() {
-      this.$refs.updateModal.close();
+      this.showUpdateModal = false;
     },
 
     update() {
@@ -281,7 +282,7 @@ export default {
 
       axios.post('people/' + this.hash + '/stayintouch',   {frequency: this.frequencyInput, state: this.stateInput})
         .then(response => {
-          this.$refs.updateModal.close();
+          this.showUpdateModal = false;
           this.isActive = this.stateInput;
           this.nextTriggerDate = response.data.trigger_date;
 

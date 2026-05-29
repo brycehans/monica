@@ -13,7 +13,7 @@
       </a>
     </div>
 
-    <sweet-modal id="enableModal" ref="enableModal" overlay-theme="dark" :title="$t('settings.2fa_otp_title')">
+    <monica-modal v-model="enableModalOpen" :title="$t('settings.2fa_otp_title')">
       <form @submit.prevent="register()">
         <p>{{ $t('settings.2fa_enable_description') }}</p>
 
@@ -42,17 +42,17 @@
           />
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a id="verify1" class="btn btn-primary" href="" @click.prevent="register()">
           {{ $t('app.verify') }}
         </a>
         <a class="btn" href="" @click.prevent="closeEnableModal()">
           {{ $t('app.cancel') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
-    <sweet-modal id="disableModal" ref="disableModal" overlay-theme="dark" :title="$t('settings.2fa_otp_title')">
+    <monica-modal v-model="disableModalOpen" :title="$t('settings.2fa_otp_title')">
       <form @submit.prevent="register()">
         <p>{{ $t('settings.2fa_disable_description') }}</p>
 
@@ -67,25 +67,22 @@
           />
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a id="verify2" class="btn btn-primary" href="" @click.prevent="unregister()">
           {{ $t('app.verify') }}
         </a>
         <a class="btn" href="" @click.prevent="closeDisableModal()">
           {{ $t('app.cancel') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
-
 export default {
 
   components: {
-    SweetModal
   },
 
   props: {
@@ -104,6 +101,8 @@ export default {
       one_time_password: '',
       image: '',
       secret: '',
+      enableModalOpen: false,
+      disableModalOpen: false,
     };
   },
 
@@ -156,7 +155,7 @@ export default {
         .then(response => {
           this.image = response.data.image;
           this.secret = response.data.secret;
-          this.$refs.enableModal.open();
+          this.enableModalOpen = true;
         }).catch(error => {
           this.notify(error.response.data.message, false);
         });
@@ -164,15 +163,15 @@ export default {
 
     showDisableModal() {
       this.one_time_password = '';
-      this.$refs.disableModal.open();
+      this.disableModalOpen = true;
     },
 
     closeEnableModal() {
-      this.$refs.enableModal.close();
+      this.enableModalOpen = false;
     },
 
     closeDisableModal() {
-      this.$refs.disableModal.close();
+      this.disableModalOpen = false;
     },
 
     notify(text, success) {

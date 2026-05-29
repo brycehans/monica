@@ -507,6 +507,16 @@
   resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.7.tgz#baccb07a970b91707df3a3e8ba6896c57ead2d11"
   integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
 
+"@types/web-bluetooth@^0.0.20":
+  version "0.0.20"
+  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.20.tgz#f066abfcd1cbe66267cdbbf0de010d8a41b41597"
+  integrity sha512-g9gZnnXVq7gM7v3tJCWV/qw7w+KeOlSHAhgF9RytFyifW6AF61hdT2ucrYhPq9hLs5JIryeupHV3qGk95dH9ow==
+
+"@types/web-bluetooth@^0.0.21":
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.21.tgz#525433c784aed9b457aaa0ee3d92aeb71f346b63"
+  integrity sha512-oIQLCGWtcFZy2JW77j9k8nHzAOpqMHLQejDA48XXMWH6tjCQHz5RCFz1bzsmROyL6PUm+LLnUiI4BCn221inxA==
+
 "@vitejs/plugin-vue@^6.0":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-vue/-/plugin-vue-6.0.7.tgz#194235d364a2c601c521b0410e524e521119059f"
@@ -612,6 +622,64 @@
   integrity sha512-odTxtUZ2JpwwiQ10t0QWYJkkYrfd0SyFYhdHH44QQ1jDatlZgTh/KRzrWVmn/ib9Gq7H4hFD4e8ahoo5YlUlDw==
   dependencies:
     vue-demi "^0.13.11"
+
+"@vueuse/core@10.11.1", "@vueuse/core@^10.5.0":
+  version "10.11.1"
+  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-10.11.1.tgz#15d2c0b6448d2212235b23a7ba29c27173e0c2c6"
+  integrity sha512-guoy26JQktXPcz+0n3GukWIy/JDNKti9v6VEMu6kV2sYBsWuGiTU8OWdg+ADfUbHg3/3DlqySDe7JmdHrktiww==
+  dependencies:
+    "@types/web-bluetooth" "^0.0.20"
+    "@vueuse/metadata" "10.11.1"
+    "@vueuse/shared" "10.11.1"
+    vue-demi ">=0.14.8"
+
+"@vueuse/core@14.3.0", "@vueuse/core@^14.0":
+  version "14.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-14.3.0.tgz#66c92f9ad7ee989e4a8fd23ec368e55429ea42b2"
+  integrity sha512-aHfz47g0ZhMtTVHmIzMVpJy8ePhhOy68GY5bv110+5DVtZ+W7BsOx+m61UNQqfrWyPztIHIanWa3E2tib3NFIw==
+  dependencies:
+    "@types/web-bluetooth" "^0.0.21"
+    "@vueuse/metadata" "14.3.0"
+    "@vueuse/shared" "14.3.0"
+
+"@vueuse/integrations@^10.5.0":
+  version "10.11.1"
+  resolved "https://registry.yarnpkg.com/@vueuse/integrations/-/integrations-10.11.1.tgz#e4af23b871773c5ef5b8fb939f959f2fc728557e"
+  integrity sha512-Y5hCGBguN+vuVYTZmdd/IMXLOdfS60zAmDmFYc4BKBcMUPZH1n4tdyDECCPjXm0bNT3ZRUy1xzTLGaUje8Xyaw==
+  dependencies:
+    "@vueuse/core" "10.11.1"
+    "@vueuse/shared" "10.11.1"
+    vue-demi ">=0.14.8"
+
+"@vueuse/integrations@^14.0":
+  version "14.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/integrations/-/integrations-14.3.0.tgz#06ce0431973a0606cc6a69d173f19880652860a6"
+  integrity sha512-76I5FT2ESvCmCaSwapI+a/u/CFtNXmzl9f9lNp1hRtx8vKB8hfiokJr8IvQqcQG5ckGXElyXK516b54ozV3MvA==
+  dependencies:
+    "@vueuse/core" "14.3.0"
+    "@vueuse/shared" "14.3.0"
+
+"@vueuse/metadata@10.11.1":
+  version "10.11.1"
+  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-10.11.1.tgz#209db7bb5915aa172a87510b6de2ca01cadbd2a7"
+  integrity sha512-IGa5FXd003Ug1qAZmyE8wF3sJ81xGLSqTqtQ6jaVfkeZ4i5kS2mwQF61yhVqojRnenVew5PldLyRgvdl4YYuSw==
+
+"@vueuse/metadata@14.3.0":
+  version "14.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-14.3.0.tgz#d782b00732d1568503027965c0be92bc1699d76c"
+  integrity sha512-BwxmbAzwAVF50+MW57GXOUEV61nFBGnlBvrTqj49PqWJu3uw7hdu72ztXeZ33RdZtDY6kO+bfCAE1PCn88Tktw==
+
+"@vueuse/shared@10.11.1":
+  version "10.11.1"
+  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-10.11.1.tgz#62b84e3118ae6e1f3ff38f4fbe71b0c5d0f10938"
+  integrity sha512-LHpC8711VFZlDaYUXEBbFBCQ7GS3dVU9mjOhhMhXP6txTV4EhYQg/KGnQuvt/sPAtoUKq7VVUnL6mVtFoL42sA==
+  dependencies:
+    vue-demi ">=0.14.8"
+
+"@vueuse/shared@14.3.0":
+  version "14.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-14.3.0.tgz#a3e7e6391f9ed7f363cbb28c32c4a278efaacbd0"
+  integrity sha512-bZpge9eSXwa4ToSiqJ7j6KRwhAsneMFoSz3LMWKQDkqimm3D/tbFlrklrs/IOqC8tEcYmXQZJ6N0UrjhBirVCg==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"
@@ -1466,6 +1534,20 @@ flatted@^3.2.9, flatted@^3.4.2:
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.4.2.tgz#f5c23c107f0f37de8dbdf24f13722b3b98d52726"
   integrity sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA==
+
+focus-trap@^7.5.4:
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/focus-trap/-/focus-trap-7.8.0.tgz#b1d9463fa42b93ad7a5223d750493a6c09b672a8"
+  integrity sha512-/yNdlIkpWbM0ptxno3ONTuf+2g318kh2ez3KSeZN5dZ8YC6AAmgeWz+GasYYiBJPFaYcSAPeu4GfhUaChzIJXA==
+  dependencies:
+    tabbable "^6.4.0"
+
+focus-trap@^8.0:
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/focus-trap/-/focus-trap-8.2.1.tgz#ab192bbaf6f767f869d47e2e6f804e336ea5874a"
+  integrity sha512-6CxwrrFRquH7pDXb1mWxudkU9LSfYBMRZutpgddb2o6iwCk7cIRrBhyY3c8SGKcmIKdeMTrGSNg4Bedh2RSF/w==
+  dependencies:
+    tabbable "^6.4.0"
 
 follow-redirects@^1.16.0:
   version "1.16.0"
@@ -2618,15 +2700,15 @@ supports-color@^8.1.1:
   dependencies:
     has-flag "^4.0.0"
 
-sweet-modal-vue@^2.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/sweet-modal-vue/-/sweet-modal-vue-2.0.0.tgz#205ee28b7e5c8579e44303544b500ef7f4fcab21"
-  integrity sha512-1/F7G3I3dWU5O2RGnHEirf6zw2AeR/CdfxiIlcEjxeyxGqgPtQmhjHoHQbem6bZTg1rFS5asVCOXMrTOyZgeJg==
-
 systeminformation@^5.31.1:
   version "5.31.6"
   resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.31.6.tgz#2da4979a7262974fd068a3a306ded30aed6127c0"
   integrity sha512-Uv2b2uGGM6ns+26czgW2cYRabYdnswM0ddSOOlryHOaelzsmDSet1iM/NT7VOYxW8x/BW+HkY+b1Ve2pLTSGSA==
+
+tabbable@^6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-6.4.0.tgz#36eb7a06d80b3924a22095daf45740dea3bf5581"
+  integrity sha512-05PUHKSNE8ou2dwIxTngl4EzcnsCDZGJ/iCLtDflR/SHB/ny14rXc+qU5P4mG9JkusiV7EivzY9Mhm55AzAvCg==
 
 tachyons@^4.12:
   version "4.12.0"
@@ -2790,6 +2872,11 @@ vue-cropperjs@^4.2.0:
   dependencies:
     cropperjs "^1.5.6"
 
+vue-demi@>=0.14.8:
+  version "0.14.10"
+  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.10.tgz#afc78de3d6f9e11bf78c55e8510ee12814522f04"
+  integrity sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==
+
 vue-demi@^0.13.11:
   version "0.13.11"
   resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.13.11.tgz#7d90369bdae8974d87b1973564ad390182410d99"
@@ -2813,6 +2900,15 @@ vue-eslint-parser@^10:
     espree "^10.3.0 || ^11.0.0"
     esquery "^1.6.0"
     semver "^7.6.3"
+
+vue-final-modal@^4.5:
+  version "4.5.5"
+  resolved "https://registry.yarnpkg.com/vue-final-modal/-/vue-final-modal-4.5.5.tgz#ffe443133009a8bb3100c0c131d413a1b8ca196b"
+  integrity sha512-A6xgsXqE6eLw9e6Tq/W6pxDBmimPuSuvq20WL9TOZpZy7itPdGeNn8e1P15PCGqP2yHM3q2gJIchPY9ZJd8YsA==
+  dependencies:
+    "@vueuse/core" "^10.5.0"
+    "@vueuse/integrations" "^10.5.0"
+    focus-trap "^7.5.4"
 
 vue-good-table@^2.21:
   version "2.21.11"

@@ -70,7 +70,7 @@
     </div>
 
     <!-- Create Gender type -->
-    <sweet-modal ref="createModal" overlay-theme="dark" :title="$t('settings.personalization_genders_modal_add')">
+    <monica-modal v-model="createModalOpen" :title="$t('settings.personalization_genders_modal_add')">
       <form @submit.prevent="store()">
         <div class="form-group">
           <div class="form-group">
@@ -108,18 +108,18 @@
           </div>
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeModal()">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="store()">
           {{ $t('app.save') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Edit gender type -->
-    <sweet-modal ref="updateModal" overlay-theme="dark" :title="$t('settings.personalization_genders_modal_edit')">
+    <monica-modal v-model="showUpdateModal" :title="$t('settings.personalization_genders_modal_edit')">
       <form @submit.prevent="update(updatedGender)">
         <div class="form-group">
           <div class="form-group">
@@ -157,18 +157,18 @@
           </div>
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeUpdateModal()">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="update(updatedGender)">
           {{ $t('app.update') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Delete Gender type -->
-    <sweet-modal ref="deleteModal" overlay-theme="dark" :title="$t('settings.personalization_genders_modal_delete')">
+    <monica-modal v-model="showDeleteModal" :title="$t('settings.personalization_genders_modal_delete')">
       <form>
         <div v-if="errorMessage !== ''" class="form-error-message mb3">
           <div class="pa2">
@@ -199,7 +199,7 @@
           </div>
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteModal()">
           {{ $t('app.cancel') }}
         </a>
@@ -213,11 +213,11 @@
         <a v-else class="btn btn-primary" href="" @click.prevent="trashAndReplace()">
           {{ $t('app.delete') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Change default Gender -->
-    <sweet-modal ref="defaultGenderModal" overlay-theme="dark" :title="$t('settings.personalization_genders_modal_default')">
+    <monica-modal v-model="defaultGenderModalOpen" :title="$t('settings.personalization_genders_modal_default')">
       <form>
         <div class="form-group">
           <div class="form-group">
@@ -231,25 +231,22 @@
           </div>
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeDefaultGenderModal()">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="updateDefaultGender()">
           {{ $t('app.save') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
-
 export default {
 
   components: {
-    SweetModal
   },
 
   data() {
@@ -289,6 +286,10 @@ export default {
       },
 
       defaultGenderId: null,
+      createModalOpen: false,
+      showUpdateModal: false,
+      showDeleteModal: false,
+      defaultGenderModalOpen: false,
     };
   },
 
@@ -342,28 +343,28 @@ export default {
     },
 
     closeModal() {
-      this.$refs.createModal.close();
+      this.createModalOpen = false;
     },
 
     closeUpdateModal() {
-      this.$refs.updateModal.close();
+      this.showUpdateModal = false;
     },
 
     closeDeleteModal() {
-      this.$refs.deleteModal.close();
+      this.showDeleteModal = false;
     },
 
     closeDefaultGenderModal() {
-      this.$refs.defaultGenderModal.close();
+      this.defaultGenderModalOpen = false;
     },
 
     showCreateModal() {
-      this.$refs.createModal.open();
+      this.createModalOpen = true;
     },
 
     showDefaultGenderModal() {
       this.defaultGenderId = this.defaultGenderType.id;
-      this.$refs.defaultGenderModal.open();
+      this.defaultGenderModalOpen = true;
     },
 
     store() {
@@ -383,7 +384,7 @@ export default {
       this.updateForm.isDefault = gender.isDefault;
       this.updatedGender = gender;
 
-      this.$refs.updateModal.open();
+      this.showUpdateModal = true;
     },
 
     update() {
@@ -405,7 +406,7 @@ export default {
       this.deleteForm.isDefault = gender.isDefault;
       this.deleteForm.numberOfContacts = gender.numberOfContacts;
 
-      this.$refs.deleteModal.open();
+      this.showDeleteModal = true;
     },
 
     trash() {

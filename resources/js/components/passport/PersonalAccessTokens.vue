@@ -62,8 +62,8 @@
     </div>
 
     <!-- Create Token Modal -->
-    <sweet-modal ref="modalCreateToken" overlay-theme="dark" tabindex="-1" role="dialog"
-                 :title="$t('settings.api_token_create')" @open="_focusInput"
+    <monica-modal v-model="showModalCreateToken"
+                  :title="$t('settings.api_token_create')" @open="_focusInput"
     >
       <!-- Form Errors -->
       <errors :errors="form.errors" />
@@ -107,18 +107,18 @@
         </div>
       </form>
       <!-- Modal Actions -->
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
           {{ $t('app.close') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="store">
           {{ $t('app.create') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Access Token Modal -->
-    <sweet-modal ref="modalAccessToken" overlay-theme="dark" tabindex="-1" role="dialog" :title="$t('settings.api_token_title')">
+    <monica-modal v-model="showModalAccessToken" :title="$t('settings.api_token_title')">
       <notifications group="passport-personal-access-token" position="middle" :duration="5000" width="400" />
       <p>{{ $t('settings.api_token_help') }}</p>
 
@@ -127,28 +127,26 @@
       </div>
 
       <!-- Modal Actions -->
-      <div slot="button">
+      <template #button>
         <a class="btn btn-primary" :title="$t('settings.dav_copy_help')" href="" @click.prevent="copyIntoClipboard(accessToken)">
           {{ $t('app.copy') }}
         </a>
         <a class="btn" href="" @click.prevent="closeModal">
           {{ $t('app.close') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
 import Errors from '../partials/Error.vue';
-import { SweetModal } from 'sweet-modal-vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 
 export default {
 
   components: {
-    SweetModal,
     Errors,
   },
 
@@ -167,6 +165,8 @@ export default {
         scopes: [],
         errors: []
       },
+      showModalCreateToken: false,
+      showModalAccessToken: false,
     };
   },
 
@@ -224,8 +224,8 @@ export default {
     closeModal() {
       this.$refs.form.reset();
       this.v$.$reset();
-      this.$refs.modalCreateToken.close();
-      this.$refs.modalAccessToken.close();
+      this.showModalCreateToken = false;
+      this.showModalAccessToken = false;
     },
 
     /**
@@ -242,7 +242,7 @@ export default {
      * Show the form for creating new tokens.
      */
     showCreateTokenForm() {
-      this.$refs.modalCreateToken.open();
+      this.showModalCreateToken = true;
     },
 
     /**
@@ -300,11 +300,11 @@ export default {
      * Show the given access token to the user.
      */
     showAccessToken(accessToken) {
-      this.$refs.modalCreateToken.close();
+      this.showModalCreateToken = false;
 
       this.accessToken = accessToken;
 
-      this.$refs.modalAccessToken.open();
+      this.showModalAccessToken = true;
     },
 
     /**

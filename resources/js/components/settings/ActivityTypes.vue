@@ -96,7 +96,7 @@
     </div>
 
     <!-- Create Activity Type Category -->
-    <sweet-modal ref="createCategoryModal" overlay-theme="dark" :title="$t('settings.personalization_activity_type_category_modal_add')">
+    <monica-modal v-model="createCategoryModalOpen" :title="$t('settings.personalization_activity_type_category_modal_add')">
       <form @submit.prevent="storeCategory()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -109,18 +109,18 @@
           />
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeCategoryModal()">
           {{ $t('app.cancel') }}
         </a>
         <a v-cy-name="'add-activity-type-category-save-button'" class="btn btn-primary" href="" @click.prevent="storeCategory()">
           {{ $t('app.save') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Update Activity Type Category -->
-    <sweet-modal ref="updateCategoryModal" overlay-theme="dark" :title="$t('settings.personalization_activity_type_category_modal_edit')">
+    <monica-modal v-model="showUpdateCategoryModal" :title="$t('settings.personalization_activity_type_category_modal_edit')">
       <form @submit.prevent="updateCategory()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -133,18 +133,18 @@
           />
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeUpdateCategoryModal()">
           {{ $t('app.cancel') }}
         </a>
         <a v-cy-name="'update-activity-type-category-button'" class="btn btn-primary" href="" @click.prevent="updateCategory()">
           {{ $t('app.update') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Create Activity Type -->
-    <sweet-modal ref="createTypeModal" overlay-theme="dark" :title="$t('settings.personalization_activity_type_modal_add')">
+    <monica-modal v-model="createTypeModalOpen" :title="$t('settings.personalization_activity_type_modal_add')">
       <form @submit.prevent="storeType()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -157,18 +157,18 @@
           />
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeCreateTypeModal()">
           {{ $t('app.cancel') }}
         </a>
         <a v-cy-name="'add-type-button'" class="btn btn-primary" href="" @click.prevent="storeType()">
           {{ $t('app.save') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Update Activity Type -->
-    <sweet-modal ref="updateTypeModal" overlay-theme="dark" :title="$t('settings.personalization_activity_type_modal_edit')">
+    <monica-modal v-model="showUpdateTypeModal" :title="$t('settings.personalization_activity_type_modal_edit')">
       <form @submit.prevent="updateType()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -181,18 +181,18 @@
           />
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeUpdateTypeModal()">
           {{ $t('app.cancel') }}
         </a>
         <a v-cy-name="'update-type-button'" class="btn btn-primary" href="" @click.prevent="updateType()">
           {{ $t('app.update') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Delete Activiy type category -->
-    <sweet-modal ref="deleteCategoryModal" overlay-theme="dark" :title="$t('settings.personalization_activity_type_category_modal_delete')">
+    <monica-modal v-model="showDeleteCategoryModal" :title="$t('settings.personalization_activity_type_category_modal_delete')">
       <form>
         <div v-if="errorMessage !== ''" class="form-error-message mb3">
           <div class="pa2">
@@ -207,18 +207,18 @@
           </p>
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteCategoryModal()">
           {{ $t('app.cancel') }}
         </a>
         <a v-cy-name="'delete-category-button'" class="btn btn-primary" href="" @click.prevent="destroyCategory()">
           {{ $t('app.delete') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Delete Activiy type  -->
-    <sweet-modal ref="deleteTypeModal" overlay-theme="dark" :title="$t('settings.personalization_activity_type_modal_delete')">
+    <monica-modal v-model="showDeleteTypeModal" :title="$t('settings.personalization_activity_type_modal_delete')">
       <form>
         <div v-if="errorMessage !== ''" class="form-error-message mb3">
           <div class="pa2">
@@ -233,25 +233,22 @@
           </p>
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteTypeModal()">
           {{ $t('app.cancel') }}
         </a>
         <a v-cy-name="'delete-type-button'" class="btn btn-primary" href="" @click.prevent="destroyType()">
           {{ $t('app.delete') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
-
 export default {
 
   components: {
-    SweetModal
   },
 
   props: {
@@ -305,6 +302,12 @@ export default {
         id: '',
         errors: []
       },
+      createCategoryModalOpen: false,
+      showUpdateCategoryModal: false,
+      createTypeModalOpen: false,
+      showUpdateTypeModal: false,
+      showDeleteCategoryModal: false,
+      showDeleteTypeModal: false,
     };
   },
 
@@ -331,21 +334,21 @@ export default {
     },
 
     closeCategoryModal() {
-      this.$refs.createCategoryModal.close();
+      this.createCategoryModalOpen = false;
     },
 
     closeDeleteCategoryModal() {
-      this.$refs.deleteCategoryModal.close();
+      this.showDeleteCategoryModal = false;
     },
 
     showCreateCategoryModal() {
-      this.$refs.createCategoryModal.open();
+      this.createCategoryModalOpen = true;
     },
 
     storeCategory() {
       axios.post('settings/personalization/activitytypecategories', this.createCategoryForm)
         .then(response => {
-          this.$refs.createCategoryModal.close();
+          this.createCategoryModalOpen = false;
           this.activityTypeCategories.push(response.data.data);
           this.createCategoryForm.name = '';
 
@@ -358,19 +361,19 @@ export default {
       this.updateCategoryForm.name = category.name;
       this.updatedCategory = category;
 
-      this.$refs.updateCategoryModal.open();
+      this.showUpdateCategoryModal = true;
     },
 
     showDeleteCategory(category) {
       this.destroyCategoryForm.id = category.id;
 
-      this.$refs.deleteCategoryModal.open();
+      this.showDeleteCategoryModal = true;
     },
 
     showDeleteType(type) {
       this.destroyTypeForm.id = type.id;
 
-      this.$refs.deleteTypeModal.open();
+      this.showDeleteTypeModal = true;
     },
 
     showEditType(type, categoryId) {
@@ -378,29 +381,29 @@ export default {
       this.updateTypeForm.name = type.name;
       this.updateTypeForm.activity_type_category_id = categoryId;
 
-      this.$refs.updateTypeModal.open();
+      this.showUpdateTypeModal = true;
     },
 
     closeUpdateCategoryModal() {
-      this.$refs.updateCategoryModal.close();
+      this.showUpdateCategoryModal = false;
     },
 
     closeCreateTypeModal() {
-      this.$refs.createTypeModal.close();
+      this.createTypeModalOpen = false;
     },
 
     closeUpdateTypeModal() {
-      this.$refs.updateTypeModal.close();
+      this.showUpdateTypeModal = false;
     },
 
     closeDeleteTypeModal() {
-      this.$refs.deleteTypeModal.close();
+      this.showDeleteTypeModal = false;
     },
 
     updateCategory() {
       axios.put('settings/personalization/activitytypecategories/' + this.updateCategoryForm.id, this.updateCategoryForm)
         .then(response => {
-          this.$refs.updateCategoryModal.close();
+          this.showUpdateCategoryModal = false;
           this.updatedCategory.name = this.updateCategoryForm.name;
           this.updateCategoryForm.name = '';
 
@@ -409,14 +412,14 @@ export default {
     },
 
     showCreateTypeModal(category) {
-      this.$refs.createTypeModal.open();
+      this.createTypeModalOpen = true;
       this.createTypeForm.activity_type_category_id = category.id;
     },
 
     storeType() {
       axios.post('settings/personalization/activitytypes', this.createTypeForm)
         .then(response => {
-          this.$refs.createTypeModal.close();
+          this.createTypeModalOpen = false;
           this.activityTypes.push(response.data);
           this.createTypeForm.name = '';
           this.getActivityTypeCategories();
@@ -428,7 +431,7 @@ export default {
     destroyCategory() {
       axios.delete('settings/personalization/activitytypecategories/' + this.destroyCategoryForm.id)
         .then(response => {
-          this.$refs.deleteCategoryModal.close();
+          this.showDeleteCategoryModal = false;
           this.destroyCategoryForm.id = '';
           this.getActivityTypeCategories();
 
@@ -442,7 +445,7 @@ export default {
     updateType() {
       axios.put('settings/personalization/activitytypes/' + this.updateTypeForm.id, this.updateTypeForm)
         .then(response => {
-          this.$refs.updateTypeModal.close();
+          this.showUpdateTypeModal = false;
           this.updatedCategory.name = this.updateTypeForm.name;
           this.updateTypeForm.name = '';
           this.getActivityTypeCategories();
@@ -454,7 +457,7 @@ export default {
     destroyType() {
       axios.delete('settings/personalization/activitytypes/' + this.destroyTypeForm.id)
         .then(response => {
-          this.$refs.deleteTypeModal.close();
+          this.showDeleteTypeModal = false;
           this.destroyTypeForm.id = '';
           this.getActivityTypeCategories();
 

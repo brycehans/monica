@@ -82,7 +82,7 @@
     </div>
 
     <!-- Create Life Event Type -->
-    <sweet-modal ref="createTypeModal" overlay-theme="dark" :title="$t('settings.personalization_life_event_type_modal_add')">
+    <monica-modal v-model="showCreateTypeModal" :title="$t('settings.personalization_life_event_type_modal_add')">
       <form @submit.prevent="storeType()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -95,18 +95,18 @@
           />
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeCreateTypeModal()">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="storeType()">
           {{ $t('app.save') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Update Life Event Type -->
-    <sweet-modal ref="updateTypeModal" overlay-theme="dark" :title="$t('settings.personalization_life_event_type_modal_edit')">
+    <monica-modal v-model="showUpdateTypeModal" :title="$t('settings.personalization_life_event_type_modal_edit')">
       <form @submit.prevent="updateType()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -119,18 +119,18 @@
           />
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeUpdateTypeModal()">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="updateType()">
           {{ $t('app.update') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Delete Life Event type  -->
-    <sweet-modal ref="deleteTypeModal" overlay-theme="dark" :title="$t('settings.personalization_life_event_type_modal_delete')">
+    <monica-modal v-model="showDeleteTypeModal" :title="$t('settings.personalization_life_event_type_modal_delete')">
       <form>
         <div v-if="errorMessage !== ''" class="form-error-message mb3">
           <div class="pa2">
@@ -145,25 +145,22 @@
           </p>
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteTypeModal()">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="destroyType()">
           {{ $t('app.delete') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
-
 export default {
 
   components: {
-    SweetModal
   },
 
   props: {
@@ -195,6 +192,9 @@ export default {
         id: '',
         errors: []
       },
+      showCreateTypeModal: false,
+      showUpdateTypeModal: false,
+      showDeleteTypeModal: false,
     };
   },
 
@@ -221,14 +221,14 @@ export default {
     },
 
     showCreateType(category) {
-      this.$refs.createTypeModal.open();
+      this.showCreateTypeModal = true;
       this.createTypeForm.life_event_category_id = category.id;
     },
 
     showDeleteType(type) {
       this.destroyTypeForm.id = type.id;
 
-      this.$refs.deleteTypeModal.open();
+      this.showDeleteTypeModal = true;
     },
 
     showEditType(type, categoryId) {
@@ -236,25 +236,25 @@ export default {
       this.updateTypeForm.name = type.name ? type.name : this.$t('people.life_event_sentence_' + type.default_life_event_type_key);
       this.updateTypeForm.life_event_category_id = categoryId;
 
-      this.$refs.updateTypeModal.open();
+      this.showUpdateTypeModal = true;
     },
 
     closeCreateTypeModal() {
-      this.$refs.createTypeModal.close();
+      this.showCreateTypeModal = false;
     },
 
     closeUpdateTypeModal() {
-      this.$refs.updateTypeModal.close();
+      this.showUpdateTypeModal = false;
     },
 
     closeDeleteTypeModal() {
-      this.$refs.deleteTypeModal.close();
+      this.showDeleteTypeModal = false;
     },
 
     storeType() {
       axios.post('settings/personalization/lifeeventtypes', this.createTypeForm)
         .then(response => {
-          this.$refs.createTypeModal.close();
+          this.showCreateTypeModal = false;
           this.createTypeForm.name = '';
           this.getLifeEventCategories();
 
@@ -265,7 +265,7 @@ export default {
     updateType() {
       axios.put('settings/personalization/lifeeventtypes/' + this.updateTypeForm.id, this.updateTypeForm)
         .then(response => {
-          this.$refs.updateTypeModal.close();
+          this.showUpdateTypeModal = false;
           this.updateTypeForm.name = '';
           this.getLifeEventCategories();
 
@@ -276,7 +276,7 @@ export default {
     destroyType() {
       axios.delete('settings/personalization/lifeeventtypes/' + this.destroyTypeForm.id)
         .then(response => {
-          this.$refs.deleteTypeModal.close();
+          this.showDeleteTypeModal = false;
           this.destroyTypeForm.id = '';
           this.getLifeEventCategories();
 

@@ -61,14 +61,13 @@
     </div>
 
     <!-- Delete Note modal -->
-    <sweet-modal ref="modalDeleteNote" v-cy-name="'modal-delete-note'"
-                 overlay-theme="dark"
-                 :title="$t('people.notes_delete_title')"
+    <monica-modal v-model="showDeleteNoteModal" v-cy-name="'modal-delete-note'"
+                  :title="$t('people.notes_delete_title')"
     >
       <p>
         {{ $t('people.notes_delete_confirmation') }}
       </p>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
           {{ $t('app.cancel') }}
         </a>
@@ -77,19 +76,13 @@
         >
           {{ $t('app.delete') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
-
 export default {
-
-  components: {
-    SweetModal,
-  },
 
   props: {
     hash: {
@@ -114,6 +107,8 @@ export default {
       deleteNote: {
         id: 0,
       },
+
+      showDeleteNoteModal: false,
     };
   },
 
@@ -198,11 +193,11 @@ export default {
 
     showDelete(note) {
       this.deleteNote.id = note.id;
-      this.$refs.modalDeleteNote.open();
+      this.showDeleteNoteModal = true;
     },
 
     closeModal() {
-      this.$refs.modalDeleteNote.close();
+      this.showDeleteNoteModal = false;
     },
 
     trash(note) {

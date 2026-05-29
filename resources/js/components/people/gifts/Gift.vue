@@ -61,21 +61,18 @@
     </div>
 
     <!-- MODAL ZOOM PHOTO -->
-    <sweet-modal ref="modalPhoto" tabindex="-1" role="dialog" :enable-mobile-fullscreen="true" width="33%">
+    <monica-modal v-model="showModalPhoto">
       <img :src="url" :alt="$t('people.photo_title')" class="mw-90 h-auto mb3" />
-    </sweet-modal>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-
-import { SweetModal } from 'sweet-modal-vue';
 import moment from 'moment-timezone';
 
 export default {
 
   components: {
-    SweetModal,
   },
 
   props: {
@@ -90,6 +87,7 @@ export default {
       comment: false,
       showModal: false,
       url: '',
+      showModalPhoto: false,
     };
   },
 
@@ -103,7 +101,7 @@ export default {
 
     modalPhoto(photo) {
       this.url = photo.link;
-      this.$refs.modalPhoto.open();
+      this.showModalPhoto = true;
     },
 
     formatDate(dateAsString) {

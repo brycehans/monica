@@ -14,6 +14,8 @@ import './bootstrap';
  */
 
 import { createApp } from 'vue';
+import { createVfm } from 'vue-final-modal';
+import 'vue-final-modal/style.css';
 
 // Custom components — Passport
 import PassportClients from './components/passport/Clients.vue';
@@ -28,6 +30,7 @@ import ContactMultiSearch from './components/people/ContactMultiSearch.vue';
 // Partials
 import Avatar from './components/partials/Avatar.vue';
 import Confirm from './components/partials/Confirm.vue';
+import MonicaModal from './components/partials/MonicaModal.vue';
 
 // Form elements
 import FormInput from './components/partials/form/Input.vue';
@@ -113,6 +116,7 @@ common.loadLanguage(window.Laravel.locale, true).then((i18n) => {
 
   app.use(i18n);
   app.use(testingDirectives);
+  app.use(createVfm());
 
   // Custom components
   app.component('PassportClients', PassportClients);
@@ -127,6 +131,7 @@ common.loadLanguage(window.Laravel.locale, true).then((i18n) => {
   // Partials
   app.component('Avatar', Avatar);
   app.component('Confirm', Confirm);
+  app.component('MonicaModal', MonicaModal);
 
   // Form elements
   app.component('FormInput', FormInput);

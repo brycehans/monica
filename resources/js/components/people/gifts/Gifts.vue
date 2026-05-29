@@ -92,27 +92,25 @@
       </div>
     </div>
 
-    <sweet-modal ref="modal" overlay-theme="dark" :title="$t('people.gifts_delete_title')">
+    <monica-modal v-model="showModal" :title="$t('people.gifts_delete_title')">
       <form>
         <div class="mb4">
           {{ $t('people.gifts_delete_confirmation') }}
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteModal()">
           {{ $t('app.cancel') }}
         </a>
         <a v-cy-name="'modal-delete-gift-button-' + giftToTrash.id" class="btn btn-primary" href="" @click.prevent="trash(giftToTrash)">
           {{ $t('app.delete') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-
-import { SweetModal } from 'sweet-modal-vue';
 import Gift from './Gift.vue';
 import CreateGift from './CreateGift.vue';
 import moment from 'moment';
@@ -122,7 +120,6 @@ export default {
   components: {
     Gift,
     CreateGift,
-    SweetModal,
   },
 
   props: {
@@ -154,6 +151,7 @@ export default {
       activeTab: '',
       giftToTrash: '',
       displayCreateGift: false,
+      showModal: false,
     };
   },
 
@@ -218,7 +216,7 @@ export default {
     },
 
     showDeleteModal(gift) {
-      this.$refs.modal.open();
+      this.showModal = true;
       this.giftToTrash = gift;
     },
 
@@ -250,7 +248,7 @@ export default {
     },
 
     closeDeleteModal() {
-      this.$refs.modal.close();
+      this.showModal = false;
     }
   }
 };
