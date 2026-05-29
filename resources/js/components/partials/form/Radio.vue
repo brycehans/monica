@@ -1,23 +1,12 @@
 <script>
 import input from './PInput';
 
-const radio = {
-  name: 'radio',
-
+// See the comment in Checkbox.vue for why we spread instead of selectively
+// re-binding each option key.
+export default {
+  ...input,
+  name: 'Radio',
   input_type: 'radio',
   input_iclass: 'p-round p-thick',
-
-  components: input.components,
-  model: input.model,
-  props: input.props,
-  data: input.data,
-  computed: input.computed,
-  watch: input.watch,
-  mounted: input.mounted,
-  methods: input.methods,
-
-  render: input.render,
 };
-
-export default radio;
 </script>

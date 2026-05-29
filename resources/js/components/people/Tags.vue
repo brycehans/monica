@@ -90,6 +90,8 @@ import moment from 'moment';
 
 export default {
 
+  name: 'Tags',
+
   props: {
     hash: {
       type: String,
@@ -120,7 +122,7 @@ export default {
     document.addEventListener('click', this.handleClickOutside);
   },
 
-  destroyed() {
+  unmounted() {
     document.removeEventListener('click', this.handleClickOutside);
   },
 

@@ -4,10 +4,14 @@
  */
 
 function makeTestingDirective(attrName) {
-  return function(el, binding) {
+  const apply = (el, binding) => {
     if (window.Laravel.env != 'production') {
       el.setAttribute(attrName, String(binding.value));
     }
+  };
+  return {
+    mounted: apply,
+    updated: apply,
   };
 }
 
