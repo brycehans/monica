@@ -19,6 +19,7 @@
  */
 
 import { test, expect, Page, ConsoleMessage } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
 
 const ADMIN_EMAIL = process.env.SMOKE_ADMIN_EMAIL ?? 'admin@admin.com';
 const ADMIN_PASSWORD = process.env.SMOKE_ADMIN_PASSWORD ?? 'admin0';
@@ -59,6 +60,59 @@ function assertNoUnknownConsoleErrors(unknown: UnknownConsole[], pageLabel: stri
   if (unknown.length === 0) return;
   const lines = unknown.map((e) => `  [${e.type}] ${e.text}${e.url ? ` @ ${e.url}` : ''}`).join('\n');
   throw new Error(`Unexpected console output on ${pageLabel}:\n${lines}`);
+}
+
+// ---------------------------------------------------------------------------
+// Premium-access helper.
+//
+// The dev compose stack pins REQUIRES_SUBSCRIPTION=true so the Stripe upgrade
+// smoke (subscription-flow.spec.ts) can render the blank/upgrade views. That
+// flag makes AccountHelper::hasLimitations return true on the seeded admin
+// account, which short-circuits limited-mode-gated features (StayInTouch,
+// FormToggle in Modules, etc.) before they can be exercised end-to-end.
+//
+// AccountHelper::hasLimitations checks `has_access_to_paid_version_for_free`
+// BEFORE the env-var-driven `requires_subscription`, so flipping the per-
+// account flag bypasses limited mode without touching the env (which would
+// break the Stripe smoke). The `account:setpremium {id} [--revoke]` artisan
+// command toggles the flag; we shell out to it via the docker exec entrypoint
+// the cypress harness already uses (tests/cypress/support/helpers/app.js).
+//
+// withPremiumAccount(fn) grants premium before fn runs and revokes it in a
+// finally — symmetric so a failed test doesn't leak premium state into the
+// next run. The helper is a no-op (with a console.warn) when SMOKE_BASE_URL
+// points outside the local compose stack; tests that depend on premium will
+// then fail naturally instead of silently mutating the wrong account.
+// ---------------------------------------------------------------------------
+
+const SMOKE_DOCKER_CONTAINER = process.env.SMOKE_DOCKER_CONTAINER ?? 'monica-app-1';
+const SMOKE_ACCOUNT_ID = process.env.SMOKE_ACCOUNT_ID ?? '1';
+const SMOKE_BASE_URL = process.env.SMOKE_BASE_URL ?? 'http://localhost:8082';
+const SMOKE_PREMIUM_ENABLED = /^https?:\/\/localhost(:\d+)?$/i.test(SMOKE_BASE_URL);
+
+function setPremiumAccess(grant: boolean): void {
+  if (!SMOKE_PREMIUM_ENABLED) {
+    console.warn(
+      `[smoke] SMOKE_BASE_URL=${SMOKE_BASE_URL} is not the local compose stack; ` +
+      `skipping account:setpremium ${grant ? '' : '--revoke'} (test may fail on limited-mode gates).`,
+    );
+    return;
+  }
+  const args = [
+    'exec', '--user', 'www-data', SMOKE_DOCKER_CONTAINER,
+    'php', 'artisan', 'account:setpremium', SMOKE_ACCOUNT_ID,
+  ];
+  if (!grant) args.push('--revoke');
+  execFileSync('docker', args, { stdio: 'pipe' });
+}
+
+async function withPremiumAccount<T>(fn: () => Promise<T>): Promise<T> {
+  setPremiumAccess(true);
+  try {
+    return await fn();
+  } finally {
+    setPremiumAccess(false);
+  }
 }
 
 async function login(page: Page): Promise<void> {
@@ -1154,5 +1208,362 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     }
 
     assertNoUnknownConsoleErrors(unknown, '/dashboard (debts tab formatDate)');
+  });
+
+  // -------------------------------------------------------------------------
+  // pr-t3: Phase 2 cutover de-risk guards (vue 3 migration plan, docs/plans/
+  // 2026-05-27-vue3-migration-design.md). Each test below locks in a user-
+  // observable behaviour that the single-PR Phase 2 cutover is about to
+  // refactor:
+  //
+  //   * vue-js-toggle-button     → native checkbox + css
+  //   * vue-directive-tooltip    → floating-vue
+  //   * vue-notification (error) → @kyvg/vue3-notification
+  //   * $tc (plural form)        → $t(key, named, count) — vue-i18n@11 drops
+  //                                tc from legacy mode
+  //   * vue-cropperjs@4          → vue-cropperjs@5
+  //   * @hokify/vuejs-datepicker → @vuepic/vue-datepicker
+  //
+  // The existing settings/dav and FormCheckbox tests above already cover
+  // vue-clipboard2 + pretty-checkbox-vue. Sweet-modal-vue is covered by the
+  // gender + oauth-client modal tests, vuelidate by the PAT empty-name test,
+  // vue-good-table by the ContactList paginate+search test, and vue-i18n
+  // generally by the locale-switch + fr-moment tests. The cases below close
+  // the remaining gaps.
+  // -------------------------------------------------------------------------
+
+  test('contact detail stay-in-touch panel: full flow guards toggle, $tc plural, tooltip (pr-t3 three-in-one)', async ({ page }) => {
+    // Multi-guard exercising the StayInTouch save flow end-to-end with
+    // premium access granted on the seeded admin account (see
+    // withPremiumAccount above for why). Three Phase 2 swaps in a single
+    // user flow:
+    //
+    //   1. vue-js-toggle-button → native checkbox + css (StayInTouch.vue,
+    //      one of two sites). Typing a positive frequency triggers
+    //      onInput($event) which sets stateInput=value>0; the toggle's
+    //      :value prop change syncs the hidden <input type="checkbox">
+    //      checked state. Post-cutover the same data-binding contract
+    //      must hold.
+    //
+    //   2. $tc plural rewrite (v11 drops `tc` from legacy mode — the
+    //      seven $tc call sites must be rewritten to $t(key, named,
+    //      count)). After a successful save with frequency=3, the
+    //      outer label renders "Stay in touch every 3 days" — the
+    //      plural form of `people.stay_in_touch_frequency`. The
+    //      singular fallback would read "Stay in touch every day".
+    //
+    //   3. vue-directive-tooltip → floating-vue (one of eight sites).
+    //      The outer label binds v-tooltip.bottom to the
+    //      `people.stay_in_touch_next_date` string; hovering it
+    //      surfaces the tooltip body in the DOM. We match on the source
+    //      string itself ("Next due:") so the assertion survives the
+    //      wrapper-class swap.
+    //
+    // Vuelidate coverage stays with the PAT test at line ~417 — saving
+    // StayInTouch with frequency=0 does NOT trip vuelidate's `required`
+    // (the validator treats numeric 0 as a valid value via
+    // String(0).length===1), so this site can't surface a second
+    // validation-error path cleanly.
+    //
+    // Restoration: the test ends by toggling stay-in-touch back off
+    // (state=false → server zeroes the persisted frequency) so repeated
+    // smoke runs start clean. Premium is revoked in withPremiumAccount's
+    // finally regardless of whether the body throws.
+    await withPremiumAccount(async () => {
+      const { unknown } = attachConsoleCapture(page);
+
+      await login(page);
+      await page.goto('/people');
+      await page.locator('a[href*="/people/h:"]').first().click();
+      await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+
+      // --- 1. Open the modal ---
+      // The contact starts inactive (dev seed default; limited-mode could
+      // not have changed it). The "Stay in touch" link calls showUpdate()
+      // which opens the modal via $refs.updateModal.open().
+      await page.getByRole('link', { name: 'Stay in touch', exact: true }).first().click();
+
+      const modal = page.locator('.sweet-modal-overlay.is-visible').filter({ hasText: 'Stay in touch' });
+      await expect(modal).toBeVisible();
+
+      const toggleCheckbox = modal.locator('input[type="checkbox"]').first();
+      const frequencyInput = modal.locator('input[name="frequency"]');
+      const saveLink = modal.getByRole('link', { name: 'Save', exact: true });
+
+      // --- 2. Toggle data-binding guard ---
+      // Initial state: toggle off, frequency=0.
+      await expect(toggleCheckbox).not.toBeChecked();
+      await expect(frequencyInput).toHaveValue('0');
+
+      // Typing positive frequency flips stateInput → toggle reflects checked.
+      await frequencyInput.fill('3');
+      await expect(toggleCheckbox).toBeChecked();
+
+      // Reset to 0 → state flips off.
+      await frequencyInput.fill('0');
+      await expect(toggleCheckbox).not.toBeChecked();
+
+      // --- 3. Successful save with plural frequency ---
+      await frequencyInput.fill('3');
+      await expect(toggleCheckbox).toBeChecked();
+      await saveLink.click();
+      // The success path closes the modal, sets isActive=true, and
+      // renders the outer label.
+      await expect(modal).toBeHidden();
+
+      // --- 4. $tc plural guard ---
+      // people.stay_in_touch_frequency = "Stay in touch every day|Stay in
+      // touch every {count} days". With count=3 the plural form must render.
+      const outerLabel = page.getByText('Stay in touch every 3 days', { exact: true });
+      await expect(outerLabel).toBeVisible();
+
+      // --- 5. Tooltip guard ---
+      // Hover the outer label; the v-tooltip.bottom body materializes.
+      // people.stay_in_touch_next_date = "Next due: {date}" — match on the
+      // "Next due:" prefix to stay date-independent.
+      await outerLabel.hover();
+      await expect(page.getByText(/Next due:/i).first()).toBeVisible();
+
+      // --- 6. Restore inactive state ---
+      // Click "Edit" (visible because isActive=true), toggle off, save.
+      // Server forces frequency=0 when state=false (ContactsController::
+      // stayInTouch:633), so the persisted frequency drops to 0 regardless
+      // of what's in the input. We leave frequencyInput=3 so vuelidate's
+      // `required` rule passes on the way out.
+      await page.getByRole('link', { name: 'Edit', exact: true }).first().click();
+      await expect(modal).toBeVisible();
+      // Click vue-js-toggle-button's wrapper label to fire @change, which
+      // flips stateInput. The hidden checkbox isn't directly clickable
+      // (display:none-ish); the label is the documented click surface.
+      // Post-cutover (native checkbox) the selector needs updating to
+      // the new wrapper.
+      await modal.locator('label.vue-js-switch').click();
+      await expect(toggleCheckbox).not.toBeChecked();
+      await saveLink.click();
+      await expect(modal).toBeHidden();
+      // The inactive "Stay in touch" link reappears.
+      await expect(page.getByRole('link', { name: 'Stay in touch', exact: true }).first()).toBeVisible();
+
+      assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (stay-in-touch full flow)');
+    });
+  });
+
+  test('contact detail set-favorite star: v-tooltip body surfaces on hover (pr-t3 vue-directive-tooltip guard)', async ({ page }) => {
+    // Guards the vue-directive-tooltip → floating-vue swap (8 sites).
+    // SetFavorite.vue:5 binds v-tooltip.top="$t('people.set_favorite')"
+    // on the inactive star svg. Hovering it materializes the tooltip body
+    // in the DOM. We match on the source string itself — the wrapper
+    // markup differs between vue-directive-tooltip (.vue-tooltip /
+    // .tooltip-content) and floating-vue (.v-popper__popper) but both
+    // libraries render the body text into the document.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    await page.locator('a[href*="/people/h:"]').first().click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+
+    const star = page.locator('[cy-name="set-favorite"]');
+    await expect(star).toBeVisible();
+    await star.hover();
+
+    // The tooltip body matches people.set_favorite verbatim. Use getByText
+    // rather than a class-scoped locator so the assertion survives the
+    // library swap. The string is unique to this tooltip on the page —
+    // no contact-detail copy uses it elsewhere.
+    await expect(
+      page.getByText('Favorite contacts are placed at the top of the contact list'),
+    ).toBeVisible();
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (set-favorite tooltip)');
+  });
+
+  test('settings/security 2FA enable: wrong OTP surfaces error toast (pr-t3 vue-notification error guard)', async ({ page }) => {
+    // Guards the `type: 'error'` arm of vue-notification → @kyvg/vue3-
+    // notification (25 sites). The existing dav-copy test (pr-1a) covers
+    // type: 'success'; MfaActivate.vue:179 fires type: 'error' from
+    // .catch() arms across the file's $notify calls. We post a 6-digit
+    // junk OTP — backend rejects with `success: false` or a 422 — and the
+    // notify(this.$t('settings.2fa_enable_error'), false) → type: 'error'
+    // toast surfaces. Assertion is on the toast body text so it survives
+    // the wrapper-class swap.
+    //
+    // No DB cleanup needed: a rejected 2FA enable doesn't persist.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/settings/security');
+
+    await page.getByRole('link', { name: 'Enable Two Factor Authentication' }).click();
+
+    // The enable modal mounts under id=enableModal. The OTP input renders
+    // with name="one_time_password1" (the id seed in MfaActivate.vue:36);
+    // the Verify anchor has id="verify1".
+    const modal = page.locator('#enableModal.is-visible');
+    await expect(modal).toBeVisible();
+
+    await modal.locator('input[name="one_time_password1"]').fill('123456');
+    await modal.locator('#verify1').click();
+
+    // The error toast text is the settings.2fa_enable_error or the server
+    // message — either way the title contains "Two Factor Authentication".
+    // We assert on the verbatim en string to lock down the failure shape.
+    await expect(
+      page.getByText(/Error when trying to activate Two Factor Authentication|Wrong validation code/i),
+    ).toBeVisible();
+
+    // The catch path closes the modal; the success path also closes it.
+    // Either way the modal should be hidden after the error toast fires.
+    await expect(modal).toBeHidden();
+
+    assertNoUnknownConsoleErrors(unknown, '/settings/security (2FA wrong OTP)');
+  });
+
+  test('settings/personalization reminder rules: plural form renders for count > 1 (pr-t3 $tc plural rewrite guard)', async ({ page }) => {
+    // Guards the $tc(key, count, params) → $t(key, namedParams, count)
+    // rewrite that vue-i18n@11 forces (legacy mode drops tc). ReminderRules
+    // .vue:29 renders `{{ $tc('settings.personalization_reminder_rule_line',
+    // reminderRule.number_of_days_before, {count: ...}) }}` — the source
+    // string is "{count} day before|{count} days before". A broken rewrite
+    // (wrong arg position, key typo, missing named param) silently falls
+    // back to the singular form, so the row would read "7 day before"
+    // instead of "7 days before".
+    //
+    // The dev seed (`monica:populate-reminders` via setup:test) ships two
+    // default rules at 7 and 30 days; both are plural. We assert at least
+    // one row's text matches `\d+ days before` with count > 1 — which
+    // catches the singular fallback unambiguously.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/settings/personalization');
+
+    // Wait for ReminderRules.vue to hydrate its rules array from GET
+    // /settings/personalization/reminderrules. The .reminder-rules class
+    // is also reused by Modules.vue further down the page, so scope by
+    // the unique "Reminder rules" h3 the ReminderRules template renders
+    // — that disambiguates the two wrappers without depending on either's
+    // internal class structure.
+    const reminderRules = page
+      .locator('div.reminder-rules')
+      .filter({ has: page.getByRole('heading', { name: 'Reminder rules', exact: true }) });
+    await expect(reminderRules).toBeVisible();
+
+    // The plural shape is "X days before" where X > 1. The dev seed has 7
+    // and 30; either matches. Using a text-locator with regex anchors on
+    // the plural-only shape — if $tc silently selects index 0 (singular),
+    // this finds zero matches and fails.
+    await expect(
+      reminderRules.getByText(/\b(?:[2-9]|\d{2,})\s+days\s+before\b/).first(),
+    ).toBeVisible();
+
+    assertNoUnknownConsoleErrors(unknown, '/settings/personalization (reminder rule plural)');
+  });
+
+  test('contact avatar edit: file upload mounts vue-cropper inside modal (pr-t3 vue-cropperjs guard)', async ({ page }) => {
+    // Guards the vue-cropperjs@4 → vue-cropperjs@5 bump (1 site:
+    // SetAvatar.vue). Selecting a file calls uploadImg() which sets
+    // uploadedImgUrl + opens cropModal. The vue-cropper component then
+    // renders the cropperjs UI: .cropper-container wrapping an <img>
+    // bound to the uploaded blob. cropperjs uses CSS transforms on <img>
+    // for its preview (no <canvas>), and the .cropper-container +
+    // .cropper-canvas .cropper-crop-box DOM contract has been stable
+    // across cropperjs v1.x; the v5 bump is a drop-in.
+    //
+    // We upload a 1x1 PNG via setInputFiles. No need to wait for the
+    // image to actually load — the DOM scaffolding is what mounts
+    // synchronously.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
+    expect(contactHref).toBeTruthy();
+    await page.goto(`${contactHref}/avatar`);
+
+    // 67-byte 1x1 transparent PNG.
+    const tinyPng = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII=',
+      'base64',
+    );
+    await page.locator('input[name="photo"]').setInputFiles({
+      name: 'tiny.png',
+      mimeType: 'image/png',
+      buffer: tinyPng,
+    });
+
+    // The crop modal opens via $refs.cropModal.open(). It's marked
+    // :blocking="true" :hide-close-button="true" so we assert visibility
+    // by class + content, then dismiss with the Cancel anchor.
+    const cropModal = page.locator('.sweet-modal-overlay.is-visible').filter({
+      hasText: 'Crop new avatar photo',
+    });
+    await expect(cropModal).toBeVisible();
+
+    // cropperjs scaffolding: .cropper-container with at least one <img>
+    // (the source image bound to uploadedImgUrl) and the .cropper-crop-box
+    // overlay. Both classes have been stable since cropperjs v1.
+    const cropper = cropModal.locator('.cropper-container');
+    await expect(cropper).toBeVisible();
+    await expect(cropper.locator('.cropper-crop-box')).toBeVisible();
+    expect(await cropper.locator('img').count()).toBeGreaterThan(0);
+
+    await cropModal.getByRole('link', { name: 'Cancel', exact: true }).click();
+    await expect(cropModal).toBeHidden();
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/avatar (vue-cropper mount)');
+  });
+
+  test('conversations create datepicker: clicking day cell populates hidden date (pr-t3 datepicker calendar pick guard)', async ({ page }) => {
+    // Guards the @hokify/vuejs-datepicker → @vuepic/vue-datepicker rewrite
+    // (1 site: Date.vue). The existing datepicker test above only checks
+    // that the visible input is enabled — that survives a mount-only swap
+    // but not a calendar-interaction regression. Here we open the calendar
+    // popup, click a specific day cell, and assert the hidden input that
+    // carries the YYYY-MM-DD wire value gets the picked date.
+    //
+    // Day 15 is chosen because it always falls inside the visible month
+    // grid (not in the previous-month padding row). Both libraries use
+    // a day-cell pattern with the digit as visible text; the cutover PR
+    // will need to update the .vdp-datepicker__calendar / .cell.day
+    // selectors to @vuepic's .dp__main / .dp__cell — that's the
+    // expected diff this test enforces a review of.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
+    expect(contactHref).toBeTruthy();
+    await page.goto(`${contactHref}/conversations/create`);
+
+    // Click the "Another day" radio to expose the typeable date input and
+    // bring the datepicker into view.
+    await page.locator('input#another').click();
+
+    // Open the calendar by clicking the visible input. form-date renders
+    // it without a stable id; locate by exclusion (a text input that is
+    // neither the radio nor a hidden field) inside the form-date wrapper.
+    const visibleDateInput = page
+      .locator('div.di:has(input#another) input:not([type="hidden"]):not([type="radio"])')
+      .first();
+    await visibleDateInput.click();
+
+    // Pick the 15th of the currently-displayed month. The .vdp-datepicker
+    // selectors are library-specific (pre-cutover); post-cutover the test
+    // body needs an update — see comment above.
+    const calendar = page.locator('.vdp-datepicker__calendar:visible');
+    await expect(calendar).toBeVisible();
+    await calendar
+      .locator('.cell.day:not(.blank):not(.disabled)', { hasText: /^15$/ })
+      .first()
+      .click();
+
+    // The hidden input carries the YYYY-MM-DD wire value that the
+    // controller reads. After clicking day 15, the date should end in -15
+    // (regardless of which month is showing).
+    const hiddenInput = page.locator('input[name="conversationDate"][type="hidden"]');
+    await expect(hiddenInput).toHaveValue(/^\d{4}-\d{2}-15$/);
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/conversations/create (datepicker pick)');
   });
 });
