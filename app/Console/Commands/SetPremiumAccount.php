@@ -12,14 +12,14 @@ class SetPremiumAccount extends Command
      *
      * @var string
      */
-    protected $signature = 'account:setpremium {accountId}';
+    protected $signature = 'account:setpremium {accountId} {--revoke}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Give a premium access to an account.';
+    protected $description = 'Grant (default) or revoke (--revoke) free premium access on an account.';
 
     /**
      * Execute the console command.
@@ -29,7 +29,7 @@ class SetPremiumAccount extends Command
     public function handle(): void
     {
         $account = Account::findOrFail($this->argument('accountId'));
-        $account->has_access_to_paid_version_for_free = true;
+        $account->has_access_to_paid_version_for_free = ! $this->option('revoke');
         $account->save();
     }
 }
