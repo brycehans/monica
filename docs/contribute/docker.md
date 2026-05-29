@@ -9,9 +9,16 @@ your image to run.
 
 Edit `.env` to set `DB_HOST=mysql` (as `mysql` is the creative name of the MySQL container).
 
-Then run:
+The dev compose mounts `./public/build:/var/www/html/public/build`, so the
+container's Apache serves whatever the host last built. Run `yarn install`
++ `yarn run prod` on the host before bringing the stack up — otherwise the
+mount overlays the image's baked-in assets with an empty directory and
+every blade page 500s on the missing `manifest.json`. After the cold
+start, `yarn run watch` rebuilds incrementally on file change.
 
 ```sh
+yarn install
+yarn run prod
 docker-compose -f docker-compose.dev.yml build
 docker-compose -f docker-compose.dev.yml up
 ```
