@@ -1,5 +1,46 @@
+<style scoped>
+.contact-autosuggest {
+  position: relative;
+  width: 100%;
+}
+
+.contact-autosuggest__input {
+  width: 100%;
+}
+
+.contact-autosuggest__results {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-top: none;
+  max-height: 360px;
+  overflow-y: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.contact-autosuggest__result {
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.contact-autosuggest__result:hover {
+  background: #f5f5f5;
+}
+
+.contact-autosuggest--overflow .contact-autosuggest__results {
+  max-height: 361px;
+  overflow-y: scroll;
+}
+</style>
+
 <template>
-  <div>
+  <div class="contact-autosuggest" :class="{ 'contact-autosuggest--overflow': overflow }">
     <label
       v-if="title"
       class="mb2"
@@ -8,45 +49,35 @@
     >
       {{ title }}
     </label>
-    <multiselect
+    <input
       :id="realid"
-      ref="multi"
-      v-model="selected"
-      :options="searchOptions"
+      v-model="query"
+      type="text"
+      autocomplete="off"
+      class="form-control contact-autosuggest__input"
+      :class="inputClass"
       :placeholder="placeholder"
-      :delay="wait"
-      :min-chars="minLen"
-      :resolve-on-load="false"
-      :filter-results="false"
-      :searchable="true"
-      :input-class="inputClass"
-      :can-clear="false"
-      :can-deselect="false"
-      label="complete_name"
-      value-prop="id"
-      :object="true"
-      :open-direction="overflow ? 'bottom' : 'auto'"
-      @select="selectHandler"
-      @search-change="onSearchChange"
-      @blur="blurHandler"
-    >
-      <template #option="{ option }">
-        <component :is="componentItem" :item="option" />
-      </template>
-    </multiselect>
+      @input="onInput"
+      @focus="onFocus"
+      @blur="onBlur"
+    />
+    <ul v-if="open && items.length > 0" class="contact-autosuggest__results">
+      <li
+        v-for="(item, idx) in items"
+        :key="item.id"
+        class="contact-autosuggest__result"
+        @mousedown.prevent="onSelect(item, idx)"
+      >
+        <component :is="componentItem" :item="item" />
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import Multiselect from '@vueform/multiselect';
-import '@vueform/multiselect/themes/default.css';
 import axios from 'axios';
 
 export default {
-
-  components: {
-    Multiselect,
-  },
 
   props: {
     id: {
@@ -99,8 +130,11 @@ export default {
 
   data() {
     return {
-      selected: null,
-      lastQuery: '',
+      query: '',
+      items: [],
+      open: false,
+      cache: {},
+      debounced: null,
     };
   },
 
@@ -110,21 +144,46 @@ export default {
     },
   },
 
+  mounted() {
+    this.debounced = _.debounce((text) => {
+      this.fetch(text);
+    }, this.wait);
+  },
+
   methods: {
-    async searchOptions(query) {
-      this.lastQuery = query || '';
-      if (!query || query.length < this.minLen) {
-        return this.addNoResult ? [this.addNewSentinel(query || '')] : [];
+    onInput() {
+      const text = this.query;
+      if (text === '' || text.length < this.minLen) {
+        this.items = this.addNoResult && text !== '' ? [this.addNewSentinel(text)] : [];
+        this.open = this.items.length > 0;
+        return;
       }
-      const response = await axios.post('people/search', { needle: query });
-      const matches = (response.data.data || []).filter(this.filter).map(contact => ({
-        ...contact,
-        keyword: query,
-      }));
-      if (this.addNoResult) {
-        matches.push(this.addNewSentinel(query));
+      if (this.cache[text] !== undefined) {
+        this.debounced.cancel();
+        this.items = this.cache[text];
+        this.open = this.items.length > 0;
+      } else {
+        this.debounced(text);
       }
-      return matches;
+    },
+
+    async fetch(text) {
+      try {
+        const response = await axios.post('people/search', { needle: text });
+        const matches = (response.data && response.data.data ? response.data.data : [])
+          .map(contact => ({ ...contact, keyword: text }))
+          .filter(this.filter);
+        if (this.addNoResult) {
+          matches.push(this.addNewSentinel(text));
+        }
+        this.cache[text] = matches;
+        if (text === this.query) {
+          this.items = matches;
+          this.open = matches.length > 0;
+        }
+      } catch (e) {
+        // network failure — leave the dropdown empty rather than throw.
+      }
     },
 
     addNewSentinel(keyword) {
@@ -136,29 +195,31 @@ export default {
       };
     },
 
-    onSearchChange(query) {
-      this.lastQuery = query || '';
+    onFocus() {
+      if (this.items.length > 0) {
+        this.open = true;
+      }
     },
 
-    blurHandler() {
-      this.$emit('blur');
+    onBlur() {
+      // Defer to let the click handler fire first (mousedown beats blur via
+      // .prevent, but click after mouseup can still race).
+      setTimeout(() => {
+        this.open = false;
+        this.$emit('blur');
+      }, 150);
     },
 
-    selectHandler(option) {
-      if (!option) {
-        return;
-      }
-      // Preserve the wire contract: consumers (ContactSearch, ContactMultiSearch)
-      // expect `{ item: contact }`.
-      this.$emit('select', { item: option });
+    onSelect(item) {
+      this.open = false;
+      this.$emit('select', { item });
+      this.query = '';
+      this.items = [];
+    },
 
-      // Clear the input + selection so the same field can be reused — matches
-      // the previous vue-autosuggest behaviour where searchInput was reset.
-      this.selected = null;
-      const ref = this.$refs.multi;
-      if (ref && typeof ref.clearSearch === 'function') {
-        ref.clearSearch();
-      }
+    clearCache() {
+      this.cache = {};
+      this.items = [];
     },
   },
 };
