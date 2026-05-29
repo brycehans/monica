@@ -51,6 +51,14 @@ services:
       - ./database:/var/www/html/database
       - ./resources:/var/www/html/resources
       - ./routes:/var/www/html/routes
+      # Surface host-side Vite builds to the container's Apache without a
+      # `docker cp` step. The narrow scope (just `public/build`) leaves the
+      # image-baked `public/storage` symlink + `public/js/langs/` untouched.
+      # Cold-start prereq: run `yarn install && yarn run prod` on the host
+      # before `docker compose up` — otherwise the mount overlays the
+      # image's built assets with an empty directory and every blade page
+      # 500s trying to read `public/build/manifest.json`.
+      - ./public/build:/var/www/html/public/build
 
   mysql:
     image: mysql:8.0

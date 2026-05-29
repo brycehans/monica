@@ -13,21 +13,33 @@ Standalone Playwright suite for verifying the user-facing app after a dependency
 From the **`docker-compose.dev.yml` rig running on `localhost:8082`**:
 
 ```bash
-# 1) Bring up the dev stack
+# 1) Build the Vite assets on the host. The dev compose mounts
+#    ./public/build:/var/www/html/public/build, so the container's Apache
+#    serves whatever the host last built. Without this step, the mount
+#    overlays the image's baked-in assets with an empty directory and
+#    every blade page 500s trying to read public/build/manifest.json.
+yarn install
+yarn run prod
+
+# 2) Bring up the dev stack
 docker compose -f docker-compose.dev.yml up -d
 
-# 2) Seed an admin account + 20 contacts.
+# 3) Seed an admin account + 20 contacts.
 #    --user www-data avoids the trap documented in #629 (php artisan as root
 #    leaves storage/logs/laravel.log root-owned, breaking subsequent web reqs).
 docker compose -f docker-compose.dev.yml exec --user www-data app \
   sh -c 'printf "yes\n20\n" | php artisan setup:test'
 
-# 3) Run the smoke from this directory
+# 4) Run the smoke from this directory
 cd tests/playwright
 yarn install
 npx playwright install chromium   # first run only
 yarn run smoke
 ```
+
+When iterating on Vue/JS sources, re-run `yarn run prod` (or `yarn run watch`
+for incremental rebuilds) on the host — the container picks up the new
+bundle on the next request. No `docker cp` step needed.
 
 Other targets:
 
