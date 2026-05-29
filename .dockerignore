@@ -26,6 +26,11 @@ persist/
 .phpunit.result.cache
 Procfile
 public/storage
+# Vite dev-server marker file. Written on the host by `yarn run dev`; if it
+# bakes into the image, laravel/framework's Vite::isRunningHot() returns
+# true and every blade page serves asset URLs from a non-existent
+# localhost:5173 instead of the production manifest.
+public/hot
 resources/vendor/
 results/
 .sass-lint.yml

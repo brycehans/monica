@@ -59,8 +59,11 @@ yarn run e2e-gui             # cypress interactive
 
 Local dev via Docker:
 ```
+yarn install && yarn run prod                 # populate public/build/ on the host first (see note below)
 docker compose -f docker-compose.dev.yml up   # app on :8082, phpmyadmin :3000, mailhog :8025/:1025
 ```
+
+The dev compose mounts `./public/build:/var/www/html/public/build`, so the container's Apache serves whatever the host last built. **`yarn run prod` is a cold-start prereq** — without it the mount overlays the image's baked-in assets with an empty directory and every blade page 500s on the missing `manifest.json`. For iteration, `yarn run watch` rebuilds incrementally on file change.
 
 ## Architecture
 
