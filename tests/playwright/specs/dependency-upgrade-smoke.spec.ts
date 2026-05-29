@@ -1332,12 +1332,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       // `required` rule passes on the way out.
       await page.getByRole('link', { name: 'Edit', exact: true }).first().click();
       await expect(modal).toBeVisible();
-      // Click vue-js-toggle-button's wrapper label to fire @change, which
-      // flips stateInput. The hidden checkbox isn't directly clickable
-      // (display:none-ish); the label is the documented click surface.
-      // Post-cutover (native checkbox) the selector needs updating to
-      // the new wrapper.
-      await modal.locator('label.vue-js-switch').click();
+      // Click the toggle-switch wrapper label to flip stateInput via the
+      // native checkbox underneath. The visually-hidden input isn't
+      // directly clickable; the label is the click surface.
+      await modal.locator('label.toggle-switch').click();
       await expect(toggleCheckbox).not.toBeChecked();
       await saveLink.click();
       await expect(modal).toBeHidden();

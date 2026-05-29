@@ -124,7 +124,7 @@
             {{ $t('people.stay_in_touch_modal_desc', { firstname: firstName }) }}
           </p>
           <div class="mb2">
-            <toggle-button class="mr2" :sync="true" :labels="true" :value="stateInput" @change="stateInput = !stateInput" />
+            <form-toggle v-model="stateInput" class="mr2" />
             <div class="dib relative" style="top: -2px;">
               <stay-in-touch-label
                 v-model="frequencyInput"
@@ -169,7 +169,6 @@
 </template>
 
 <script>
-import { ToggleButton } from 'vue-js-toggle-button';
 import { useVuelidate } from '@vuelidate/core';
 import { required, numeric } from '@vuelidate/validators';
 import moment from 'moment-timezone';
@@ -178,7 +177,6 @@ import StayInTouchLabel from './StayInTouchLabel';
 export default {
 
   components: {
-    ToggleButton,
     StayInTouchLabel,
   },
 

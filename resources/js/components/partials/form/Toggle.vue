@@ -1,3 +1,64 @@
+<style>
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-switch__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-switch__track {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  background: #c0c4cc;
+  border-radius: 10px;
+  transition: background-color 0.15s ease;
+  flex: none;
+}
+
+.toggle-switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.toggle-switch__input:checked + .toggle-switch__track {
+  background: #1976d2;
+}
+
+.toggle-switch__input:checked + .toggle-switch__track .toggle-switch__thumb {
+  transform: translateX(16px);
+}
+
+.toggle-switch__input:focus-visible + .toggle-switch__track {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
+
+.toggle-switch__label {
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.toggle-switch--disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+</style>
+
 <template>
   <div>
     <label
@@ -8,31 +69,30 @@
     >
       {{ title }}
     </label>
-    <toggle-button
-      :id="realId"
-      :name="id"
-      :class="inputClass"
-      :sync="true"
-      :labels="labels"
-      :disabled="disabled"
-      :value="selectedOption"
-      @input="$emit('input', $event)"
-      @change="$emit('change', $event)"
-    />
+    <label class="toggle-switch" :class="[inputClass, { 'toggle-switch--disabled': disabled }]">
+      <input
+        :id="realId"
+        type="checkbox"
+        :name="id"
+        :checked="modelValue"
+        :disabled="disabled"
+        class="toggle-switch__input"
+        @change="onChange"
+      />
+      <span class="toggle-switch__track">
+        <span class="toggle-switch__thumb"></span>
+      </span>
+      <span v-if="labelText" class="toggle-switch__label">{{ labelText }}</span>
+    </label>
   </div>
 </template>
 
 <script>
-import { ToggleButton } from 'vue-js-toggle-button';
+let counter = 0;
 
 export default {
-
-  components: {
-    ToggleButton
-  },
-
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       default: false,
     },
@@ -58,34 +118,39 @@ export default {
     },
     iclass: {
       type: String,
-      default: ''
+      default: '',
     },
   },
 
+  emits: ['update:modelValue', 'change'],
+
   data() {
     return {
-      selectedOption: null,
+      uid: ++counter,
     };
   },
 
   computed: {
     realId() {
-      return this.id + this._uid;
+      return this.id + '_' + this.uid;
     },
     inputClass() {
-      return this.iclass !== '' ? this.iclass : '';
+      return this.iclass;
+    },
+    labelText() {
+      if (this.labels && typeof this.labels === 'object') {
+        return this.modelValue ? this.labels.checked : this.labels.unchecked;
+      }
+      return '';
     },
   },
 
-  watch: {
-    value: function (newValue) {
-      this.selectedOption = newValue;
-    }
+  methods: {
+    onChange(event) {
+      const checked = event.target.checked;
+      this.$emit('update:modelValue', checked);
+      this.$emit('change', checked);
+    },
   },
-
-  mounted() {
-    this.selectedOption = this.value;
-  },
-
 };
 </script>
