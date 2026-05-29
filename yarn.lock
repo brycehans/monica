@@ -648,6 +648,11 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.5.35.tgz#192eb3d720c40715db79313454c4937432a4e86d"
   integrity sha512-zSbjL7gRXwks2ZQLRGCajBtBXEOXW9Ddhn/HvSdrGkE2dqGnumzW8XtusRrxrE9LvqtiqDXQ+A60Hp6mvdYxfA==
 
+"@vueform/multiselect@^2.6":
+  version "2.6.11"
+  resolved "https://registry.yarnpkg.com/@vueform/multiselect/-/multiselect-2.6.11.tgz#3585bf1989b969019cd6f8095c8a27d4d45c61e7"
+  integrity sha512-iG4TGfqE3baftbSGF0PhoS+xZOCnV0ChkDo9rwhJ/Qi2YlCdb6tyQCjvyug3jnzncga8+d85kx0WvG7rDYFqiA==
+
 "@vuelidate/core@^2.0":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@vuelidate/core/-/core-2.0.3.tgz#40468c5ed15b72bde880a026b0699c2f0f1ecede"
@@ -2917,11 +2922,6 @@ vite@^8.0:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vue-autosuggest@^2.2:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/vue-autosuggest/-/vue-autosuggest-2.2.0.tgz#0202b9aaeeef6a3a4357bf401a73be2ecbe166f1"
-  integrity sha512-cHgEakpoRUOaqXXEo8RcRrbSTM3eAaCu9b55ZXiKbaS6IUD8ewqffQrMy/A1DXqHSQbyEEGui4oAsCbRge29Jg==
-
 vue-cropperjs@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/vue-cropperjs/-/vue-cropperjs-4.2.0.tgz#6bce4c17478cecec56571d4060892a386307c60e"
@@ -2986,11 +2986,6 @@ vue-resize@^2.0.0-alpha.1:
   version "2.0.0-alpha.1"
   resolved "https://registry.yarnpkg.com/vue-resize/-/vue-resize-2.0.0-alpha.1.tgz#43eeb79e74febe932b9b20c5c57e0ebc14e2df3a"
   integrity sha512-7+iqOueLU7uc9NrMfrzbG8hwMqchfVfSzpVlCMeJQe4pyibqyoifDNbKTZvwxZKDvGkB+PdFeKvnGZMoEb8esg==
-
-vue-select@^3.20:
-  version "3.20.4"
-  resolved "https://registry.yarnpkg.com/vue-select/-/vue-select-3.20.4.tgz#cf1fee2e0dfad3b692b23895acf959b9971770de"
-  integrity sha512-pXIsDUnBR1075qHNEM7mKgX7YnHI3MfCO+7VmXSA1Hywplpqi52jOa0j6EHWQU6MnaW/mBZPuaQtgp3yvks2Kw==
 
 vue@^3.5:
   version "3.5.35"

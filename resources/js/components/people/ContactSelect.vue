@@ -4,36 +4,38 @@
       {{ title }}
     </p>
     <input type="hidden" :name="name" :value="selected ? selected.id : ''" />
-    <v-select
-      :id="id ? id : ''"
-      :value="selected"
+    <multiselect
+      :id="id || ''"
+      v-model="selected"
+      :options="searchOptions"
       :placeholder="placeholder"
-      :label="'complete_name'"
-      :options="items"
+      :delay="wait"
+      :min-chars="0"
+      :resolve-on-load="false"
+      :filter-results="false"
+      :searchable="true"
+      label="complete_name"
+      value-prop="id"
+      :object="true"
       :dir="$root.htmldir"
-      @search="search"
-      @search:blur="blur"
-      @search:focus="focus"
-      @input="selected = $event; $emit('input', $event)"
     />
   </div>
 </template>
 
 <script>
-import vSelect from 'vue-select';
-import 'vue-select/dist/vue-select.css';
+import Multiselect from '@vueform/multiselect';
+import '@vueform/multiselect/themes/default.css';
 import axios from 'axios';
 
 export default {
-  components: {
-    vSelect
-  },
+  components: { Multiselect },
+
   props: {
     id: {
       type: String,
       default: null,
     },
-    value: {
+    modelValue: {
       type: Object,
       default: null,
     },
@@ -61,86 +63,44 @@ export default {
       type: String,
       default: '',
     },
-    wait : {
+    wait: {
       type: Number,
       default: 200,
     },
   },
 
-  data () {
+  emits: ['update:modelValue'],
+
+  data() {
     return {
-      selected: null,
-      items: [],
-      callUpdateItems: null,
-      cache: [],
+      selected: this.modelValue,
     };
   },
 
   watch: {
-    value(newValue) {
+    modelValue(newValue) {
       this.selected = newValue;
-    }
-  },
-
-  mounted() {
-    this.selected = this.value;
-    this.callUpdateItems = _.debounce((text) => {
-      this.getContacts(text, this)
-        .then((response) => {
-          this.cache[text] = response;
-          this.displayItems(text);
-        });
-    }, this.wait);
-    this.items = this.defaultOptions;
+    },
+    selected(newValue) {
+      this.$emit('update:modelValue', newValue);
+    },
   },
 
   methods: {
-
-    updateItems(text) {
-      if (text === null) {
-        return;
+    async searchOptions(query) {
+      if (!query) {
+        return this.filterDefaults(this.defaultOptions);
       }
-      if (text.length < this.minLen) {
-        this.items = [];
-        return;
+      const response = await axios.post('people/search', { needle: query });
+      return this.filterDefaults(response.data.data);
+    },
+
+    filterDefaults(items) {
+      if (this.userContactId === null) {
+        return items;
       }
-
-      if (this.cache[text] === undefined) {
-        this.callUpdateItems(text);
-      } else {
-        this.callUpdateItems.cancel();
-        this.displayItems(text);
-      }
+      return items.filter(item => item.id !== this.userContactId);
     },
-
-    displayItems(text) {
-      var datas = [];
-      if (text === undefined || text.length === 0) {
-        datas = this.defaultOptions;
-      } else {
-        datas = this.cache[text];
-      }
-
-      datas = datas.filter(this.filter);
-
-      this.items = datas;
-    },
-
-    getContacts(keyword, vm) {
-      return axios.post('people/search', {
-        needle: keyword
-      }).then(function(response) {
-        return response.data.data;
-      });
-    },
-
-    filter(item) {
-      return this.userContactId !== item.id;
-    },
-
-    search(keyword, loading) {
-      this.updateItems(keyword);
-    },
-  }
+  },
 };
 </script>

@@ -1,31 +1,3 @@
-<style lang="scss">
-  .autosuggest__results-container {
-    position: relative;
-    width: 100%;
-  }
-  .autosuggest__results {
-    position: absolute;
-    width: 100%;
-    z-index: 100;
-  }
-  .autosuggest__results-overflow {
-    position: absolute;
-    width: 100%;
-    z-index: 100;
-    overflow: scroll;
-    max-height: 361px;
-  }
-  .autosuggest__results-item {
-    background: white;
-  }
-  .autosuggest__results-item:active,
-  .autosuggest__results-item:hover,
-  .autosuggest__results-item:focus,
-  .autosuggest__results-item--highlighted {
-    background: #f5f5f5;
-  }
-</style>
-
 <template>
   <div>
     <label
@@ -36,33 +8,46 @@
     >
       {{ title }}
     </label>
-    <vue-autosuggest
-      ref="autosuggest"
-      :suggestions="items"
-      :input-props="inputProps"
-      :get-suggestion-value="getSuggestionValue"
-      :component-attr-class-autosuggest-results="overflow ? 'autosuggest__results-overflow' : 'autosuggest__results'"
-      @selected="selectHandler"
-      @click="clickHandler"
+    <multiselect
+      :id="realid"
+      ref="multi"
+      v-model="selected"
+      :options="searchOptions"
+      :placeholder="placeholder"
+      :delay="wait"
+      :min-chars="minLen"
+      :resolve-on-load="false"
+      :filter-results="false"
+      :searchable="true"
+      :input-class="inputClass"
+      :can-clear="false"
+      :can-deselect="false"
+      label="complete_name"
+      value-prop="id"
+      :object="true"
+      :open-direction="overflow ? 'bottom' : 'auto'"
+      @select="selectHandler"
+      @search-change="onSearchChange"
       @blur="blurHandler"
-      @input="updateItems"
     >
-      <template slot-scope="{suggestion}">
-        <component :is="componentItem" :item="suggestion.item" />
+      <template #option="{ option }">
+        <component :is="componentItem" :item="option" />
       </template>
-    </vue-autosuggest>
+    </multiselect>
   </div>
 </template>
 
 <script>
+import Multiselect from '@vueform/multiselect';
+import '@vueform/multiselect/themes/default.css';
 import axios from 'axios';
-import { VueAutosuggest } from 'vue-autosuggest';
 
 export default {
 
   components: {
-    VueAutosuggest,
+    Multiselect,
   },
+
   props: {
     id: {
       type: String,
@@ -80,19 +65,19 @@ export default {
       type: Boolean,
       default: true,
     },
-    placeholder : {
+    placeholder: {
       type: String,
       default: '',
     },
-    componentItem : {
+    componentItem: {
       type: Object,
-      default: () => null
+      default: () => null,
     },
-    wait : {
+    wait: {
       type: Number,
       default: 200,
     },
-    minLen : {
+    minLen: {
       type: Number,
       default: 1,
     },
@@ -100,21 +85,22 @@ export default {
       type: Boolean,
       default: false,
     },
-    inputClass : {
+    inputClass: {
       type: String,
       default: '',
     },
     filter: {
       type: Function,
       default: () => true,
-    }
+    },
   },
 
-  data () {
+  emits: ['select', 'blur'],
+
+  data() {
     return {
-      items: [],
-      callUpdateItems: null,
-      cache: [],
+      selected: null,
+      lastQuery: '',
     };
   },
 
@@ -122,105 +108,58 @@ export default {
     realid() {
       return this.id ? this.id : 'autosuggest__input';
     },
-    inputProps() {
-      return {
-        id: this.realid,
-        placeholder: this.placeholder,
-        class: ['form-control', this.inputClass],
-      };
-    }
-  },
-
-  mounted() {
-    this.callUpdateItems = _.debounce((text) => {
-      this.getContacts(text, this)
-        .then((response) => {
-          this.cache[text] = response;
-          this.displayItems(text);
-        });
-    }, this.wait);
   },
 
   methods: {
+    async searchOptions(query) {
+      this.lastQuery = query || '';
+      if (!query || query.length < this.minLen) {
+        return this.addNoResult ? [this.addNewSentinel(query || '')] : [];
+      }
+      const response = await axios.post('people/search', { needle: query });
+      const matches = (response.data.data || []).filter(this.filter).map(contact => ({
+        ...contact,
+        keyword: query,
+      }));
+      if (this.addNoResult) {
+        matches.push(this.addNewSentinel(query));
+      }
+      return matches;
+    },
 
-    updateItems (text) {
-      if (text === null || text === undefined) {
+    addNewSentinel(keyword) {
+      return {
+        id: -1,
+        name: 'add_new_contact',
+        complete_name: 'add_new_contact',
+        keyword,
+      };
+    },
+
+    onSearchChange(query) {
+      this.lastQuery = query || '';
+    },
+
+    blurHandler() {
+      this.$emit('blur');
+    },
+
+    selectHandler(option) {
+      if (!option) {
         return;
       }
-      if (text.length < this.minLen) {
-        this.items = [];
-        return;
+      // Preserve the wire contract: consumers (ContactSearch, ContactMultiSearch)
+      // expect `{ item: contact }`.
+      this.$emit('select', { item: option });
+
+      // Clear the input + selection so the same field can be reused — matches
+      // the previous vue-autosuggest behaviour where searchInput was reset.
+      this.selected = null;
+      const ref = this.$refs.multi;
+      if (ref && typeof ref.clearSearch === 'function') {
+        ref.clearSearch();
       }
-
-      if (this.cache[text] === undefined) {
-        this.callUpdateItems(text);
-      } else {
-        this.callUpdateItems.cancel();
-        this.displayItems(text);
-      }
     },
-
-    displayItems (text) {
-      var datas = this.cache[text];
-
-      datas = datas.filter(this.filter);
-
-      this.items = [{ data: datas }];
-    },
-
-    getContacts: function (keyword, vm) {
-      return axios.post('people/search', {
-        needle: keyword
-      }).then(function(response) {
-        const data = [];
-        if (response.data.noResults === undefined || response.data.noResults === null) {
-          response.data.data
-            .forEach(function (contact) {
-              contact.keyword = keyword;
-              data.push(contact);
-            });
-        }
-        data.push({
-          id: -1,
-          name: 'add_new_contact',
-          keyword: keyword,
-        });
-        return data;
-      });
-    },
-
-    clearCache() {
-      this.cache = [];
-      this.items = [];
-    },
-
-    blurHandler(sender) {
-      this.$emit('blur', sender);
-    },
-
-    clickHandler(e) {
-      this.loading = false;
-      this.updateItems(this.value);
-    },
-
-    selectHandler(suggestion) {
-      if (!suggestion || !suggestion.item) {
-        return;
-      }
-
-      this.$emit('select', suggestion);
-
-      this.$refs.autosuggest.searchInput = '';
-    },
-
-    getSuggestionValue(suggestion) {
-      if (!suggestion || !suggestion.item || suggestion.item.id < 0) {
-        return;
-      }
-      return suggestion.item.complete_name.length > 0 ?
-        suggestion.item.complete_name :
-        suggestion.item.keyword;
-    }
-  }
+  },
 };
 </script>
