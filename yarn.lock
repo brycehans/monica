@@ -1170,7 +1170,7 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-date-fns@^2.17.0:
+date-fns@^2.25.0:
   version "2.30.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.30.0.tgz#f367e644839ff57894ec6ac480de40cae4b0f4d0"
   integrity sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==
@@ -2960,12 +2960,12 @@ vue-final-modal@^4.5:
     "@vueuse/integrations" "^10.5.0"
     focus-trap "^7.5.4"
 
-vue-good-table@^2.21:
-  version "2.21.11"
-  resolved "https://registry.yarnpkg.com/vue-good-table/-/vue-good-table-2.21.11.tgz#0d92a36f4119bc91825009780c09df38d27b5a4b"
-  integrity sha512-OpVPdxbBTahtfq1aXxEa5P1CMy1wiLcBg4mo7k6Qs537l9v8KVrvF+fXqbnxqNrAfmd1Mw9LidcjgTErjmVU8g==
+vue-good-table-next@^0.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/vue-good-table-next/-/vue-good-table-next-0.2.2.tgz#26e1094a85957bb7dfcb78f1de49262d3599584b"
+  integrity sha512-ts8En2SZEGPPgDs1wLjmZxH4INcEz/V/Bs2e8Y3wktAusWGJvv1cPcl4WQEHoaCtARPNjIuaUywncKbLCJGTog==
   dependencies:
-    date-fns "^2.17.0"
+    date-fns "^2.25.0"
     lodash.isequal "^4.5.0"
 
 vue-i18n@^10.0:

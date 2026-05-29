@@ -57,9 +57,6 @@
       @on-search="onSearch"
       @on-row-click="onRowClick"
     >
-      <div slot="emptystate" class="tc">
-        {{ $t('people.people_search_no_results') }}
-      </div>
       <template #emptystate>
         <div v-if="!ready" class="vgt-center-align vgt-text-disabled h3">
           {{ $t('app.loading') }}
@@ -68,7 +65,7 @@
           {{ $t('people.people_search_no_results') }}
         </div>
       </template>
-      <template slot="table-row" slot-scope="props">
+      <template #table-row="props">
         <template v-if="props.column.field === 'avatar'">
           <contact-item
             :item="props.row"
@@ -109,7 +106,7 @@
 </template>
 
 <script>
-import { VueGoodTable } from 'vue-good-table';
+import { VueGoodTable } from 'vue-good-table-next';
 import ContactItem from './partials/ContactItem.vue';
 
 export default {
