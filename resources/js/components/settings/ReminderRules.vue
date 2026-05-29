@@ -84,7 +84,7 @@ export default {
             text: '',
             type: 'success'
           });
-          this.$set(reminderRule, 'active', response.data.data.active);
+          reminderRule.active = response.data.data.active;
         });
     }
   }

@@ -11,7 +11,7 @@
         :value="true"
         :dclass="'flex mb2'"
       >
-        <template slot="label">
+        <template #label>
           {{ $t('people.deceased_mark_person_deceased') }}
         </template>
       </form-checkbox>
@@ -23,7 +23,7 @@
           :dclass="'flex mb1'"
           @change="_focusDate()"
         >
-          <template slot="label">
+          <template #label>
             {{ $t('people.deceased_know_date') }}
           </template>
         </form-checkbox>

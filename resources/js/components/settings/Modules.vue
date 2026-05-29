@@ -101,7 +101,7 @@ export default {
             text: '',
             type: 'success'
           });
-          this.$set(module, 'active', response.data.data.active);
+          module.active = response.data.data.active;
         });
     }
   }

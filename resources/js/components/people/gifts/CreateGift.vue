@@ -235,11 +235,6 @@ export default {
     PhotoUpload
   },
 
-  model: {
-    prop: 'gift',
-    event: 'update'
-  },
-
   props: {
     hash: {
       type: String,

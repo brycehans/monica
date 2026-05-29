@@ -122,12 +122,14 @@
             value="1"
             :model-value="true"
           >
-            <template slot="label">
+            <template #label>
               {{ trans('people.relationship_form_also_create_contact') }}
             </template>
-            <span slot="extra" class="silver">
-              {{ trans('people.relationship_form_add_description') }}
-            </span>
+            <template #extra>
+              <span class="silver">
+                {{ trans('people.relationship_form_add_description') }}
+              </span>
+            </template>
           </form-checkbox>
         </div>
       </div>

@@ -14,7 +14,7 @@
           :iclass="[ dirltr ? 'mr2' : 'ml2' ]"
           @change="event => { _saveOption(); }"
         >
-          <template slot="label">
+          <template #label>
             {{ $t('people.information_edit_unknown') }}
           </template>
         </form-radio>
@@ -26,10 +26,10 @@
           :iclass="[ dirltr ? 'mr2' : 'ml2' ]"
           @change="event => { if (selectedOptionSave !== 'approximate') {_focusAge();} _saveOption(); }"
         >
-          <template slot="label">
+          <template #label>
             {{ $t('people.information_edit_probably') }}
           </template>
-          <div v-if="selectedOption === 'approximate'" slot="extra">
+          <template v-if="selectedOption === 'approximate'" #extra>
             <form-input
               :id="'age'"
               ref="age"
@@ -39,7 +39,7 @@
               :required="true"
               :validator="v$.selectedAge"
             />
-          </div>
+          </template>
         </form-radio>
         <form-radio
           v-model.lazy="selectedOption"
@@ -49,11 +49,11 @@
           :iclass="[ dirltr ? 'mr2' : 'ml2' ]"
           @change="event => { if (selectedOptionSave !== 'almost') {_focusMonth();} _saveOption(); }"
         >
-          <template slot="label">
+          <template #label>
             {{ $t('people.information_edit_not_year') }}
           </template>
-          <div v-if="selectedOption === 'almost'" slot="extra" class="mt2">
-            <div class="flex">
+          <template v-if="selectedOption === 'almost'" #extra>
+            <div class="mt2 flex">
               <form-select
                 :id="'month'"
                 ref="month"
@@ -70,7 +70,7 @@
                 :class="[ dirltr ? '' : 'mr3' ]"
               />
             </div>
-          </div>
+          </template>
         </form-radio>
         <form-radio
           v-model.lazy="selectedOption"
@@ -80,10 +80,10 @@
           :iclass="[ dirltr ? 'mr2' : 'ml2' ]"
           @change="event => { if (selectedOptionSave !== 'exact') {_focusBirthday();} _saveOption(); }"
         >
-          <template slot="label">
+          <template #label>
             {{ $t('people.information_edit_exact') }}
           </template>
-          <div v-if="selectedOption === 'exact'" slot="extra" class="mt2">
+          <template v-if="selectedOption === 'exact'" #extra>
             <form-date
               :id="'birthdayDate'"
               ref="birthday"
@@ -91,10 +91,10 @@
               :show-calendar-on-focus="true"
               :locale="locale"
               :label="$t('people.information_edit_birthdate_label')"
-              :class="[ dirltr ? 'fl' : 'fr' ]"
+              :class="[ dirltr ? 'fl' : 'fr', 'mt2' ]"
               :validator="v$.selectedDate"
             />
-          </div>
+          </template>
         </form-radio>
       </div>
     </div>
@@ -107,7 +107,7 @@
           :value="'addReminder'"
           :dclass="[ 'flex', dirltr ? 'mr2' : 'ml2' ]"
         >
-          <template slot="label">
+          <template #label>
             {{ $t('people.people_add_reminder_for_birthday') }}
           </template>
         </form-checkbox>
@@ -195,7 +195,7 @@ export default {
         }
       };
     }
-    return null;
+    return {};
   },
 
   computed: {

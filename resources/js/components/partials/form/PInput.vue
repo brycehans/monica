@@ -30,11 +30,6 @@
 <script>
 export default {
 
-  model: {
-    prop: 'modelValue',
-    event: 'change'
-  },
-
   props: {
     name: {
       type: String,
@@ -47,6 +42,10 @@ export default {
     modelValue: {
       type: [String, Boolean],
       default: '',
+    },
+    modelModifiers: {
+      type: Object,
+      default: () => ({}),
     },
     iclass: {
       type: [String, Array],
@@ -73,6 +72,8 @@ export default {
       default: false
     }
   },
+
+  emits: ['change', 'update:modelValue'],
 
   computed: {
     _type() {
@@ -102,12 +103,16 @@ export default {
   },
 
   methods: {
+    emitChange(val) {
+      this.$emit('update:modelValue', val);
+      this.$emit('change', val);
+    },
     onChange(event) {
       if (this._type === 'radio') {
-        this.$emit('change', this.value);
+        this.emitChange(this.value);
         return;
       }
-      this.$emit('change', event.target.checked);
+      this.emitChange(event.target.checked);
     },
     select() {
       if (this.disabled) {
@@ -116,11 +121,11 @@ export default {
       switch (this._type) {
       case 'checkbox':
         this.$refs.input.checked = ! this.$refs.input.checked;
-        this.$emit('change', this.$refs.input.checked);
+        this.emitChange(this.$refs.input.checked);
         break;
       case 'radio':
         this.$refs.input.checked = true;
-        this.$emit('change', this.value);
+        this.emitChange(this.value);
         break;
       case 'input':
           //this.$refs.input.focus();

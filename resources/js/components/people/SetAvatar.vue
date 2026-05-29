@@ -10,12 +10,12 @@
         :dclass="'flex mb1'"
         :iclass="dirltr ? 'mr2' : 'ml2'"
       >
-        <template slot="label">
+        <template #label>
           {{ $t('people.avatar_default_avatar') }}
         </template>
-        <div slot="extra">
+        <template #extra>
           <img class="mb4 pa2 ba b--gray-monica br3" style="width: 150px" :src="defaultUrl" alt="" />
-        </div>
+        </template>
       </form-radio>
 
       <!-- Gravatar -->
@@ -27,12 +27,12 @@
         :dclass="'flex mb1'"
         :iclass="dirltr ? 'mr2' : 'ml2'"
       >
-        <template slot="label">
+        <template #label>
           <span v-html="$t('people.avatar_gravatar')"></span>
         </template>
-        <div slot="extra">
+        <template #extra>
           <img class="mb4 pa2 ba b--gray-monica br3" style="width: 150px" :src="gravatarUrl" alt="" />
-        </div>
+        </template>
       </form-radio>
 
       <!-- Existing avatar -->
@@ -44,12 +44,12 @@
         :dclass="'flex mb1'"
         :iclass="dirltr ? 'mr2' : 'ml2'"
       >
-        <template slot="label">
+        <template #label>
           {{ $t('people.avatar_current') }}
         </template>
-        <div slot="extra">
+        <template #extra>
           <img class="mb4 pa2 ba b--gray-monica br3" style="width: 150px" :src="photoUrl" alt="" />
-        </div>
+        </template>
       </form-radio>
 
       <!-- Upload avatar -->
@@ -61,7 +61,7 @@
         :iclass="dirltr ? 'mr2' : 'ml2'"
         :disabled="hasReachedAccountStorageLimit"
       >
-        <template slot="label">
+        <template #label>
           {{ $t('people.avatar_photo') }}
           <span v-if="hasReachedAccountStorageLimit">
             <a href="settings/subscriptions">
@@ -69,7 +69,7 @@
             </a>
           </span>
         </template>
-        <div slot="extra">
+        <template #extra>
           <input ref="uploadedImg"
                  type="file"
                  class="form-control-file"
@@ -81,7 +81,7 @@
             {{ $t('people.information_edit_max_size2', { size: maxUploadSize }) }}
           </small>
           <img v-if="croppedImgUrl" class="mb4 pa2 ba b--gray-monica br3" style="width: 150px" :src="croppedImgUrl" alt="" />
-        </div>
+        </template>
       </form-radio>
     </div>
     <monica-modal v-model="showCropModal" :title="$t('people.avatar_crop_new_avatar_photo')">

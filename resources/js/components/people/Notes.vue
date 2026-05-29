@@ -144,7 +144,7 @@ export default {
     },
 
     toggleEditMode(note) {
-      this.$set(note, 'edit', !note.edit);
+      note.edit = !note.edit;
     },
 
     getNotes() {
@@ -180,7 +180,7 @@ export default {
     update(note) {
       axios.put('people/' + this.hash + '/notes/' + note.id, note)
         .then(response => {
-          this.$set(note, 'edit', false);
+          note.edit = false;
 
           this.$notify({
             group: 'main',

@@ -96,7 +96,7 @@
               <!-- ACTIONS -->
               <ul class="list">
                 <li class="di">
-                  <a v-cy-name="'edit-activity-button-'+activity.id" href="" class="pointer" @click.prevent="$set(activity, 'edit', true)">{{ $t('app.edit') }}</a>
+                  <a v-cy-name="'edit-activity-button-'+activity.id" href="" class="pointer" @click.prevent="activity.edit = true">{{ $t('app.edit') }}</a>
                   <a v-show="destroyActivityId !== activity.id" v-cy-name="'delete-activity-button-'+activity.id" href="" class="pointer" @click.prevent="showDestroyActivity(activity)">{{ $t('app.delete') }}</a>
                   <ul v-show="destroyActivityId === activity.id" class="di">
                     <li class="di">
@@ -122,8 +122,8 @@
                          :name="name"
                          :activity="activity"
                          :contact-id="contactId"
-                         @update="$set(activity, 'edit', false); updateList($event)"
-                         @cancel="$set(activity, 'edit', false); displayLogActivity = false"
+                         @update="activity.edit = false; updateList($event)"
+                         @cancel="activity.edit = false; displayLogActivity = false"
         />
       </div>
       <a v-if="!isLastPage" class="pointer mr1" style="float: right" @click.prevent="getActivities">
@@ -217,7 +217,7 @@ export default {
     updateList(activity) {
       this.displayLogActivity = false;
       const index = this.activities.indexOf(this.activities.find(item => item.id === activity.id));
-      this.$set(this.activities, index >= 0 ? index : this.activities.length, activity);
+      this.activities[index >= 0 ? index : this.activities.length] = activity;
     },
 
     showDestroyActivity(activity) {

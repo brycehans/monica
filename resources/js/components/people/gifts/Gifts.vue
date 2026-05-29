@@ -68,7 +68,7 @@
 
           <div :class="dirltr ? 'fr' : 'fl'">
             <a v-cy-name="'edit-gift-button-' + gift.id" :class="dirltr ? 'mr1' : 'ml1'" class="di" href=""
-               @click.prevent="$set(gift, 'edit', true)"
+               @click.prevent="gift.edit = true"
             >
               {{ $t('app.edit') }}
             </a>
@@ -87,7 +87,7 @@
           :family-contacts="familyContacts"
           :reach-limit="reachLimit"
           @update="updateGift(gift, $event)"
-          @cancel="$set(gift, 'edit', false)"
+          @cancel="gift.edit = false"
         />
       </div>
     </div>
@@ -210,8 +210,8 @@ export default {
       gift.contact_id = this.contactId;
       axios.put(`people/${this.hash}/gifts/${gift.id}`, gift)
         .then(response => {
-          this.$set(gift, 'status', response.data.data.status);
-          this.$set(gift, 'date', response.data.data.date);
+          gift.status = response.data.data.status;
+          gift.date = response.data.data.date;
         });
     },
 
@@ -234,16 +234,16 @@ export default {
     },
 
     updateGift(gift, response) {
-      this.$set(gift, 'edit', false);
-      this.$set(gift, 'name', response.name);
-      this.$set(gift, 'comment', response.comment);
-      this.$set(gift, 'url', response.url);
-      this.$set(gift, 'amount', response.amount);
-      this.$set(gift, 'amount_with_currency', response.amount_with_currency);
-      this.$set(gift, 'status', response.status);
-      this.$set(gift, 'recipient', response.recipient);
-      this.$set(gift, 'date', response.date);
-      this.$set(gift, 'photos', response.photos);
+      gift.edit = false;
+      gift.name = response.name;
+      gift.comment = response.comment;
+      gift.url = response.url;
+      gift.amount = response.amount;
+      gift.amount_with_currency = response.amount_with_currency;
+      gift.status = response.status;
+      gift.recipient = response.recipient;
+      gift.date = response.date;
+      gift.photos = response.photos;
       this.$emit('update', response);
     },
 
