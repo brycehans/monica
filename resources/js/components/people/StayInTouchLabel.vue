@@ -1,4 +1,6 @@
 <script>
+import { h } from 'vue';
+
 export default {
   props: {
     value: {
@@ -7,13 +9,13 @@ export default {
     },
   },
 
-  render(createElement) {
-    const text = this.$tc('people.stay_in_touch_modal_label', this.value, {count: '[slot]'});
+  render() {
+    const text = this.$t('people.stay_in_touch_modal_label', {count: '[slot]'}, this.value);
     const texts = _.split(text, '[slot]');
-    return createElement('div', [
-      createElement('span', texts[0]),
-      this.$slots.default,
-      createElement('span', texts[1]),
+    return h('div', [
+      h('span', texts[0]),
+      this.$slots.default && this.$slots.default(),
+      h('span', texts[1]),
     ]);
   },
 };

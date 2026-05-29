@@ -192,7 +192,7 @@
                 </div>
                 <div v-else class="ba br3 photo-upload-zone mb3 pa3">
                   <div class="tc dib w-100 relative">
-                    {{ $tc('app.file_selected', photos.length, {count: photos.length}) }}
+                    {{ $t('app.file_selected', {count: photos.length}, photos.length) }}
                   </div>
                 </div>
               </div>

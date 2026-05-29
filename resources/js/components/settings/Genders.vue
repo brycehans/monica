@@ -41,7 +41,7 @@
           <div class="pa2">
             {{ gender.name }}
             <span class="i">
-              {{ $tc('settings.personalization_genders_list_contact_number', gender.numberOfContacts, { count: gender.numberOfContacts }) }}
+              {{ $t('settings.personalization_genders_list_contact_number', { count: gender.numberOfContacts }, gender.numberOfContacts) }}
             </span>
           </div>
         </div>
@@ -183,10 +183,10 @@
           </p>
           <div v-if="deleteForm.numberOfContacts !== 0 || deleteForm.isDefault">
             <p v-if="deleteForm.numberOfContacts !== 0">
-              {{ $tc('settings.personalization_genders_modal_delete_question', deleteForm.numberOfContacts, {count: deleteForm.numberOfContacts}) }}
+              {{ $t('settings.personalization_genders_modal_delete_question', {count: deleteForm.numberOfContacts}, deleteForm.numberOfContacts) }}
             </p>
             <p v-else>
-              {{ $tc('settings.personalization_genders_modal_delete_question_default') }}
+              {{ $t('settings.personalization_genders_modal_delete_question_default') }}
             </p>
             <form-select
               :id="'deleteNewId'"

@@ -28,7 +28,7 @@
     <!-- Contact has a frequency set -->
     <div v-else class="di">
       <span v-tooltip.bottom="$t('people.stay_in_touch_next_date', { date: formatDate(nextTriggerDate) })" class="bb dashed dib pointer nowrap-link">
-        {{ $tc('people.stay_in_touch_frequency', frequencyInput, { count: frequencyInput }) }}
+        {{ $t('people.stay_in_touch_frequency', { count: frequencyInput }, frequencyInput) }}
       </span>
       <a class="pointer" href="" @click.prevent="showUpdate">
         {{ $t('app.edit') }}
