@@ -16,6 +16,7 @@ import './bootstrap';
 import { createApp } from 'vue';
 import { createVfm } from 'vue-final-modal';
 import 'vue-final-modal/style.css';
+import Notifications from '@kyvg/vue3-notification';
 
 // Custom components — Passport
 import PassportClients from './components/passport/Clients.vue';
@@ -117,6 +118,7 @@ common.loadLanguage(window.Laravel.locale, true).then((i18n) => {
   app.use(i18n);
   app.use(testingDirectives);
   app.use(createVfm());
+  app.use(Notifications);
 
   // Custom components
   app.component('PassportClients', PassportClients);

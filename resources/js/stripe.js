@@ -14,6 +14,7 @@ import './bootstrap';
  */
 
 import { createApp } from 'vue';
+import Notifications from '@kyvg/vue3-notification';
 import StripeSubscription from './components/settings/Subscription.vue';
 import FormInput from './components/partials/form/Input.vue';
 import ContactSearch from './components/people/ContactSearch.vue';
@@ -30,6 +31,7 @@ common.loadLanguage(window.Laravel.locale, true).then((i18n) => {
   });
 
   app.use(i18n);
+  app.use(Notifications);
 
   // Custom components
   app.component('StripeSubscription', StripeSubscription);
