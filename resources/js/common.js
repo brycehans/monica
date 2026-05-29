@@ -3,13 +3,8 @@
 // axios
 import axios from 'axios';
 
-// Vue (imported explicitly rather than relying on window.Vue — modules are
-// singletons, so this is the same instance app.js/stripe.js use.)
-import Vue from 'vue';
-
 // i18n
-import VueI18n from 'vue-i18n';
-Vue.use(VueI18n);
+import { createI18n } from 'vue-i18n';
 
 // Moments
 import moment from 'moment';
@@ -51,26 +46,29 @@ import messages from '../../public/js/langs/en.json';
 import pluralization from './pluralization.js';
 
 export default {
-  i18n: new VueI18n({
-    locale: 'en', // set locale
+  i18n: createI18n({
+    legacy: true,
+    locale: 'en',
     fallbackLocale: 'en',
     messages: {'en': messages},
     pluralizationRules: pluralization,
   }),
-  
+
   loadedLanguages : ['en'], // our default language that is preloaded
-  
+
   _setI18nLanguage (lang) {
-    this.i18n.locale = lang;
+    // Legacy-mode locale is a plain string property, not a ref — direct
+    // assignment (not `.value`). Composition mode is the `.value` shape.
+    this.i18n.global.locale = lang;
     axios.defaults.headers.common['Accept-Language'] = lang;
     document.querySelector('html').setAttribute('lang', lang);
   },
-  
+
   _loadLanguageAsync (lang) {
-    if (this.i18n.locale !== lang) {
+    if (this.i18n.global.locale !== lang) {
       if (!this.loadedLanguages.includes(lang)) {
         return axios.get(`js/langs/${lang}.json`).then(msgs => {
-          this.i18n.setLocaleMessage(lang, msgs.data);
+          this.i18n.global.setLocaleMessage(lang, msgs.data);
           this.loadedLanguages.push(lang);
           return this.i18n;
         });
