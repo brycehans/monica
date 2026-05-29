@@ -80,7 +80,7 @@
             :iclass="'br2 f5 w-50 ba b--black-40 pa2 outline-0'"
             :required="true"
             :title="$t('settings.api_token_name')"
-            :validator="$v.form.name"
+            :validator="v$.form.name"
           />
         </div>
 
@@ -142,8 +142,8 @@
 <script>
 import Errors from '../partials/Error.vue';
 import { SweetModal } from 'sweet-modal-vue';
-import { validationMixin } from 'vuelidate';
-import { required } from 'vuelidate/lib/validators';
+import { useVuelidate } from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
 
 export default {
 
@@ -152,7 +152,7 @@ export default {
     Errors,
   },
 
-  mixins: [validationMixin],
+  setup: () => ({ v$: useVuelidate() }),
 
   data() {
     return {
@@ -170,12 +170,14 @@ export default {
     };
   },
 
-  validations: {
-    form: {
-      name: {
-        required,
+  validations() {
+    return {
+      form: {
+        name: {
+          required,
+        }
       }
-    }
+    };
   },
 
   computed: {
@@ -221,7 +223,7 @@ export default {
      */
     closeModal() {
       this.$refs.form.reset();
-      this.$v.$reset();
+      this.v$.$reset();
       this.$refs.modalCreateToken.close();
       this.$refs.modalAccessToken.close();
     },
@@ -247,9 +249,9 @@ export default {
      * Create a new personal access token.
      */
     store() {
-      this.$v.$touch();
+      this.v$.$touch();
 
-      if (this.$v.$invalid) {
+      if (this.v$.$invalid) {
         return;
       }
 

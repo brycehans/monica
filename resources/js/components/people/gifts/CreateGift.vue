@@ -58,7 +58,7 @@
             :required="true"
             :class="'dtc pr2'"
             :title="$t('people.gifts_add_gift_name')"
-            :validator="$v.newGift.name"
+            :validator="v$.newGift.name"
             @submit="store"
           />
         </div>
@@ -153,7 +153,7 @@
             v-model="newGift.recipient_id"
             :label="$t('people.gifts_add_recipient_field')"
             :options="familyContacts"
-            :validator="$v.newGift.recipient_id"
+            :validator="v$.newGift.recipient_id"
             @input="hasRecipient = true"
           />
         </div>
@@ -226,16 +226,14 @@
 
 import Error from '../../partials/Error.vue';
 import PhotoUpload from '../photo/PhotoUpload.vue';
-import { validationMixin } from 'vuelidate';
-import { required, maxLength } from 'vuelidate/lib/validators';
+import { useVuelidate } from '@vuelidate/core';
+import { required, maxLength } from '@vuelidate/validators';
 
 export default {
   components: {
     Error,
     PhotoUpload
   },
-
-  mixins: [validationMixin],
 
   model: {
     prop: 'gift',
@@ -264,6 +262,8 @@ export default {
       default: true,
     },
   },
+
+  setup: () => ({ v$: useVuelidate() }),
 
   data() {
     return {
@@ -371,7 +371,7 @@ export default {
       this.displayUpload= this.gift ? this.gift.photos.length > 0 : false;
 
       this.errors = [];
-      this.$v.$reset();
+      this.v$.$reset();
     },
 
     close() {
@@ -384,9 +384,9 @@ export default {
         this.newGift.recipient_id = null;
       }
 
-      this.$v.$touch();
+      this.v$.$touch();
 
-      if (this.$v.$invalid) {
+      if (this.v$.$invalid) {
         return;
       }
 

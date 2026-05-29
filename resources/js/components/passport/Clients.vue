@@ -111,7 +111,7 @@
               :iclass="'br2 f5 w-50 ba b--black-40 pa2 outline-0'"
               :required="true"
               :title="$t('settings.api_oauth_name')"
-              :validator="$v.form.name"
+              :validator="v$.form.name"
               @submit="store"
             />
 
@@ -130,7 +130,7 @@
               :iclass="'br2 f5 w-50 ba b--black-40 pa2 outline-0'"
               :required="true"
               :title="$t('settings.api_oauth_redirecturl')"
-              :validator="$v.form.redirect"
+              :validator="v$.form.redirect"
               @submit="store"
             />
 
@@ -186,8 +186,8 @@
 <script>
 import Errors from '../partials/Error.vue';
 import { SweetModal } from 'sweet-modal-vue';
-import { validationMixin } from 'vuelidate';
-import { required, url } from 'vuelidate/lib/validators';
+import { useVuelidate } from '@vuelidate/core';
+import { required, url } from '@vuelidate/validators';
 
 export default {
 
@@ -196,7 +196,7 @@ export default {
     Errors,
   },
 
-  mixins: [validationMixin],
+  setup: () => ({ v$: useVuelidate() }),
 
   data() {
     return {
@@ -211,16 +211,18 @@ export default {
     };
   },
 
-  validations: {
-    form: {
-      name: {
-        required,
-      },
-      redirect: {
-        required,
-        url,
+  validations() {
+    return {
+      form: {
+        name: {
+          required,
+        },
+        redirect: {
+          required,
+          url,
+        }
       }
-    }
+    };
   },
 
   computed: {
@@ -270,9 +272,9 @@ export default {
      * Create a new OAuth client for the user.
      */
     store() {
-      this.$v.$touch();
+      this.v$.$touch();
 
-      if (this.$v.$invalid) {
+      if (this.v$.$invalid) {
         return;
       }
 
@@ -354,7 +356,7 @@ export default {
 
     closeModal() {
       this.resetField();
-      this.$v.$reset();
+      this.v$.$reset();
       this.$refs.form.reset();
       this.$refs.modalClient.close();
     },

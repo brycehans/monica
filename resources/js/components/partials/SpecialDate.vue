@@ -37,7 +37,7 @@
               :input-type="'number'"
               :width="50"
               :required="true"
-              :validator="$v.selectedAge"
+              :validator="v$.selectedAge"
             />
           </div>
         </form-radio>
@@ -92,7 +92,7 @@
               :locale="locale"
               :label="$t('people.information_edit_birthdate_label')"
               :class="[ dirltr ? 'fl' : 'fr' ]"
-              :validator="$v.selectedDate"
+              :validator="v$.selectedDate"
             />
           </div>
         </form-radio>
@@ -118,8 +118,8 @@
 
 <script>
 import moment from 'moment';
-import { validationMixin } from 'vuelidate';
-import { required, numeric, helpers } from 'vuelidate/lib/validators';
+import { useVuelidate } from '@vuelidate/core';
+import { required, numeric, helpers } from '@vuelidate/validators';
 
 const before = (param) =>
   helpers.withParams(
@@ -128,8 +128,6 @@ const before = (param) =>
   );
 
 export default {
-
-  mixins: [validationMixin],
 
   props: {
     value: {
@@ -165,6 +163,8 @@ export default {
       default: false,
     },
   },
+
+  setup: () => ({ v$: useVuelidate() }),
 
   data() {
     return {

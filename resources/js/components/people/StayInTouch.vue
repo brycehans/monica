@@ -128,7 +128,7 @@
             <div class="dib relative" style="top: -2px;">
               <stay-in-touch-label
                 v-model="frequencyInput"
-                :class="{ 'form-group-error': $v.frequencyInput.$error }"
+                :class="{ 'form-group-error': v$.frequencyInput.$error }"
               >
                 <div class="dib">
                   <form-input
@@ -137,7 +137,7 @@
                     :input-type="'number'"
                     :width="60"
                     :required="true"
-                    :validator="$v.frequencyInput"
+                    :validator="v$.frequencyInput"
                     @input="onInput($event)"
                   />
                 </div>
@@ -169,8 +169,8 @@
 <script>
 import { SweetModal } from 'sweet-modal-vue';
 import { ToggleButton } from 'vue-js-toggle-button';
-import { validationMixin } from 'vuelidate';
-import { required, numeric } from 'vuelidate/lib/validators';
+import { useVuelidate } from '@vuelidate/core';
+import { required, numeric } from '@vuelidate/validators';
 import moment from 'moment-timezone';
 import StayInTouchLabel from './StayInTouchLabel';
 
@@ -181,8 +181,6 @@ export default {
     ToggleButton,
     StayInTouchLabel,
   },
-
-  mixins: [validationMixin],
 
   props: {
     hash: {
@@ -207,11 +205,15 @@ export default {
     },
   },
 
-  validations: {
-    frequencyInput: {
-      required,
-      numeric,
-    },
+  setup: () => ({ v$: useVuelidate() }),
+
+  validations() {
+    return {
+      frequencyInput: {
+        required,
+        numeric,
+      },
+    };
   },
 
   data() {
@@ -271,9 +273,9 @@ export default {
         return;
       }
 
-      this.$v.$touch();
+      this.v$.$touch();
 
-      if (this.$v.$invalid) {
+      if (this.v$.$invalid) {
         return;
       }
 
