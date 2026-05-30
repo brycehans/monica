@@ -67,6 +67,12 @@ export default {
     },
     confirm(event) {
       this.close();
+      // vue-final-modal teleports the modal's submit button out of the
+      // parent form, so the button's native submit no longer fires. The
+      // component's root (`this.$el`) is not teleported and is still
+      // inside the form when one exists. See #727.
+      const form = this.$el.closest('form');
+      if (form) form.submit();
       this.$emit('confirm', event);
     }
   }
