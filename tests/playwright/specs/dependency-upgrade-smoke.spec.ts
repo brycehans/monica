@@ -360,7 +360,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     // Open the Create Client modal.
     await page.getByRole('link', { name: 'Create New Client' }).click();
-    const createModal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Create Client' });
+    const createModal = page.locator('.monica-modal__panel').filter({ hasText: 'Create Client' });
     await expect(createModal).toBeVisible();
 
     // Fill name + redirect, submit.
@@ -370,7 +370,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     // Create modal closes, Client Secret modal opens with the plain value.
     await expect(createModal).toBeHidden();
-    const secretModal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Client Secret' });
+    const secretModal = page.locator('.monica-modal__panel').filter({ hasText: 'Client Secret' });
     await expect(secretModal).toBeVisible();
 
     const secretText = (await secretModal.locator('[cy-name="client-secret-display"] code').textContent())?.trim() ?? '';
@@ -379,7 +379,9 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     expect(secretText).toMatch(/^[A-Za-z0-9]+$/);
 
     // Close the secret modal. The new client should still be in the list.
-    await secretModal.getByRole('link', { name: 'Close', exact: true }).click();
+    // Scope to the footer button slot — MonicaModal renders an aria-labelled
+    // × icon at the top-right that would otherwise also match.
+    await secretModal.locator('.monica-modal__footer').getByRole('link', { name: 'Close', exact: true }).click();
     await expect(secretModal).toBeHidden();
     await expect(page.locator('body')).toContainText(marker);
 
@@ -447,11 +449,11 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // The "Add new gender type" anchor opens the sweet-modal.
     await page.getByRole('link', { name: 'Add new gender type' }).click();
 
-    // sweet-modal renders inside .sweet-modal-overlay. We scope to that
-    // container so we don't pick up unrelated form-input components on the
-    // page underneath (Genders / Contact field types / etc. all share the
-    // same form-input).
-    const modal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Add gender type' });
+    // monica-modal wraps its slot body inside .monica-modal__panel. Scope
+    // to that wrapper so we don't pick up unrelated form-input components
+    // on the page underneath (Genders / Contact field types / etc. all
+    // share the same form-input).
+    const modal = page.locator('.monica-modal__panel').filter({ hasText: 'Add gender type' });
     await expect(modal).toBeVisible();
 
     // The "Name" field — first text input inside the modal. form-input
@@ -735,10 +737,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
       await page.getByRole('link', { name: 'Add a new security key' }).click();
 
-      // The modal is a <sweet-modal-overlay>; scope by "Key name" body copy —
-      // the underlying page also has a "Security key …" <h3>, which we'd
-      // rather not collide with.
-      const modal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Key name' }).first();
+      // The modal is a monica-modal/vue-final-modal; scope by "Key name"
+      // body copy — the underlying page also has a "Security key …" <h3>,
+      // which we'd rather not collide with.
+      const modal = page.locator('.monica-modal__panel').filter({ hasText: 'Key name' }).first();
       await expect(modal).toBeVisible();
 
       // form-input wraps the <input>, generating an id like `keyName<n>`
@@ -1356,7 +1358,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       // which opens the modal via $refs.updateModal.open().
       await page.getByRole('link', { name: 'Stay in touch', exact: true }).first().click();
 
-      const modal = page.locator('.sweet-modal-overlay.is-visible').filter({ hasText: 'Stay in touch' });
+      const modal = page.locator('.monica-modal__panel').filter({ hasText: 'Stay in touch' });
       await expect(modal).toBeVisible();
 
       const toggleCheckbox = modal.locator('input[type="checkbox"]').first();
@@ -1467,10 +1469,13 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     await page.getByRole('link', { name: 'Enable Two Factor Authentication' }).click();
 
-    // The enable modal mounts under id=enableModal. The OTP input renders
-    // with name="one_time_password1" (the id seed in MfaActivate.vue:36);
+    // The enable modal renders under .monica-modal__panel with the
+    // 2fa_otp_title heading. The OTP input renders with
+    // name="one_time_password1" (the id seed in MfaActivate.vue:36);
     // the Verify anchor has id="verify1".
-    const modal = page.locator('#enableModal.is-visible');
+    const modal = page.locator('.monica-modal__panel').filter({
+      hasText: 'Two Factor Authentication mobile application',
+    });
     await expect(modal).toBeVisible();
 
     await modal.locator('input[name="one_time_password1"]').fill('123456');
@@ -1563,10 +1568,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       buffer: tinyPng,
     });
 
-    // The crop modal opens via $refs.cropModal.open(). It's marked
-    // :blocking="true" :hide-close-button="true" so we assert visibility
-    // by class + content, then dismiss with the Cancel anchor.
-    const cropModal = page.locator('.sweet-modal-overlay.is-visible').filter({
+    // The crop modal opens via cropModalOpen=true and renders inside
+    // .monica-modal__panel. We assert visibility by content, then
+    // dismiss with the Cancel anchor.
+    const cropModal = page.locator('.monica-modal__panel').filter({
       hasText: 'Crop new avatar photo',
     });
     await expect(cropModal).toBeVisible();

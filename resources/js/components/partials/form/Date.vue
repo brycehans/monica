@@ -12,10 +12,10 @@
       :auto-apply="true"
     />
     <input :name="id" type="hidden" :value="exchange" />
-    <small v-if="validator && (validator.$error && validator.required !== undefined && !validator.required)" class="error">
+    <small v-if="validator?.$error && validator.required?.$invalid" class="error">
       {{ requiredMessage }}
     </small>
-    <small v-if="validator && (validator.$error && validator.before !== undefined && !validator.before)" class="error">
+    <small v-if="validator?.$error && validator.before?.$invalid" class="error">
       {{ beforeMessage }}
     </small>
   </div>
@@ -75,7 +75,7 @@ export default {
     beforeMessage() {
       return this.$t('validation.vue.max.numeric', {
         field: this.label,
-        max: this.displayValue(this.validator.$params.before.date),
+        max: this.displayValue(this.validator?.before?.$params?.date),
       });
     },
   },

@@ -29,18 +29,24 @@ textarea:focus {
       :rows="rows"
       class="br2 f5 w-100 ba b--black-40 pa2 outline-0"
       :style="textareaStyle"
-      @input="$emit('input', buffer)"
+      @input="emitUpdate"
     ></textarea>
   </div>
 </template>
 
 <script>
+import { getCurrentInstance } from 'vue';
+
 export default {
 
   props: {
-    value: {
+    modelValue: {
       type: String,
       default: '',
+    },
+    modelModifiers: {
+      type: Object,
+      default: () => ({}),
     },
     label: {
       type: String,
@@ -68,15 +74,21 @@ export default {
     }
   },
 
+  emits: ['update:modelValue', 'input'],
+
+  setup() {
+    return { uid: getCurrentInstance().uid };
+  },
+
   data() {
     return {
-      buffer: this.value
+      buffer: this.modelValue
     };
   },
 
   computed: {
     realid() {
-      return this.id + this._uid;
+      return this.id + this.uid;
     },
     textareaStyle() {
       return this.width >= 0 ? 'width:' + this.width + 'px' : '';
@@ -84,13 +96,20 @@ export default {
   },
 
   watch: {
-    value: function (newValue) {
+    modelValue: function (newValue) {
       this.buffer = newValue;
     }
   },
 
   mounted() {
-    this.buffer = this.value;
+    this.buffer = this.modelValue;
+  },
+
+  methods: {
+    emitUpdate() {
+      this.$emit('update:modelValue', this.buffer);
+      this.$emit('input', this.buffer);
+    },
   },
 };
 </script>
