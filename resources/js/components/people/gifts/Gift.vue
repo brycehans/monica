@@ -105,7 +105,7 @@ export default {
     },
 
     formatDate(dateAsString) {
-      moment.locale(this._i18n.locale);
+      moment.locale(this.$i18n.locale);
       moment.tz.setDefault('UTC');
 
       var date = moment.tz(moment(dateAsString), this.$root.timezone);
