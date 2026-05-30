@@ -22,13 +22,4 @@ module.exports = defineConfig({
     supportFile: 'tests/cypress/support/e2e.js',
     specPattern: 'tests/cypress/e2e/**/*.cy.js',
   },
-  component: {
-    devServer: {
-      framework: 'vue',
-      bundler: 'vite',
-    },
-    supportFile: 'tests/cypress/support/component.js',
-    specPattern: 'tests/cypress/component/**/*.cy.js',
-    indexHtmlFile: 'tests/cypress/support/component-index.html',
-  },
 });
