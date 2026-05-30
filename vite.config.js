@@ -57,16 +57,6 @@ export default defineConfig(({ mode }) => ({
   build: {
     sourcemap: true,
   },
-  optimizeDeps: {
-    // sweet-modal-vue's `module` field points at raw src/ with extension-less
-    // .vue imports (`import SweetModal from './components/SweetModal'`).
-    // Production `vite build` resolves those via plugin-vue2 + the .vue
-    // extension in resolve.extensions, but the dev-server's esbuild
-    // dep-pre-bundling step doesn't honour that list. Skipping pre-bundling
-    // lets plugin-vue2 handle the imports lazily. Affects `vite` dev server
-    // and @cypress/vite-dev-server; `vite build` (Rollup) is unaffected.
-    exclude: ['sweet-modal-vue'],
-  },
   css: {
     // LightningCSS minification (Vite 8 default) rejects legacy IE6/7 star-
     // property hacks like Tachyons' `*zoom: 1`. Enable error recovery so the
@@ -87,27 +77,32 @@ export default defineConfig(({ mode }) => ({
             './resources/js/**/*.js',
             './app/**/*.php',
           ],
+          // Vendor CSS class prefixes that PurgeCSS can't statically observe
+          // because the consuming JS (in node_modules) injects them at runtime.
+          // Update when swapping a vendor: drop the predecessor's prefix and
+          // add the new vendor's.
           safelist: {
             standard: [
-              /^autosuggest/,
-              /^fa-/,
-              /^vdp-datepicker/,
-              /^StripeElement/,
-              /^vgt/,
-              /^vue-tooltip/,
-              /^pretty/,
-              /^sweet-/,
-              /^vuejs-clipper-basic/,
-              /^vs__/,
-              /^sr-only/,
+              /^fa-/,                  // font-awesome
+              /^StripeElement/,        // @stripe/stripe-js
+              /^sr-only/,              // accessibility utility
+              /^pretty/,               // pretty-checkbox (still imported)
+              /^vgt/,                  // vue-good-table-next (vgt-* prefix)
+              /^multiselect/,          // @vueform/multiselect
+              /^dp__/,                 // @vuepic/vue-datepicker (elements)
+              /^dp--/,                 // @vuepic/vue-datepicker (modifiers)
+              /^vfm/,                  // vue-final-modal (monica-modal wrapper)
+              /^v-popper/,             // floating-vue tooltips
+              /^cropper/,              // vue-cropperjs / cropperjs
+              /^contact-autosuggest/,  // our ContactAutosuggest.vue scoped styles
             ],
             deep: [
-              /^vdp-datepicker/,
               /^vgt/,
-              /^vue-tooltip/,
               /^pretty/,
-              /^sweet-/,
-              /^vs-/,
+              /^multiselect/,
+              /^dp__/,
+              /^dp--/,
+              /^vfm/,
             ],
           },
         }),
