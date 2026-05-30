@@ -50,7 +50,7 @@
             <div class="dt dt--fixed">
               <div class="dtc pr2">
                 <form-input
-                  value=""
+                  model-value=""
                   :input-type="'text'"
                   :id="'first_name'"
                   :required="true"
@@ -59,7 +59,7 @@
               </div>
               <div class="dtc">
                 <form-input
-                  value=""
+                  model-value=""
                   :input-type="'text'"
                   :id="'last_name'"
                   :required="false"
@@ -73,7 +73,7 @@
             <div class="dt dt--fixed">
               <div class="dtc pr2">
                 <form-input
-                  value=""
+                  model-value=""
                   :input-type="'text'"
                   :id="'last_name'"
                   :required="false"
@@ -82,7 +82,7 @@
               </div>
               <div class="dtc">
                 <form-input
-                  value=""
+                  model-value=""
                   :input-type="'text'"
                   :id="'first_name'"
                   :required="true"
@@ -102,7 +102,7 @@
             :required="false"
             :title="'{{ trans('people.people_add_gender') }}'"
             :id="'gender_id'"
-            :value="'{{ $defaultGender }}'">
+            :model-value="'{{ $defaultGender }}'">
           </form-select>
         </div>
 
@@ -158,7 +158,7 @@
       <div class="pa4-ns ph3 pv2 mb3 mb0-ns bb b--gray-monica">
         <form-select
           :options="{{ $relationshipTypes }}"
-          value="{{ $type }}"
+          model-value="{{ $type }}"
           :required="true"
           :title="'{{ trans('people.relationship_form_is_with') }}'"
           :id="'relationship_type_id'">

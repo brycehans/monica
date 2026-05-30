@@ -52,7 +52,7 @@
               <form-date
                 :id="'conversationDate'"
                 :default-date="'{{ now() }}'"
-                :value="'{{ $conversation->happened_at }}'"
+                :model-value="'{{ $conversation->happened_at }}'"
                 :locale="'{{ \App::getLocale() }}'">
               </form-date>
             </span></label>
@@ -65,7 +65,7 @@
         <form-select
           :options="{{ $contactFieldTypes }}"
           :required="true"
-          value="{{ $conversation->contact_field_type_id }}"
+          model-value="{{ $conversation->contact_field_type_id }}"
           :title="'{{ trans('people.conversation_add_how') }}'"
           :id="'contactFieldTypeId'">
         </form-select>

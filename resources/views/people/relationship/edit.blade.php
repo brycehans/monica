@@ -37,7 +37,7 @@
             <div class="dt dt--fixed">
               <div class="dtc pr2">
                 <form-input
-                  value="{{ $partner->first_name }}"
+                  model-value="{{ $partner->first_name }}"
                   :input-type="'text'"
                   :id="'first_name'"
                   :required="true"
@@ -46,7 +46,7 @@
               </div>
               <div class="dtc">
                 <form-input
-                  value="{{ $partner->last_name }}"
+                  model-value="{{ $partner->last_name }}"
                   :input-type="'text'"
                   :id="'last_name'"
                   :required="false"
@@ -60,7 +60,7 @@
             <div class="dt dt--fixed">
               <div class="dtc pr2">
                 <form-input
-                  value="{{ $partner->last_name }}"
+                  model-value="{{ $partner->last_name }}"
                   :input-type="'text'"
                   :id="'last_name'"
                   :required="false"
@@ -69,7 +69,7 @@
               </div>
               <div class="dtc">
                 <form-input
-                  value="{{ $partner->first_name }}"
+                  model-value="{{ $partner->first_name }}"
                   :input-type="'text'"
                   :id="'first_name'"
                   :required="true"
@@ -87,7 +87,7 @@
           <form-select
             :options="{{ $genders }}"
             :required="false"
-            value="{{ $partner->gender_id }}"
+            model-value="{{ $partner->gender_id }}"
             :title="'{{ trans('people.people_add_gender') }}'"
             :id="'gender_id'">
           </form-select>
@@ -130,7 +130,7 @@
       <div class="pa4-ns ph3 pv2 mb3 mb0-ns bb b--gray-monica">
         <form-select
           :options="{{ $relationshipTypes }}"
-          value="{{ $type }}"
+          model-value="{{ $type }}"
           :required="true"
           :title="'{{
             $partner->is_partial ?
