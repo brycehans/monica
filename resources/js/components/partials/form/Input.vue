@@ -30,7 +30,7 @@
       :placeholder="placeholder"
       :class="inputClass"
       :style="inputStyle"
-      :value="value"
+      :value="modelValue"
       :maxlength="maxlength"
       :step="step"
       @input="onInput($event)"
@@ -38,25 +38,31 @@
       @change="onChange($event)"
       @keyup.enter="onSubmit($event)"
     />
-    <small v-if="validator && (validator.$error && validator.required !== undefined && !validator.required)" class="error">
+    <small v-if="validator?.$error && validator.required?.$invalid" class="error">
       {{ requiredMessage }}
     </small>
-    <small v-if="validator && (validator.$error && validator.maxLength !== undefined && !validator.maxLength)" class="error">
+    <small v-if="validator?.$error && validator.maxLength?.$invalid" class="error">
       {{ maxLengthMessage }}
     </small>
-    <small v-if="validator && (validator.$error && validator.url !== undefined && !validator.url)" class="error">
+    <small v-if="validator?.$error && validator.url?.$invalid" class="error">
       {{ urlMessage }}
     </small>
   </div>
 </template>
 
 <script>
+import { getCurrentInstance } from 'vue';
+
 export default {
 
   props: {
-    value: {
+    modelValue: {
       type: [String, Number],
       default: '',
+    },
+    modelModifiers: {
+      type: Object,
+      default: () => ({}),
     },
     title: {
       type: String,
@@ -104,9 +110,15 @@ export default {
     },
   },
 
+  emits: ['update:modelValue', 'input', 'submit', 'blur', 'change'],
+
+  setup() {
+    return { uid: getCurrentInstance().uid };
+  },
+
   computed: {
     realid() {
-      return this.id + this._uid;
+      return this.id + this.uid;
     },
     inputClass() {
       var c = [this.iclass !== '' ? this.iclass : 'br2 f5 w-100 ba b--black-40 pa2 outline-0'];
@@ -138,7 +150,7 @@ export default {
       }
       return this.$t(`validation.vue.max.${type}`, {
         field: this.field,
-        max: this.validator ? this.validator.$params.maxLength.max : '',
+        max: this.validator?.maxLength?.$params?.max ?? '',
       });
     },
   },
@@ -148,11 +160,16 @@ export default {
       this.$refs.input.focus();
     },
 
+    emitUpdate(val) {
+      this.$emit('update:modelValue', val);
+      this.$emit('input', val);
+    },
+
     onInput(event) {
       if (this.validator && event.data !== undefined) {
         this.validator.$reset();
       }
-      this.$emit('input', event.target.value);
+      this.emitUpdate(event.target.value);
     },
 
     onSubmit(event) {

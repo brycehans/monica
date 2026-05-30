@@ -192,8 +192,6 @@ export default {
 
   methods: {
     prepareComponent() {
-      //this.$refs.modalAccessToken.$refs.content.className = 'flex-auto';
-      this.$refs.modalAccessToken.$refs.content.getElementsByClassName('sweet-content-content')[0].className = 'flex-auto';
       this.getTokens();
       this.getScopes();
     },

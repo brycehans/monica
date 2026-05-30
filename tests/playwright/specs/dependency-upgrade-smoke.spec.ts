@@ -481,7 +481,9 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     await page.getByRole('link', { name: 'Create New Token' }).click();
 
-    const modal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Create Token' });
+    // The MonicaModal wrapper renders the title + slot body inside
+    // .monica-modal__panel, scoped here for filtering by visible heading.
+    const modal = page.locator('.monica-modal__panel').filter({ hasText: 'Create Token' });
     await expect(modal).toBeVisible();
 
     // Click "Create" without filling the name field. The button is an
