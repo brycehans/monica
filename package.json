@@ -64,6 +64,7 @@
     "axios": "^1.16",
     "bootstrap": "^4.6",
     "cropperjs": "^1.6.2",
+    "date-fns": "^4",
     "dompurify": "^3.4",
     "floating-vue": "^5.2",
     "focus-trap": "^8.0",

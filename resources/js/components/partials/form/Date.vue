@@ -3,7 +3,7 @@
     <datepicker
       v-model="selectedDate"
       :format="displayValue"
-      :locale="locale"
+      :locale="dateFnsLocale"
       :week-start="mondayFirst ? 1 : 0"
       :input-class-name="inputClass"
       :text-input="true"
@@ -24,6 +24,31 @@
 <script>
 import { VueDatePicker as Datepicker } from '@vuepic/vue-datepicker';
 import moment from 'moment';
+// @vuepic/vue-datepicker v13 passes :locale straight to date-fns/format,
+// which expects a Locale OBJECT (not a string). Map the Laravel locale
+// codes Monica ships (resources/lang/) to date-fns Locale modules; fall
+// back to enUS for anything we don't have a direct match for.
+import {
+  ar, cs, da, de, el, enGB, enUS, es, faIR, fi, fr, he, hr, id as idLocale,
+  it, ja, nb, nl, pt, ptBR, ru, sv, tr, uk, vi, zhCN, zhTW,
+} from 'date-fns/locale';
+
+const LOCALE_MAP = {
+  ar, cs, da, de, el, es, fi, fr, he, hr, it, ja, nl, pt, ru, sv, tr, uk, vi,
+  en: enUS,
+  'en-GB': enGB,
+  fa: faIR,
+  id: idLocale,
+  no: nb,
+  'pt-BR': ptBR,
+  zh: zhCN,
+  'zh-TW': zhTW,
+};
+
+function resolveDateFnsLocale(code) {
+  if (!code) return enUS;
+  return LOCALE_MAP[code] || LOCALE_MAP[code.split('-')[0]] || enUS;
+}
 
 export default {
 
@@ -52,6 +77,10 @@ export default {
   },
 
   computed: {
+    dateFnsLocale() {
+      return resolveDateFnsLocale(this.locale);
+    },
+
     exchangeFormat() {
       return 'YYYY-MM-DD';
     },
