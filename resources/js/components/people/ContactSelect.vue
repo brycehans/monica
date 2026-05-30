@@ -11,7 +11,7 @@
       :placeholder="placeholder"
       :delay="wait"
       :min-chars="0"
-      :resolve-on-load="false"
+      :resolve-on-load="true"
       :filter-results="false"
       :searchable="true"
       label="complete_name"

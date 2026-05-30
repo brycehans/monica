@@ -13,11 +13,11 @@ describe('Avatar upload / crop / save', function () {
       cy.contains('label', 'From a photo that you upload').click();
       cy.get('input[type=file][name=photo]').selectFile('tests/cypress/fixtures/avatar-test.jpg', { force: true });
 
-      cy.get('.sweet-modal.is-visible', { timeout: 10000 }).should('exist');
-      cy.get('.sweet-modal.is-visible .cropper-container', { timeout: 10000 }).should('exist');
-      cy.contains('.sweet-modal.is-visible .btn-primary', 'Done').click({ force: true });
+      cy.get('.monica-modal__panel', { timeout: 10000 }).should('exist');
+      cy.get('.monica-modal__panel .cropper-container', { timeout: 10000 }).should('exist');
+      cy.contains('.monica-modal__panel .btn-primary', 'Done').click({ force: true });
 
-      cy.get('.sweet-modal.is-visible').should('not.exist');
+      cy.get('.monica-modal__panel').should('not.exist');
 
       cy.get('button[name=save][type=submit]').click();
 
@@ -36,10 +36,10 @@ describe('Avatar upload / crop / save', function () {
       cy.contains('label', 'From a photo that you upload').click();
       cy.get('input[type=file][name=photo]').selectFile('tests/cypress/fixtures/avatar-test.jpg', { force: true });
 
-      cy.get('.sweet-modal.is-visible', { timeout: 10000 }).should('exist');
-      cy.contains('.sweet-modal.is-visible .btn', 'Cancel').click({ force: true });
+      cy.get('.monica-modal__panel', { timeout: 10000 }).should('exist');
+      cy.contains('.monica-modal__panel .btn', 'Cancel').click({ force: true });
 
-      cy.get('.sweet-modal.is-visible').should('not.exist');
+      cy.get('.monica-modal__panel').should('not.exist');
       cy.get('input[type=file][name=photo]').should(($input) => {
         expect($input[0].files.length).to.equal(0);
       });
