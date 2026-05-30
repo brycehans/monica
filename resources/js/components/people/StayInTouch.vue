@@ -211,7 +211,6 @@ export default {
         required,
         numeric,
       },
-      showUpdateModal: false,
     };
   },
 
@@ -222,6 +221,7 @@ export default {
       frequencyInput: 0,
       nextTriggerDate: null,
       stateInput: false,
+      showUpdateModal: false,
     };
   },
 
