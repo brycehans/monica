@@ -52,10 +52,10 @@
         enabled: true,
         placeholder: $t('people.people_search'),
       }"
-      @on-page-change="onPageChange"
-      @on-per-page-change="onPerPageChange"
-      @on-search="onSearch"
-      @on-row-click="onRowClick"
+      @page-change="onPageChange"
+      @per-page-change="onPerPageChange"
+      @search="onSearch"
+      @row-click="onRowClick"
     >
       <template #emptystate>
         <div v-if="!ready" class="vgt-center-align vgt-text-disabled h3">

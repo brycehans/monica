@@ -10,7 +10,7 @@
       :pagination-options="{
         enabled: true
       }"
-      @on-row-click="onRowClick"
+      @row-click="onRowClick"
     >
       <template #table-row="props">
         <span v-if="props.column.field === 'message_count'">
