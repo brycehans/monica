@@ -48,6 +48,8 @@
     class="monica-modal"
     content-class="monica-modal__content"
     overlay-class="monica-modal__overlay"
+    :click-to-close="!blocking"
+    :esc-to-close="!blocking"
     @update:model-value="(v) => $emit('update:modelValue', v)"
     @opened="$emit('open')"
     @closed="$emit('close')"
@@ -56,7 +58,7 @@
       <h3 v-if="title" class="monica-modal__title">
         {{ title }}
       </h3>
-      <a class="monica-modal__close pointer" href="" :aria-label="$t('app.close')" @click.prevent="$emit('update:modelValue', false)">&times;</a>
+      <a v-if="!blocking" class="monica-modal__close pointer" href="" :aria-label="$t('app.close')" @click.prevent="$emit('update:modelValue', false)">&times;</a>
       <div class="monica-modal__body">
         <slot ></slot>
       </div>
@@ -76,6 +78,11 @@ export default {
   props: {
     modelValue: { type: Boolean, default: false },
     title: { type: String, default: '' },
+    // When true, the X close link is suppressed and esc / click-outside do
+    // nothing. Use for modals where the only valid exits are explicit Cancel
+    // / Done buttons that run cleanup (see SetAvatar: closing via X would
+    // bypass cancelCrop and leave the uncropped upload in the file input).
+    blocking: { type: Boolean, default: false },
   },
 
   emits: ['update:modelValue', 'open', 'close'],

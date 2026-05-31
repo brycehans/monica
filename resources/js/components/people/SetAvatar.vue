@@ -84,7 +84,7 @@
         </template>
       </form-radio>
     </div>
-    <monica-modal v-model="showCropModal" :title="$t('people.avatar_crop_new_avatar_photo')">
+    <monica-modal v-model="showCropModal" :title="$t('people.avatar_crop_new_avatar_photo')" :blocking="true">
       <vue-cropper v-if="uploadedImgUrl"
                    ref="clipper"
                    :key="uploadedImgUrl"

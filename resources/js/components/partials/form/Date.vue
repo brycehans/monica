@@ -1,6 +1,7 @@
 <template>
   <div :class="{ 'form-group-error': validator && validator.$error }">
     <datepicker
+      ref="picker"
       v-model="selectedDate"
       :format="displayValue"
       :locale="dateFnsLocale"
@@ -164,10 +165,10 @@ export default {
     },
 
     focus() {
-      // @vuepic/vue-datepicker opens its menu on input focus by default;
-      // callers that previously did `$refs.dateField.focus()` to surface
-      // the picker should continue to work because focus on the visible
-      // <input> triggers the menu open.
+      // SpecialDate / SpecialDeceased call this to surface the picker after
+      // the user selects "exact birthday" / "known deceased date" radios.
+      // @vuepic/vue-datepicker exposes openMenu() on its component instance.
+      this.$refs.picker?.openMenu?.();
     },
   },
 };
