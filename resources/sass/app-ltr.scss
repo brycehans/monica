@@ -24,16 +24,16 @@ $fa-font-path: "/build/assets";
 @import "font-awesome/scss/font-awesome";
 
 // Tooltip
-@import "vue-directive-tooltip/src/css/index.scss";
+@import "floating-vue/dist/style.css";
 
 // Radio button
 @import "pretty-checkbox/src/pretty-checkbox";
 
 // datepicker
-@import "@hokify/vuejs-datepicker/dist/vuejs-datepicker.css";
+@import "@vuepic/vue-datepicker/dist/main.css";
 
 // Tables
-@import "vue-good-table/dist/vue-good-table.css";
+@import "vue-good-table-next/dist/vue-good-table-next.css";
 
 @import "buttons";
 @import "header";

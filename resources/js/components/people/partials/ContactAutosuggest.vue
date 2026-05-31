@@ -1,33 +1,46 @@
-<style lang="scss">
-  .autosuggest__results-container {
-    position: relative;
-    width: 100%;
-  }
-  .autosuggest__results {
-    position: absolute;
-    width: 100%;
-    z-index: 100;
-  }
-  .autosuggest__results-overflow {
-    position: absolute;
-    width: 100%;
-    z-index: 100;
-    overflow: scroll;
-    max-height: 361px;
-  }
-  .autosuggest__results-item {
-    background: white;
-  }
-  .autosuggest__results-item:active,
-  .autosuggest__results-item:hover,
-  .autosuggest__results-item:focus,
-  .autosuggest__results-item--highlighted {
-    background: #f5f5f5;
-  }
+<style scoped>
+.contact-autosuggest {
+  position: relative;
+  width: 100%;
+}
+
+.contact-autosuggest__input {
+  width: 100%;
+}
+
+.contact-autosuggest__results {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-top: none;
+  max-height: 360px;
+  overflow-y: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.contact-autosuggest__result {
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.contact-autosuggest__result:hover {
+  background: #f5f5f5;
+}
+
+.contact-autosuggest--overflow .contact-autosuggest__results {
+  max-height: 361px;
+  overflow-y: scroll;
+}
 </style>
 
 <template>
-  <div>
+  <div class="contact-autosuggest" :class="{ 'contact-autosuggest--overflow': overflow }">
     <label
       v-if="title"
       class="mb2"
@@ -36,33 +49,36 @@
     >
       {{ title }}
     </label>
-    <vue-autosuggest
-      ref="autosuggest"
-      :suggestions="items"
-      :input-props="inputProps"
-      :get-suggestion-value="getSuggestionValue"
-      :component-attr-class-autosuggest-results="overflow ? 'autosuggest__results-overflow' : 'autosuggest__results'"
-      @selected="selectHandler"
-      @click="clickHandler"
-      @blur="blurHandler"
-      @input="updateItems"
-    >
-      <template slot-scope="{suggestion}">
-        <component :is="componentItem" :item="suggestion.item" />
-      </template>
-    </vue-autosuggest>
+    <input
+      :id="realid"
+      v-model="query"
+      type="text"
+      autocomplete="off"
+      class="form-control contact-autosuggest__input"
+      :class="inputClass"
+      :placeholder="placeholder"
+      @input="onInput"
+      @focus="onFocus"
+      @blur="onBlur"
+    />
+    <ul v-if="open && items.length > 0" class="contact-autosuggest__results">
+      <li
+        v-for="(item, idx) in items"
+        :key="item.id"
+        class="contact-autosuggest__result"
+        @mousedown.prevent="onSelect(item, idx)"
+      >
+        <component :is="componentItem" :item="item" />
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { VueAutosuggest } from 'vue-autosuggest';
 
 export default {
 
-  components: {
-    VueAutosuggest,
-  },
   props: {
     id: {
       type: String,
@@ -80,19 +96,19 @@ export default {
       type: Boolean,
       default: true,
     },
-    placeholder : {
+    placeholder: {
       type: String,
       default: '',
     },
-    componentItem : {
+    componentItem: {
       type: Object,
-      default: () => null
+      default: () => null,
     },
-    wait : {
+    wait: {
       type: Number,
       default: 200,
     },
-    minLen : {
+    minLen: {
       type: Number,
       default: 1,
     },
@@ -100,21 +116,25 @@ export default {
       type: Boolean,
       default: false,
     },
-    inputClass : {
+    inputClass: {
       type: String,
       default: '',
     },
     filter: {
       type: Function,
       default: () => true,
-    }
+    },
   },
 
-  data () {
+  emits: ['select', 'blur'],
+
+  data() {
     return {
+      query: '',
       items: [],
-      callUpdateItems: null,
-      cache: [],
+      open: false,
+      cache: {},
+      debounced: null,
     };
   },
 
@@ -122,105 +142,85 @@ export default {
     realid() {
       return this.id ? this.id : 'autosuggest__input';
     },
-    inputProps() {
-      return {
-        id: this.realid,
-        placeholder: this.placeholder,
-        class: ['form-control', this.inputClass],
-      };
-    }
   },
 
   mounted() {
-    this.callUpdateItems = _.debounce((text) => {
-      this.getContacts(text, this)
-        .then((response) => {
-          this.cache[text] = response;
-          this.displayItems(text);
-        });
+    this.debounced = _.debounce((text) => {
+      this.fetch(text);
     }, this.wait);
   },
 
   methods: {
-
-    updateItems (text) {
-      if (text === null || text === undefined) {
+    onInput() {
+      const text = this.query;
+      if (text === '' || text.length < this.minLen) {
+        this.items = this.addNoResult && text !== '' ? [this.addNewSentinel(text)] : [];
+        this.open = this.items.length > 0;
         return;
       }
-      if (text.length < this.minLen) {
-        this.items = [];
-        return;
-      }
-
-      if (this.cache[text] === undefined) {
-        this.callUpdateItems(text);
+      if (this.cache[text] !== undefined) {
+        this.debounced.cancel();
+        this.items = this.cache[text];
+        this.open = this.items.length > 0;
       } else {
-        this.callUpdateItems.cancel();
-        this.displayItems(text);
+        this.debounced(text);
       }
     },
 
-    displayItems (text) {
-      var datas = this.cache[text];
-
-      datas = datas.filter(this.filter);
-
-      this.items = [{ data: datas }];
-    },
-
-    getContacts: function (keyword, vm) {
-      return axios.post('people/search', {
-        needle: keyword
-      }).then(function(response) {
-        const data = [];
-        if (response.data.noResults === undefined || response.data.noResults === null) {
-          response.data.data
-            .forEach(function (contact) {
-              contact.keyword = keyword;
-              data.push(contact);
-            });
+    async fetch(text) {
+      try {
+        const response = await axios.post('people/search', { needle: text });
+        const matches = (response.data && response.data.data ? response.data.data : [])
+          .map(contact => ({ ...contact, keyword: text }))
+          .filter(this.filter);
+        if (this.addNoResult) {
+          matches.push(this.addNewSentinel(text));
         }
-        data.push({
-          id: -1,
-          name: 'add_new_contact',
-          keyword: keyword,
-        });
-        return data;
-      });
+        this.cache[text] = matches;
+        if (text === this.query) {
+          this.items = matches;
+          this.open = matches.length > 0;
+        }
+      } catch (e) {
+        // network failure — leave the dropdown empty rather than throw.
+      }
     },
 
-    clearCache() {
-      this.cache = [];
+    addNewSentinel(keyword) {
+      return {
+        id: -1,
+        name: 'add_new_contact',
+        complete_name: 'add_new_contact',
+        keyword,
+      };
+    },
+
+    onFocus() {
+      if (this.items.length > 0) {
+        this.open = true;
+      }
+    },
+
+    onBlur() {
+      // Defer to let the click handler fire first (mousedown beats blur via
+      // .prevent, but click after mouseup can still race).
+      setTimeout(() => {
+        this.open = false;
+        this.$emit('blur');
+      }, 150);
+    },
+
+    onSelect(item) {
+      this.open = false;
+      this.$emit('select', { item });
+      this.query = '';
       this.items = [];
     },
 
-    blurHandler(sender) {
-      this.$emit('blur', sender);
+    clearCache() {
+      this.cache = {};
+      this.items = [];
     },
-
-    clickHandler(e) {
-      this.loading = false;
-      this.updateItems(this.value);
-    },
-
-    selectHandler(suggestion) {
-      if (!suggestion || !suggestion.item) {
-        return;
-      }
-
-      this.$emit('select', suggestion);
-
-      this.$refs.autosuggest.searchInput = '';
-    },
-
-    getSuggestionValue(suggestion) {
-      if (!suggestion || !suggestion.item || suggestion.item.id < 0) {
-        return;
-      }
-      return suggestion.item.complete_name.length > 0 ?
-        suggestion.item.complete_name :
-        suggestion.item.keyword;
-    }
-  }
+  },
 };
 </script>

@@ -64,9 +64,9 @@
     </div>
 
     <!-- Create Contact field type -->
-    <sweet-modal ref="modalCreateContactFieldType" overlay-theme="dark"
-                 :title="$t('settings.personalization_contact_field_type_modal_title')"
-                 @open="_focusCreateInput"
+    <monica-modal v-model="showModalCreateContactFieldType"
+                  :title="$t('settings.personalization_contact_field_type_modal_title')"
+                  @open="_focusCreateInput"
     >
       <!-- Form Errors -->
       <errors :errors="createForm.errors" />
@@ -119,20 +119,20 @@
           </div>
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="store">
           {{ $t('app.save') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Edit Contact field type -->
-    <sweet-modal ref="modalEditContactFieldType" overlay-theme="dark"
-                 :title="$t('settings.personalization_contact_field_type_modal_edit_title')"
-                 @open="_focusEditInput"
+    <monica-modal v-model="showModalEditContactFieldType"
+                  :title="$t('settings.personalization_contact_field_type_modal_edit_title')"
+                  @open="_focusEditInput"
     >
       <!-- Form Errors -->
       <error :errors="editForm.errors" />
@@ -185,43 +185,41 @@
           </div>
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="update">
           {{ $t('app.edit') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!-- Delete Contact field type -->
-    <sweet-modal ref="modalDeleteContactFieldType" overlay-theme="dark"
-                 :title="$t('settings.personalization_contact_field_type_modal_delete_title')"
+    <monica-modal v-model="showModalDeleteContactFieldType"
+                  :title="$t('settings.personalization_contact_field_type_modal_delete_title')"
     >
       <p>
         {{ $t('settings.personalization_contact_field_type_modal_delete_description') }}
       </p>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="trash">
           {{ $t('app.delete') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
 import Errors from '../partials/Error.vue';
 
 export default {
 
   components: {
-    SweetModal,
     Errors,
   },
 
@@ -247,6 +245,9 @@ export default {
         icon: '',
         errors: []
       },
+      showModalCreateContactFieldType: false,
+      showModalEditContactFieldType: false,
+      showModalDeleteContactFieldType: false,
     };
   },
 
@@ -273,13 +274,13 @@ export default {
     },
 
     add() {
-      this.$refs.modalCreateContactFieldType.open();
+      this.showModalCreateContactFieldType = true;
     },
 
     closeModal() {
-      this.$refs.modalCreateContactFieldType.close();
-      this.$refs.modalEditContactFieldType.close();
-      this.$refs.modalDeleteContactFieldType.close();
+      this.showModalCreateContactFieldType = false;
+      this.showModalEditContactFieldType = false;
+      this.showModalDeleteContactFieldType = false;
     },
 
     store() {
@@ -303,7 +304,7 @@ export default {
       this.editForm.protocol = contactFieldType.protocol;
       this.editForm.icon = contactFieldType.fontawesome_icon;
 
-      this.$refs.modalEditContactFieldType.open();
+      this.showModalEditContactFieldType = true;
     },
 
     update() {
@@ -324,7 +325,7 @@ export default {
     showDelete(contactFieldType) {
       this.editForm.id = contactFieldType.id;
 
-      this.$refs.modalDeleteContactFieldType.open();
+      this.showModalDeleteContactFieldType = true;
     },
 
     trash() {

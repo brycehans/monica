@@ -11,7 +11,7 @@
         :value="true"
         :dclass="'flex mb2'"
       >
-        <template slot="label">
+        <template #label>
           {{ $t('people.deceased_mark_person_deceased') }}
         </template>
       </form-checkbox>
@@ -23,7 +23,7 @@
           :dclass="'flex mb1'"
           @change="_focusDate()"
         >
-          <template slot="label">
+          <template #label>
             {{ $t('people.deceased_know_date') }}
           </template>
         </form-checkbox>
@@ -35,7 +35,7 @@
             :label="$t('people.deceased_date_label')"
             :show-calendar-on-focus="true"
             :locale="locale"
-            :validator="$v.selectedDate"
+            :validator="v$.selectedDate"
           />
           <div v-show="selectedDate !== ''" class="mt2">
             <form-checkbox
@@ -54,8 +54,8 @@
 
 <script>
 import moment from 'moment';
-import { validationMixin } from 'vuelidate';
-import { required, numeric, helpers } from 'vuelidate/lib/validators';
+import { useVuelidate } from '@vuelidate/core';
+import { required, numeric, helpers } from '@vuelidate/validators';
 
 const before = (param) =>
   helpers.withParams(
@@ -64,8 +64,6 @@ const before = (param) =>
   );
 
 export default {
-
-  mixins: [validationMixin],
 
   props: {
     value: {
@@ -82,6 +80,8 @@ export default {
     },
   },
 
+  setup: () => ({ v$: useVuelidate() }),
+
   data() {
     return {
       deceased: false,
@@ -90,11 +90,13 @@ export default {
     };
   },
 
-  validations: {
-    selectedDate: {
-      required,
-      before: before(moment())
-    }
+  validations() {
+    return {
+      selectedDate: {
+        required,
+        before: before(moment())
+      }
+    };
   },
 
   computed: {

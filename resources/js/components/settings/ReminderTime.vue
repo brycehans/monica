@@ -4,12 +4,12 @@
     <div class="form-group">
       <form-select
         :id="'timezone'"
-        :value="updatedTimezone"
+        v-model="updatedTimezone"
         :options="timezones"
         :title="$t('settings.timezone')"
         :required="true"
         :iclass="'form-control'"
-        @input="timezoneUpdate"
+        @input="computeMessage"
       />
     </div>
 
@@ -17,12 +17,12 @@
     <div class="form-group">
       <form-select
         :id="'reminder_time'"
-        :value="updatedReminder"
+        v-model="updatedReminder"
         :options="hours"
         :title="$t('settings.reminder_time_to_send')"
         :required="true"
         :iclass="'form-control'"
-        @input="reminderUpdate"
+        @input="computeMessage"
       />
       <small class="form-text text-muted" v-html="message"></small>
     </div>
@@ -76,18 +76,8 @@ export default {
       this.computeMessage();
     },
 
-    timezoneUpdate: function(event) {
-      this.updatedTimezone = event;
-      this.computeMessage();
-    },
-
-    reminderUpdate: function(event) {
-      this.updatedReminder = event;
-      this.computeMessage();
-    },
-
     computeMessage() {
-      moment.locale(this._i18n.locale);
+      moment.locale(this.$i18n.locale);
       moment.tz.setDefault('UTC');
 
       var now = moment();

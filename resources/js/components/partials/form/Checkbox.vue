@@ -1,23 +1,16 @@
 <script>
 import input from './PInput';
 
-const checkbox = {
-  name: 'checkbox',
-
+// Spread PInput's defined options so undefined keys (e.g. mounted, data) don't
+// land in this component's option object. Vue 3 explicit `mounted: undefined`
+// in a child component, combined with a mixin contributing a real mounted
+// (vue-i18n's global mixin does), produces `[undefined, fn]` in the merged
+// hook array — which crashes Vue at `.bind` time. The spread avoids the
+// undefined keys entirely.
+export default {
+  ...input,
+  name: 'Checkbox',
   input_type: 'checkbox',
   input_iclass: 'p-curve p-thick',
-
-  components: input.components,
-  model: input.model,
-  props: input.props,
-  data: input.data,
-  computed: input.computed,
-  watch: input.watch,
-  mounted: input.mounted,
-  methods: input.methods,
-
-  render: input.render,
 };
-
-export default checkbox;
 </script>

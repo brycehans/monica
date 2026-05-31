@@ -10,9 +10,9 @@
       :pagination-options="{
         enabled: true
       }"
-      @on-row-click="onRowClick"
+      @row-click="onRowClick"
     >
-      <template slot="table-row" slot-scope="props">
+      <template #table-row="props">
         <span v-if="props.column.field === 'message_count'">
           <span>
             {{ props.row.message_count }}
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { VueGoodTable } from 'vue-good-table';
+import { VueGoodTable } from 'vue-good-table-next';
 
 export default {
 

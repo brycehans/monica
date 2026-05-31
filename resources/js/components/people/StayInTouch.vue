@@ -28,14 +28,14 @@
     <!-- Contact has a frequency set -->
     <div v-else class="di">
       <span v-tooltip.bottom="$t('people.stay_in_touch_next_date', { date: formatDate(nextTriggerDate) })" class="bb dashed dib pointer nowrap-link">
-        {{ $tc('people.stay_in_touch_frequency', frequencyInput, { count: frequencyInput }) }}
+        {{ $t('people.stay_in_touch_frequency', { count: frequencyInput }, frequencyInput) }}
       </span>
       <a class="pointer" href="" @click.prevent="showUpdate">
         {{ $t('app.edit') }}
       </a>
     </div>
 
-    <sweet-modal ref="updateModal" overlay-theme="dark" :title="$t('people.stay_in_touch_modal_title')">
+    <monica-modal v-model="showUpdateModal" :title="$t('people.stay_in_touch_modal_title')">
       <div class="tc mw-100">
         <svg viewBox="0 0 423 74" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <defs />
@@ -124,11 +124,11 @@
             {{ $t('people.stay_in_touch_modal_desc', { firstname: firstName }) }}
           </p>
           <div class="mb2">
-            <toggle-button class="mr2" :sync="true" :labels="true" :value="stateInput" @change="stateInput = !stateInput" />
+            <form-toggle v-model="stateInput" class="mr2" />
             <div class="dib relative" style="top: -2px;">
               <stay-in-touch-label
                 v-model="frequencyInput"
-                :class="{ 'form-group-error': $v.frequencyInput.$error }"
+                :class="{ 'form-group-error': v$.frequencyInput.$error }"
               >
                 <div class="dib">
                   <form-input
@@ -137,7 +137,7 @@
                     :input-type="'number'"
                     :width="60"
                     :required="true"
-                    :validator="$v.frequencyInput"
+                    :validator="v$.frequencyInput"
                     @input="onInput($event)"
                   />
                 </div>
@@ -154,35 +154,31 @@
           </div>
         </div>
       </form>
-      <div slot="button" class="tc">
-        <a class="btn" href="" @click.prevent="closeModal()">
-          {{ $t('app.cancel') }}
-        </a>
-        <a class="btn btn-primary" href="" @click.prevent="update()">
-          {{ $t('app.save') }}
-        </a>
-      </div>
-    </sweet-modal>
+      <template #button>
+        <div class="tc">
+          <a class="btn" href="" @click.prevent="closeModal()">
+            {{ $t('app.cancel') }}
+          </a>
+          <a class="btn btn-primary" href="" @click.prevent="update()">
+            {{ $t('app.save') }}
+          </a>
+        </div>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
-import { ToggleButton } from 'vue-js-toggle-button';
-import { validationMixin } from 'vuelidate';
-import { required, numeric } from 'vuelidate/lib/validators';
+import { useVuelidate } from '@vuelidate/core';
+import { required, numeric } from '@vuelidate/validators';
 import moment from 'moment-timezone';
 import StayInTouchLabel from './StayInTouchLabel';
 
 export default {
 
   components: {
-    SweetModal,
-    ToggleButton,
     StayInTouchLabel,
   },
-
-  mixins: [validationMixin],
 
   props: {
     hash: {
@@ -207,11 +203,15 @@ export default {
     },
   },
 
-  validations: {
-    frequencyInput: {
-      required,
-      numeric,
-    },
+  setup: () => ({ v$: useVuelidate() }),
+
+  validations() {
+    return {
+      frequencyInput: {
+        required,
+        numeric,
+      },
+    };
   },
 
   data() {
@@ -221,6 +221,7 @@ export default {
       frequencyInput: 0,
       nextTriggerDate: null,
       stateInput: false,
+      showUpdateModal: false,
     };
   },
 
@@ -247,7 +248,7 @@ export default {
     },
 
     formatDate(dateAsString) {
-      moment.locale(this._i18n.locale);
+      moment.locale(this.$i18n.locale);
       moment.tz.setDefault('UTC');
       var date = moment.tz(moment(dateAsString), this.$root.timezone);
       return date.format('LL');
@@ -255,11 +256,11 @@ export default {
 
     showUpdate() {
       this.errorMessage = '';
-      this.$refs.updateModal.open();
+      this.showUpdateModal = true;
     },
 
     closeModal() {
-      this.$refs.updateModal.close();
+      this.showUpdateModal = false;
     },
 
     update() {
@@ -271,15 +272,15 @@ export default {
         return;
       }
 
-      this.$v.$touch();
+      this.v$.$touch();
 
-      if (this.$v.$invalid) {
+      if (this.v$.$invalid) {
         return;
       }
 
       axios.post('people/' + this.hash + '/stayintouch',   {frequency: this.frequencyInput, state: this.stateInput})
         .then(response => {
-          this.$refs.updateModal.close();
+          this.showUpdateModal = false;
           this.isActive = this.stateInput;
           this.nextTriggerDate = response.data.trigger_date;
 

@@ -13,9 +13,11 @@ import './bootstrap';
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-import Vue from 'vue';
-import Notifications from 'vue-notification';
-import Tooltip from 'vue-directive-tooltip';
+import { createApp } from 'vue';
+import { createVfm } from 'vue-final-modal';
+import 'vue-final-modal/style.css';
+import Notifications from '@kyvg/vue3-notification';
+import FloatingVue from 'floating-vue';
 
 // Custom components — Passport
 import PassportClients from './components/passport/Clients.vue';
@@ -30,6 +32,7 @@ import ContactMultiSearch from './components/people/ContactMultiSearch.vue';
 // Partials
 import Avatar from './components/partials/Avatar.vue';
 import Confirm from './components/partials/Confirm.vue';
+import MonicaModal from './components/partials/MonicaModal.vue';
 
 // Form elements
 import FormInput from './components/partials/form/Input.vue';
@@ -92,111 +95,110 @@ import ActivityTypes from './components/settings/ActivityTypes.vue';
 import LifeEventTypes from './components/settings/LifeEventTypes.vue';
 import DavResources from './components/settings/DAVResources.vue';
 
-import './testing';
+import testingDirectives from './testing';
 import common from './common';
 import methods from './methods';
 
-window.Vue = Vue;
-
-// Notifications
-Vue.use(Notifications);
-
-// Tooltip
-Vue.use(Tooltip, { delay: 0 });
-
-// Custom components
-Vue.component('PassportClients', PassportClients);
-Vue.component('PassportAuthorizedClients', PassportAuthorizedClients);
-Vue.component('PassportPersonalAccessTokens', PassportPersonalAccessTokens);
-
-// Vue select
-Vue.component('ContactSelect', ContactSelect);
-Vue.component('ContactSearch', ContactSearch);
-Vue.component('ContactMultiSearch', ContactMultiSearch);
-
-// Partials
-Vue.component('Avatar', Avatar);
-Vue.component('Confirm', Confirm);
-
-// Form elements
-Vue.component('FormInput', FormInput);
-Vue.component('FormSelect', FormSelect);
-Vue.component('FormDate', FormDate);
-Vue.component('FormCheckbox', FormCheckbox);
-Vue.component('FormRadio', FormRadio);
-Vue.component('FormTextarea', FormTextarea);
-Vue.component('FormToggle', FormToggle);
-Vue.component('FormSpecialdate', FormSpecialdate);
-Vue.component('FormSpecialdeceased', FormSpecialdeceased);
-
-// Dashboard
-Vue.component('DashboardLog', DashboardLog);
-
-// Contacts
-Vue.component('Tags', Tags);
-Vue.component('ContactAvatar', ContactAvatar);
-Vue.component('ContactFavorite', ContactFavorite);
-Vue.component('ContactArchive', ContactArchive);
-Vue.component('ContactAddress', ContactAddress);
-Vue.component('ContactInformation', ContactInformation);
-Vue.component('ContactList', ContactList);
-Vue.component('ContactTask', ContactTask);
-Vue.component('ContactNote', ContactNote);
-Vue.component('ContactGift', ContactGift);
-Vue.component('Pet', Pet);
-Vue.component('MeContact', MeContact);
-Vue.component('StayInTouch', StayInTouch);
-Vue.component('LastCalled', LastCalled);
-Vue.component('PhoneCallList', PhoneCallList);
-Vue.component('ConversationList', ConversationList);
-Vue.component('Conversation', Conversation);
-Vue.component('Message', Message);
-Vue.component('ActivityList', ActivityList);
-Vue.component('DocumentList', DocumentList);
-Vue.component('CreateLifeEvent', CreateLifeEvent);
-Vue.component('CreateDefaultLifeEvent', CreateDefaultLifeEvent);
-Vue.component('LifeEventList', LifeEventList);
-Vue.component('PhotoList', PhotoList);
-
-// Journal
-Vue.component('JournalList', JournalList);
-Vue.component('JournalRateDay', JournalRateDay);
-Vue.component('JournalCalendar', JournalCalendar);
-Vue.component('JournalContentRate', JournalContentRate);
-Vue.component('JournalContentActivity', JournalContentActivity);
-Vue.component('JournalContentEntry', JournalContentEntry);
-
-// Settings
-Vue.component('ContactFieldTypes', ContactFieldTypes);
-Vue.component('Genders', Genders);
-Vue.component('ReminderRules', ReminderRules);
-Vue.component('ReminderTime', ReminderTime);
-Vue.component('MfaActivate', MfaActivate);
-Vue.component('WebauthnConnector', WebauthnConnector);
-Vue.component('RecoveryCodes', RecoveryCodes);
-Vue.component('Modules', Modules);
-Vue.component('ActivityTypes', ActivityTypes);
-Vue.component('LifeEventTypes', LifeEventTypes);
-Vue.component('DavResources', DavResources);
-
 common.loadLanguage(window.Laravel.locale, true).then((i18n) => {
-  // the Vue appplication
-  const app = new Vue({
-    i18n,
-    data: {
-      htmldir: window.Laravel.htmldir,
-      timezone: window.Laravel.timezone,
-      locale: i18n.locale,
-      reminders_frequency: 'once',
-      accept_invite_user: false,
-      date_met_the_contact: 'known',
-      global_relationship_form_new_contact: true,
-      global_profile_default_view: window.Laravel.profileDefaultView,
+  const app = createApp({
+    data() {
+      return {
+        htmldir: window.Laravel.htmldir,
+        timezone: window.Laravel.timezone,
+        locale: i18n.global.locale,
+        reminders_frequency: 'once',
+        accept_invite_user: false,
+        date_met_the_contact: 'known',
+        global_relationship_form_new_contact: true,
+        global_profile_default_view: window.Laravel.profileDefaultView,
+      };
     },
-
-    // global methods
     methods,
-  }).$mount('#app');
+  });
+
+  app.use(i18n);
+  app.use(testingDirectives);
+  app.use(createVfm());
+  app.use(Notifications);
+  app.use(FloatingVue);
+
+  // Custom components
+  app.component('PassportClients', PassportClients);
+  app.component('PassportAuthorizedClients', PassportAuthorizedClients);
+  app.component('PassportPersonalAccessTokens', PassportPersonalAccessTokens);
+
+  // Vue select
+  app.component('ContactSelect', ContactSelect);
+  app.component('ContactSearch', ContactSearch);
+  app.component('ContactMultiSearch', ContactMultiSearch);
+
+  // Partials
+  app.component('Avatar', Avatar);
+  app.component('Confirm', Confirm);
+  app.component('MonicaModal', MonicaModal);
+
+  // Form elements
+  app.component('FormInput', FormInput);
+  app.component('FormSelect', FormSelect);
+  app.component('FormDate', FormDate);
+  app.component('FormCheckbox', FormCheckbox);
+  app.component('FormRadio', FormRadio);
+  app.component('FormTextarea', FormTextarea);
+  app.component('FormToggle', FormToggle);
+  app.component('FormSpecialdate', FormSpecialdate);
+  app.component('FormSpecialdeceased', FormSpecialdeceased);
+
+  // Dashboard
+  app.component('DashboardLog', DashboardLog);
+
+  // Contacts
+  app.component('Tags', Tags);
+  app.component('ContactAvatar', ContactAvatar);
+  app.component('ContactFavorite', ContactFavorite);
+  app.component('ContactArchive', ContactArchive);
+  app.component('ContactAddress', ContactAddress);
+  app.component('ContactInformation', ContactInformation);
+  app.component('ContactList', ContactList);
+  app.component('ContactTask', ContactTask);
+  app.component('ContactNote', ContactNote);
+  app.component('ContactGift', ContactGift);
+  app.component('Pet', Pet);
+  app.component('MeContact', MeContact);
+  app.component('StayInTouch', StayInTouch);
+  app.component('LastCalled', LastCalled);
+  app.component('PhoneCallList', PhoneCallList);
+  app.component('ConversationList', ConversationList);
+  app.component('Conversation', Conversation);
+  app.component('Message', Message);
+  app.component('ActivityList', ActivityList);
+  app.component('DocumentList', DocumentList);
+  app.component('CreateLifeEvent', CreateLifeEvent);
+  app.component('CreateDefaultLifeEvent', CreateDefaultLifeEvent);
+  app.component('LifeEventList', LifeEventList);
+  app.component('PhotoList', PhotoList);
+
+  // Journal
+  app.component('JournalList', JournalList);
+  app.component('JournalRateDay', JournalRateDay);
+  app.component('JournalCalendar', JournalCalendar);
+  app.component('JournalContentRate', JournalContentRate);
+  app.component('JournalContentActivity', JournalContentActivity);
+  app.component('JournalContentEntry', JournalContentEntry);
+
+  // Settings
+  app.component('ContactFieldTypes', ContactFieldTypes);
+  app.component('Genders', Genders);
+  app.component('ReminderRules', ReminderRules);
+  app.component('ReminderTime', ReminderTime);
+  app.component('MfaActivate', MfaActivate);
+  app.component('WebauthnConnector', WebauthnConnector);
+  app.component('RecoveryCodes', RecoveryCodes);
+  app.component('Modules', Modules);
+  app.component('ActivityTypes', ActivityTypes);
+  app.component('LifeEventTypes', LifeEventTypes);
+  app.component('DavResources', DavResources);
+
+  app.mount('#app');
 
   return app;
 });

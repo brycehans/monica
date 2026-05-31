@@ -92,9 +92,9 @@
     </div>
 
     <!-- Create Client Modal -->
-    <sweet-modal ref="modalClient" overlay-theme="dark" tabindex="-1" role="dialog"
-                 :title="form.id ? $t('settings.api_oauth_edit') : $t('settings.api_oauth_create')"
-                 @open="_focusInput"
+    <monica-modal v-model="showModalClient"
+                  :title="form.id ? $t('settings.api_oauth_edit') : $t('settings.api_oauth_create')"
+                  @open="_focusInput"
     >
       <!-- Form Errors -->
       <errors :errors="form.errors" />
@@ -111,7 +111,7 @@
               :iclass="'br2 f5 w-50 ba b--black-40 pa2 outline-0'"
               :required="true"
               :title="$t('settings.api_oauth_name')"
-              :validator="$v.form.name"
+              :validator="v$.form.name"
               @submit="store"
             />
 
@@ -130,7 +130,7 @@
               :iclass="'br2 f5 w-50 ba b--black-40 pa2 outline-0'"
               :required="true"
               :title="$t('settings.api_oauth_redirecturl')"
-              :validator="$v.form.redirect"
+              :validator="v$.form.redirect"
               @submit="store"
             />
 
@@ -142,15 +142,15 @@
       </form>
 
       <!-- Modal Actions -->
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
           {{ $t('app.close') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="store">
           {{ form.id ? $t('app.save') : $t('app.create') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
 
     <!--
       Client Secret Modal — surfaces the plain secret once on creation.
@@ -158,8 +158,8 @@
       only exists in the create response. Mirrors the PersonalAccessTokens
       access-token one-shot pattern.
     -->
-    <sweet-modal ref="modalClientSecret" overlay-theme="dark" tabindex="-1" role="dialog"
-                 :title="$t('settings.api_oauth_secret_title')"
+    <monica-modal v-model="showModalClientSecret"
+                  :title="$t('settings.api_oauth_secret_title')"
     >
       <p>{{ $t('settings.api_oauth_secret_help') }}</p>
 
@@ -169,7 +169,7 @@
         <pre><code>{{ clientSecret }}</code></pre>
       </div>
 
-      <div slot="button">
+      <template #button>
         <a class="btn btn-primary" :title="$t('settings.dav_copy_help')" href=""
            @click.prevent="copyIntoClipboard(clientSecret)"
         >
@@ -178,25 +178,23 @@
         <a class="btn" href="" @click.prevent="closeSecretModal">
           {{ $t('app.close') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
 import Errors from '../partials/Error.vue';
-import { SweetModal } from 'sweet-modal-vue';
-import { validationMixin } from 'vuelidate';
-import { required, url } from 'vuelidate/lib/validators';
+import { useVuelidate } from '@vuelidate/core';
+import { required, url } from '@vuelidate/validators';
 
 export default {
 
   components: {
-    SweetModal,
     Errors,
   },
 
-  mixins: [validationMixin],
+  setup: () => ({ v$: useVuelidate() }),
 
   data() {
     return {
@@ -208,19 +206,23 @@ export default {
         name: '',
         redirect: ''
       },
+      showModalClient: false,
+      showModalClientSecret: false,
     };
   },
 
-  validations: {
-    form: {
-      name: {
-        required,
-      },
-      redirect: {
-        required,
-        url,
+  validations() {
+    return {
+      form: {
+        name: {
+          required,
+        },
+        redirect: {
+          required,
+          url,
+        }
       }
-    }
+    };
   },
 
   computed: {
@@ -263,16 +265,16 @@ export default {
      */
     showCreateClientForm() {
       this.resetField();
-      this.$refs.modalClient.open();
+      this.showModalClient = true;
     },
 
     /**
      * Create a new OAuth client for the user.
      */
     store() {
-      this.$v.$touch();
+      this.v$.$touch();
 
-      if (this.$v.$invalid) {
+      if (this.v$.$invalid) {
         return;
       }
 
@@ -288,7 +290,7 @@ export default {
     edit(client) {
       this.form = Object.assign({errors:[]}, client);
 
-      this.$refs.modalClient.open();
+      this.showModalClient = true;
     },
 
     /**
@@ -328,16 +330,16 @@ export default {
      * Show the plain client secret in a one-shot modal after create.
      */
     showClientSecret(secret) {
-      this.$refs.modalClient.close();
+      this.showModalClient = false;
       this.clientSecret = secret;
-      this.$refs.modalClientSecret.open();
+      this.showModalClientSecret = true;
     },
 
     /**
      * Close the secret modal and clear in-memory state.
      */
     closeSecretModal() {
-      this.$refs.modalClientSecret.close();
+      this.showModalClientSecret = false;
       this.clientSecret = null;
       this.resetField();
     },
@@ -354,9 +356,9 @@ export default {
 
     closeModal() {
       this.resetField();
-      this.$v.$reset();
+      this.v$.$reset();
       this.$refs.form.reset();
-      this.$refs.modalClient.close();
+      this.showModalClient = false;
     },
 
     resetField() {

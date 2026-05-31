@@ -30,7 +30,7 @@ describe('Settings: activity types', function () {
 
     // add an activity type category
     cy.get('[cy-name=add-activity-type-category-button]').click();
-    cy.get('.sweet-modal-overlay').should('be.visible');
+    cy.get('.monica-modal__panel').should('be.visible');
     cy.get('[name=add-category-name]:visible').type('This is an activity type category');
     cy.get('[cy-name=add-activity-type-category-save-button]').click();
     cy.wait(10);
@@ -41,7 +41,7 @@ describe('Settings: activity types', function () {
 
       // edit an activity type category
       cy.get('[cy-name=activity-type-category-edit-button-'+item+']').click();
-      cy.get('.sweet-modal-overlay').should('be.visible');
+      cy.get('.monica-modal__panel').should('be.visible');
       cy.get('[name=update-category-name]:visible').clear();
       cy.get('[name=update-category-name]:visible').type('This is still an activity type category');
       cy.get('[cy-name=update-activity-type-category-button]').click();
@@ -49,7 +49,7 @@ describe('Settings: activity types', function () {
 
       // add an activity type
       cy.get('[cy-name=add-activity-type-button-for-category-'+item+']').click();
-      cy.get('.sweet-modal-overlay').should('be.visible');
+      cy.get('.monica-modal__panel').should('be.visible');
       cy.get('[name=add-type-name]:visible').type('This is activity type 1');
       cy.get('[cy-name=add-type-button]').click();
       cy.get('[cy-name=activity-types]').should('contain', 'This is activity type 1');
@@ -59,7 +59,7 @@ describe('Settings: activity types', function () {
         let aitem = _.last(items.split(','));
 
         cy.get('[cy-name=activity-type-edit-button-'+aitem+']').click();
-        cy.get('.sweet-modal-overlay').should('be.visible');
+        cy.get('.monica-modal__panel').should('be.visible');
         cy.get('[name=update-type-name]:visible').clear();
         cy.get('[name=update-type-name]:visible').type('This is modified activity type 1');
         cy.get('[cy-name=update-type-button]').click();
@@ -69,7 +69,7 @@ describe('Settings: activity types', function () {
 
       // delete an activity type
       cy.get('[cy-name=add-activity-type-button-for-category-'+item+']').click();
-      cy.get('.sweet-modal-overlay').should('be.visible');
+      cy.get('.monica-modal__panel').should('be.visible');
       cy.get('[name=add-type-name]:visible').type('This is activity type 2');
       cy.get('[cy-name=add-type-button]').click();
       cy.get('[cy-name=activity-types]').should('contain', 'This is activity type 2');
@@ -108,7 +108,7 @@ describe('Settings: activity types', function () {
 
     // add an activity type category
     cy.get('[cy-name=add-activity-type-category-button]').click();
-    cy.get('.sweet-modal-overlay').should('be.visible');
+    cy.get('.monica-modal__panel').should('be.visible');
     cy.get('[name=add-category-name]:visible').type('This is an activity type category');
     cy.get('[cy-name=add-activity-type-category-save-button]').click();
 
@@ -118,7 +118,7 @@ describe('Settings: activity types', function () {
 
       // edit an activity type category
       cy.get('[cy-name=activity-type-category-edit-button-'+item+']').click();
-      cy.get('.sweet-modal-overlay').should('be.visible');
+      cy.get('.monica-modal__panel').should('be.visible');
       cy.get('[name=update-category-name]:visible').clear();
       cy.get('[name=update-category-name]:visible').type('This is still an activity type category');
       cy.get('[cy-name=update-activity-type-category-button]').click();
@@ -126,7 +126,7 @@ describe('Settings: activity types', function () {
 
       // add an activity type
       cy.get('[cy-name=add-activity-type-button-for-category-'+item+']').click();
-      cy.get('.sweet-modal-overlay').should('be.visible');
+      cy.get('.monica-modal__panel').should('be.visible');
       cy.get('[name=add-type-name]:visible').type('This is activity type 1');
       cy.get('[cy-name=add-type-button]').click();
       cy.get('[cy-name=activity-types]').should('contain', 'This is activity type 1');

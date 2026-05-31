@@ -214,7 +214,7 @@ export default {
     },
 
     toggleEdit(contactField) {
-      this.$set(contactField, 'edit', !contactField.edit);
+      contactField.edit = !contactField.edit;
       this.updateForm.id = contactField.id;
       this.updateForm.data = contactField.data;
       this.updateForm.contact_field_type_id = contactField.contact_field_type_id;

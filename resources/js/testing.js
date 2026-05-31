@@ -3,21 +3,21 @@
  * These are only active on local or testing environment.
  */
 
-import Vue from 'vue';
-
-function testingDirective(el, binding, vnode) {
-  if (window.Laravel.env != 'production') {
-    var value = '';
-    try {
-      value = function(expr) {
-        return eval(expr);
-      }.call(vnode.context, ' with(this) { ' + binding.expression + ' } ');
-    } catch (e) {
-      value = binding.value;
+function makeTestingDirective(attrName) {
+  const apply = (el, binding) => {
+    if (window.Laravel.env != 'production') {
+      el.setAttribute(attrName, String(binding.value));
     }
-    el.setAttribute(binding.name, value.toString());
-  }
+  };
+  return {
+    mounted: apply,
+    updated: apply,
+  };
 }
 
-Vue.directive('cy-items', testingDirective);
-Vue.directive('cy-name', testingDirective);
+export default {
+  install(app) {
+    app.directive('cy-name', makeTestingDirective('cy-name'));
+    app.directive('cy-items', makeTestingDirective('cy-items'));
+  },
+};

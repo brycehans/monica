@@ -212,7 +212,7 @@ export default {
     },
 
     toggleEditMode(task) {
-      this.$set(task, 'edit', !task.edit);
+      task.edit = !task.edit;
     },
 
     index() {
@@ -241,7 +241,7 @@ export default {
 
     toggleComplete(task) {
       this.updateMode = true;
-      this.$set(task, 'disabled', true);
+      task.disabled = true;
       this.update(task, false);
     },
 
@@ -249,8 +249,8 @@ export default {
       axios.put('tasks/' + task.id, task)
         .then(response => {
           this.updateMode = false;
-          this.$set(task, 'disabled', false);
-          this.$set(task, 'completed_at', response.data.completed_at ? this.formatDate(response.data.completed_at): null);
+          task.disabled = false;
+          task.completed_at = response.data.completed_at ? this.formatDate(response.data.completed_at) : null;
           if (toggleEdit) {
             this.toggleEditMode(task);
           }
@@ -264,7 +264,7 @@ export default {
     },
 
     formatDate(dateAsString) {
-      moment.locale(this._i18n.locale);
+      moment.locale(this.$i18n.locale);
       moment.tz.setDefault('UTC');
 
       var date = moment.tz(moment(dateAsString), this.$root.timezone);

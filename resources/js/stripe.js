@@ -13,35 +13,35 @@ import './bootstrap';
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-import Vue from 'vue';
-import Notifications from 'vue-notification';
+import { createApp } from 'vue';
+import Notifications from '@kyvg/vue3-notification';
 import StripeSubscription from './components/settings/Subscription.vue';
 import FormInput from './components/partials/form/Input.vue';
 import ContactSearch from './components/people/ContactSearch.vue';
 import common from './common';
 
-window.Vue = Vue;
-
-// Notifications
-Vue.use(Notifications);
-
-// Custom components
-Vue.component('StripeSubscription', StripeSubscription);
-
-// Form elements
-Vue.component('FormInput', FormInput);
-
-Vue.component('ContactSearch', ContactSearch);
-
 common.loadLanguage(window.Laravel.locale, true).then((i18n) => {
-  // the Vue appplication
-  const app = new Vue({
-    i18n,
-    data: {
-      htmldir: window.Laravel.htmldir,
-      locale: i18n.locale,
+  const app = createApp({
+    data() {
+      return {
+        htmldir: window.Laravel.htmldir,
+        locale: i18n.global.locale,
+      };
     },
-  }).$mount('#app');
+  });
+
+  app.use(i18n);
+  app.use(Notifications);
+
+  // Custom components
+  app.component('StripeSubscription', StripeSubscription);
+
+  // Form elements
+  app.component('FormInput', FormInput);
+
+  app.component('ContactSearch', ContactSearch);
+
+  app.mount('#app');
 
   return app;
 });

@@ -38,7 +38,7 @@
             :input-type="'text'"
             :required="true"
             :title="'{{ trans('people.people_add_firstname') }}'"
-            value="{{ $firstName }}">
+            model-value="{{ $firstName }}">
           </form-input>
         </div>
 
@@ -57,7 +57,7 @@
             :input-type="'text'"
             :required="false"
             :title="'{{ trans('people.people_add_lastname') }}'"
-            value="{{ $lastName }}">
+            model-value="{{ $lastName }}">
           </form-input>
         </div>
 
@@ -78,7 +78,7 @@
             :input-type="'text'"
             :required="false"
             :title="'{{ trans('people.people_add_lastname') }}'"
-            value="{{ $lastName }}">
+            model-value="{{ $lastName }}">
           </form-input>
         </div>
 
@@ -88,7 +88,7 @@
             :input-type="'text'"
             :required="true"
             :title="'{{ trans('people.people_add_firstname') }}'"
-            value="{{ $firstName }}">
+            model-value="{{ $firstName }}">
           </form-input>
         </div>
 
@@ -119,7 +119,7 @@
           :input-type="'text'"
           :required="false"
           :title="'{{ trans('people.people_add_email') }}'"
-          :value="'{{ $email }}'">
+          :model-value="'{{ $email }}'">
         </form-input>
       </div>
 
@@ -129,7 +129,7 @@
           :required="false"
           :title="'{{ trans('people.people_add_gender') }}'"
           :id="'gender'"
-          :value="'{{ $defaultGender }}'">
+          :model-value="'{{ $defaultGender }}'">
         </form-select>
       </div>
 

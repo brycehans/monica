@@ -1,110 +1,101 @@
 <template>
   <div :class="{ 'form-group-error': validator && validator.$error }">
     <datepicker
-      ref="select"
-      :ref-name="'select'"
-      :value="selectedDate"
+      ref="picker"
+      v-model="selectedDate"
       :format="displayValue"
-      :parse-typed-date="formatTypedValue"
-      :language="locale"
-      :monday-first="mondayFirst"
-      :input-class="inputClass"
-      :typeable="true"
-      :clear-button="true"
-      :show-calendar-on-focus="showCalendarOnFocus"
-      @input="onInput($event)"
-      @selected="onSelected($event)"
-      @clearDate="onSelected('')"
+      :locale="dateFnsLocale"
+      :week-start="mondayFirst ? 1 : 0"
+      :input-class-name="inputClass"
+      :text-input="true"
+      :clearable="true"
+      :enable-time-picker="false"
+      :auto-apply="true"
     />
     <input :name="id" type="hidden" :value="exchange" />
-    <small v-if="validator && (validator.$error && validator.required !== undefined && !validator.required)" class="error">
+    <small v-if="validator?.$error && validator.required?.$invalid" class="error">
       {{ requiredMessage }}
     </small>
-    <small v-if="validator && (validator.$error && validator.before !== undefined && !validator.before)" class="error">
+    <small v-if="validator?.$error && validator.before?.$invalid" class="error">
       {{ beforeMessage }}
     </small>
   </div>
 </template>
 
 <script>
-import Datepicker from '@hokify/vuejs-datepicker';
+import { VueDatePicker as Datepicker } from '@vuepic/vue-datepicker';
 import moment from 'moment';
+// @vuepic/vue-datepicker v13 passes :locale straight to date-fns/format,
+// which expects a Locale OBJECT (not a string). Map the Laravel locale
+// codes Monica ships (resources/lang/) to date-fns Locale modules; fall
+// back to enUS for anything we don't have a direct match for.
+import {
+  ar, cs, da, de, el, enGB, enUS, es, faIR, fi, fr, he, hr, id as idLocale,
+  it, ja, nb, nl, pt, ptBR, ru, sv, tr, uk, vi, zhCN, zhTW,
+} from 'date-fns/locale';
+
+const LOCALE_MAP = {
+  ar, cs, da, de, el, es, fi, fr, he, hr, it, ja, nl, pt, ru, sv, tr, uk, vi,
+  en: enUS,
+  'en-GB': enGB,
+  fa: faIR,
+  id: idLocale,
+  no: nb,
+  'pt-BR': ptBR,
+  zh: zhCN,
+  'zh-TW': zhTW,
+};
+
+function resolveDateFnsLocale(code) {
+  if (!code) return enUS;
+  return LOCALE_MAP[code] || LOCALE_MAP[code.split('-')[0]] || enUS;
+}
 
 export default {
 
   components: {
-    Datepicker
-  },
-
-  model: {
-    prop: 'value',
-    event: 'input'
+    Datepicker,
   },
 
   props: {
-    id: {
-      type: String,
-      default: '',
-    },
-    value: {
-      type: String,
-      default: '',
-    },
-    label: {
-      type: String,
-      default: '',
-    },
-    defaultDate: {
-      type: String,
-      default: '',
-    },
-    locale: {
-      type: String,
-      default: '',
-    },
-    showCalendarOnFocus: {
-      type: Boolean,
-      default: false,
-    },
-    validator: {
-      type: Object,
-      default: null,
-    },
+    id: { type: String, default: '' },
+    modelValue: { type: String, default: '' },
+    label: { type: String, default: '' },
+    defaultDate: { type: String, default: '' },
+    locale: { type: String, default: '' },
+    showCalendarOnFocus: { type: Boolean, default: false },
+    validator: { type: Object, default: null },
   },
+
+  emits: ['update:modelValue'],
 
   data() {
     return {
-      /**
-       * Value of the date in exchange format
-       */
       exchange: '',
-
-      selectedDate: '',
-      mondayFirst: false
+      selectedDate: null,
+      mondayFirst: false,
     };
   },
 
   computed: {
-    /**
-     * Exchange format with controller (moment format type).
-     */
+    dateFnsLocale() {
+      return resolveDateFnsLocale(this.locale);
+    },
+
     exchangeFormat() {
       return 'YYYY-MM-DD';
     },
 
-    /**
-     * Display format (moment format type).
-     */
     displayFormat() {
       return 'L';
     },
 
     inputClass() {
-      var c = ['br2 f5 ba b--black-40 pa2 outline-0'];
-      if (this.validator) {
-        c.push({ 'error': this.validator.$error });
+      const classes = ['br2', 'f5', 'ba', 'b--black-40', 'pa2', 'outline-0'];
+      if (this.validator && this.validator.$error) {
+        classes.push('error');
       }
-      return c;
+      return classes.join(' ');
     },
 
     requiredMessage() {
@@ -114,51 +105,45 @@ export default {
     beforeMessage() {
       return this.$t('validation.vue.max.numeric', {
         field: this.label,
-        max: this.displayValue(this.validator.$params.before.date)
+        max: this.displayValue(this.validator?.before?.$params?.date),
       });
     },
   },
 
   watch: {
-    value: function (newValue) {
+    modelValue(newValue) {
       this.updateExchange(newValue);
-    }
+    },
+
+    selectedDate(newValue) {
+      if (this.validator) {
+        this.validator.$touch();
+      }
+      this.update(newValue);
+      this.$emit('update:modelValue', this.exchangeValue(newValue));
+    },
   },
 
   mounted() {
-    this.updateExchange(this.value === '' ? this.defaultDate : this.value);
+    this.updateExchange(this.modelValue === '' ? this.defaultDate : this.modelValue);
     this.mondayFirst = moment.localeData().firstDayOfWeek() === 1;
   },
 
   methods: {
-    /**
-     * Format date for display it.
-     * @param date string in locale format
-     * @return string date in display format
-     */
     displayValue(date) {
       return date !== '' && date !== null ? moment(date).format(this.displayFormat) : '';
     },
 
-    /**
-     * Format date for save it.
-     * @param date string in locale format
-     * @return string date in exchange format
-     */
     exchangeValue(date) {
       return date !== '' && date !== null ? moment(date).format(this.exchangeFormat) : '';
     },
 
-    /**
-     * Update the value of hidden input.
-     * Store it in exchange format value.
-     */
     update(date) {
       if (date === '' || date === null) {
         this.exchange = '';
       } else {
-        var mdate = moment(date);
-        if (! mdate.isValid()) {
+        let mdate = moment(date);
+        if (!mdate.isValid()) {
           mdate = moment();
         }
         this.exchange = mdate.format(this.exchangeFormat);
@@ -168,39 +153,23 @@ export default {
     updateExchange(date) {
       this.exchange = date;
       if (this.exchange !== '') {
-        var mdate = moment(this.exchange, this.exchangeFormat);
-        if (! mdate.isValid()) {
+        let mdate = moment(this.exchange, this.exchangeFormat);
+        if (!mdate.isValid()) {
           mdate = moment();
         }
         this.selectedDate = mdate.toDate();
+      } else {
+        this.selectedDate = null;
       }
       this.update(this.selectedDate);
     },
 
-    /**
-     * Format the typed value with the locale specification.
-     * @param date string in locale format
-     * @return date value
-     */
-    formatTypedValue(date) {
-      return date !== '' && date !== null ? moment(date, this.displayFormat).toDate() : '';
-    },
-
     focus() {
-      this.$refs.select.$children[0].$refs.select.focus();
+      // SpecialDate / SpecialDeceased call this to surface the picker after
+      // the user selects "exact birthday" / "known deceased date" radios.
+      // @vuepic/vue-datepicker exposes openMenu() on its component instance.
+      this.$refs.picker?.openMenu?.();
     },
-
-    onInput(event) {
-      if (this.validator) {
-        this.validator.$touch();
-      }
-      this.$emit('input', this.exchangeValue(event));
-    },
-
-    onSelected(event) {
-      this.update(event);
-      this.onInput(event);
-    }
-  }
+  },
 };
 </script>

@@ -529,7 +529,7 @@
     </div>
 
     <!-- Delete confirmation modal -->
-    <sweet-modal ref="deleteLifeEventModal" overlay-theme="dark" :title="$t('people.life_event_delete_title')">
+    <monica-modal v-model="showDeleteLifeEventModal" :title="$t('people.life_event_delete_title')">
       <form>
         <div class="mb4">
           <p class="mb2">
@@ -537,25 +537,22 @@
           </p>
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn center" href="" @click.prevent="closeDeleteModal()">
           {{ $t('app.cancel') }}
         </a>
         <a v-cy-name="'delete-life-event-button'" class="btn btn-primary" href="" @click.prevent="destroy(lifeEventToDelete)">
           {{ $t('app.delete') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
-
 export default {
 
   components: {
-    SweetModal
   },
 
   props: {
@@ -592,6 +589,7 @@ export default {
       lifeEvents: [],
       lifeEventToDelete: null,
       showAdd: false,
+      showDeleteLifeEventModal: false,
     };
   },
 
@@ -637,12 +635,12 @@ export default {
     },
 
     showDeleteModal(lifeEvent) {
-      this.$refs.deleteLifeEventModal.open();
+      this.showDeleteLifeEventModal = true;
       this.lifeEventToDelete = lifeEvent;
     },
 
     closeDeleteModal() {
-      this.$refs.deleteLifeEventModal.close();
+      this.showDeleteLifeEventModal = false;
     },
   }
 };

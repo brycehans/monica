@@ -29,7 +29,7 @@
             <div class="dt-ns dt--fixed di">
               <div class="dtc-ns pr2-ns pb0-ns w-100 pb3">
                 <form-input
-                  value="{{ $contact->first_name }}"
+                  model-value="{{ $contact->first_name }}"
                   :input-type="'text'"
                   :id="'firstname'"
                   :required="true"
@@ -38,7 +38,7 @@
               </div>
               <div class="dtc-ns pr2-ns pb0-ns w-100 pb3">
                 <form-input
-                  value="{{ $contact->middle_name }}"
+                  model-value="{{ $contact->middle_name }}"
                   :input-type="'text'"
                   :id="'middlename'"
                   :required="false"
@@ -47,7 +47,7 @@
               </div>
               <div class="dtc-ns pr2-ns pb0-ns w-100 pb3">
                 <form-input
-                  value="{{ $contact->last_name }}"
+                  model-value="{{ $contact->last_name }}"
                   :input-type="'text'"
                   :id="'lastname'"
                   :required="false"
@@ -56,7 +56,7 @@
               </div>
               <div class="dtc-ns pb0-ns w-100">
                 <form-input
-                  value="{{ $contact->nickname }}"
+                  model-value="{{ $contact->nickname }}"
                   :input-type="'text'"
                   :id="'nickname'"
                   :required="false"
@@ -70,7 +70,7 @@
             <div class="dt-ns dt--fixed di">
               <div class="dtc-ns pr2-ns pb0-ns w-100 pb3">
                 <form-input
-                  value="{{ $contact->last_name }}"
+                  model-value="{{ $contact->last_name }}"
                   :input-type="'text'"
                   :id="'lastname'"
                   :required="false"
@@ -79,7 +79,7 @@
               </div>
               <div class="dtc-ns pr2-ns pb0-ns w-100 pb3">
                 <form-input
-                  value="{{ $contact->first_name }}"
+                  model-value="{{ $contact->first_name }}"
                   :input-type="'text'"
                   :id="'firstname'"
                   :required="true"
@@ -88,7 +88,7 @@
               </div>
               <div class="dtc-ns pb0-ns w-100">
                 <form-input
-                  value="{{ $contact->nickname }}"
+                  model-value="{{ $contact->nickname }}"
                   :input-type="'text'"
                   :id="'nickname'"
                   :required="false"
@@ -106,7 +106,7 @@
           <div class="mb3 mb0-ns">
             <form-select
               :options="{{ $genders }}"
-              value="{{ $contact->gender_id }}"
+              model-value="{{ $contact->gender_id }}"
               :required="false"
               :title="'{{ trans('people.people_add_gender') }}'"
               :id="'gender'">
@@ -118,7 +118,7 @@
         <div class="pa4-ns ph3 pv2 bb b--gray-monica">
           <div class="mb3 mb0-ns">
             <form-input
-              value="{{ $contact->description }}"
+              model-value="{{ $contact->description }}"
               :input-type="'text'"
               :id="'description'"
               :required="false"

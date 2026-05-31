@@ -31,7 +31,7 @@ div >>> .avatar-small {
     </div>
     <div class="cb"></div>
 
-    <sweet-modal ref="modal" overlay-theme="dark" :title="$t('settings.me_select')">
+    <monica-modal v-model="showModal" :title="$t('settings.me_select')">
       <form>
         <contact-select
           v-model="newContact"
@@ -42,7 +42,7 @@ div >>> .avatar-small {
           :default-options="existingContacts"
         />
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn fl" href="" @click.prevent="remove">
           {{ $t('settings.me_remove_contact') }}
         </a>
@@ -52,17 +52,14 @@ div >>> .avatar-small {
         <a class="btn btn-primary" href="" @click.prevent="save">
           {{ $t('app.save') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
-
 export default {
   components: {
-    SweetModal,
   },
 
   props: {
@@ -83,7 +80,8 @@ export default {
   data() {
     return {
       meContact: null,
-      newContact: null
+      newContact: null,
+      showModal: false,
     };
   },
 
@@ -127,11 +125,11 @@ export default {
     },
 
     openModal() {
-      this.$refs.modal.open();
+      this.showModal = true;
     },
 
     closeModal() {
-      this.$refs.modal.close();
+      this.showModal = false;
     }
   }
 };

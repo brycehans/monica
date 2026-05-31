@@ -54,19 +54,25 @@
         </optgroup>
       </template>
     </select>
-    <small v-if="validator && (validator.$error && validator.required !== undefined && !validator.required)" class="error">
+    <small v-if="validator?.$error && validator.required?.$invalid" class="error">
       {{ requiredMessage }}
     </small>
   </div>
 </template>
 
 <script>
+import { getCurrentInstance } from 'vue';
+
 export default {
 
   props: {
-    value: {
+    modelValue: {
       type: [String, Number],
       default: '',
+    },
+    modelModifiers: {
+      type: Object,
+      default: () => ({}),
     },
     options: {
       type: [Array, Object],
@@ -102,6 +108,12 @@ export default {
     }
   },
 
+  emits: ['update:modelValue', 'input'],
+
+  setup() {
+    return { uid: getCurrentInstance().uid };
+  },
+
   data() {
     return {
       selectedOption: null,
@@ -110,7 +122,7 @@ export default {
 
   computed: {
     realid() {
-      return this.id + this._uid;
+      return this.id + this.uid;
     },
     selectClass() {
       var c = [this.iclass !== '' ? this.iclass : 'br2 f5 w-100 ba b--black-40 pa2 outline-0'];
@@ -129,13 +141,13 @@ export default {
   },
 
   watch: {
-    value: function (newValue) {
+    modelValue: function (newValue) {
       this.selectedOption = newValue;
     }
   },
 
   mounted() {
-    this.selectedOption = this.value;
+    this.selectedOption = this.modelValue;
   },
 
   methods: {
@@ -157,6 +169,7 @@ export default {
       if (this.validator) {
         this.validator.$touch();
       }
+      this.$emit('update:modelValue', event.target.value);
       this.$emit('input', event.target.value);
     },
   },

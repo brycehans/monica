@@ -27,12 +27,13 @@ describe('Introduction', function () {
     cy.url().should('include', '/introductions/edit');
 
     cy.get('textarea[name=first_met_additional_info]').type('Lorem ipsum');
-    cy.get('#metThrough input[type=search]').click();
-    cy.get('#metThrough ul[role="listbox"]').contains('John Doe');
-    cy.get('#metThrough ul[role="listbox"]').contains('Jane Doe');
-    cy.get('#metThrough ul[role="listbox"]').contains('Joe Shmoe');
+    cy.get('#metThrough').click();
+    cy.get('.multiselect-options').contains('John Doe');
+    cy.get('.multiselect-options').contains('Jane Doe');
+    // Joe Shmoe is the active contact and is excluded from his own
+    // introduction dropdown by ContactSelect's userContactId filter.
 
-    cy.get('#metThrough ul[role="listbox"]').contains('John Doe').click();
+    cy.get('.multiselect-options').contains('John Doe').click();
 
     cy.get('button.btn-primary[type=submit]').click();
 
@@ -49,12 +50,12 @@ describe('Introduction', function () {
     cy.url().should('include', '/introductions/edit');
 
     cy.get('textarea[name=first_met_additional_info]').type('Lorem ipsum');
-    cy.get('#metThrough input[type=search]').type('John');
-    cy.get('#metThrough ul[role="listbox"]').contains('John Doe');
-    cy.get('#metThrough ul[role="listbox"]').should('not.contain', 'Joe Shmoe');
-    cy.get('#metThrough ul[role="listbox"]').should('not.contain', 'Jane Doe');
+    cy.get('#metThrough').type('John');
+    cy.get('.multiselect-options').contains('John Doe');
+    cy.get('.multiselect-options').should('not.contain', 'Joe Shmoe');
+    cy.get('.multiselect-options').should('not.contain', 'Jane Doe');
 
-    cy.get('#metThrough ul[role="listbox"]').contains('John Doe').click();
+    cy.get('.multiselect-options').contains('John Doe').click();
     cy.get('button.btn-primary[type=submit]').click();
 
     cy.url().should('include', '/people/h:');

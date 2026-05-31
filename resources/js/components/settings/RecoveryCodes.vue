@@ -16,7 +16,7 @@
       </a>
     </div>
 
-    <sweet-modal id="recoveryModal" ref="recoveryModal" overlay-theme="dark" :title="$t('settings.recovery_title')">
+    <monica-modal v-model="recoveryModalOpen" :title="$t('settings.recovery_title')">
       <notifications group="recovery" position="top middle" :duration="5000" width="400" />
 
       <p>{{ $t('settings.recovery_help_intro') }}</p>
@@ -26,7 +26,7 @@
         </span>
       </p>
       <p>{{ $t('settings.recovery_help_information') }}</p>
-      <div slot="button">
+      <template #button>
         <span :class="[ dirltr ? 'fl' : 'fr' ]">
           <a class="btn" href="" @click.prevent="generateNewCodes">
             {{ $t('settings.recovery_generate') }}
@@ -47,23 +47,21 @@
             {{ $t('app.close') }}
           </a>
         </span>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
-
 export default {
 
   components: {
-    SweetModal
   },
 
   data() {
     return {
       codes: [],
+      recoveryModalOpen: false,
     };
   },
 
@@ -85,7 +83,7 @@ export default {
       axios.post('settings/security/recovery-codes')
         .then(response => {
           this.codes = response.data;
-          this.$refs.recoveryModal.open();
+          this.recoveryModalOpen = true;
         }).catch(error => {
           this.notify(error.response.data.message, false);
         });
@@ -102,7 +100,7 @@ export default {
     },
 
     closeRecoveryModal() {
-      this.$refs.recoveryModal.close();
+      this.recoveryModalOpen = false;
     },
 
     copyIntoClipboard() {

@@ -347,7 +347,7 @@ export default {
     toggleEdit(contactAddress) {
       this.addMode = false;
       this.toggleEditExcept(contactAddress.id);
-      this.$set(contactAddress, 'edit', !contactAddress.edit);
+      contactAddress.edit = !contactAddress.edit;
       this.updateForm.id = contactAddress.id;
       this.updateForm.name = contactAddress.name;
       this.updateForm.street = contactAddress.street;
@@ -363,7 +363,7 @@ export default {
       _.forEach(_.filter(this.contactAddresses, function (a) {
         return a.id !== contactAddressId;}
       ), (a) => {
-        this.$set(a, 'edit', false);
+        a.edit = false;
       });
     },
 
@@ -381,12 +381,12 @@ export default {
 
     update(contactAddress) {
       var vm = this;
-      this.$set(contactAddress, 'edit', !contactAddress.edit);
+      contactAddress.edit = !contactAddress.edit;
       this.persistClient(
         'put', 'people/' + this.hash + '/addresses/' + contactAddress.id,
         this.updateForm
       ).then(response => {
-        this.$set(vm.contactAddresses, vm.contactAddresses.indexOf(vm.contactAddresses.find(item => item.id === response.data.id)), response.data);
+        vm.contactAddresses[vm.contactAddresses.indexOf(vm.contactAddresses.find(item => item.id === response.data.id))] = response.data;
       });
     },
 

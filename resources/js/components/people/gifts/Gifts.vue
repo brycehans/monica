@@ -68,7 +68,7 @@
 
           <div :class="dirltr ? 'fr' : 'fl'">
             <a v-cy-name="'edit-gift-button-' + gift.id" :class="dirltr ? 'mr1' : 'ml1'" class="di" href=""
-               @click.prevent="$set(gift, 'edit', true)"
+               @click.prevent="gift.edit = true"
             >
               {{ $t('app.edit') }}
             </a>
@@ -87,32 +87,30 @@
           :family-contacts="familyContacts"
           :reach-limit="reachLimit"
           @update="updateGift(gift, $event)"
-          @cancel="$set(gift, 'edit', false)"
+          @cancel="gift.edit = false"
         />
       </div>
     </div>
 
-    <sweet-modal ref="modal" overlay-theme="dark" :title="$t('people.gifts_delete_title')">
+    <monica-modal v-model="showModal" :title="$t('people.gifts_delete_title')">
       <form>
         <div class="mb4">
           {{ $t('people.gifts_delete_confirmation') }}
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteModal()">
           {{ $t('app.cancel') }}
         </a>
         <a v-cy-name="'modal-delete-gift-button-' + giftToTrash.id" class="btn btn-primary" href="" @click.prevent="trash(giftToTrash)">
           {{ $t('app.delete') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-
-import { SweetModal } from 'sweet-modal-vue';
 import Gift from './Gift.vue';
 import CreateGift from './CreateGift.vue';
 import moment from 'moment';
@@ -122,7 +120,6 @@ export default {
   components: {
     Gift,
     CreateGift,
-    SweetModal,
   },
 
   props: {
@@ -154,6 +151,7 @@ export default {
       activeTab: '',
       giftToTrash: '',
       displayCreateGift: false,
+      showModal: false,
     };
   },
 
@@ -212,13 +210,13 @@ export default {
       gift.contact_id = this.contactId;
       axios.put(`people/${this.hash}/gifts/${gift.id}`, gift)
         .then(response => {
-          this.$set(gift, 'status', response.data.data.status);
-          this.$set(gift, 'date', response.data.data.date);
+          gift.status = response.data.data.status;
+          gift.date = response.data.data.date;
         });
     },
 
     showDeleteModal(gift) {
-      this.$refs.modal.open();
+      this.showModal = true;
       this.giftToTrash = gift;
     },
 
@@ -236,21 +234,21 @@ export default {
     },
 
     updateGift(gift, response) {
-      this.$set(gift, 'edit', false);
-      this.$set(gift, 'name', response.name);
-      this.$set(gift, 'comment', response.comment);
-      this.$set(gift, 'url', response.url);
-      this.$set(gift, 'amount', response.amount);
-      this.$set(gift, 'amount_with_currency', response.amount_with_currency);
-      this.$set(gift, 'status', response.status);
-      this.$set(gift, 'recipient', response.recipient);
-      this.$set(gift, 'date', response.date);
-      this.$set(gift, 'photos', response.photos);
+      gift.edit = false;
+      gift.name = response.name;
+      gift.comment = response.comment;
+      gift.url = response.url;
+      gift.amount = response.amount;
+      gift.amount_with_currency = response.amount_with_currency;
+      gift.status = response.status;
+      gift.recipient = response.recipient;
+      gift.date = response.date;
+      gift.photos = response.photos;
       this.$emit('update', response);
     },
 
     closeDeleteModal() {
-      this.$refs.modal.close();
+      this.showModal = false;
     }
   }
 };

@@ -360,7 +360,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     // Open the Create Client modal.
     await page.getByRole('link', { name: 'Create New Client' }).click();
-    const createModal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Create Client' });
+    const createModal = page.locator('.monica-modal__panel').filter({ hasText: 'Create Client' });
     await expect(createModal).toBeVisible();
 
     // Fill name + redirect, submit.
@@ -370,7 +370,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     // Create modal closes, Client Secret modal opens with the plain value.
     await expect(createModal).toBeHidden();
-    const secretModal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Client Secret' });
+    const secretModal = page.locator('.monica-modal__panel').filter({ hasText: 'Client Secret' });
     await expect(secretModal).toBeVisible();
 
     const secretText = (await secretModal.locator('[cy-name="client-secret-display"] code').textContent())?.trim() ?? '';
@@ -379,7 +379,9 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     expect(secretText).toMatch(/^[A-Za-z0-9]+$/);
 
     // Close the secret modal. The new client should still be in the list.
-    await secretModal.getByRole('link', { name: 'Close', exact: true }).click();
+    // Scope to the footer button slot — MonicaModal renders an aria-labelled
+    // × icon at the top-right that would otherwise also match.
+    await secretModal.locator('.monica-modal__footer').getByRole('link', { name: 'Close', exact: true }).click();
     await expect(secretModal).toBeHidden();
     await expect(page.locator('body')).toContainText(marker);
 
@@ -447,11 +449,11 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // The "Add new gender type" anchor opens the sweet-modal.
     await page.getByRole('link', { name: 'Add new gender type' }).click();
 
-    // sweet-modal renders inside .sweet-modal-overlay. We scope to that
-    // container so we don't pick up unrelated form-input components on the
-    // page underneath (Genders / Contact field types / etc. all share the
-    // same form-input).
-    const modal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Add gender type' });
+    // monica-modal wraps its slot body inside .monica-modal__panel. Scope
+    // to that wrapper so we don't pick up unrelated form-input components
+    // on the page underneath (Genders / Contact field types / etc. all
+    // share the same form-input).
+    const modal = page.locator('.monica-modal__panel').filter({ hasText: 'Add gender type' });
     await expect(modal).toBeVisible();
 
     // The "Name" field — first text input inside the modal. form-input
@@ -481,7 +483,9 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     await page.getByRole('link', { name: 'Create New Token' }).click();
 
-    const modal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Create Token' });
+    // The MonicaModal wrapper renders the title + slot body inside
+    // .monica-modal__panel, scoped here for filtering by visible heading.
+    const modal = page.locator('.monica-modal__panel').filter({ hasText: 'Create Token' });
     await expect(modal).toBeVisible();
 
     // Click "Create" without filling the name field. The button is an
@@ -733,10 +737,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
       await page.getByRole('link', { name: 'Add a new security key' }).click();
 
-      // The modal is a <sweet-modal-overlay>; scope by "Key name" body copy —
-      // the underlying page also has a "Security key …" <h3>, which we'd
-      // rather not collide with.
-      const modal = page.locator('.sweet-modal-overlay').filter({ hasText: 'Key name' }).first();
+      // The modal is a monica-modal/vue-final-modal; scope by "Key name"
+      // body copy — the underlying page also has a "Security key …" <h3>,
+      // which we'd rather not collide with.
+      const modal = page.locator('.monica-modal__panel').filter({ hasText: 'Key name' }).first();
       await expect(modal).toBeVisible();
 
       // form-input wraps the <input>, generating an id like `keyName<n>`
@@ -1052,6 +1056,77 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/relationships/create (form-checkbox toggle)');
   });
 
+  test('relationship/create: SpecialDate birthdate radio labels render their #label slot content (vue3 slot= → #X guard)', async ({ page }) => {
+    // Guards the slot="X" → #X migration in SpecialDate.vue. Vue 3 dropped
+    // the vue-2 attribute form (`<template slot="label">`) entirely, so any
+    // accidental revert would mount the four birthdate radios as bare
+    // unlabelled circles — the #label slot content gets silently dropped
+    // by PInput's `<slot name="label">`. Asserting the sibling
+    // <label class="pointer"> populated per radio catches that regression.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    await page.locator('a[href*="/people/h:"]').first().click();
+    await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
+    await page.goto(page.url() + '/relationships/create');
+
+    // SpecialDate.vue renders four form-radios named "birthdate" with
+    // values unknown / approximate / almost / exact. Map each to the
+    // expected label text from resources/lang/en/people.php; the curly
+    // apostrophe (’) and ellipsis (…) are intentional —
+    // Crowdin preserves both.
+    const cases: Array<{ value: string; label: string }> = [
+      { value: 'unknown',     label: 'I do not know this person’s age' },
+      { value: 'approximate', label: 'This person is probably…' },
+      { value: 'almost',      label: 'I know the day and month of this person’s birthday, but not the year…' },
+      { value: 'exact',       label: 'I know this person’s exact birthday…' },
+    ];
+
+    for (const { value, label } of cases) {
+      // PInput's dclass on these radios is "flex mb3"; the outer label
+      // is `<label class="pointer">` populated from <slot name="label">.
+      const wrapper = page.locator('div.flex').filter({
+        has: page.locator(`input[name="birthdate"][value="${value}"]`),
+      });
+      await expect(wrapper.locator('label.pointer')).toHaveText(label);
+    }
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/relationships/create (SpecialDate #label slots)');
+  });
+
+  test('contact avatar edit: SetAvatar radio labels render their #label slot content (vue3 slot= → #X guard)', async ({ page }) => {
+    // Same slot="X" → #X guard as the SpecialDate test above, but for
+    // SetAvatar.vue. The avatar page mounts up to four form-radios named
+    // "avatar"; two (default, upload) always render, the other two
+    // (gravatar, photo) are conditional on existing state. Assert only the
+    // always-on pair to keep the test deterministic across seed data.
+    const { unknown } = attachConsoleCapture(page);
+
+    await login(page);
+    await page.goto('/people');
+    const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
+    expect(contactHref).toBeTruthy();
+    await page.goto(`${contactHref}/avatar`);
+
+    const cases: Array<{ value: string; label: string }> = [
+      { value: 'default', label: 'The default avatar' },
+      { value: 'upload',  label: 'From a photo that you upload' },
+    ];
+
+    for (const { value, label } of cases) {
+      const wrapper = page.locator('div.flex').filter({
+        has: page.locator(`input[name="avatar"][value="${value}"]`),
+      });
+      // toContainText (not toHaveText) — the upload radio's #label slot
+      // appends a conditional "Upgrade" link when the account has hit its
+      // storage limit. Substring match keeps the test stable.
+      await expect(wrapper.locator('label.pointer')).toContainText(label);
+    }
+
+    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/avatar (SetAvatar #label slots)');
+  });
+
   test('contact detail: log-a-call form persists with LL-formatted date (pr-1b form-radio + pr-1c |moment guard)', async ({ page }) => {
     // Two guards in one test:
     //
@@ -1283,7 +1358,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       // which opens the modal via $refs.updateModal.open().
       await page.getByRole('link', { name: 'Stay in touch', exact: true }).first().click();
 
-      const modal = page.locator('.sweet-modal-overlay.is-visible').filter({ hasText: 'Stay in touch' });
+      const modal = page.locator('.monica-modal__panel').filter({ hasText: 'Stay in touch' });
       await expect(modal).toBeVisible();
 
       const toggleCheckbox = modal.locator('input[type="checkbox"]').first();
@@ -1332,12 +1407,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       // `required` rule passes on the way out.
       await page.getByRole('link', { name: 'Edit', exact: true }).first().click();
       await expect(modal).toBeVisible();
-      // Click vue-js-toggle-button's wrapper label to fire @change, which
-      // flips stateInput. The hidden checkbox isn't directly clickable
-      // (display:none-ish); the label is the documented click surface.
-      // Post-cutover (native checkbox) the selector needs updating to
-      // the new wrapper.
-      await modal.locator('label.vue-js-switch').click();
+      // Click the toggle-switch wrapper label to flip stateInput via the
+      // native checkbox underneath. The visually-hidden input isn't
+      // directly clickable; the label is the click surface.
+      await modal.locator('label.toggle-switch').click();
       await expect(toggleCheckbox).not.toBeChecked();
       await saveLink.click();
       await expect(modal).toBeHidden();
@@ -1396,10 +1469,13 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     await page.getByRole('link', { name: 'Enable Two Factor Authentication' }).click();
 
-    // The enable modal mounts under id=enableModal. The OTP input renders
-    // with name="one_time_password1" (the id seed in MfaActivate.vue:36);
+    // The enable modal renders under .monica-modal__panel with the
+    // 2fa_otp_title heading. The OTP input renders with
+    // name="one_time_password1" (the id seed in MfaActivate.vue:36);
     // the Verify anchor has id="verify1".
-    const modal = page.locator('#enableModal.is-visible');
+    const modal = page.locator('.monica-modal__panel').filter({
+      hasText: 'Two Factor Authentication mobile application',
+    });
     await expect(modal).toBeVisible();
 
     await modal.locator('input[name="one_time_password1"]').fill('123456');
@@ -1492,10 +1568,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       buffer: tinyPng,
     });
 
-    // The crop modal opens via $refs.cropModal.open(). It's marked
-    // :blocking="true" :hide-close-button="true" so we assert visibility
-    // by class + content, then dismiss with the Cancel anchor.
-    const cropModal = page.locator('.sweet-modal-overlay.is-visible').filter({
+    // The crop modal opens via cropModalOpen=true and renders inside
+    // .monica-modal__panel. We assert visibility by content, then
+    // dismiss with the Cancel anchor.
+    const cropModal = page.locator('.monica-modal__panel').filter({
       hasText: 'Crop new avatar photo',
     });
     await expect(cropModal).toBeVisible();
@@ -1548,13 +1624,13 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       .first();
     await visibleDateInput.click();
 
-    // Pick the 15th of the currently-displayed month. The .vdp-datepicker
-    // selectors are library-specific (pre-cutover); post-cutover the test
-    // body needs an update — see comment above.
-    const calendar = page.locator('.vdp-datepicker__calendar:visible');
+    // Pick the 15th of the currently-displayed month. Post-cutover the
+    // datepicker is @vuepic/vue-datepicker, which renders its calendar
+    // popup with `.dp--menu` and day cells with `.dp--cell-inner`.
+    const calendar = page.locator('.dp--menu:visible');
     await expect(calendar).toBeVisible();
     await calendar
-      .locator('.cell.day:not(.blank):not(.disabled)', { hasText: /^15$/ })
+      .locator('.dp--cell-inner:not(.dp--cell-offset):not(.dp--cell-disabled)', { hasText: /^15$/ })
       .first()
       .click();
 

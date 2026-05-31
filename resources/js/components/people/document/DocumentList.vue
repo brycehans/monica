@@ -293,7 +293,7 @@ export default {
     },
 
     formatTime(dateAsString) {
-      moment.locale(this._i18n.locale);
+      moment.locale(this.$i18n.locale);
 
       var date = moment(dateAsString);
       return date.format('ll');

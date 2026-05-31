@@ -34,9 +34,9 @@ describe('Notes', function () {
         cy.get('[cy-name=note-body-'+item+']').should('contain', 'This is another note');
 
         // delete a note
-        cy.get('[cy-name=modal-delete-note]').should('not.be.visible');
+        cy.get('.monica-modal__panel').should('not.exist');
         cy.get('[cy-name=delete-note-button-'+item+']').click();
-        cy.get('[cy-name=modal-delete-note]').should('be.visible');
+        cy.get('.monica-modal__panel').should('be.visible');
         cy.get('[cy-name=delete-mode-note-button-'+item+']').click();
 
         cy.get('[cy-name=note-body-'+item+']').should('not.exist');

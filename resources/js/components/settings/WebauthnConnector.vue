@@ -44,11 +44,8 @@
       </small>
 
 
-      <sweet-modal
-        id="registerModal"
-        ref="registerModal"
-        overlay-theme="dark"
-        :title="$t('settings.webauthn_title')"
+      <monica-modal v-model="registerModalOpen"
+                    :title="$t('settings.webauthn_title')"
       >
         <div v-if="registerTab === '1'">
           <p>
@@ -103,7 +100,7 @@
             </p>
           </div>
         </div>
-        <div slot="button">
+        <template #button>
           <a v-if="registerTab === '1'" class="btn" href="" @click.prevent="showRegisterModalTab('2');startRegister();">
             {{ $t('pagination.next') }}
           </a>
@@ -113,8 +110,8 @@
           <a class="btn" href="" @click.prevent="closeRegisterModal()">
             {{ $t('app.cancel') }}
           </a>
-        </div>
-      </sweet-modal>
+        </template>
+      </monica-modal>
     </div>
     <div v-else>
       <div v-if="errorMessage !== ''" class="form-error-message mb3">
@@ -155,33 +152,31 @@
       </div>
     </div>
 
-    <sweet-modal ref="delete" overlay-theme="dark" title="Remove a key">
+    <monica-modal v-model="showDelete" title="Remove a key">
       <form>
         <div class="mb4">
           {{ $t('settings.webauthn_delete_confirmation') }}
         </div>
       </form>
-      <div slot="button">
+      <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteModal()">
           {{ $t('app.cancel') }}
         </a>
         <a class="btn" href="" @click.prevent="webauthnRemove(keyToTrash)">
           {{ $t('app.delete') }}
         </a>
-      </div>
-    </sweet-modal>
+      </template>
+    </monica-modal>
   </div>
 </template>
 
 <script>
-import { SweetModal } from 'sweet-modal-vue';
 import moment from 'moment-timezone';
 import { startRegistration, startAuthentication, browserSupportsWebAuthn } from '@simplewebauthn/browser';
 
 export default {
 
   components: {
-    SweetModal
   },
 
   props: {
@@ -219,6 +214,8 @@ export default {
       keyToTrash: '',
       keyName: '',
       registerTab: '',
+      registerModalOpen: false,
+      showDelete: false,
     };
   },
 
@@ -276,7 +273,7 @@ export default {
       this.keyName = '';
       this.success = false;
       this.showRegisterModalTab('1');
-      this.$refs.registerModal.open();
+      this.registerModalOpen = true;
     },
 
     showRegisterModalTab(tab) {
@@ -296,7 +293,7 @@ export default {
     },
 
     closeRegisterModal() {
-      this.$refs.registerModal.close();
+      this.registerModalOpen = false;
       this.showRegisterModalTab('');
     },
 
@@ -362,15 +359,15 @@ export default {
 
     showDeleteModal(id) {
       this.keyToTrash = id;
-      this.$refs.delete.open();
+      this.showDelete = true;
     },
 
     closeDeleteModal() {
-      this.$refs.delete.close();
+      this.showDelete = false;
     },
 
     formatTime(value) {
-      moment.locale(this._i18n.locale);
+      moment.locale(this.$i18n.locale);
       moment.tz.setDefault('UTC');
 
       var t = moment(value);

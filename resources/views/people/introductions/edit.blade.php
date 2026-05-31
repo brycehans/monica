@@ -54,7 +54,7 @@
                     :placeholder="'{{ trans('people.relationship_form_associate_dropdown_placeholder') }}'"
                     :default-options="{{ \Safe\json_encode($contacts) }}"
                     :user-contact-id="{{ $contact->id }}"
-                    :value="{{ $introducer !== null ? \Safe\json_encode($introducer) : 'null' }}">
+                    :model-value="{{ $introducer !== null ? \Safe\json_encode($introducer) : 'null' }}">
                   </contact-select>
                 </div>
 
