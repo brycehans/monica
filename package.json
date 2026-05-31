@@ -24,7 +24,7 @@
     "delete:reports": "rm results/cypress/* || true",
     "pree2e": "yarn run delete:reports",
     "migrate": "DB_CONNECTION=testing php artisan migrate:fresh && DB_CONNECTION=testing php artisan db:seed",
-    "pretest": "yarn run migrate",
+    "pretest": "php artisan config:clear && yarn run migrate",
     "test": "vendor/bin/phpunit",
     "posttest": "vendor/bin/phpstan analyse",
     "composer update": "COMPOSER_MEMORY_LIMIT=-1 composer update"

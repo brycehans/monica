@@ -70,6 +70,9 @@ services:
       - MYSQL_PASSWORD=secret
     volumes:
       - /var/lib/mysql
+      # First-boot init: creates monica_test and grants homestead so
+      # `docker exec monica-app-1 yarn run test` works out of the box.
+      - ./scripts/docker/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   stripe-mock:
     image: stripe/stripe-mock:v0.199.0
