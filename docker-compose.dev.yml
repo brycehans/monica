@@ -54,7 +54,6 @@ services:
       - ./tests:/var/www/html/tests
       - ./phpunit.xml:/var/www/html/phpunit.xml
       - ./config:/var/www/html/config
-      - ./.env.testing:/var/www/html/.env.testing
       # Surface host-side Vite builds to the container's Apache without a
       # `docker cp` step. The narrow scope (just `public/build`) leaves the
       # image-baked `public/storage` symlink + `public/js/langs/` untouched.
@@ -75,8 +74,9 @@ services:
     volumes:
       - /var/lib/mysql
       # First-boot init: creates monica_test and grants homestead so the
-      # testing connection (DB_TEST_DATABASE=monica_test from .env.testing)
-      # has somewhere to migrate. Runs once on first volume init.
+      # testing connection (DB_TEST_DATABASE=monica_test from .env.dev's
+      # env_file injection) has somewhere to migrate. Runs once on first
+      # volume init.
       - ./scripts/docker/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   stripe-mock:
