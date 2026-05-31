@@ -133,6 +133,13 @@ class SeedRegressionDemo extends Command
     private function buildDemoAccount(): void
     {
         $this->demoAccount = Account::createDefault('Demo', 'User', 'test@example.com', 'password');
+        // Bypass the free-plan contact ceiling so the supporting-contact loop
+        // can populate the rich demo account without tripping abort(402) when
+        // REQUIRES_SUBSCRIPTION=true (which docker-compose.dev.yml pins for
+        // the Stripe upgrade-flow smoke). Direct attribute assignment because
+        // the flag isn't in Account::$fillable. Mirrors the SetupTest fix.
+        $this->demoAccount->legacy_free_plan_unlimited_contacts = 1;
+        $this->demoAccount->save();
         /** @var User $user */
         $user = $this->demoAccount->users()->first();
         $user->markEmailAsVerified();
@@ -142,6 +149,8 @@ class SeedRegressionDemo extends Command
     private function buildBlankAccount(): void
     {
         $this->blankAccount = Account::createDefault('Blank', 'State', 'blank@example.com', 'password');
+        $this->blankAccount->legacy_free_plan_unlimited_contacts = 1;
+        $this->blankAccount->save();
         $this->blankAccount->users()->first()->markEmailAsVerified();
     }
 
