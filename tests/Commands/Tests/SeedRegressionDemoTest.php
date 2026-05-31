@@ -29,12 +29,13 @@ use App\Models\Relationship\Relationship;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use PHPUnit\Framework\Attributes\Test;
 
 class SeedRegressionDemoTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** @test */
+    #[Test]
     public function it_creates_a_browser_regression_demo_dataset()
     {
         $this->artisan('monica:seed-regression-demo', ['--seed' => 12345])
