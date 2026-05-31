@@ -8,6 +8,8 @@ use App\Models\Contact\Contact;
 use App\Models\Contact\ContactFieldType;
 use App\Models\Contact\Debt;
 use App\Models\Contact\Document;
+use App\Models\Contact\LifeEventType;
+use App\Models\Contact\Note;
 use App\Models\Contact\Reminder;
 use App\Models\Contact\Task;
 use App\Models\Journal\Day;
@@ -151,7 +153,9 @@ class SeedRegressionDemo extends Command
         $this->blankAccount = Account::createDefault('Blank', 'State', 'blank@example.com', 'password');
         $this->blankAccount->legacy_free_plan_unlimited_contacts = 1;
         $this->blankAccount->save();
-        $this->blankAccount->users()->first()->markEmailAsVerified();
+        /** @var User $blankUser */
+        $blankUser = $this->blankAccount->users()->first();
+        $blankUser->markEmailAsVerified();
     }
 
     private function buildEdgeCaseContacts(): void
@@ -495,14 +499,20 @@ class SeedRegressionDemo extends Command
         $accountId = $this->demoAccount->id;
 
         foreach ($this->supportingContacts as $i => $contact) {
-            $contact->notes()->create([
+            // `Note::create` (rather than `$contact->notes()->create()`) sidesteps
+            // a phpstan ambiguity: Contact has both a `notes()` hasMany relation
+            // and an `@method static notes(string, ?int)` scope shadow, which
+            // confuses argument-count inference on the relation call.
+            Note::create([
+                'contact_id' => $contact->id,
                 'body' => $this->faker->realText(120),
                 'account_id' => $accountId,
                 'is_favorited' => false,
             ]);
             if ($i % 4 === 0) {
                 // `favorited_at` is not in Note's $fillable, so set it after create().
-                $favorited = $contact->notes()->create([
+                $favorited = Note::create([
+                    'contact_id' => $contact->id,
                     'body' => $this->faker->realText(600),
                     'account_id' => $accountId,
                     'is_favorited' => true,
@@ -817,8 +827,10 @@ class SeedRegressionDemo extends Command
         if ($eventTypes->isEmpty()) {
             return;
         }
-        $pickType = function () use ($eventTypes) {
-            return $eventTypes->random()->id;
+        $pickType = function () use ($eventTypes): int {
+            /** @var LifeEventType $picked */
+            $picked = $eventTypes->random();
+            return $picked->id;
         };
 
         $events = [
