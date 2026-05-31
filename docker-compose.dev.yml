@@ -74,6 +74,10 @@ services:
       - MYSQL_PASSWORD=secret
     volumes:
       - /var/lib/mysql
+      # First-boot init: creates monica_test and grants homestead so the
+      # testing connection (DB_TEST_DATABASE=monica_test from .env.testing)
+      # has somewhere to migrate. Runs once on first volume init.
+      - ./scripts/docker/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   stripe-mock:
     image: stripe/stripe-mock:v0.199.0
