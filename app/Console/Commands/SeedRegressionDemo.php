@@ -33,6 +33,7 @@ use App\Services\Contact\Relationship\CreateRelationship;
 use App\Services\Contact\Reminder\CreateReminder;
 use App\Services\Contact\Tag\AssociateTag;
 use Illuminate\Console\Command;
+use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -42,13 +43,15 @@ use function Safe\base64_decode;
 
 class SeedRegressionDemo extends Command
 {
+    use ConfirmableTrait;
     use WithFaker;
 
     protected $signature = 'monica:seed-regression-demo
                             {--seed=12345 : Faker seed for reproducibility.}
                             {--random : Use a fresh random seed and print it.}
                             {--contacts=20 : Total supporting contact count for the rich demo account.}
-                            {--fresh-demo : Delete and rebuild the known demo accounts if they already exist.}';
+                            {--fresh-demo : Delete and rebuild the known demo accounts if they already exist.}
+                            {--force : Force the operation to run when in production.}';
 
     protected $description = 'Build the browser-regression demo dataset (test@example.com, blank@example.com).';
 
@@ -61,6 +64,15 @@ class SeedRegressionDemo extends Command
 
     public function handle(): int
     {
+        // Creates known-credential accounts (test@example.com / password) and,
+        // with --fresh-demo, destroys any existing accounts whose owner has
+        // those emails. Both are dev/CI affordances — block in production
+        // unless the operator passes --force. Follows the same pattern as
+        // Laravel's migrate / db:wipe commands via ConfirmableTrait.
+        if (! $this->confirmToProceed()) {
+            return self::FAILURE;
+        }
+
         if (! $this->prepareAccountsForSeeding()) {
             return self::FAILURE;
         }

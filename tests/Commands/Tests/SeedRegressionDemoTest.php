@@ -28,6 +28,7 @@ use App\Models\Journal\JournalEntry;
 use App\Models\Relationship\Relationship;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -38,6 +39,16 @@ class SeedRegressionDemoTest extends TestCase
     #[Test]
     public function it_creates_a_browser_regression_demo_dataset()
     {
+        // `populateAttachments()` writes document + photo files to the
+        // configured filesystem disk (FILESYSTEM_DISK=public in phpunit.xml);
+        // `CreateContact` also dispatches `GenerateDefaultAvatar` synchronously
+        // (QUEUE_CONNECTION=sync), which writes an avatar JPG per contact.
+        // DatabaseTransactions only rolls back the DB — file writes would
+        // persist across runs and pollute storage/app/public. Fake the disk
+        // so all writes land in an in-memory dir that's discarded after the
+        // test.
+        Storage::fake('public');
+
         $this->artisan('monica:seed-regression-demo', ['--seed' => 12345])
             ->expectsOutput('Browser regression demo data created.')
             ->run();
