@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "366952323255cca03dae2f293418b05d",
+    "content-hash": "82bb9696a224ae2666337ade33c8ef06",
     "packages": [
         {
             "name": "asbiin/laravel-webauthn",
@@ -12321,67 +12321,6 @@
             "time": "2026-05-20T13:07:01+00:00"
         },
         {
-            "name": "werk365/etagconditionals",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/365Werk/etagconditionals.git",
-                "reference": "62d6c9f2c113853e44ff6835591c9201d0da6052"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/365Werk/etagconditionals/zipball/62d6c9f2c113853e44ff6835591c9201d0da6052",
-                "reference": "62d6c9f2c113853e44ff6835591c9201d0da6052",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "~7|~8|~9|~10|~11|~12"
-            },
-            "require-dev": {
-                "orchestra/testbench": "~5|~6|~7|~8",
-                "phpunit/phpunit": "~8.0|~9.0"
-            },
-            "default-branch": true,
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "EtagConditionals": "Werk365\\EtagConditionals\\Facades\\EtagConditionals"
-                    },
-                    "providers": [
-                        "Werk365\\EtagConditionals\\EtagConditionalsServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Werk365\\EtagConditionals\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Hergen Dillema",
-                    "email": "h.dillema@365werk.nl",
-                    "homepage": "https://365werk.nl"
-                }
-            ],
-            "description": "Laravel package to enable support for ETags and handling If-Match and If-None-Match conditional requests",
-            "homepage": "https://github.com/werk365/etagconditionals",
-            "keywords": [
-                "EtagConditionals",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/365Werk/etagconditionals/issues",
-                "source": "https://github.com/365Werk/etagconditionals/tree/master"
-            },
-            "time": "2025-08-26T12:51:50+00:00"
-        },
-        {
             "name": "xantios/mimey",
             "version": "v2.2.0",
             "source": {
@@ -17131,8 +17070,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "roave/security-advisories": 20,
-        "werk365/etagconditionals": 20
+        "roave/security-advisories": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -16,7 +16,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Auth\Notifications\VerifyEmail;
-use Werk365\EtagConditionals\EtagConditionals;
+use App\Http\Middleware\Etag\EtagConditionals;
 use Illuminate\Auth\Notifications\ResetPassword;
 
 class AppServiceProvider extends ServiceProvider
