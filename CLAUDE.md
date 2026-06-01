@@ -15,7 +15,7 @@ If `CLAUDE.local.md` and `.migration/` exist in your working tree, they hold for
 - **Vue 2.7** (current line; Vue 3 migration is a planned ladder rung — see "Fork-specific scope"), Bootstrap 4 + Tachyons, vue-i18n.
 - **MySQL** is the only supported database. Postgres/SQLite are not tested.
 - Static analysis: **PHPStan** (`phpstan.neon`) runs after the PHPUnit suite via `yarn run test` (the `posttest` hook). Psalm is currently removed from `require-dev` — see `composer.json` `extra.fork-notes.psalm-removed-on-php84` for why (it crashes on PHP 8.4); the re-add path is psalm ^6 once `thecodingmachine/safe ^3` is unblocked. `psalm.xml` lingers in the tree but is unused.
-- E2E: **Cypress** (`cypress.json`, `tests/cypress/`) and Laravel **Dusk** (`tests/Browser/`).
+- E2E: **Playwright** (`tests/playwright/`) for the UI surface, and Laravel **Dusk** (`tests/Browser/`) for auth / 2FA / DAV.
 
 ## Common commands
 
@@ -51,8 +51,7 @@ vendor/bin/phpunit --filter SomeTest                           # single test cla
 vendor/bin/phpunit tests/Unit/Services/Contact/SomeServiceTest.php  # single file
 vendor/bin/phpstan analyse
 php artisan dusk             # browser tests (needs Chrome + a running app)
-yarn run e2e                 # cypress headless
-yarn run e2e-gui             # cypress interactive
+yarn run e2e                 # playwright e2e suite (see tests/playwright/README.md)
 ```
 
 `yarn run test` always re-migrates a fresh testing DB first (`pretest` hook). The `phpunit.xml` testsuites group tests by area (`Api`, `Feature`, `Commands-Other`, `Commands-Scheduling`, `Unit-Models`, `Unit-Services`) — useful for running one slice via `phpunit --testsuite Unit-Services`.

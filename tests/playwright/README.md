@@ -4,7 +4,7 @@ Standalone Playwright suite for verifying the user-facing app. Two distinct sets
 
 1. **`dependency-upgrade-smoke.spec.ts`** — the phase-close gate per `CLAUDE.md`: login → dashboard → contact list → contact detail → vCard export → journal → reminders → settings → search → logout. Run before merging composer/npm bump PRs.
 2. **`subscription-flow.spec.ts`** — drives the Stripe-gated `/settings/subscriptions/*` routes through stripe-mock.
-3. **`<feature>.spec.ts`** — cypress-port coverage (#725). Each spec covers a focused UI-binding / cross-component invariant that phpunit alone can't reach:
+3. **`<feature>.spec.ts`** — UI-binding / cross-component invariant coverage (#725). Each spec covers behaviour that phpunit alone can't reach:
    - `contact-introductions.spec.ts` — ContactSelect multiselect ARIA contract + filter behaviour
    - `activity-types.spec.ts` — settings → activity-add cross-flow (premium-gated)
    - `activity-journal-side-effect.spec.ts` — activity-create inserts a non-deletable journal row
@@ -17,9 +17,9 @@ Standalone Playwright suite for verifying the user-facing app. Two distinct sets
    - `activity-types-premium-gate.spec.ts` — non-premium account sees the upgrade block
    - `gift-crud.spec.ts` — gift create / inline edit / modal delete
 
-## Why it's here and not in `tests/cypress/`
+## Why it's a separate suite
 
-- **Scope.** Cypress runs as part of the existing e2e gate (`yarn run e2e`). The smoke walkthrough is a separate ad-hoc verification step — run before merging composer/npm bump PRs, not on every CI build. Mixing it into the Cypress suite would slow CI for everyone.
+- **Scope.** The smoke walkthrough is an ad-hoc verification step — run before merging composer/npm bump PRs, not on every CI build. The feature specs cover focused UI-binding behaviour and are intended for the same local-only invocation. Neither is a CI gate yet.
 - **Lockfile isolation.** This directory has its own `package.json`. The root `yarn.lock` won't churn when `@playwright/test` is bumped, and the npm-side audit pass (PR-B / PR-C under [milestone #2](https://github.com/brycehans/monica/milestone/2)) won't fight with this dep tree.
 - **The MCP path is already Playwright.** Sessions that drive the walkthrough through `mcp__playwright__*` tools (as in PR #623's verification) can encode their steps here verbatim.
 
@@ -67,9 +67,9 @@ docker restart monica-app-1
 ```
 
 This is especially relevant to the planted-violation methodology used
-across the cypress-port specs (`#725`): if you flip an assertion in PHP and
-re-run the spec without restarting, you'll see the old behaviour and assume
-the assertion is loose when it actually bites.
+across the #725 specs: if you flip an assertion in PHP and re-run the spec
+without restarting, you'll see the old behaviour and assume the assertion
+is loose when it actually bites.
 
 Other targets:
 
@@ -91,7 +91,7 @@ yarn run smoke:report    # open the HTML report after a failing run
 | `PW_DOCKER_CONTAINER`    | `monica-app-1`          | docker-compose service container name                                    |
 | `PW_DOCKER_USER`         | `www-data`              | `--user` passed to `docker exec`; empty string runs as root              |
 
-If `setup:test` ever switches the default admin creds, override `SMOKE_ADMIN_EMAIL`/`SMOKE_ADMIN_PASSWORD` rather than editing the spec. The cypress-port specs (#725) that use `loginAsFreshUser` provision their own accounts via `setup:frontendtestuser`, so admin creds don't gate them.
+If `setup:test` ever switches the default admin creds, override `SMOKE_ADMIN_EMAIL`/`SMOKE_ADMIN_PASSWORD` rather than editing the spec. The #725 specs that use `loginAsFreshUser` provision their own accounts via `setup:frontendtestuser`, so admin creds don't gate them.
 
 ## Console-noise allowlist
 
@@ -115,5 +115,4 @@ Surface-specific noise — bugs that fire on a single Vue component, where a glo
 
 - Not part of `yarn run test` or any CI gate (yet).
 - Not a substitute for `tests/Browser/` (Dusk), which covers auth + 2FA + DAV through its own harness.
-- The cypress suite at `tests/cypress/` will be retired once the #725 port is fully landed (PR-b drops the directory + scripts entirely); for now both harnesses coexist.
-- Not exhaustive coverage. The smoke spec catches bumps that break login / blade rendering / sabre vcard / search APIs in a couple of minutes; the cypress-port specs cover focused UI-binding behaviour. Manual walkthrough at phase close still happens.
+- Not exhaustive coverage. The smoke spec catches bumps that break login / blade rendering / sabre vcard / search APIs in a couple of minutes; the #725 specs cover focused UI-binding behaviour. Manual walkthrough at phase close still happens.
