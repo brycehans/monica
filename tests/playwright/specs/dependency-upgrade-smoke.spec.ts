@@ -50,6 +50,26 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     consoleGate.assertNoUnknownErrors('/dashboard');
   });
 
+  // T2.1 — Ported from tests/cypress/e2e/auth/login.cy.js. The bad-creds
+  // path is otherwise uncovered: phpunit's auth tests don't drive the
+  // Blade-rendered Login form, and the smoke walkthrough's good-creds
+  // happy path above doesn't exercise the validation error rendering.
+  test('login rejects bad credentials with a visible alert', async ({ page, consoleGate }) => {
+    await page.goto('/login');
+    await page.getByRole('textbox', { name: 'Email' }).fill(`bogus-${Date.now()}@example.com`);
+    await page.getByRole('textbox', { name: 'Password' }).fill('not-a-real-password');
+    await page.getByRole('button', { name: 'Login' }).click();
+
+    // The login validation error is rendered as a Bootstrap alert div
+    // (.alert.alert-danger) wrapped around a <ul>. Laravel surfaces the
+    // validation message verbatim; verify the well-known string so a
+    // future copy change is caught.
+    await expect(page.locator('body')).toContainText('These credentials do not match our records');
+    await expect(page).toHaveURL(/\/login$/);
+
+    consoleGate.assertNoUnknownErrors('/login (bad creds)');
+  });
+
   test('contact list renders with expected count', async ({ page, consoleGate }) => {
 
     await loginAsAdmin(page);
@@ -1453,6 +1473,61 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await expect(cropModal).toBeHidden();
 
     consoleGate.assertNoUnknownErrors('/people/h:<contact>/avatar (vue-cropper mount)');
+  });
+
+  // T2.4 — Avatar happy-path end-to-end. The smoke test above stops at
+  // the cropper mount + Cancel; this test completes the flow: select the
+  // "From a photo" radio, upload, crop-Done, save, and confirm the
+  // contact-detail header now renders an updated img.cover src that
+  // routes through the per-contact avatar endpoint (not the
+  // `default-X.png` placeholder).
+  test('contact avatar upload happy path: cropper → Done → save → contact header updates', async ({ page, consoleGate }) => {
+    await loginAsAdmin(page);
+    await page.goto('/people');
+    const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
+    expect(contactHref).toBeTruthy();
+    await page.goto(`${contactHref}/avatar`);
+
+    // Selecting the upload radio sets selectedAvatar='upload' so the form
+    // POST tells the controller to use the uploaded photo. PInput.vue
+    // doesn't `for`-associate its <label> with the <input>, so getByLabel
+    // can't find it — but clicking the visible label text fires PInput's
+    // @click handler which programmatically checks the radio.
+    await page.locator('label', { hasText: 'From a photo that you upload' }).first().click();
+
+    const tinyPng = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII=',
+      'base64',
+    );
+    await page.locator('input[name="photo"]').setInputFiles({
+      name: 'tiny.png',
+      mimeType: 'image/png',
+      buffer: tinyPng,
+    });
+
+    // Crop modal opens; the Done button commits the cropped File into the
+    // hidden <input name="photo"> ready for form submission.
+    const cropModal = page.getByRole('dialog', { name: 'Crop new avatar photo' });
+    await expect(cropModal).toBeVisible();
+    await cropModal.getByRole('link', { name: 'Done', exact: true }).click();
+    await expect(cropModal).toBeHidden();
+
+    // Submit. The form posts to people.avatar.update which redirects to
+    // people.show on success.
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(page).toHaveURL(new RegExp(`${contactHref}$`));
+
+    // The header img.cover's src should now route through the
+    // contact-specific avatar endpoint rather than the static
+    // `/img/avatars/default-X.png` placeholder. We assert via a regex
+    // that the src does NOT look like the default placeholder.
+    const headerImg = page.locator('img.cover').first();
+    await expect(headerImg).toBeVisible();
+    const headerSrc = await headerImg.getAttribute('src');
+    expect(headerSrc).toBeTruthy();
+    expect(headerSrc).not.toMatch(/\/img\/avatars\/default/);
+
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (avatar upload happy path)');
   });
 
   test('conversations create datepicker: clicking day cell populates hidden date (pr-t3 datepicker calendar pick guard)', async ({ page, consoleGate }) => {

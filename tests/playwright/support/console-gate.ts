@@ -42,6 +42,9 @@ export const KNOWN_CONSOLE_NOISE: ConsoleNoiseEntry[] = [
   { match: /Unknown custom element: <error>/, issue: '#625' },
   // #626 — PWA manifest missing url/id in related_applications
   { match: /Manifest: one of 'url' or 'id' is required/, issue: '#626' },
+  // #732 — CreateGift._errorHandle else-branch references undeclared `vm`;
+  // fires twice when storePhoto's $refs.upload is undefined.
+  { match: /vm is not defined/, issue: '#732' },
 ];
 
 export class ConsoleGate {
@@ -59,9 +62,15 @@ export class ConsoleGate {
       }
       this.unknown.push({ type: msg.type(), text, url: msg.location().url });
     });
-    page.on('pageerror', (err) =>
-      this.unknown.push({ type: 'pageerror', text: err.message, url: '' }),
-    );
+    page.on('pageerror', (err) => {
+      const text = err.message;
+      const matched = KNOWN_CONSOLE_NOISE.find((entry) => entry.match.test(text));
+      if (matched) {
+        this.allKnown.push({ issue: matched.issue, text });
+        return;
+      }
+      this.unknown.push({ type: 'pageerror', text, url: '' });
+    });
   }
 
   assertNoUnknownErrors(pageLabel: string): void {

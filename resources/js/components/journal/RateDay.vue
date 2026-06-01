@@ -24,7 +24,7 @@
             <div class="flex items-center h-100">
               <div class="flex-none w-100" :class="[ dirltr ? 'tr' : 'tl' ]">
                 <!-- sad smiley monochrome -->
-                <svg v-if="!showSadSmileyColor" v-cy-name="'sad-reaction-button'" width="42px" height="41px" viewBox="0 0 42 41"
+                <svg v-if="!showSadSmileyColor" v-cy-name="'sad-reaction-button'" role="button" tabindex="0" :aria-label="$t('journal.journal_rate_sad')" width="42px" height="41px" viewBox="0 0 42 41"
                      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      class="pointer" :class="{ selected: day.rate === 1 }"
                      @click="showComment(1)" @mouseover="showSadSmileyColor = true"
@@ -44,7 +44,7 @@
                 </svg>
 
                 <!-- sad smiley color -->
-                <svg v-if="showSadSmileyColor" v-cy-name="'sad-reaction-button'" width="42px" height="41px" viewBox="0 0 42 41"
+                <svg v-if="showSadSmileyColor" v-cy-name="'sad-reaction-button'" role="button" tabindex="0" :aria-label="$t('journal.journal_rate_sad')" width="42px" height="41px" viewBox="0 0 42 41"
                      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      class="pointer" :class="{ selected: day.rate === 1 }"
                      @click="showComment(1)" @mouseleave="showSadSmileyColor = false"
@@ -64,7 +64,7 @@
                 </svg>
 
                 <!-- mediocre day monochrome -->
-                <svg v-if="!showMediocreSmileyColor" v-cy-name="'medium-reaction-button'" width="42px" height="41px" viewBox="0 0 42 41"
+                <svg v-if="!showMediocreSmileyColor" v-cy-name="'medium-reaction-button'" role="button" tabindex="0" :aria-label="$t('journal.journal_rate_medium')" width="42px" height="41px" viewBox="0 0 42 41"
                      version="1.1"
                      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      class="pointer" :class="{ selected: day.rate === 2 }" @click="showComment(2)" @mouseover="showMediocreSmileyColor = true"
@@ -83,7 +83,7 @@
                 </svg>
 
                 <!-- mediocre day color -->
-                <svg v-if="showMediocreSmileyColor" v-cy-name="'medium-reaction-button'" width="42px" height="41px" viewBox="0 0 42 41"
+                <svg v-if="showMediocreSmileyColor" v-cy-name="'medium-reaction-button'" role="button" tabindex="0" :aria-label="$t('journal.journal_rate_medium')" width="42px" height="41px" viewBox="0 0 42 41"
                      version="1.1"
                      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      class="pointer" :class="{ selected: day.rate === 2 }" @click="showComment(2)" @mouseleave="showMediocreSmileyColor = false"
@@ -102,7 +102,7 @@
                 </svg>
 
                 <!-- happy day monochrome -->
-                <svg v-if="!showHappySmileyColor" v-cy-name="'happy-reaction-button'" width="42px" height="42px" viewBox="0 0 42 42"
+                <svg v-if="!showHappySmileyColor" v-cy-name="'happy-reaction-button'" role="button" tabindex="0" :aria-label="$t('journal.journal_rate_happy')" width="42px" height="42px" viewBox="0 0 42 42"
                      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      class="pointer" :class="{ selected: day.rate === 3 }"
                      @click="showComment(3)" @mouseover="showHappySmileyColor = true"
@@ -123,7 +123,7 @@
                 </svg>
 
                 <!-- happy day color -->
-                <svg v-if="showHappySmileyColor" v-cy-name="'happy-reaction-button'" width="42px" height="42px" viewBox="0 0 42 42"
+                <svg v-if="showHappySmileyColor" v-cy-name="'happy-reaction-button'" role="button" tabindex="0" :aria-label="$t('journal.journal_rate_happy')" width="42px" height="42px" viewBox="0 0 42 42"
                      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      class="pointer" :class="{ selected: day.rate === 3 }"
                      @click="showComment(3)" @mouseleave="showHappySmileyColor = false"
