@@ -95,16 +95,21 @@ If `setup:test` ever switches the default admin creds, override `SMOKE_ADMIN_EMA
 
 ## Console-noise allowlist
 
-Specs fail on **any unexpected** Vue or browser console error or `pageerror` — that's the whole point of running them after a bump. To keep the signal:noise ratio honest, the shared `support/console-gate.ts` fixture carries a short allowlist of *known* pre-existing messages that have open issues filed against them:
+Specs fail on **any unexpected** Vue or browser console error or `pageerror` — that's the whole point of running them after a bump. To keep the signal:noise ratio honest, the shared `support/console-gate.ts` fixture carries a short *global* allowlist of pre-existing messages that have open issues filed against them:
 
 | Pattern                                                | Issue |
 | ------------------------------------------------------ | ----- |
 | `ContactSelect` undefined blur/focus handlers          | [#624](https://github.com/brycehans/monica/issues/624) |
 | `<error>` unknown custom element                       | [#625](https://github.com/brycehans/monica/issues/625) |
 | PWA manifest missing `url`/`id`                        | [#626](https://github.com/brycehans/monica/issues/626) |
-| `vm is not defined` in CreateGift error path           | [#732](https://github.com/brycehans/monica/issues/732) |
 
 When one of those issues is closed, drop its entry from `KNOWN_CONSOLE_NOISE` in `support/console-gate.ts`.
+
+Surface-specific noise — bugs that fire on a single Vue component, where a global allowlist would risk swallowing unrelated regressions with the same message text — should be registered per-spec via `consoleGate.allow(pattern, issue)` at the top of the test. Current spec-scoped entries:
+
+| Spec | Pattern | Issue |
+| --- | --- | --- |
+| `gift-crud.spec.ts` | `vm is not defined` | [#732](https://github.com/brycehans/monica/issues/732) |
 
 ## What this is NOT
 
