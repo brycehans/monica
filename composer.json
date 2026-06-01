@@ -54,7 +54,6 @@
         "vectorface/whip": "^0.5",
         "vinkla/hashids": "^13.0",
         "vluzrmos/language-detector": "^2.2",
-        "werk365/etagconditionals": "dev-master",
         "xantios/mimey": "^2.0"
     },
     "require-dev": {
