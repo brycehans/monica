@@ -38,18 +38,12 @@
  */
 
 import { test, expect } from '@playwright/test';
-
-const ADMIN_EMAIL = process.env.SMOKE_ADMIN_EMAIL ?? 'admin@admin.com';
-const ADMIN_PASSWORD = process.env.SMOKE_ADMIN_PASSWORD ?? 'admin0';
+import { loginAsAdmin } from '../support/auth';
 
 test.describe('Monica v4 — subscription-flow smoke', () => {
   test('upgrade path renders blank state, upgrade view, and success page', async ({ page }) => {
     // --- Login ---
-    await page.goto('/login');
-    await page.getByRole('textbox', { name: 'Email' }).fill(ADMIN_EMAIL);
-    await page.getByRole('textbox', { name: 'Password' }).fill(ADMIN_PASSWORD);
-    await page.getByRole('button', { name: 'Login' }).click();
-    await page.waitForURL('**/dashboard');
+    await loginAsAdmin(page);
 
     // --- /settings/subscriptions — blank state ---
     // Fresh seed accounts have no Stripe customer; getSubscribedPlan() returns
