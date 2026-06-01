@@ -19,11 +19,10 @@
  *     contacts, journal entries, notes, etc. — should prefer this so the
  *     state graph stays bounded across runs.
  *
- *     Returns the user id (string). The user's account_id is created fresh
- *     by the User factory and isn't returned here; if a test also needs to
- *     setPremium() on the new account, it can either run the test against
- *     admin (accountId=1) or extend this helper later to look up
- *     account_id via a follow-up shellout.
+ *     Returns { userId, accountId }. The User factory creates a fresh
+ *     account per user; we look up `account_id` via a follow-up tinker
+ *     shellout so tests that need to toggle premium on the isolated
+ *     account can do so without falling back to admin.
  */
 
 import type { Page } from '@playwright/test';
@@ -40,11 +39,13 @@ export async function loginAsAdmin(page: Page): Promise<void> {
   await page.waitForURL('**/dashboard');
 }
 
-export async function loginAsFreshUser(page: Page): Promise<string> {
+export type FreshUser = { userId: string; accountId: string };
+
+export async function loginAsFreshUser(page: Page): Promise<FreshUser> {
   // PHP versions with display_errors=on interleave deprecation warnings with
   // the command's stdout; the user id is always the last non-empty line. See
   // #592 for the cypress equivalent that taught us this.
-  const userId = artisan('setup:frontendtestuser').trim().split(/\r?\n/).pop()!.trim();
+  const userId = lastLine(artisan('setup:frontendtestuser'));
   // /_dusk/login returns 200 with an empty body. Use page.request rather
   // than page.goto so the empty / non-HTML response doesn't trip navigation;
   // cookies still persist into the page context.
@@ -52,5 +53,14 @@ export async function loginAsFreshUser(page: Page): Promise<string> {
   if (!response.ok()) {
     throw new Error(`/_dusk/login/${userId} returned ${response.status()}`);
   }
-  return userId;
+  // Look up the user's account_id so callers that need to setPremium on the
+  // isolated account can target it without falling back to admin.
+  const accountId = lastLine(
+    artisan('tinker', '--execute', `echo App\\Models\\User\\User::find(${userId})->account_id;`),
+  );
+  return { userId, accountId };
+}
+
+function lastLine(stdout: string): string {
+  return stdout.trim().split(/\r?\n/).pop()!.trim();
 }

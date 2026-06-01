@@ -38,6 +38,12 @@ export function dockerExec(...args: string[]): string {
     ? [
         'docker', 'exec',
         ...(DOCKER_USER ? ['--user', DOCKER_USER] : []),
+        // Route psysh's XDG-derived config + history dirs into /tmp so
+        // `php artisan tinker` doesn't try to write under /var/www/.config
+        // (apache's home in the dev image, which www-data can't create).
+        // Harmless for non-tinker commands.
+        '-e', 'XDG_CONFIG_HOME=/tmp/psy-config',
+        '-e', 'XDG_DATA_HOME=/tmp/psy-data',
         DOCKER_CONTAINER,
         ...args,
       ]

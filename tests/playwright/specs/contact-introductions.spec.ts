@@ -24,6 +24,7 @@ import type { Page } from '@playwright/test';
 
 test.describe('Monica v4 — contact introductions ARIA contract', () => {
   test('contact picker exposes ARIA roles, filters on input, persists selection', async ({ page, consoleGate }) => {
+    // accountId from the return shape is unused — the picker doesn't gate on premium.
     await loginAsFreshUser(page);
 
     // Create three contacts. The third call ends with a redirect to the
