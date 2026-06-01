@@ -1,6 +1,21 @@
-# Playwright smoke walkthrough
+# Playwright suite
 
-Standalone Playwright suite for verifying the user-facing app after a dependency-upgrade tranche. Drives the exact walkthrough documented in `CLAUDE.md` as the phase-close gate: login → dashboard → contact list → contact detail → vCard export → journal → reminders → settings → search → logout.
+Standalone Playwright suite for verifying the user-facing app. Two distinct sets of specs:
+
+1. **`dependency-upgrade-smoke.spec.ts`** — the phase-close gate per `CLAUDE.md`: login → dashboard → contact list → contact detail → vCard export → journal → reminders → settings → search → logout. Run before merging composer/npm bump PRs.
+2. **`subscription-flow.spec.ts`** — drives the Stripe-gated `/settings/subscriptions/*` routes through stripe-mock.
+3. **`<feature>.spec.ts`** — cypress-port coverage (#725). Each spec covers a focused UI-binding / cross-component invariant that phpunit alone can't reach:
+   - `contact-introductions.spec.ts` — ContactSelect multiselect ARIA contract + filter behaviour
+   - `activity-types.spec.ts` — settings → activity-add cross-flow (premium-gated)
+   - `activity-journal-side-effect.spec.ts` — activity-create inserts a non-deletable journal row
+   - `contact-favorite-ordering.spec.ts` — favorite star reactivity + list-ordering side-effect
+   - `note-modal-crud.spec.ts` — inline edit + modal-confirm delete pattern
+   - `contact-create-validation.spec.ts` — HTML5 required blocks /people/add
+   - `signup-duplicate-email.spec.ts` — `unique:users` validation on /register
+   - `journal-rate-day.spec.ts` — sad reaction → comment box → save
+   - `conversation-create.spec.ts` — picker + message submit on /conversations/create
+   - `activity-types-premium-gate.spec.ts` — non-premium account sees the upgrade block
+   - `gift-crud.spec.ts` — gift create / inline edit / modal delete
 
 ## Why it's here and not in `tests/cypress/`
 
@@ -51,29 +66,34 @@ yarn run smoke:report    # open the HTML report after a failing run
 
 ## Configuration
 
-| Env var                 | Default                 | Purpose                                               |
-| ----------------------- | ----------------------- | ----------------------------------------------------- |
-| `SMOKE_BASE_URL`        | `http://localhost:8082` | Where Monica is running                               |
-| `SMOKE_ADMIN_EMAIL`     | `admin@admin.com`       | Login email (matches `setup:test` defaults)           |
-| `SMOKE_ADMIN_PASSWORD`  | `admin0`                | Login password                                        |
+| Env var                  | Default                 | Purpose                                                                  |
+| ------------------------ | ----------------------- | ------------------------------------------------------------------------ |
+| `SMOKE_BASE_URL`         | `http://localhost:8082` | Where Monica is running                                                  |
+| `SMOKE_ADMIN_EMAIL`      | `admin@admin.com`       | Login email (matches `setup:test` defaults)                              |
+| `SMOKE_ADMIN_PASSWORD`   | `admin0`                | Login password                                                           |
+| `SMOKE_ACCOUNT_ID`       | `1`                     | Account id used by `account:setpremium` for the admin-bound tests        |
+| `PW_USE_DOCKER`          | `true`                  | `false`/`0`/`no` skips `docker exec` for artisan shellouts (run on host) |
+| `PW_DOCKER_CONTAINER`    | `monica-app-1`          | docker-compose service container name                                    |
+| `PW_DOCKER_USER`         | `www-data`              | `--user` passed to `docker exec`; empty string runs as root              |
 
-If `setup:test` ever switches the default admin creds, override here rather than editing the spec.
+If `setup:test` ever switches the default admin creds, override `SMOKE_ADMIN_EMAIL`/`SMOKE_ADMIN_PASSWORD` rather than editing the spec. The cypress-port specs (#725) that use `loginAsFreshUser` provision their own accounts via `setup:frontendtestuser`, so admin creds don't gate them.
 
 ## Console-noise allowlist
 
-The walkthrough fails on **any unexpected** Vue or browser console error — that's the whole point of running it after a bump. To keep the signal:noise ratio honest, the spec carries a short allowlist of *known* pre-existing console messages that have open issues filed against them:
+Specs fail on **any unexpected** Vue or browser console error or `pageerror` — that's the whole point of running them after a bump. To keep the signal:noise ratio honest, the shared `support/console-gate.ts` fixture carries a short allowlist of *known* pre-existing messages that have open issues filed against them:
 
 | Pattern                                                | Issue |
 | ------------------------------------------------------ | ----- |
 | `ContactSelect` undefined blur/focus handlers          | [#624](https://github.com/brycehans/monica/issues/624) |
 | `<error>` unknown custom element                       | [#625](https://github.com/brycehans/monica/issues/625) |
 | PWA manifest missing `url`/`id`                        | [#626](https://github.com/brycehans/monica/issues/626) |
-| marked.js `sanitize`/`sanitizer` deprecation           | [#627](https://github.com/brycehans/monica/issues/627) |
+| `vm is not defined` in CreateGift error path           | [#732](https://github.com/brycehans/monica/issues/732) |
 
-When one of those issues is closed, drop its entry from `KNOWN_CONSOLE_NOISE` in `specs/dependency-upgrade-smoke.spec.ts`.
+When one of those issues is closed, drop its entry from `KNOWN_CONSOLE_NOISE` in `support/console-gate.ts`.
 
 ## What this is NOT
 
-- Not part of `yarn run test` or any CI gate.
-- Not a substitute for `tests/cypress/` or `tests/Browser/` (Dusk) — those cover regression of specific user flows.
-- Not exhaustive coverage. It's a **smoke** suite: the goal is to catch a bump that wholesale breaks login / blade rendering / sabre vcard / search APIs in a couple of minutes, not to replace the manual walkthrough at phase close.
+- Not part of `yarn run test` or any CI gate (yet).
+- Not a substitute for `tests/Browser/` (Dusk), which covers auth + 2FA + DAV through its own harness.
+- The cypress suite at `tests/cypress/` will be retired once the #725 port is fully landed (PR-b drops the directory + scripts entirely); for now both harnesses coexist.
+- Not exhaustive coverage. The smoke spec catches bumps that break login / blade rendering / sabre vcard / search APIs in a couple of minutes; the cypress-port specs cover focused UI-binding behaviour. Manual walkthrough at phase close still happens.
