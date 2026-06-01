@@ -56,6 +56,21 @@ When iterating on Vue/JS sources, re-run `yarn run prod` (or `yarn run watch`
 for incremental rebuilds) on the host — the container picks up the new
 bundle on the next request. No `docker cp` step needed.
 
+When iterating on **PHP** sources (controllers / models / artisan commands),
+`yarn run prod` does nothing — there's no Vite step for PHP. The dev image's
+PHP-FPM also caches bytecode via OpCache, which `php artisan optimize:clear`
+does **not** invalidate. After editing a `.php` file, restart the container
+so Apache picks up the new bytecode:
+
+```bash
+docker restart monica-app-1
+```
+
+This is especially relevant to the planted-violation methodology used
+across the cypress-port specs (`#725`): if you flip an assertion in PHP and
+re-run the spec without restarting, you'll see the old behaviour and assume
+the assertion is loose when it actually bites.
+
 Other targets:
 
 ```bash
