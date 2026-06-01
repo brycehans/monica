@@ -29,7 +29,6 @@ Those companies have graciously offered a paid plan for free.
 |----------------------------------|-----------------------------------------------------------------------------------------------|
 | Sentry | [Sentry](https://sentry.io) is a cross-platform crash reporting and aggregation platform. We use it to analyze what's going on in production. |
 | Crowdin | [Crowdin](https://crowdin.com/project/monicahq) is a translation platform. |
-| Cypress | [Cypress](https://dashboard.cypress.io/projects/q8h6k9/runs) is an end-to-end test platform. |
 
 ### Open source projects
 
