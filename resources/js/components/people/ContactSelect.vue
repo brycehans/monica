@@ -18,6 +18,7 @@
       value-prop="id"
       :object="true"
       :dir="$root.htmldir"
+      :aria="{ 'aria-label': title }"
     />
   </div>
 </template>
