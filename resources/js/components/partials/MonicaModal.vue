@@ -54,7 +54,7 @@
     @opened="$emit('open')"
     @closed="$emit('close')"
   >
-    <div class="monica-modal__panel" role="dialog">
+    <div class="monica-modal__panel" role="dialog" :aria-label="title || null">
       <h3 v-if="title" class="monica-modal__title">
         {{ title }}
       </h3>

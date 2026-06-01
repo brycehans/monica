@@ -20,7 +20,7 @@
 
 import { test, expect } from '../support/console-gate';
 import { loginAsFreshUser } from '../support/auth';
-import type { Page } from '@playwright/test';
+import { createContact } from '../support/contacts';
 
 test.describe('Monica v4 — contact introductions ARIA contract', () => {
   test('contact picker exposes ARIA roles, filters on input, persists selection', async ({ page, consoleGate }) => {
@@ -88,19 +88,3 @@ test.describe('Monica v4 — contact introductions ARIA contract', () => {
   });
 });
 
-async function createContact(
-  page: Page,
-  firstName: string,
-  lastName: string,
-  gender: 'Man' | 'Woman' | 'Rather not say',
-): Promise<void> {
-  await page.goto('/people');
-  await page.getByRole('link', { name: 'Add someone' }).click();
-  await expect(page).toHaveURL(/\/people\/add$/);
-  await page.getByLabel(/First name/i).fill(firstName);
-  await page.getByLabel(/Last name/i).fill(lastName);
-  await page.getByLabel(/Gender/i).selectOption({ label: gender });
-  await page.getByRole('button', { name: 'Add', exact: true }).click();
-  // The contact-store action redirects to /people/h:<hash>.
-  await expect(page).toHaveURL(/\/people\/h:[A-Za-z0-9]+$/);
-}
