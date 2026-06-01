@@ -18,110 +18,9 @@
  * local compose stack.
  */
 
-import { test, expect, Page, ConsoleMessage } from '@playwright/test';
-import { execFileSync } from 'node:child_process';
-
-const ADMIN_EMAIL = process.env.SMOKE_ADMIN_EMAIL ?? 'admin@admin.com';
-const ADMIN_PASSWORD = process.env.SMOKE_ADMIN_PASSWORD ?? 'admin0';
-
-// Console messages we know about and have filed issues for. Anything new and
-// outside this list fails the smoke. Keep entries short and link the issue.
-const KNOWN_CONSOLE_NOISE: { match: RegExp; issue: string }[] = [
-  // #624 — ContactSelect references undefined blur/focus handlers
-  { match: /Property or method "(?:blur|focus)" is not defined/, issue: '#624' },
-  { match: /Invalid handler for event "search:(?:blur|focus)"/, issue: '#624' },
-  // #625 — Unknown <error> element in ContactFieldTypes.vue
-  { match: /Unknown custom element: <error>/, issue: '#625' },
-  // #626 — PWA manifest missing url/id in related_applications
-  { match: /Manifest: one of 'url' or 'id' is required/, issue: '#626' },
-];
-
-type UnknownConsole = { type: string; text: string; url: string };
-
-function attachConsoleCapture(page: Page): { unknown: UnknownConsole[]; allKnown: { issue: string; text: string }[] } {
-  const unknown: UnknownConsole[] = [];
-  const allKnown: { issue: string; text: string }[] = [];
-  const handler = (msg: ConsoleMessage) => {
-    if (msg.type() !== 'error' && msg.type() !== 'warning') return;
-    const text = msg.text();
-    const matched = KNOWN_CONSOLE_NOISE.find((entry) => entry.match.test(text));
-    if (matched) {
-      allKnown.push({ issue: matched.issue, text });
-      return;
-    }
-    unknown.push({ type: msg.type(), text, url: msg.location().url });
-  };
-  page.on('console', handler);
-  page.on('pageerror', (err) => unknown.push({ type: 'pageerror', text: err.message, url: '' }));
-  return { unknown, allKnown };
-}
-
-function assertNoUnknownConsoleErrors(unknown: UnknownConsole[], pageLabel: string) {
-  if (unknown.length === 0) return;
-  const lines = unknown.map((e) => `  [${e.type}] ${e.text}${e.url ? ` @ ${e.url}` : ''}`).join('\n');
-  throw new Error(`Unexpected console output on ${pageLabel}:\n${lines}`);
-}
-
-// ---------------------------------------------------------------------------
-// Premium-access helper.
-//
-// The dev compose stack pins REQUIRES_SUBSCRIPTION=true so the Stripe upgrade
-// smoke (subscription-flow.spec.ts) can render the blank/upgrade views. That
-// flag makes AccountHelper::hasLimitations return true on the seeded admin
-// account, which short-circuits limited-mode-gated features (StayInTouch,
-// FormToggle in Modules, etc.) before they can be exercised end-to-end.
-//
-// AccountHelper::hasLimitations checks `has_access_to_paid_version_for_free`
-// BEFORE the env-var-driven `requires_subscription`, so flipping the per-
-// account flag bypasses limited mode without touching the env (which would
-// break the Stripe smoke). The `account:setpremium {id} [--revoke]` artisan
-// command toggles the flag; we shell out to it via the docker exec entrypoint
-// the cypress harness already uses (tests/cypress/support/helpers/app.js).
-//
-// withPremiumAccount(fn) grants premium before fn runs and revokes it in a
-// finally — symmetric so a failed test doesn't leak premium state into the
-// next run. The helper is a no-op (with a console.warn) when SMOKE_BASE_URL
-// points outside the local compose stack; tests that depend on premium will
-// then fail naturally instead of silently mutating the wrong account.
-// ---------------------------------------------------------------------------
-
-const SMOKE_DOCKER_CONTAINER = process.env.SMOKE_DOCKER_CONTAINER ?? 'monica-app-1';
-const SMOKE_ACCOUNT_ID = process.env.SMOKE_ACCOUNT_ID ?? '1';
-const SMOKE_BASE_URL = process.env.SMOKE_BASE_URL ?? 'http://localhost:8082';
-const SMOKE_PREMIUM_ENABLED = /^https?:\/\/localhost(:\d+)?$/i.test(SMOKE_BASE_URL);
-
-function setPremiumAccess(grant: boolean): void {
-  if (!SMOKE_PREMIUM_ENABLED) {
-    console.warn(
-      `[smoke] SMOKE_BASE_URL=${SMOKE_BASE_URL} is not the local compose stack; ` +
-      `skipping account:setpremium ${grant ? '' : '--revoke'} (test may fail on limited-mode gates).`,
-    );
-    return;
-  }
-  const args = [
-    'exec', '--user', 'www-data', SMOKE_DOCKER_CONTAINER,
-    'php', 'artisan', 'account:setpremium', SMOKE_ACCOUNT_ID,
-  ];
-  if (!grant) args.push('--revoke');
-  execFileSync('docker', args, { stdio: 'pipe' });
-}
-
-async function withPremiumAccount<T>(fn: () => Promise<T>): Promise<T> {
-  setPremiumAccess(true);
-  try {
-    return await fn();
-  } finally {
-    setPremiumAccess(false);
-  }
-}
-
-async function login(page: Page): Promise<void> {
-  await page.goto('/login');
-  await page.getByRole('textbox', { name: 'Email' }).fill(ADMIN_EMAIL);
-  await page.getByRole('textbox', { name: 'Password' }).fill(ADMIN_PASSWORD);
-  await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/dashboard');
-}
+import { test, expect } from '../support/console-gate';
+import { loginAsAdmin } from '../support/auth';
+import { withPremiumAccount } from '../support/premium';
 
 // Base64url-no-padding decode. The PHP server (web-auth/webauthn-lib) decodes
 // `clientDataJSON` and `id` via ParagonIE\ConstantTime\Base64UrlSafe::decodeNoPadding,
@@ -136,10 +35,9 @@ function decodeBase64UrlNoPadding(value: string): Uint8Array {
 }
 
 test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
-  test('login lands on dashboard with expected nav', async ({ page }) => {
-    const { unknown } = attachConsoleCapture(page);
+  test('login lands on dashboard with expected nav', async ({ page, consoleGate }) => {
 
-    await login(page);
+    await loginAsAdmin(page);
 
     await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Contacts' })).toBeVisible();
@@ -149,13 +47,32 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await expect(page.locator('body')).toContainText(/Contacts/);
     await expect(page.locator('body')).toContainText(/Activities/);
 
-    assertNoUnknownConsoleErrors(unknown, '/dashboard');
+    consoleGate.assertNoUnknownErrors('/dashboard');
   });
 
-  test('contact list renders with expected count', async ({ page }) => {
-    const { unknown } = attachConsoleCapture(page);
+  // T2.1 — Ported from tests/cypress/e2e/auth/login.cy.js. The bad-creds
+  // path is otherwise uncovered: phpunit's auth tests don't drive the
+  // Blade-rendered Login form, and the smoke walkthrough's good-creds
+  // happy path above doesn't exercise the validation error rendering.
+  test('login rejects bad credentials with a visible alert', async ({ page, consoleGate }) => {
+    await page.goto('/login');
+    await page.getByRole('textbox', { name: 'Email' }).fill(`bogus-${Date.now()}@example.com`);
+    await page.getByRole('textbox', { name: 'Password' }).fill('not-a-real-password');
+    await page.getByRole('button', { name: 'Login' }).click();
 
-    await login(page);
+    // The login validation error is rendered as a Bootstrap alert div
+    // (.alert.alert-danger) wrapped around a <ul>. Laravel surfaces the
+    // validation message verbatim; verify the well-known string so a
+    // future copy change is caught.
+    await expect(page.locator('body')).toContainText('These credentials do not match our records');
+    await expect(page).toHaveURL(/\/login$/);
+
+    consoleGate.assertNoUnknownErrors('/login (bad creds)');
+  });
+
+  test('contact list renders with expected count', async ({ page, consoleGate }) => {
+
+    await loginAsAdmin(page);
     await page.goto('/people');
 
     // The contact list links use /people/h:<hash>. Count is approximate (seed
@@ -163,13 +80,12 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     const contactLinks = await page.locator('a[href*="/people/h:"]').count();
     expect(contactLinks).toBeGreaterThan(10);
 
-    assertNoUnknownConsoleErrors(unknown, '/people');
+    consoleGate.assertNoUnknownErrors('/people');
   });
 
-  test('contact detail renders the full section graph', async ({ page }) => {
-    const { unknown } = attachConsoleCapture(page);
+  test('contact detail renders the full section graph', async ({ page, consoleGate }) => {
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     const firstContact = page.locator('a[href*="/people/h:"]').first();
     await firstContact.click();
@@ -191,19 +107,18 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       await expect(page.locator('body')).toContainText(heading);
     }
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact>');
   });
 
-  test('add-note flow: note persists into list with typed body', async ({ page }) => {
+  test('add-note flow: note persists into list with typed body', async ({ page, consoleGate }) => {
     // Guards the exact regression PR-D's cypress 15 bump retired: PR-C's
     // marked → DOMPurify swap broke the notes render path on Electron 12's
     // Chromium 89, but CI didn't notice (no cypress workflow). Modern
     // Chromium (this playwright run, cypress 15's Electron 37) renders fine;
     // having the assertion here means a future marked / DOMPurify / axios
     // bump that breaks the POST-then-update-list path fails the per-PR smoke.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     const firstContact = page.locator('a[href*="/people/h:"]').first();
     await firstContact.click();
@@ -218,17 +133,16 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // contain the new marker text once the round-trip + re-render settle.
     await expect(page.locator('ul[cy-name=notes-body]')).toContainText(marker);
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (add-note)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (add-note)');
   });
 
-  test('add-journal-entry flow: entry persists into list with typed body', async ({ page }) => {
+  test('add-journal-entry flow: entry persists into list with typed body', async ({ page, consoleGate }) => {
     // Same regression guard as the add-note test above, but for the journal
     // surface — JournalContentEntry.vue's compiledMarkdown was the other PR-C
     // casualty on Electron 12. The /journal route shows the entry list after
     // submission via JournalList.vue, which re-fetches and re-renders.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/journal');
 
     const marker = `smoke entry ${Date.now()}`;
@@ -240,13 +154,12 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     await expect(page.locator('[cy-name=journal-entries-body]')).toContainText(marker);
 
-    assertNoUnknownConsoleErrors(unknown, '/journal (add-entry)');
+    consoleGate.assertNoUnknownErrors('/journal (add-entry)');
   });
 
-  test('vCard export downloads a valid VCARD 4.0', async ({ page }) => {
-    const { unknown } = attachConsoleCapture(page);
+  test('vCard export downloads a valid VCARD 4.0', async ({ page, consoleGate }) => {
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     const firstContact = page.locator('a[href*="/people/h:"]').first();
     const contactHref = await firstContact.getAttribute('href');
@@ -265,26 +178,24 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     expect(vcard).toContain('FN:');
     expect(vcard).toContain('END:VCARD');
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/vcard');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact>/vcard');
   });
 
-  test('journal page renders', async ({ page }) => {
-    const { unknown } = attachConsoleCapture(page);
+  test('journal page renders', async ({ page, consoleGate }) => {
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/journal');
     // Journal renders even with no entries — what we care about is no crash.
     // `exact: true` is required to avoid matching the "Add a journal entry"
     // button alongside the navbar link.
     await expect(page.getByRole('link', { name: 'Journal', exact: true })).toBeVisible();
 
-    assertNoUnknownConsoleErrors(unknown, '/journal');
+    consoleGate.assertNoUnknownErrors('/journal');
   });
 
-  test('reminders create form renders', async ({ page }) => {
-    const { unknown } = attachConsoleCapture(page);
+  test('reminders create form renders', async ({ page, consoleGate }) => {
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     const firstContact = page.locator('a[href*="/people/h:"]').first();
     const contactHref = await firstContact.getAttribute('href');
@@ -300,18 +211,18 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     const submitButtons = await page.locator('button[type="submit"], input[type="submit"]').count();
     expect(submitButtons).toBeGreaterThan(0);
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/reminders/create');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact>/reminders/create');
   });
 
-  test('settings sub-nav exposes the expected sections', async ({ page }) => {
-    attachConsoleCapture(page);  // captured but not asserted — see #624
+  test('settings sub-nav exposes the expected sections', async ({ page, consoleGate }) => {
+    // console capture active via fixture; not asserted — see #624
     // /settings is the page with the known ContactSelect Vue noise (#624).
     // We don't assert clean console here — instead we just verify the page
     // structurally renders. The console-noise filter still tracks #624 errors
     // so any *new* error on this page would fail other tests via the same
     // KNOWN_CONSOLE_NOISE allowlist.
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings');
 
     // Some of these are rendered with Tachyons responsive classes (e.g. `dn-l`
@@ -325,7 +236,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
   });
 
   test('search APIs return JSON with matching contact', async ({ page, request }) => {
-    await login(page);
+    await loginAsAdmin(page);
 
     // /api/contacts — the OAuth-secured REST endpoint
     const apiResponse = await page.request.get('/api/contacts?query=a', {
@@ -353,7 +264,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // <sweet-modal> showing the plain secret. v13 hashes secrets at
     // insertion so the plain value is only available in that response —
     // the previous "refetch the index" path silently dropped it.
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings/api');
 
     const marker = `smoke client ${Date.now()}`;
@@ -401,15 +312,14 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
   // a contract the cutover PR has to honour.
   // -------------------------------------------------------------------------
 
-  test('contact list table renders with pagination footer and search filtering', async ({ page }) => {
+  test('contact list table renders with pagination footer and search filtering', async ({ page, consoleGate }) => {
     // Guards the vue-good-table → vue-good-table-next swap in pr-v.
     // ContactList.vue is server-paginated; the dev seed only generates ~20
     // contacts (one page), so we don't assert that the next-page button does
     // something — only that the pagination footer is rendered, and that the
     // global search filters rows on the server round-trip.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
 
     // Initial rows
@@ -431,17 +341,16 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await expect(rows.first()).toBeVisible();
     expect(await rows.count()).toBeGreaterThan(0);
 
-    assertNoUnknownConsoleErrors(unknown, '/people (vgt search)');
+    consoleGate.assertNoUnknownErrors('/people (vgt search)');
   });
 
-  test('gender personalization modal: create persists into list', async ({ page }) => {
+  test('gender personalization modal: create persists into list', async ({ page, consoleGate }) => {
     // Guards the sweet-modal-vue → vue-final-modal swap (17 files, 32 modals).
     // The gender create modal is the simplest representative: open → fill →
     // save → list updates. If the modal can't open, can't render its form,
     // or the v-model on createForm.name breaks, this fails.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings/personalization');
 
     const newGenderName = `smoke gender ${Date.now()}`;
@@ -467,18 +376,17 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await expect(modal).toBeHidden();
     await expect(page.locator('body')).toContainText(newGenderName);
 
-    assertNoUnknownConsoleErrors(unknown, '/settings/personalization (gender modal)');
+    consoleGate.assertNoUnknownErrors('/settings/personalization (gender modal)');
   });
 
-  test('personal access tokens: vuelidate flags empty name', async ({ page }) => {
+  test('personal access tokens: vuelidate flags empty name', async ({ page, consoleGate }) => {
     // Guards the vuelidate@0.7 → @vuelidate/core@2 migration (6 files,
     // $v → v$). The PAT create modal validates the name field with the
     // `required` rule; submitting empty must surface the inline error and
     // not POST. If validation breaks silently, the empty-name request would
     // 422 from the server instead — that's the regression this catches.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings/api');
 
     await page.getByRole('link', { name: 'Create New Token' }).click();
@@ -500,19 +408,18 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // (the success path closes it and opens modalAccessToken instead).
     await expect(modal).toBeVisible();
 
-    assertNoUnknownConsoleErrors(unknown, '/settings/api (vuelidate)');
+    consoleGate.assertNoUnknownErrors('/settings/api (vuelidate)');
   });
 
-  test('conversations create form: datepicker input is interactive', async ({ page }) => {
+  test('conversations create form: datepicker input is interactive', async ({ page, consoleGate }) => {
     // Guards the @hokify/vuejs-datepicker → @vuepic/vue-datepicker rewrite.
     // The design issue says "reminders create form" but reminders/form.blade
     // uses a native <input type="date"> — the only blade surface that mounts
     // the Vue Date.vue datepicker is conversations/new.blade and journal
     // edit. We use conversations/new because journal/edit needs an existing
     // entry to navigate to.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
     expect(contactHref).toBeTruthy();
@@ -545,10 +452,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     expect(await visibleInputs.count()).toBeGreaterThan(0);
     await expect(visibleInputs.first()).toBeEnabled();
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/conversations/create');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact>/conversations/create');
   });
 
-  test('locale switch to fr renders translated dashboard and reverts', async ({ page }) => {
+  test('locale switch to fr renders translated dashboard and reverts', async ({ page, consoleGate }) => {
     // Guards the vue-i18n@8 → vue-i18n@11 (legacy mode) migration. After
     // the cutover the locale mutation moves from `i18n.locale = lang` to
     // `i18n.global.locale = lang` (direct, not `.value` in legacy mode),
@@ -562,7 +469,6 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // English-string assertions in this suite on the next run. Use
     // setLocale() rather than try/finally because Playwright's afterEach
     // is per-test and we want the revert inline.
-    const { unknown } = attachConsoleCapture(page);
 
     const setLocale = async (lang: 'en' | 'fr'): Promise<void> => {
       await page.goto('/settings');
@@ -573,7 +479,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       await page.waitForURL('**/settings');
     };
 
-    await login(page);
+    await loginAsAdmin(page);
     try {
       await setLocale('fr');
 
@@ -589,10 +495,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       await setLocale('en');
     }
 
-    assertNoUnknownConsoleErrors(unknown, '/settings (locale switch)');
+    consoleGate.assertNoUnknownErrors('/settings (locale switch)');
   });
 
-  test('moment locale registers fr — Vue-rendered dates use French month names under fr (regression guard for #718)', async ({ page }) => {
+  test('moment locale registers fr — Vue-rendered dates use French month names under fr (regression guard for #718)', async ({ page, consoleGate }) => {
     // Guards the Vite-cutover regression where `moment/locale/<lang>` UMD
     // wrappers landed their `defineLocale(...)` calls on an orphan moment
     // instance, leaving `moment.locale('fr')` a silent no-op. After the fix
@@ -605,7 +511,6 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // an English one ("May"). Probing `moment.locales()` directly would be
     // bundle-path dependent (the hash changes each build); the DOM assertion
     // is bundle-agnostic.
-    const { unknown } = attachConsoleCapture(page);
 
     const setLocale = async (lang: 'en' | 'fr'): Promise<void> => {
       await page.goto('/settings');
@@ -614,7 +519,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       await page.waitForURL('**/settings');
     };
 
-    await login(page);
+    await loginAsAdmin(page);
     try {
       await setLocale('fr');
 
@@ -651,11 +556,11 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       await setLocale('en');
     }
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (fr locale moment guard)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (fr locale moment guard)');
   });
 
   test('logout clears session', async ({ page }) => {
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/logout');
 
     // After logout we end up at root with a login link visible.
@@ -675,21 +580,20 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
   // close the remaining gaps.
   // -------------------------------------------------------------------------
 
-  test('settings/security mounts recovery-codes, mfa-activate, webauthn-connector', async ({ page }) => {
+  test('settings/security mounts recovery-codes, mfa-activate, webauthn-connector', async ({ page, consoleGate }) => {
     // All three are gated by config('google2fa.enabled'). webauthn-connector
     // additionally requires config('webauthn.enable'). Both default on in
     // the dev compose stack. Each component renders its own <h3> from inside
     // the Vue template, so a silent mount failure means the heading is absent.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings/security');
 
     await expect(page.getByRole('heading', { name: 'Recovery codes' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Two Factor Authentication mobile application' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Security key — WebAuthn protocol' })).toBeVisible();
 
-    assertNoUnknownConsoleErrors(unknown, '/settings/security');
+    consoleGate.assertNoUnknownErrors('/settings/security');
   });
 
   test('webauthn registration: virtual authenticator drives the register wire shape (swap contract for #710)', async ({ page, context }) => {
@@ -732,7 +636,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     });
 
     try {
-      await login(page);
+      await loginAsAdmin(page);
       await page.goto('/settings/security');
 
       await page.getByRole('link', { name: 'Add a new security key' }).click();
@@ -802,14 +706,13 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     }
   });
 
-  test('settings/dav mounts dav-resources with the base URL input', async ({ page }) => {
+  test('settings/dav mounts dav-resources with the base URL input', async ({ page, consoleGate }) => {
     // DavResources renders the WebDAV / CardDAV / CalDAV headings + the
     // base-URL readonly input populated from the dav-route prop. If the
     // component fails to mount, the heading is supplied by the Vue
     // template (not Blade), so it disappears entirely.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings/dav');
 
     await expect(page.getByRole('heading', { name: 'WebDAV' })).toBeVisible();
@@ -823,16 +726,15 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     const baseUrl = await baseUrlInput.inputValue();
     expect(baseUrl).toMatch(/\/dav\/?$/);
 
-    assertNoUnknownConsoleErrors(unknown, '/settings/dav');
+    consoleGate.assertNoUnknownErrors('/settings/dav');
   });
 
-  test('settings/personalization mounts contact-field-types, reminder-rules, activity-types, life-event-types, modules', async ({ page }) => {
+  test('settings/personalization mounts contact-field-types, reminder-rules, activity-types, life-event-types, modules', async ({ page, consoleGate }) => {
     // Genders is already covered by the existing create-modal test. The
     // remaining five components on this page have never been asserted.
     // Each renders its own <h3> heading from the Vue template.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings/personalization');
 
     for (const heading of [
@@ -845,35 +747,33 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       await expect(page.getByRole('heading', { name: heading })).toBeVisible();
     }
 
-    assertNoUnknownConsoleErrors(unknown, '/settings/personalization');
+    consoleGate.assertNoUnknownErrors('/settings/personalization');
   });
 
-  test('settings/api mounts passport-authorized-clients with empty state', async ({ page }) => {
+  test('settings/api mounts passport-authorized-clients with empty state', async ({ page, consoleGate }) => {
     // PassportAuthorizedClients is the third Vue component on /settings/api
     // (alongside PassportClients and PassportPersonalAccessTokens, both
     // covered above). It only renders content rows when the user has
     // authorized a third-party client — the seeded admin has not, so the
     // expected state is the empty-state copy from the Vue template.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings/api');
 
     await expect(page.getByRole('heading', { name: 'List of authorized clients' })).toBeVisible();
     await expect(page.locator('body')).toContainText('There are no authorized clients yet.');
 
-    assertNoUnknownConsoleErrors(unknown, '/settings/api (authorized clients)');
+    consoleGate.assertNoUnknownErrors('/settings/api (authorized clients)');
   });
 
-  test('contact detail sidebar mounts contact-information, contact-address, pet', async ({ page }) => {
+  test('contact detail sidebar mounts contact-information, contact-address, pet', async ({ page, consoleGate }) => {
     // The existing contact-detail test asserts headings rendered by Blade
     // wrappers (Conversations / Phone calls / etc). The sidebar components
     // are different: their <h3> comes from inside the Vue template, gated
     // only by the module being enabled (default-on in the seed). These have
     // never been asserted on the contact-detail surface.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     await page.locator('a[href*="/people/h:"]').first().click();
     await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
@@ -882,10 +782,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await expect(page.getByRole('heading', { name: 'Addresses' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Pets' })).toBeVisible();
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (sidebar mounts)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (sidebar mounts)');
   });
 
-  test('contact detail tasks section mounts contact-task component', async ({ page }) => {
+  test('contact detail tasks section mounts contact-task component', async ({ page, consoleGate }) => {
     // ContactTask renders its own "Tasks" <h3> from people.section_personal_tasks
     // — the surrounding Blade has no heading for this section, so a missing
     // <h3> means the Vue component didn't render.
@@ -897,9 +797,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // so we click the Notes tab explicitly rather than trusting the
     // server-side default. The heading name is exact ("Tasks") so we use
     // a regex to allow the trailing edit/done link text inside the same h3.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     await page.locator('a[href*="/people/h:"]').first().click();
     await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
@@ -908,10 +807,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     await expect(page.getByRole('heading', { name: /^Tasks/ })).toBeVisible();
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (tasks mount)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (tasks mount)');
   });
 
-  test('contact detail photos tab mounts photo-list', async ({ page }) => {
+  test('contact detail photos tab mounts photo-list', async ({ page, consoleGate }) => {
     // PhotoList only renders when global_profile_default_view === 'photos'.
     // Clicking the Photos tab POSTs /settings/updateDefaultProfileView and
     // toggles the v-if; the PhotoList template then renders its "Related
@@ -921,9 +820,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // earlier-in-file tests that assume the notes tab would break on the
     // next smoke run if we didn't restore. Same try/finally pattern as
     // the locale-switch test above.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     await page.locator('a[href*="/people/h:"]').first().click();
     await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
@@ -941,18 +839,17 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       await page.locator('span').filter({ hasText: /Notes, reminders/ }).first().click();
     }
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (photos tab)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (photos tab)');
   });
 
-  test('contact detail life-events tab mounts life-event-list', async ({ page }) => {
+  test('contact detail life-events tab mounts life-event-list', async ({ page, consoleGate }) => {
     // LifeEventList only renders when global_profile_default_view ===
     // 'life-events'. Same tab-click mechanism as the photos test. The
     // blank-state SVG is the stable cross-i18n indicator the component
     // rendered. Same try/finally restoration as the photos test — the tab
     // click persists per-user, and earlier tests in the file assume notes.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     await page.locator('a[href*="/people/h:"]').first().click();
     await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
@@ -971,7 +868,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       await page.locator('span').filter({ hasText: /Notes, reminders/ }).first().click();
     }
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (life-events tab)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (life-events tab)');
   });
 
   // -------------------------------------------------------------------------
@@ -990,7 +887,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
   // contract each PR has to honour.
   // -------------------------------------------------------------------------
 
-  test('settings/dav copy button surfaces success toast (pr-1a guard)', async ({ page, context }) => {
+  test('settings/dav copy button surfaces success toast (pr-1a guard)', async ({ page, context, consoleGate }) => {
     // Guards the vue-clipboard2 → navigator.clipboard.writeText swap.
     // DAVResources.vue:111 calls `this.$copyText(text).then(() => this.notify(...))`.
     // Post-cutover, the same chain must produce the same dav_clipboard_copied
@@ -999,9 +896,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // not silently NotAllowedError into the .catch branch and skip the toast.
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings/dav');
 
     // The first Copy anchor sits next to the davRoute (base URL) input. There
@@ -1016,10 +912,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // doesn't expose a stable selector, so we match on the string.
     await expect(page.locator('body')).toContainText('Value copied into your clipboard');
 
-    assertNoUnknownConsoleErrors(unknown, '/settings/dav (copy button)');
+    consoleGate.assertNoUnknownErrors('/settings/dav (copy button)');
   });
 
-  test('relationship/create: form-checkbox toggles checked state (pr-1b FormCheckbox guard)', async ({ page }) => {
+  test('relationship/create: form-checkbox toggles checked state (pr-1b FormCheckbox guard)', async ({ page, consoleGate }) => {
     // Guards the pretty-checkbox-vue → native <input> swap. The settings/users
     // create form would be a cleaner target (its FormCheckbox controls a
     // submit-disabled state), but that route 302s to settings/subscriptions
@@ -1028,9 +924,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // <form-checkbox name="realContact" :model-value="true">, so toggling the
     // input verifies PInput's v-model wiring + slot rendering survive the
     // refactor.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     await page.locator('a[href*="/people/h:"]').first().click();
     await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
@@ -1053,19 +948,18 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await checkbox.click();
     await expect(checkbox).toBeChecked();
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/relationships/create (form-checkbox toggle)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact>/relationships/create (form-checkbox toggle)');
   });
 
-  test('relationship/create: SpecialDate birthdate radio labels render their #label slot content (vue3 slot= → #X guard)', async ({ page }) => {
+  test('relationship/create: SpecialDate birthdate radio labels render their #label slot content (vue3 slot= → #X guard)', async ({ page, consoleGate }) => {
     // Guards the slot="X" → #X migration in SpecialDate.vue. Vue 3 dropped
     // the vue-2 attribute form (`<template slot="label">`) entirely, so any
     // accidental revert would mount the four birthdate radios as bare
     // unlabelled circles — the #label slot content gets silently dropped
     // by PInput's `<slot name="label">`. Asserting the sibling
     // <label class="pointer"> populated per radio catches that regression.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     await page.locator('a[href*="/people/h:"]').first().click();
     await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
@@ -1092,18 +986,17 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       await expect(wrapper.locator('label.pointer')).toHaveText(label);
     }
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/relationships/create (SpecialDate #label slots)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact>/relationships/create (SpecialDate #label slots)');
   });
 
-  test('contact avatar edit: SetAvatar radio labels render their #label slot content (vue3 slot= → #X guard)', async ({ page }) => {
+  test('contact avatar edit: SetAvatar radio labels render their #label slot content (vue3 slot= → #X guard)', async ({ page, consoleGate }) => {
     // Same slot="X" → #X guard as the SpecialDate test above, but for
     // SetAvatar.vue. The avatar page mounts up to four form-radios named
     // "avatar"; two (default, upload) always render, the other two
     // (gravatar, photo) are conditional on existing state. Assert only the
     // always-on pair to keep the test deterministic across seed data.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
     expect(contactHref).toBeTruthy();
@@ -1124,10 +1017,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       await expect(wrapper.locator('label.pointer')).toContainText(label);
     }
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/avatar (SetAvatar #label slots)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact>/avatar (SetAvatar #label slots)');
   });
 
-  test('contact detail: log-a-call form persists with LL-formatted date (pr-1b form-radio + pr-1c |moment guard)', async ({ page }) => {
+  test('contact detail: log-a-call form persists with LL-formatted date (pr-1b form-radio + pr-1c |moment guard)', async ({ page, consoleGate }) => {
     // Two guards in one test:
     //
     //   pr-1b   the Log Call form mounts <form-radio> (PInput-backed) for
@@ -1141,9 +1034,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     //           renders with an LL date string.
     //
     // Cleans up the created call so repeated smoke runs don't accumulate rows.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     await page.locator('a[href*="/people/h:"]').first().click();
     await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
@@ -1176,19 +1068,18 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await callRow.locator('[cy-name^="delete-call-confirm-button-"]').click();
     await expect(page.locator('[cy-name="calls-body"]')).not.toContainText(marker);
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (log-a-call + |moment filter)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (log-a-call + |moment filter)');
   });
 
-  test('contact detail: log-an-activity form persists with LL-formatted date (pr-1c ActivityList |moment guard)', async ({ page }) => {
+  test('contact detail: log-an-activity form persists with LL-formatted date (pr-1c ActivityList |moment guard)', async ({ page, consoleGate }) => {
     // Guards the `filters: { moment }` block on ActivityList.vue that renders
     // `{{ activity.happened_at | moment }}` in LL format ("Month D, YYYY").
     // pr-1c lifts this to a formatMomentLL method; the assertion below
     // verifies a freshly-saved activity still renders with an LL date string.
     //
     // Cleans up the created activity so repeated smoke runs don't accumulate.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     await page.locator('a[href*="/people/h:"]').first().click();
     await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
@@ -1228,10 +1119,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await activityRow.locator('[cy-name="confirm-delete-activity"]').click();
     await expect(activityRow).toHaveCount(0);
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (log-an-activity + |moment filter)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (log-an-activity + |moment filter)');
   });
 
-  test('dashboard debts tab: formatDate filter renders LL date (pr-1c global formatDate guard)', async ({ page }) => {
+  test('dashboard debts tab: formatDate filter renders LL date (pr-1c global formatDate guard)', async ({ page, consoleGate }) => {
     // Guards the global `Vue.filter('formatDate')` registration in
     // resources/js/common.js. Its only consumer is DashboardLog.vue:118
     // `{{ debt.created_at | formatDate }}` inside the Debts tab. pr-1c will
@@ -1242,9 +1133,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // with 1-6 debts at 1/2 probability — vanishingly small chance of zero
     // debts in the seed. If the debts tab is empty, the test fails with a
     // clear hint rather than a confusing assertion miss.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/dashboard');
 
     // The Debts tab is a <li @click="setActiveTab('debts')">. The rendered
@@ -1282,7 +1172,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       throw err;
     }
 
-    assertNoUnknownConsoleErrors(unknown, '/dashboard (debts tab formatDate)');
+    consoleGate.assertNoUnknownErrors('/dashboard (debts tab formatDate)');
   });
 
   // -------------------------------------------------------------------------
@@ -1307,7 +1197,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
   // the remaining gaps.
   // -------------------------------------------------------------------------
 
-  test('contact detail stay-in-touch panel: full flow guards toggle, $tc plural, tooltip (pr-t3 three-in-one)', async ({ page }) => {
+  test('contact detail stay-in-touch panel: full flow guards toggle, $tc plural, tooltip (pr-t3 three-in-one)', async ({ page, consoleGate }) => {
     // Multi-guard exercising the StayInTouch save flow end-to-end with
     // premium access granted on the seeded admin account (see
     // withPremiumAccount above for why). Three Phase 2 swaps in a single
@@ -1345,9 +1235,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // smoke runs start clean. Premium is revoked in withPremiumAccount's
     // finally regardless of whether the body throws.
     await withPremiumAccount(async () => {
-      const { unknown } = attachConsoleCapture(page);
-
-      await login(page);
+  
+      await loginAsAdmin(page);
       await page.goto('/people');
       await page.locator('a[href*="/people/h:"]').first().click();
       await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
@@ -1417,11 +1306,11 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       // The inactive "Stay in touch" link reappears.
       await expect(page.getByRole('link', { name: 'Stay in touch', exact: true }).first()).toBeVisible();
 
-      assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (stay-in-touch full flow)');
+      consoleGate.assertNoUnknownErrors('/people/h:<contact> (stay-in-touch full flow)');
     });
   });
 
-  test('contact detail set-favorite star: v-tooltip body surfaces on hover (pr-t3 vue-directive-tooltip guard)', async ({ page }) => {
+  test('contact detail set-favorite star: v-tooltip body surfaces on hover (pr-t3 vue-directive-tooltip guard)', async ({ page, consoleGate }) => {
     // Guards the vue-directive-tooltip → floating-vue swap (8 sites).
     // SetFavorite.vue:5 binds v-tooltip.top="$t('people.set_favorite')"
     // on the inactive star svg. Hovering it materializes the tooltip body
@@ -1429,9 +1318,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // markup differs between vue-directive-tooltip (.vue-tooltip /
     // .tooltip-content) and floating-vue (.v-popper__popper) but both
     // libraries render the body text into the document.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     await page.locator('a[href*="/people/h:"]').first().click();
     await page.waitForURL(/\/people\/h:[A-Za-z0-9]+$/);
@@ -1448,10 +1336,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       page.getByText('Favorite contacts are placed at the top of the contact list'),
     ).toBeVisible();
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact> (set-favorite tooltip)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (set-favorite tooltip)');
   });
 
-  test('settings/security 2FA enable: wrong OTP surfaces error toast (pr-t3 vue-notification error guard)', async ({ page }) => {
+  test('settings/security 2FA enable: wrong OTP surfaces error toast (pr-t3 vue-notification error guard)', async ({ page, consoleGate }) => {
     // Guards the `type: 'error'` arm of vue-notification → @kyvg/vue3-
     // notification (25 sites). The existing dav-copy test (pr-1a) covers
     // type: 'success'; MfaActivate.vue:179 fires type: 'error' from
@@ -1462,9 +1350,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // the wrapper-class swap.
     //
     // No DB cleanup needed: a rejected 2FA enable doesn't persist.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings/security');
 
     await page.getByRole('link', { name: 'Enable Two Factor Authentication' }).click();
@@ -1492,10 +1379,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // Either way the modal should be hidden after the error toast fires.
     await expect(modal).toBeHidden();
 
-    assertNoUnknownConsoleErrors(unknown, '/settings/security (2FA wrong OTP)');
+    consoleGate.assertNoUnknownErrors('/settings/security (2FA wrong OTP)');
   });
 
-  test('settings/personalization reminder rules: plural form renders for count > 1 (pr-t3 $tc plural rewrite guard)', async ({ page }) => {
+  test('settings/personalization reminder rules: plural form renders for count > 1 (pr-t3 $tc plural rewrite guard)', async ({ page, consoleGate }) => {
     // Guards the $tc(key, count, params) → $t(key, namedParams, count)
     // rewrite that vue-i18n@11 forces (legacy mode drops tc). ReminderRules
     // .vue:29 renders `{{ $tc('settings.personalization_reminder_rule_line',
@@ -1509,9 +1396,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // default rules at 7 and 30 days; both are plural. We assert at least
     // one row's text matches `\d+ days before` with count > 1 — which
     // catches the singular fallback unambiguously.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/settings/personalization');
 
     // Wait for ReminderRules.vue to hydrate its rules array from GET
@@ -1533,10 +1419,10 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       reminderRules.getByText(/\b(?:[2-9]|\d{2,})\s+days\s+before\b/).first(),
     ).toBeVisible();
 
-    assertNoUnknownConsoleErrors(unknown, '/settings/personalization (reminder rule plural)');
+    consoleGate.assertNoUnknownErrors('/settings/personalization (reminder rule plural)');
   });
 
-  test('contact avatar edit: file upload mounts vue-cropper inside modal (pr-t3 vue-cropperjs guard)', async ({ page }) => {
+  test('contact avatar edit: file upload mounts vue-cropper inside modal (pr-t3 vue-cropperjs guard)', async ({ page, consoleGate }) => {
     // Guards the vue-cropperjs@4 → vue-cropperjs@5 bump (1 site:
     // SetAvatar.vue). Selecting a file calls uploadImg() which sets
     // uploadedImgUrl + opens cropModal. The vue-cropper component then
@@ -1549,9 +1435,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // We upload a 1x1 PNG via setInputFiles. No need to wait for the
     // image to actually load — the DOM scaffolding is what mounts
     // synchronously.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
     expect(contactHref).toBeTruthy();
@@ -1587,10 +1472,65 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await cropModal.getByRole('link', { name: 'Cancel', exact: true }).click();
     await expect(cropModal).toBeHidden();
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/avatar (vue-cropper mount)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact>/avatar (vue-cropper mount)');
   });
 
-  test('conversations create datepicker: clicking day cell populates hidden date (pr-t3 datepicker calendar pick guard)', async ({ page }) => {
+  // T2.4 — Avatar happy-path end-to-end. The smoke test above stops at
+  // the cropper mount + Cancel; this test completes the flow: select the
+  // "From a photo" radio, upload, crop-Done, save, and confirm the
+  // contact-detail header now renders an updated img.cover src that
+  // routes through the per-contact avatar endpoint (not the
+  // `default-X.png` placeholder).
+  test('contact avatar upload happy path: cropper → Done → save → contact header updates', async ({ page, consoleGate }) => {
+    await loginAsAdmin(page);
+    await page.goto('/people');
+    const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
+    expect(contactHref).toBeTruthy();
+    await page.goto(`${contactHref}/avatar`);
+
+    // Selecting the upload radio sets selectedAvatar='upload' so the form
+    // POST tells the controller to use the uploaded photo. PInput.vue
+    // doesn't `for`-associate its <label> with the <input>, so getByLabel
+    // can't find it — but clicking the visible label text fires PInput's
+    // @click handler which programmatically checks the radio.
+    await page.locator('label', { hasText: 'From a photo that you upload' }).first().click();
+
+    const tinyPng = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII=',
+      'base64',
+    );
+    await page.locator('input[name="photo"]').setInputFiles({
+      name: 'tiny.png',
+      mimeType: 'image/png',
+      buffer: tinyPng,
+    });
+
+    // Crop modal opens; the Done button commits the cropped File into the
+    // hidden <input name="photo"> ready for form submission.
+    const cropModal = page.getByRole('dialog', { name: 'Crop new avatar photo' });
+    await expect(cropModal).toBeVisible();
+    await cropModal.getByRole('link', { name: 'Done', exact: true }).click();
+    await expect(cropModal).toBeHidden();
+
+    // Submit. The form posts to people.avatar.update which redirects to
+    // people.show on success.
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(page).toHaveURL(new RegExp(`${contactHref}$`));
+
+    // The header img.cover's src should now route through the
+    // contact-specific avatar endpoint rather than the static
+    // `/img/avatars/default-X.png` placeholder. We assert via a regex
+    // that the src does NOT look like the default placeholder.
+    const headerImg = page.locator('img.cover').first();
+    await expect(headerImg).toBeVisible();
+    const headerSrc = await headerImg.getAttribute('src');
+    expect(headerSrc).toBeTruthy();
+    expect(headerSrc).not.toMatch(/\/img\/avatars\/default/);
+
+    consoleGate.assertNoUnknownErrors('/people/h:<contact> (avatar upload happy path)');
+  });
+
+  test('conversations create datepicker: clicking day cell populates hidden date (pr-t3 datepicker calendar pick guard)', async ({ page, consoleGate }) => {
     // Guards the @hokify/vuejs-datepicker → @vuepic/vue-datepicker rewrite
     // (1 site: Date.vue). The existing datepicker test above only checks
     // that the visible input is enabled — that survives a mount-only swap
@@ -1604,9 +1544,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // will need to update the .vdp-datepicker__calendar / .cell.day
     // selectors to @vuepic's .dp__main / .dp__cell — that's the
     // expected diff this test enforces a review of.
-    const { unknown } = attachConsoleCapture(page);
 
-    await login(page);
+    await loginAsAdmin(page);
     await page.goto('/people');
     const contactHref = await page.locator('a[href*="/people/h:"]').first().getAttribute('href');
     expect(contactHref).toBeTruthy();
@@ -1640,6 +1579,6 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     const hiddenInput = page.locator('input[name="conversationDate"][type="hidden"]');
     await expect(hiddenInput).toHaveValue(/^\d{4}-\d{2}-15$/);
 
-    assertNoUnknownConsoleErrors(unknown, '/people/h:<contact>/conversations/create (datepicker pick)');
+    consoleGate.assertNoUnknownErrors('/people/h:<contact>/conversations/create (datepicker pick)');
   });
 });

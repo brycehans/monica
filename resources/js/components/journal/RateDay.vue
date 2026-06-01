@@ -23,11 +23,17 @@
           <div class="w-30">
             <div class="flex items-center h-100">
               <div class="flex-none w-100" :class="[ dirltr ? 'tr' : 'tl' ]">
+                <button type="button"
+                     :aria-label="$t('journal.journal_rate_sad')"
+                     :aria-pressed="day.rate === 1"
+                     class="pointer bn bg-transparent pa0"
+                     @click="showComment(1)"
+                     @mouseover="showSadSmileyColor = true"
+                     @mouseleave="showSadSmileyColor = false">
                 <!-- sad smiley monochrome -->
                 <svg v-if="!showSadSmileyColor" v-cy-name="'sad-reaction-button'" width="42px" height="41px" viewBox="0 0 42 41"
                      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      class="pointer" :class="{ selected: day.rate === 1 }"
-                     @click="showComment(1)" @mouseover="showSadSmileyColor = true"
                 >
                   <defs />
                   <g id="App" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -44,10 +50,9 @@
                 </svg>
 
                 <!-- sad smiley color -->
-                <svg v-if="showSadSmileyColor" v-cy-name="'sad-reaction-button'" width="42px" height="41px" viewBox="0 0 42 41"
+                <svg v-else v-cy-name="'sad-reaction-button'" width="42px" height="41px" viewBox="0 0 42 41"
                      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      class="pointer" :class="{ selected: day.rate === 1 }"
-                     @click="showComment(1)" @mouseleave="showSadSmileyColor = false"
                 >
                   <defs />
                   <g id="App" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -62,12 +67,20 @@
                     </g>
                   </g>
                 </svg>
+                </button>
 
+                <button type="button"
+                     :aria-label="$t('journal.journal_rate_medium')"
+                     :aria-pressed="day.rate === 2"
+                     class="pointer bn bg-transparent pa0"
+                     @click="showComment(2)"
+                     @mouseover="showMediocreSmileyColor = true"
+                     @mouseleave="showMediocreSmileyColor = false">
                 <!-- mediocre day monochrome -->
                 <svg v-if="!showMediocreSmileyColor" v-cy-name="'medium-reaction-button'" width="42px" height="41px" viewBox="0 0 42 41"
                      version="1.1"
                      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                     class="pointer" :class="{ selected: day.rate === 2 }" @click="showComment(2)" @mouseover="showMediocreSmileyColor = true"
+                     class="pointer" :class="{ selected: day.rate === 2 }"
                 >
                   <defs />
                   <g id="App" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -83,10 +96,10 @@
                 </svg>
 
                 <!-- mediocre day color -->
-                <svg v-if="showMediocreSmileyColor" v-cy-name="'medium-reaction-button'" width="42px" height="41px" viewBox="0 0 42 41"
+                <svg v-else v-cy-name="'medium-reaction-button'" width="42px" height="41px" viewBox="0 0 42 41"
                      version="1.1"
                      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                     class="pointer" :class="{ selected: day.rate === 2 }" @click="showComment(2)" @mouseleave="showMediocreSmileyColor = false"
+                     class="pointer" :class="{ selected: day.rate === 2 }"
                 >
                   <defs />
                   <g id="App" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -100,12 +113,19 @@
                     </g>
                   </g>
                 </svg>
+                </button>
 
+                <button type="button"
+                     :aria-label="$t('journal.journal_rate_happy')"
+                     :aria-pressed="day.rate === 3"
+                     class="pointer bn bg-transparent pa0"
+                     @click="showComment(3)"
+                     @mouseover="showHappySmileyColor = true"
+                     @mouseleave="showHappySmileyColor = false">
                 <!-- happy day monochrome -->
                 <svg v-if="!showHappySmileyColor" v-cy-name="'happy-reaction-button'" width="42px" height="42px" viewBox="0 0 42 42"
                      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      class="pointer" :class="{ selected: day.rate === 3 }"
-                     @click="showComment(3)" @mouseover="showHappySmileyColor = true"
                 >
                   <defs />
                   <g id="App" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -123,10 +143,9 @@
                 </svg>
 
                 <!-- happy day color -->
-                <svg v-if="showHappySmileyColor" v-cy-name="'happy-reaction-button'" width="42px" height="42px" viewBox="0 0 42 42"
+                <svg v-else v-cy-name="'happy-reaction-button'" width="42px" height="42px" viewBox="0 0 42 42"
                      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      class="pointer" :class="{ selected: day.rate === 3 }"
-                     @click="showComment(3)" @mouseleave="showHappySmileyColor = false"
                 >
                   <defs />
                   <g id="App" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -142,6 +161,7 @@
                     </g>
                   </g>
                 </svg>
+                </button>
               </div>
             </div>
           </div>

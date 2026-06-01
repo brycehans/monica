@@ -65,6 +65,8 @@ docker compose -f docker-compose.dev.yml up   # app on :8082, phpmyadmin :3000, 
 
 The dev compose mounts `./public/build:/var/www/html/public/build`, so the container's Apache serves whatever the host last built. **`yarn run prod` is a cold-start prereq** — without it the mount overlays the image's baked-in assets with an empty directory and every blade page 500s on the missing `manifest.json`. For iteration, `yarn run watch` rebuilds incrementally on file change.
 
+**PHP-side edits and OpCache.** The dev image's PHP-FPM caches bytecode via OpCache. When you edit a `.php` file (controller, model, helper, etc.), `php artisan optimize:clear` clears Laravel-level caches but **does NOT invalidate OpCache** — Apache will keep serving the old bytecode. To pick up the new PHP, restart the container: `docker restart monica-app-1`. The mounted source is live (no `docker cp` needed) but the OpCache layer in front of it is not. Symptom: planted bugs in PHP don't reproduce until you restart. Vue/JS source edits don't hit this — they're rebundled by `yarn run prod`/`watch` and served via the public/build mount.
+
 ## Architecture
 
 Standard Laravel + Vue monolith. Worth knowing before changing things:
