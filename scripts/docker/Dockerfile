@@ -212,4 +212,9 @@ RUN set -ex; \
     \
     composer install --no-interaction --no-progress; \
     composer clear-cache; \
-    rm -rf .composer
+    rm -rf .composer; \
+    # composer install above runs as root, leaving vendor/ root-owned. The
+    # runtime user is www-data, so an in-container `composer install` (e.g.
+    # to pick up a host-side composer.lock bump during dev) would fail
+    # writing temp zips into vendor/composer/. Hand vendor/ back to www-data.
+    chown -R www-data:www-data vendor
