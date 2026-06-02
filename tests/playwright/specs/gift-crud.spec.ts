@@ -30,14 +30,6 @@ import { createContact } from '../support/contacts';
 
 test.describe('Monica v4 — gift CRUD', () => {
   test('create + edit + delete a gift on the contact detail page', async ({ page, consoleGate }) => {
-    // CreateGift._errorHandle's else-branch references undeclared `vm`
-    // (filed as #732). It fires twice per gift save when $refs.upload is
-    // undefined — i.e., every save that doesn't open the photo-upload
-    // panel, which includes this test. Scope the allowlist to this spec
-    // so a `vm is not defined` regression anywhere else in the app keeps
-    // failing the gate.
-    consoleGate.allow(/vm is not defined/, '#732');
-
     await loginAsFreshUser(page);
     await createContact(page, 'John', 'Doe', 'Man');
 

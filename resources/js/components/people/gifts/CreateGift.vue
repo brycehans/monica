@@ -388,6 +388,11 @@ export default {
       const method = this.gift ? 'put' : 'post';
       const url = `people/${this.hash}/gifts${this.gift ? '/'+this.gift.id : ''}`;
 
+      // vue-i18n legacy mode installs $t per component instance (not on a
+      // shared prototype like vue 2 did), so it dies with the proxy once
+      // vm.close() emits 'cancel' and the parent flips its v-if. Resolve
+      // the toast string here while the proxy is still alive.
+      const successTitle = this.$t('people.gifts_add_success');
 
       const vm = this;
       axios[method](url, this.newGift)
@@ -395,7 +400,6 @@ export default {
           return vm.storePhoto(response);
         })
         .then(response => {
-          //this.update(response);
           vm.close();
           vm.$emit('update', response.data.data);
           return response;
@@ -403,7 +407,7 @@ export default {
         .then(() => {
           this.$notify({
             group: 'main',
-            title: vm.$t('people.gifts_add_success'),
+            title: successTitle,
             text: '',
             type: 'success'
           });
@@ -433,7 +437,7 @@ export default {
       if (error.response && typeof error.response.data === 'object') {
         this.errors = _.flatten(_.toArray(error.response.data));
       } else {
-        this.errors = [vm.$t('app.error_try_again'), error.message];
+        this.errors = [this.$t('app.error_try_again'), error.message];
       }
     },
 
