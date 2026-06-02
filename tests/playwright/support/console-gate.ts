@@ -44,8 +44,6 @@ export const KNOWN_CONSOLE_NOISE: ConsoleNoiseEntry[] = [
   { match: /Invalid handler for event "search:(?:blur|focus)"/, issue: '#624' },
   // #625 — Unknown <error> element in ContactFieldTypes.vue
   { match: /Unknown custom element: <error>/, issue: '#625' },
-  // #626 — PWA manifest missing url/id in related_applications
-  { match: /Manifest: one of 'url' or 'id' is required/, issue: '#626' },
 ];
 
 export class ConsoleGate {

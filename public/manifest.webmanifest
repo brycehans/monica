@@ -22,8 +22,5 @@
       "type": "image/svg+xml"
     }
   ],
-  "orientation": "portrait-primary",
-  "related_applications": [{
-    "platform": "web"
-  }]
+  "orientation": "portrait-primary"
 }
