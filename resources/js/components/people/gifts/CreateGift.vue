@@ -200,7 +200,7 @@
           </div>
         </div>
 
-        <error :errors="errors" />
+        <form-errors :errors="errors" />
 
         <!-- ACTIONS -->
         <div class="pt3">
@@ -224,14 +224,14 @@
 
 <script>
 
-import Error from '../../partials/Error.vue';
+import FormErrors from '../../partials/FormErrors.vue';
 import PhotoUpload from '../photo/PhotoUpload.vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, maxLength } from '@vuelidate/validators';
 
 export default {
   components: {
-    Error,
+    FormErrors,
     PhotoUpload
   },
 

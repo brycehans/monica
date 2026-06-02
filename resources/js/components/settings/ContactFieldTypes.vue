@@ -69,7 +69,7 @@
                   @open="_focusCreateInput"
     >
       <!-- Form Errors -->
-      <errors :errors="createForm.errors" />
+      <form-errors :errors="createForm.errors" />
 
       <form class="form-horizontal" role="form" @submit.prevent="store">
         <div class="form-group">
@@ -135,7 +135,7 @@
                   @open="_focusEditInput"
     >
       <!-- Form Errors -->
-      <error :errors="editForm.errors" />
+      <form-errors :errors="editForm.errors" />
 
       <form class="form-horizontal" role="form" @submit.prevent="update">
         <div class="form-group">
@@ -215,12 +215,12 @@
 </template>
 
 <script>
-import Errors from '../partials/Error.vue';
+import FormErrors from '../partials/FormErrors.vue';
 
 export default {
 
   components: {
-    Errors,
+    FormErrors,
   },
 
   data() {

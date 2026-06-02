@@ -66,7 +66,7 @@
                   :title="$t('settings.api_token_create')" @open="_focusInput"
     >
       <!-- Form Errors -->
-      <errors :errors="form.errors" />
+      <form-errors :errors="form.errors" />
 
       <!-- Create Token Form -->
       <form ref="form" class="form-horizontal" role="form" @submit.prevent="store">
@@ -140,14 +140,14 @@
 </template>
 
 <script>
-import Errors from '../partials/Error.vue';
+import FormErrors from '../partials/FormErrors.vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 
 export default {
 
   components: {
-    Errors,
+    FormErrors,
   },
 
   setup: () => ({ v$: useVuelidate() }),

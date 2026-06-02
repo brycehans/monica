@@ -38,13 +38,7 @@ export type ConsoleNoiseEntry = { match: RegExp; issue: string };
 export type UnknownConsole = { type: string; text: string; url: string };
 export type KnownConsole = { issue: string; text: string };
 
-export const KNOWN_CONSOLE_NOISE: ConsoleNoiseEntry[] = [
-  // #624 — ContactSelect references undefined blur/focus handlers
-  { match: /Property or method "(?:blur|focus)" is not defined/, issue: '#624' },
-  { match: /Invalid handler for event "search:(?:blur|focus)"/, issue: '#624' },
-  // #625 — Unknown <error> element in ContactFieldTypes.vue
-  { match: /Unknown custom element: <error>/, issue: '#625' },
-];
+export const KNOWN_CONSOLE_NOISE: ConsoleNoiseEntry[] = [];
 
 export class ConsoleGate {
   readonly unknown: UnknownConsole[] = [];
