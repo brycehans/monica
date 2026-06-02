@@ -12,14 +12,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # psalm job is temporarily suppressed on the PHP 8.4 line.
-  # See issue #647 — vimeo/psalm v5 crashes at startup via a vendor cascade
-  # (its custom error handler converts safe v2's implicit-nullable autoload
-  # deprecation into an uncaught exception). vimeo/psalm and psalm/plugin-laravel
-  # are also removed from composer.json require-dev. Re-add at v6 + plugin-laravel
-  # v3 in phase 3 PR-E. See composer.json extra.fork-notes.psalm-removed-on-php84
-  # for the full rationale.
-
   phpstan:
     runs-on: ubuntu-latest
     steps:

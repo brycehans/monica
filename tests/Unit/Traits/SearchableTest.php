@@ -51,9 +51,6 @@ class SearchableTest extends TestCase
         $this->assertTrue($searchResults->contains($contact));
     }
 
-    /**
-     * @psalm-suppress UndefinedFunction
-     */
     #[Test]
     public function testFailingSearchContacts()
     {

@@ -73,7 +73,6 @@ class ActivityTypeCategory extends Model
      * Get the activity type category's attribute.
      *
      * @return string
-     * @psalm-suppress InvalidReturnStatement
      */
     public function getNameAttribute($value)
     {

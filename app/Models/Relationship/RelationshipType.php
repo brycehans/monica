@@ -86,9 +86,6 @@ class RelationshipType extends Model
     /**
      * Get the i18n version of the name attribute, like "Significant other".
      *
-     * @psalm-suppress InvalidReturnType
-     * @psalm-suppress InvalidReturnStatement
-     *
      * @param  Contact  $contact
      * @param  bool  $includeOpposite
      * @param  string  $gender
