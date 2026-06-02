@@ -109,11 +109,7 @@ Specs fail on **any unexpected** Vue or browser console error or `pageerror` —
 
 When one of those issues is closed, drop its entry from `KNOWN_CONSOLE_NOISE` in `support/console-gate.ts`.
 
-Surface-specific noise — bugs that fire on a single Vue component, where a global allowlist would risk swallowing unrelated regressions with the same message text — should be registered per-spec via `consoleGate.allow(pattern, issue)` at the top of the test. Current spec-scoped entries:
-
-| Spec | Pattern | Issue |
-| --- | --- | --- |
-| `gift-crud.spec.ts` | `vm is not defined` | [#732](https://github.com/brycehans/monica/issues/732) |
+Surface-specific noise — bugs that fire on a single Vue component, where a global allowlist would risk swallowing unrelated regressions with the same message text — should be registered per-spec via `consoleGate.allow(pattern, issue)` at the top of the test. No spec-scoped entries are currently active.
 
 ## What this is NOT
 
