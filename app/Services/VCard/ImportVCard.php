@@ -664,9 +664,6 @@ class ImportVCard extends BaseService
      * John Doe Johnny john@doe.com.
      * Only used for report display.
      *
-     * @psalm-suppress InvalidReturnStatement
-     * @psalm-suppress InvalidReturnType
-     *
      * @param  VCard  $entry
      * @return array|string
      */

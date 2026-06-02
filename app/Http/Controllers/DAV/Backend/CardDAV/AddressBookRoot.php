@@ -42,7 +42,6 @@ class AddressBookRoot extends BaseAddressBookRoot implements IACL
      *
      * @param  array  $principal
      * @return \Sabre\DAV\INode
-     * @psalm-suppress ParamNameMismatch
      */
     public function getChildForPrincipal(array $principal)
     {

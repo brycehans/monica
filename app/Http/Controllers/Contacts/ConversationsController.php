@@ -235,7 +235,6 @@ class ConversationsController extends Controller
      * @param  Conversation  $conversation
      * @param  string  $date
      * @return bool|string|\Illuminate\Contracts\Validation\Validator
-     * @psalm-return bool|array|string|\Illuminate\Contracts\Validation\Validator
      */
     private function updateMessages(Request $request, Conversation $conversation, string $date)
     {

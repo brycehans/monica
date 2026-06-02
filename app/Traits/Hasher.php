@@ -5,12 +5,9 @@ namespace App\Traits;
 use App\Services\Instance\IdHasher;
 use Illuminate\Database\Eloquent\Model;
 
-/** @psalm-implements \App\Interfaces\Hashing */
 trait Hasher
 {
     /**
-     * @psalm-suppress MethodSignatureMustProvideReturnType
-     *
      * @return string
      */
     public function getRouteKey()
