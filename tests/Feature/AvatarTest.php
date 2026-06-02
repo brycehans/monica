@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\FeatureTestCase;
 use App\Models\Account\Photo;
 use App\Models\Contact\Contact;
+use App\Models\Contact\Document;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -114,5 +115,34 @@ class AvatarTest extends FeatureTestCase
             'contact_id' => $contact2->id,
             'photo_id' => $photo->id,
         ]);
+    }
+
+    public function test_edit_screen_passes_storage_limit_false_when_under_quota()
+    {
+        [$user, $contact] = $this->fetchUser();
+        config(['monica.requires_subscription' => true]);
+        config(['monica.max_storage_size' => 100]);
+
+        $response = $this->get('/people/'.$contact->hashID().'/avatar');
+
+        $response->assertStatus(200);
+        $response->assertSee(':has-reached-account-storage-limit="false"', false);
+    }
+
+    public function test_edit_screen_passes_storage_limit_true_when_over_quota()
+    {
+        [$user, $contact] = $this->fetchUser();
+        config(['monica.requires_subscription' => true]);
+        config(['monica.max_storage_size' => 0.1]);
+
+        factory(Document::class)->create([
+            'filesize' => 1000000,
+            'account_id' => $user->account_id,
+        ]);
+
+        $response = $this->get('/people/'.$contact->hashID().'/avatar');
+
+        $response->assertStatus(200);
+        $response->assertSee(':has-reached-account-storage-limit="true"', false);
     }
 }

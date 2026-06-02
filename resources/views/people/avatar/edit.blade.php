@@ -20,7 +20,7 @@
           :default-url="'{{ $contact->getAvatarDefaultURL() }}'"
           :gravatar-url="'{{ $contact->avatar_gravatar_url }}'"
           :photo-url="'{{ $contact->getAvatarURL() }}'"
-          :has-reached-account-storage-limit="false"
+          :has-reached-account-storage-limit="{{ \Safe\json_encode($hasReachedAccountStorageLimit) }}"
           :max-upload-size="{{ config('monica.max_upload_size') }}"
         >
         </contact-avatar>
