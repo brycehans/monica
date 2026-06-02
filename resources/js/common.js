@@ -47,25 +47,31 @@ import pluralization from './pluralization.js';
 
 export default {
   i18n: createI18n({
-    legacy: true,
+    legacy: false,
+    // Keeps `$t` / `$tc` injected on every component instance so Options API
+    // call sites work during the Phase 2 per-component migration to
+    // `useI18n()`. Default is already true; pinned explicitly to make the
+    // intent visible while the legacy surface is being walked down (#744).
+    globalInjection: true,
     locale: 'en',
     fallbackLocale: 'en',
     messages: {'en': messages},
-    pluralizationRules: pluralization,
+    // Composition mode renames `pluralizationRules` → `pluralRules`.
+    pluralRules: pluralization,
   }),
 
   loadedLanguages : ['en'], // our default language that is preloaded
 
   _setI18nLanguage (lang) {
-    // Legacy-mode locale is a plain string property, not a ref — direct
-    // assignment (not `.value`). Composition mode is the `.value` shape.
-    this.i18n.global.locale = lang;
+    // Composition mode: `global.locale` is a ref, so assign via `.value`.
+    // (Legacy mode treated it as a plain string property.)
+    this.i18n.global.locale.value = lang;
     axios.defaults.headers.common['Accept-Language'] = lang;
     document.querySelector('html').setAttribute('lang', lang);
   },
 
   _loadLanguageAsync (lang) {
-    if (this.i18n.global.locale !== lang) {
+    if (this.i18n.global.locale.value !== lang) {
       if (!this.loadedLanguages.includes(lang)) {
         return axios.get(`js/langs/${lang}.json`).then(msgs => {
           this.i18n.global.setLocaleMessage(lang, msgs.data);
