@@ -66,6 +66,8 @@ The dev compose mounts `./public/build:/var/www/html/public/build`, so the conta
 
 **PHP-side edits and OpCache.** The dev image's PHP-FPM caches bytecode via OpCache. When you edit a `.php` file (controller, model, helper, etc.), `php artisan optimize:clear` clears Laravel-level caches but **does NOT invalidate OpCache** — Apache will keep serving the old bytecode. To pick up the new PHP, restart the container: `docker restart monica-app-1`. The mounted source is live (no `docker cp` needed) but the OpCache layer in front of it is not. Symptom: planted bugs in PHP don't reproduce until you restart. Vue/JS source edits don't hit this — they're rebundled by `yarn run prod`/`watch` and served via the public/build mount.
 
+**Root-level config files aren't mounted.** Only `app/`, `database/`, `resources/`, `routes/`, `tests/`, `config/`, and `phpunit.xml` live-mount into the container (plus `public/build`). Edits to root config (`phpstan.neon`, `composer.json`, `package.json`, `vite.config.js`, `.env`) sit on the host but the container keeps using the image-baked copy. Symptom: change `phpstan.neon`'s `ignoreErrors`, re-run `vendor/bin/phpstan` in the container, see the old behavior. Fix: `docker cp phpstan.neon monica-app-1:/var/www/html/phpstan.neon` (or rebuild the image). `.env` is the same — to flip a config value for one-off browser verification, edit the container's `.env` directly via `docker exec` + `sed`, then `docker restart`.
+
 ## Architecture
 
 Standard Laravel + Vue monolith. Worth knowing before changing things:
