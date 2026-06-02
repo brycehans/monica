@@ -13,6 +13,7 @@
 /tests/cypress/videos
 test-results/
 playwright-report/
+.playwright-mcp/
 /vendor
 .composer
 .env
@@ -37,3 +38,4 @@ yarn-error.log
 CLAUDE_CONTINUE.md
 tmp/
 toolgate.config.local.ts
+docs/mem-proposals/
