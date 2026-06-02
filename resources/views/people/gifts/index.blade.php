@@ -8,7 +8,7 @@
           'id' => $familyRelationship->ofContact->id,
           'name' => $familyRelationship->ofContact->first_name,
       ];
-    }) }}"
+    })->values() }}"
     :reach-limit="{{ \Safe\json_encode($hasReachedAccountStorageLimit) }}"
   >
   </contact-gift>
