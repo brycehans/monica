@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Contacts;
 
 use Illuminate\Http\Request;
+use App\Helpers\StorageHelper;
 use App\Models\Contact\Contact;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -18,8 +19,11 @@ class AvatarController extends Controller
     {
         $contact->throwInactive();
 
+        $hasReachedAccountStorageLimit = StorageHelper::hasReachedAccountStorageLimit($contact->account);
+
         return view('people.avatar.edit')
-            ->withContact($contact);
+            ->withContact($contact)
+            ->withHasReachedAccountStorageLimit($hasReachedAccountStorageLimit);
     }
 
     /**
