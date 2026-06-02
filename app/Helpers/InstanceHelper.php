@@ -58,7 +58,8 @@ class InstanceHelper
     {
         try {
             $stripeSubscription = $subscription->asStripeSubscription();
-            $plan = $stripeSubscription->plan;
+            // stripe-php 17 removed the top-level Stripe\Subscription->plan property; per-item plan data now lives on each SubscriptionItem. Reading $stripeSubscription->plan emits a "Stripe Notice: Undefined property" warning on every render of the subscription settings page.
+            $plan = $stripeSubscription->items->data[0]->plan ?? null;
         } catch (\Stripe\Exception\ApiErrorException $e) {
             $stripeSubscription = null;
             $plan = null;
