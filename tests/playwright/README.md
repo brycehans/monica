@@ -4,7 +4,7 @@ Standalone Playwright suite for verifying the user-facing app. Two distinct sets
 
 1. **`dependency-upgrade-smoke.spec.ts`** — the phase-close gate per `CLAUDE.md`: login → dashboard → contact list → contact detail → vCard export → journal → reminders → settings → search → logout. Run before merging composer/npm bump PRs.
 2. **`subscription-flow.spec.ts`** — drives the Stripe-gated `/settings/subscriptions/*` routes through stripe-mock.
-3. **`<feature>.spec.ts`** — UI-binding / cross-component invariant coverage (#725). Each spec covers behaviour that phpunit alone can't reach:
+3. **`<feature>.spec.ts`** — UI-binding / cross-component invariant coverage (#725) + Tier A coverage-gap backfill (#731). Each spec covers behaviour that phpunit alone can't reach:
    - `contact-introductions.spec.ts` — ContactSelect multiselect ARIA contract + filter behaviour
    - `activity-types.spec.ts` — settings → activity-add cross-flow (premium-gated)
    - `activity-journal-side-effect.spec.ts` — activity-create inserts a non-deletable journal row
@@ -16,6 +16,10 @@ Standalone Playwright suite for verifying the user-facing app. Two distinct sets
    - `conversation-create.spec.ts` — picker + message submit on /conversations/create
    - `activity-types-premium-gate.spec.ts` — non-premium account sees the upgrade block
    - `gift-crud.spec.ts` — gift create / inline edit / modal delete
+   - `reminder-persistence.spec.ts` — reminder create persists and surfaces in the contact's reminders list (#731 A.6)
+   - `audit-log.spec.ts` — contact-create surfaces in `/settings/auditlogs` (#731 A.3)
+   - `account-export.spec.ts` — JSON + SQL export submit, complete, and download with the right filename (#731 A.4)
+   - `account-import-vcard.spec.ts` — vCard upload lands an imported contact on `/people` (#731 A.5)
 
 ## Why it's a separate suite
 
