@@ -99,11 +99,17 @@ class InstanceHelperTest extends TestCase
     public function it_fetches_subscription_information()
     {
         $stripeSubscription = (object) [
-            'plan' => (object) [
-                'currency' => 'USD',
-                'amount' => 500,
-                'interval' => 'month',
-                'id' => 'monthly',
+            'items' => (object) [
+                'data' => [
+                    (object) [
+                        'plan' => (object) [
+                            'currency' => 'USD',
+                            'amount' => 500,
+                            'interval' => 'month',
+                            'id' => 'monthly',
+                        ],
+                    ],
+                ],
             ],
         ];
 
