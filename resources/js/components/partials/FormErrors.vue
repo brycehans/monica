@@ -28,6 +28,8 @@
 
 <script>
 export default {
+  name: 'FormErrors',
+
   props: {
     errors: {
       type: [Array, Object],

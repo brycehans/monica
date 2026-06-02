@@ -102,7 +102,7 @@
           />
         </div>
 
-        <error :errors="errors" />
+        <form-errors :errors="errors" />
 
         <!-- ACTIONS -->
         <div class="pt3">
@@ -128,14 +128,14 @@
 import moment from 'moment';
 import ActivityTypeList from './ActivityTypeList.vue';
 import Emotion from '../Emotion.vue';
-import Error from '../../partials/Error.vue';
+import FormErrors from '../../partials/FormErrors.vue';
 import Participant from '../Participant.vue';
 
 export default {
   components: {
     ActivityTypeList,
     Emotion,
-    Error,
+    FormErrors,
     Participant,
   },
 
