@@ -8,10 +8,12 @@ use Mockery\MockInterface;
 use App\Jobs\ExportAccount;
 use App\Models\Contact\Contact;
 use App\Models\Account\ExportJob;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\ExportAccountDone;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Testing\AssertableJsonString;
+use Illuminate\Contracts\Notifications\Dispatcher;
 use App\Services\Account\Settings\SqlExportAccount;
 use App\Services\Account\Settings\JsonExportAccount;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -82,6 +84,48 @@ class ExportAccountTest extends TestCase
         Notification::assertSentTo(
             [$job->user], ExportAccountDone::class
         );
+    }
+
+    #[Test]
+    public function it_keeps_export_status_done_when_post_completion_notification_throws()
+    {
+        // Regression test for #738. Pre-fix, a thrown notification (empty
+        // MAIL_FROM_ADDRESS, SMTP outage, etc.) propagated back into
+        // ExportAccount::handle()'s broad try/catch and flipped status to
+        // FAILED — even though the export file had already landed on disk.
+        Storage::fake();
+        $fake = Storage::fake('local');
+        $fake->put('temp/test.json', 'null');
+
+        $job = ExportJob::factory()->create();
+
+        $this->mock(JsonExportAccount::class, function (MockInterface $mock) use ($job) {
+            $mock->shouldReceive('execute')
+                ->once()
+                ->with([
+                    'account_id' => $job->account_id,
+                    'user_id' => $job->user_id,
+                ])
+                ->andReturn('temp/test.json');
+        });
+
+        // Swap the notification dispatcher binding for one that throws on
+        // send(). Notifiable::notify() resolves through
+        // app(Dispatcher::class), so this short-circuits the actual mail
+        // pipeline at the right seam.
+        $this->mock(Dispatcher::class, function (MockInterface $mock) {
+            $mock->shouldReceive('send')
+                ->once()
+                ->andThrow(new \RuntimeException('Simulated mail failure'));
+        });
+
+        Log::shouldReceive('warning')->once();
+
+        ExportAccount::dispatchSync($job);
+        $job->refresh();
+
+        $this->assertEquals(ExportJob::EXPORT_DONE, $job->status);
+        Storage::disk('public')->assertExists($job->filename);
     }
 
     #[Test]

@@ -8,9 +8,11 @@ use Illuminate\Bus\Queueable;
 use App\Helpers\StorageHelper;
 use App\Models\Account\ExportJob;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Notifications\ExportAccountDone;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Services\Account\Settings\SqlExportAccount;
 use App\Services\Account\Settings\JsonExportAccount;
@@ -75,12 +77,31 @@ class ExportAccount implements ShouldQueue
             $this->exportJob->end();
         } catch (Throwable $e) {
             $this->fail($e);
+
+            return;
         } finally {
             // delete old file from temp folder
             $storage = Storage::disk('local');
             if ($storage->exists($tempFileName)) {
                 $storage->delete($tempFileName);
             }
+        }
+
+        // The export is committed (status=done, file on disk) before the
+        // user-facing notification is dispatched. A notification failure
+        // (mail misconfig, SMTP outage, …) is logged but does NOT roll the
+        // status back — the artifact stays recoverable from the exports
+        // list. With QUEUE_CONNECTION=sync (Monica's default) the notify
+        // call runs inline, so the catch is what protects status from a
+        // synchronous throw; on a real queue driver the notification is
+        // already isolated and this catch is a no-op. See #738.
+        try {
+            $this->exportJob->user->notify(new ExportAccountDone($this->exportJob));
+        } catch (Throwable $e) {
+            Log::warning('Export notification dispatch failed', [
+                'export_job_id' => $this->exportJob->id,
+                'exception' => $e->getMessage(),
+            ]);
         }
     }
 
