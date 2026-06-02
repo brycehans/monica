@@ -5,7 +5,6 @@ namespace App\Models\Account;
 use App\Traits\HasUuid;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
-use App\Notifications\ExportAccountDone;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -141,7 +140,5 @@ class ExportJob extends Model
         $this->status = self::EXPORT_DONE;
         $this->ended_at = now();
         $this->save();
-
-        $this->user->notify(new ExportAccountDone($this));
     }
 }
