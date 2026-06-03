@@ -42,7 +42,7 @@
   <body data-account-id="{{ auth()->user()->account_id }}" class="bg-gray-monica min-vh-100 flex flex-column">
 
     <div id="app" class="flex-grow-1">
-      <modals-container />
+      <modals-container></modals-container>
       @if (Route::currentRouteName() != 'settings.subscriptions.confirm')
         @include('partials.header')
         @include('partials.subscription')
