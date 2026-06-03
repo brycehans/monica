@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import { VueDatePicker as Datepicker } from '@vuepic/vue-datepicker';
 import moment from 'moment';
 // @vuepic/vue-datepicker v13 passes :locale straight to date-fns/format,
@@ -69,6 +70,11 @@ export default {
 
   emits: ['update:modelValue'],
 
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   data() {
     return {
       exchange: '',
@@ -99,11 +105,11 @@ export default {
     },
 
     requiredMessage() {
-      return this.$t('validation.vue.required', { field: this.label });
+      return this.t('validation.vue.required', { field: this.label });
     },
 
     beforeMessage() {
-      return this.$t('validation.vue.max.numeric', {
+      return this.t('validation.vue.max.numeric', {
         field: this.label,
         max: this.displayValue(this.validator?.before?.$params?.date),
       });

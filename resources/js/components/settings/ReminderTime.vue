@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment-timezone';
 
 export default {
@@ -57,6 +58,11 @@ export default {
     }
   },
 
+  setup() {
+    const { t, locale } = useI18n();
+    return { t, locale };
+  },
+
   data() {
     return {
       message: '',
@@ -77,7 +83,7 @@ export default {
     },
 
     computeMessage() {
-      moment.locale(this.$i18n.locale);
+      moment.locale(this.locale);
       moment.tz.setDefault('UTC');
 
       var now = moment();
@@ -89,7 +95,7 @@ export default {
         date = date.add(1, 'days');
       }
 
-      this.message = this.$t('settings.reminder_time_to_send_help', {
+      this.message = this.t('settings.reminder_time_to_send_help', {
         dateTime: date.format('LLL'),
         dateTimeUtc: date.utc().format('YYYY-MM-DD HH:mm z')
       });

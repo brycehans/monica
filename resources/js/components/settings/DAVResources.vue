@@ -85,6 +85,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   props: {
@@ -106,12 +108,17 @@ export default {
     },
   },
 
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   methods: {
 
     copyIntoClipboard(text) {
       navigator.clipboard.writeText(text)
         .then(() => {
-          this.notify(this.$t('settings.dav_clipboard_copied'), true);
+          this.notify(this.t('settings.dav_clipboard_copied'), true);
         })
         .catch(() => { /* silent on permission denial / non-secure context */ });
     },

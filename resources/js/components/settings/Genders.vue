@@ -244,9 +244,16 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   components: {
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -300,8 +307,8 @@ export default {
 
     toggleOptions() {
       return {
-        checked: this.$t('app.yes'),
-        unchecked: this.$t('app.no')
+        checked: this.t('app.yes'),
+        unchecked: this.t('app.no')
       };
     },
 
@@ -427,7 +434,7 @@ export default {
           if (typeof error.response.data === 'object') {
             this.errorMessage = error.response.data.message;
           } else {
-            this.errorMessage = this.$t('app.error_try_again');
+            this.errorMessage = this.t('app.error_try_again');
           }
         });
     },

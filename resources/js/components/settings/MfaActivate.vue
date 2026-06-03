@@ -80,6 +80,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   components: {
@@ -90,6 +92,11 @@ export default {
       type: Boolean,
       default: false
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -123,9 +130,9 @@ export default {
           this.closeEnableModal();
           this.selectActivated = response.data.success;
           if (response.data.success) {
-            this.notify(this.$t('settings.2fa_enable_success'), true);
+            this.notify(this.t('settings.2fa_enable_success'), true);
           } else {
-            this.notify(this.$t('settings.2fa_enable_error'), false);
+            this.notify(this.t('settings.2fa_enable_error'), false);
           }
         }).catch(error => {
           this.closeEnableModal();
@@ -139,9 +146,9 @@ export default {
           this.closeDisableModal();
           this.selectActivated = ! response.data.success;
           if (response.data.success) {
-            this.notify(this.$t('settings.2fa_disable_success'), true);
+            this.notify(this.t('settings.2fa_disable_success'), true);
           } else {
-            this.notify(this.$t('settings.2fa_disable_error'), false);
+            this.notify(this.t('settings.2fa_disable_error'), false);
           }
         }).catch(error => {
           this.closeDisableModal();

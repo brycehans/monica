@@ -246,6 +246,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   components: {
@@ -256,6 +258,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -352,7 +359,7 @@ export default {
           this.activityTypeCategories.push(response.data.data);
           this.createCategoryForm.name = '';
 
-          this.notify(this.$t('app.default_save_success'), true);
+          this.notify(this.t('app.default_save_success'), true);
         });
     },
 
@@ -407,7 +414,7 @@ export default {
           this.updatedCategory.name = this.updateCategoryForm.name;
           this.updateCategoryForm.name = '';
 
-          this.notify(this.$t('app.default_save_success'), true);
+          this.notify(this.t('app.default_save_success'), true);
         });
     },
 
@@ -424,7 +431,7 @@ export default {
           this.createTypeForm.name = '';
           this.getActivityTypeCategories();
 
-          this.notify(this.$t('app.default_save_success'), true);
+          this.notify(this.t('app.default_save_success'), true);
         });
     },
 
@@ -435,7 +442,7 @@ export default {
           this.destroyCategoryForm.id = '';
           this.getActivityTypeCategories();
 
-          this.notify(this.$t('app.default_save_success'), true);
+          this.notify(this.t('app.default_save_success'), true);
         })
         .catch(error => {
           this.errorMessage = error.response.data.message;
@@ -450,7 +457,7 @@ export default {
           this.updateTypeForm.name = '';
           this.getActivityTypeCategories();
 
-          this.notify(this.$t('app.default_save_success'), true);
+          this.notify(this.t('app.default_save_success'), true);
         });
     },
 
@@ -461,7 +468,7 @@ export default {
           this.destroyTypeForm.id = '';
           this.getActivityTypeCategories();
 
-          this.notify(this.$t('app.default_save_success'), true);
+          this.notify(this.t('app.default_save_success'), true);
         })
         .catch(error => {
           this.errorMessage = error.response.data.message;

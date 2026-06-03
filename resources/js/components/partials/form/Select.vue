@@ -62,6 +62,7 @@
 
 <script>
 import { getCurrentInstance } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 export default {
 
@@ -111,7 +112,8 @@ export default {
   emits: ['update:modelValue', 'input'],
 
   setup() {
-    return { uid: getCurrentInstance().uid };
+    const { t } = useI18n();
+    return { uid: getCurrentInstance().uid, t };
   },
 
   data() {
@@ -136,7 +138,7 @@ export default {
       return this.label && this.label.length > 0 ? this.label : this.title;
     },
     requiredMessage() {
-      return this.$t('validation.vue.required', { field: this.field });
+      return this.t('validation.vue.required', { field: this.field });
     },
   },
 

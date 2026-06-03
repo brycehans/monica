@@ -45,7 +45,14 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
 
   data() {
     return {
@@ -80,7 +87,7 @@ export default {
         .then(response => {
           this.$notify({
             group: 'main',
-            title: this.$t('settings.personalization_reminder_rule_save'),
+            title: this.t('settings.personalization_reminder_rule_save'),
             text: '',
             type: 'success'
           });

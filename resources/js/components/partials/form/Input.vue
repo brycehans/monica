@@ -52,6 +52,7 @@
 
 <script>
 import { getCurrentInstance } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 export default {
 
@@ -113,7 +114,8 @@ export default {
   emits: ['update:modelValue', 'input', 'submit', 'blur', 'change'],
 
   setup() {
-    return { uid: getCurrentInstance().uid };
+    const { t } = useI18n();
+    return { uid: getCurrentInstance().uid, t };
   },
 
   computed: {
@@ -136,10 +138,10 @@ export default {
       return this.label && this.label.length > 0 ? this.label : this.title;
     },
     requiredMessage() {
-      return this.$t('validation.vue.required', { field: this.field });
+      return this.t('validation.vue.required', { field: this.field });
     },
     urlMessage() {
-      return this.$t('validation.vue.url', { field: this.field });
+      return this.t('validation.vue.url', { field: this.field });
     },
     maxLengthMessage() {
       var type = 'string';
@@ -148,7 +150,7 @@ export default {
         type = 'numeric';
         break;
       }
-      return this.$t(`validation.vue.max.${type}`, {
+      return this.t(`validation.vue.max.${type}`, {
         field: this.field,
         max: this.validator?.maxLength?.$params?.max ?? '',
       });

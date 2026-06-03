@@ -215,12 +215,18 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import FormErrors from '../partials/FormErrors.vue';
 
 export default {
 
   components: {
     FormErrors,
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -291,7 +297,7 @@ export default {
 
       this.$notify({
         group: 'main',
-        title: this.$t('settings.personalization_contact_field_type_add_success'),
+        title: this.t('settings.personalization_contact_field_type_add_success'),
         text: '',
         width: '500px',
         type: 'success'
@@ -315,7 +321,7 @@ export default {
 
       this.$notify({
         group: 'main',
-        title: this.$t('settings.personalization_contact_field_type_edit_success'),
+        title: this.t('settings.personalization_contact_field_type_edit_success'),
         text: '',
         width: '500px',
         type: 'success'
@@ -336,7 +342,7 @@ export default {
 
       this.$notify({
         group: 'main',
-        title: this.$t('settings.personalization_contact_field_type_delete_success'),
+        title: this.t('settings.personalization_contact_field_type_delete_success'),
         text: '',
         width: '500px',
         type: 'success'
@@ -364,7 +370,7 @@ export default {
           if (typeof error.response.data === 'object') {
             form.errors = _.flatten(_.toArray(error.response.data));
           } else {
-            form.errors = [this.$t('app.error_try_again')];
+            form.errors = [this.t('app.error_try_again')];
           }
         });
     },
