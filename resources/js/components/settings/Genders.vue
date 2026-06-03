@@ -66,33 +66,9 @@
       </div>
     </div>
     <div class="mt2" :class="[ dirltr ? 'tr' : 'tl' ]">
-      <a class="pointer" href="" @click.prevent="showDefaultGenderModal">{{ t('settings.personalization_genders_make_default') }}</a>
+      <a class="pointer" href="" @click.prevent="openSetDefault">{{ t('settings.personalization_genders_make_default') }}</a>
     </div>
 
-    <!-- Change default Gender -->
-    <monica-modal v-model="defaultGenderModalOpen" :title="t('settings.personalization_genders_modal_default')">
-      <form>
-        <div class="form-group">
-          <div class="form-group">
-            <form-select
-              :id="''"
-              v-model="defaultGenderId"
-              :options="genders"
-              :required="true"
-              :title="t('settings.personalization_genders_select_default')"
-            />
-          </div>
-        </div>
-      </form>
-      <template #button>
-        <a class="btn" href="" @click.prevent="closeDefaultGenderModal()">
-          {{ t('app.cancel') }}
-        </a>
-        <a class="btn btn-primary" href="" @click.prevent="updateDefaultGender()">
-          {{ t('app.save') }}
-        </a>
-      </template>
-    </monica-modal>
   </div>
 </template>
 
@@ -102,6 +78,7 @@ import { useModal } from 'vue-final-modal';
 import CreateModal from './genders/CreateModal.vue';
 import EditModal from './genders/EditModal.vue';
 import DeleteModal from './genders/DeleteModal.vue';
+import SetDefaultModal from './genders/SetDefaultModal.vue';
 
 export default {
 
@@ -113,7 +90,8 @@ export default {
     const createModal = useModal({ component: CreateModal, attrs: {} });
     const editModal = useModal({ component: EditModal, attrs: {} });
     const deleteModal = useModal({ component: DeleteModal, attrs: {} });
-    return { t, createModal, editModal, deleteModal };
+    const setDefaultModal = useModal({ component: SetDefaultModal, attrs: {} });
+    return { t, createModal, editModal, deleteModal, setDefaultModal };
   },
 
   data() {
@@ -121,8 +99,6 @@ export default {
       genders: [],
       genderTypes: [],
 
-      defaultGenderId: null,
-      defaultGenderModalOpen: false,
     };
   },
 
@@ -170,10 +146,6 @@ export default {
         });
     },
 
-    closeDefaultGenderModal() {
-      this.defaultGenderModalOpen = false;
-    },
-
     openCreate() {
       this.createModal.patchOptions({
         attrs: {
@@ -185,9 +157,15 @@ export default {
       this.createModal.open();
     },
 
-    showDefaultGenderModal() {
-      this.defaultGenderId = this.defaultGenderType.id;
-      this.defaultGenderModalOpen = true;
+    openSetDefault() {
+      this.setDefaultModal.patchOptions({
+        attrs: {
+          genders: this.genders,
+          defaultId: this.defaultGenderType?.id ?? null,
+          onSaved: () => this.getGenders(),
+        },
+      });
+      this.setDefaultModal.open();
     },
 
     openEdit(gender) {
@@ -211,14 +189,6 @@ export default {
       });
       this.deleteModal.open();
     },
-
-    updateDefaultGender() {
-      axios.put('settings/personalization/genders/default/' + this.defaultGenderId)
-        .then(response => {
-          this.closeDefaultGenderModal();
-          this.getGenders();
-        });
-    }
   }
 };
 </script>
