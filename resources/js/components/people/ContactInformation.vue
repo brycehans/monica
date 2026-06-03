@@ -108,6 +108,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   props: {
@@ -123,6 +125,11 @@ export default {
       type: Number,
       default: 26,
     }
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -178,7 +185,7 @@ export default {
       _.each(data, function(value) {
         var shortenName = value.data;
         if (shortenName.length > vm.sizeLimit + 1) {
-          shortenName = vm.$t('format.short_text', { text: shortenName.substr(0, vm.sizeLimit) });
+          shortenName = vm.t('format.short_text', { text: shortenName.substr(0, vm.sizeLimit) });
         }
         value.shortenName = shortenName;
       });
@@ -251,7 +258,7 @@ export default {
           if (typeof error.response.data === 'object') {
             form.errors = _.flatten(_.toArray(error.response.data));
           } else {
-            form.errors = [this.$t('app.error_try_again')];
+            form.errors = [this.t('app.error_try_again')];
           }
         });
     },
