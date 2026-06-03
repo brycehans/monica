@@ -4,7 +4,7 @@
 
     <h3 class="mb3">
       {{ t('settings.personalization_genders_title') }}
-      <a class="btn nt2" :class="[ dirltr ? 'fr' : 'fl' ]" href="" @click.prevent="showCreateModal">
+      <a class="btn nt2" :class="[ dirltr ? 'fr' : 'fl' ]" href="" @click.prevent="openCreate">
         {{ t('settings.personalization_genders_add') }}
       </a>
     </h3>
@@ -68,55 +68,6 @@
     <div class="mt2" :class="[ dirltr ? 'tr' : 'tl' ]">
       <a class="pointer" href="" @click.prevent="showDefaultGenderModal">{{ t('settings.personalization_genders_make_default') }}</a>
     </div>
-
-    <!-- Create Gender type -->
-    <monica-modal v-model="createModalOpen" :title="t('settings.personalization_genders_modal_add')">
-      <form @submit.prevent="store()">
-        <div class="form-group">
-          <div class="form-group">
-            <form-input
-              :id="''"
-              v-model="createForm.name"
-              :input-type="'text'"
-              :required="true"
-              :title="t('settings.personalization_genders_modal_name')"
-            />
-            <small class="form-text text-muted">
-              {{ t('settings.personalization_genders_modal_name_help') }}
-            </small>
-          </div>
-          <div class="form-group">
-            <form-select
-              :id="''"
-              v-model="createForm.type"
-              :options="genderTypes"
-              :required="true"
-              :title="t('settings.personalization_genders_modal_sex')"
-            />
-            <small class="form-text text-muted">
-              {{ t('settings.personalization_genders_modal_sex_help') }}
-            </small>
-          </div>
-          <div class="form-group">
-            <form-toggle
-              :id="''"
-              v-model="createForm.isDefault"
-              :labels="toggleOptions"
-              :required="true"
-              :title="t('settings.personalization_genders_modal_default')"
-            />
-          </div>
-        </div>
-      </form>
-      <template #button>
-        <a class="btn" href="" @click.prevent="closeModal()">
-          {{ t('app.cancel') }}
-        </a>
-        <a class="btn btn-primary" href="" @click.prevent="store()">
-          {{ t('app.save') }}
-        </a>
-      </template>
-    </monica-modal>
 
     <!-- Edit gender type -->
     <monica-modal v-model="showUpdateModal" :title="t('settings.personalization_genders_modal_edit')">
@@ -245,6 +196,8 @@
 
 <script>
 import { useI18n } from 'vue-i18n';
+import { useModal } from 'vue-final-modal';
+import CreateModal from './genders/CreateModal.vue';
 
 export default {
 
@@ -253,7 +206,8 @@ export default {
 
   setup() {
     const { t } = useI18n();
-    return { t };
+    const createModal = useModal({ component: CreateModal, attrs: {} });
+    return { t, createModal };
   },
 
   data() {
@@ -268,13 +222,6 @@ export default {
       },
 
       errorMessage: '',
-
-      createForm: {
-        name: '',
-        type: '',
-        isDefault: false,
-        errors: []
-      },
 
       updateForm: {
         id: '',
@@ -293,7 +240,6 @@ export default {
       },
 
       defaultGenderId: null,
-      createModalOpen: false,
       showUpdateModal: false,
       showDeleteModal: false,
       defaultGenderModalOpen: false,
@@ -330,15 +276,10 @@ export default {
       ]);
     },
 
-    setDefaultGenderType() {
-      this.createForm.type = this.defaultGenderType.type;
-    },
-
     getGenders() {
       return axios.get('settings/personalization/genders')
         .then(response => {
           this.genders = _.toArray(response.data);
-          this.setDefaultGenderType();
         });
     },
 
@@ -347,10 +288,6 @@ export default {
         .then(response => {
           this.genderTypes = _.toArray(response.data);
         });
-    },
-
-    closeModal() {
-      this.createModalOpen = false;
     },
 
     closeUpdateModal() {
@@ -365,23 +302,24 @@ export default {
       this.defaultGenderModalOpen = false;
     },
 
-    showCreateModal() {
-      this.createModalOpen = true;
+    openCreate() {
+      this.createModal.patchOptions({
+        attrs: {
+          genderTypes: this.genderTypes,
+          defaultGenderType: this.defaultGenderType,
+          onSaved: () => {
+            this.createModal.close();
+            this.getGenders();
+          },
+          onCancelled: () => this.createModal.close(),
+        },
+      });
+      this.createModal.open();
     },
 
     showDefaultGenderModal() {
       this.defaultGenderId = this.defaultGenderType.id;
       this.defaultGenderModalOpen = true;
-    },
-
-    store() {
-      axios.post('settings/personalization/genders', this.createForm)
-        .then(response => {
-          this.closeModal();
-          this.getGenders();
-          this.createForm.name = '';
-          this.createForm.type = '';
-        });
     },
 
     showEdit(gender) {
