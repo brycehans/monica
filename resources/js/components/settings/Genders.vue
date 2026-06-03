@@ -68,7 +68,6 @@
     <div class="mt2" :class="[ dirltr ? 'tr' : 'tl' ]">
       <a class="pointer" href="" @click.prevent="openSetDefault">{{ t('settings.personalization_genders_make_default') }}</a>
     </div>
-
   </div>
 </template>
 
@@ -81,10 +80,6 @@ import DeleteModal from './genders/DeleteModal.vue';
 import SetDefaultModal from './genders/SetDefaultModal.vue';
 
 export default {
-
-  components: {
-  },
-
   setup() {
     const { t } = useI18n();
     const createModal = useModal({ component: CreateModal, attrs: {} });
@@ -98,20 +93,12 @@ export default {
     return {
       genders: [],
       genderTypes: [],
-
     };
   },
 
   computed: {
     dirltr() {
       return this.$root.htmldir === 'ltr';
-    },
-
-    toggleOptions() {
-      return {
-        checked: this.t('app.yes'),
-        unchecked: this.t('app.no')
-      };
     },
 
     defaultGenderType() {
