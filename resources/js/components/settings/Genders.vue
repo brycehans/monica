@@ -60,7 +60,7 @@
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
           <div class="pa2">
             <em class="fa fa-pencil-square-o pointer pr2" @click="openEdit(gender)"></em>
-            <em v-if="genders.length > 1" class="fa fa-trash-o pointer" @click="showDelete(gender)"></em>
+            <em v-if="genders.length > 1" class="fa fa-trash-o pointer" @click="openDelete(gender)"></em>
           </div>
         </div>
       </div>
@@ -68,55 +68,6 @@
     <div class="mt2" :class="[ dirltr ? 'tr' : 'tl' ]">
       <a class="pointer" href="" @click.prevent="showDefaultGenderModal">{{ t('settings.personalization_genders_make_default') }}</a>
     </div>
-
-    <!-- Delete Gender type -->
-    <monica-modal v-model="showDeleteModal" :title="t('settings.personalization_genders_modal_delete')">
-      <form>
-        <div v-if="errorMessage !== ''" class="form-error-message mb3">
-          <div class="pa2">
-            <p class="mb0">
-              {{ errorMessage }}
-            </p>
-          </div>
-        </div>
-        <div class="mb4">
-          <p class="mb2">
-            {{ t('settings.personalization_genders_modal_delete_desc', {name: deleteForm.name}) }}
-          </p>
-          <div v-if="deleteForm.numberOfContacts !== 0 || deleteForm.isDefault">
-            <p v-if="deleteForm.numberOfContacts !== 0">
-              {{ t('settings.personalization_genders_modal_delete_question', {count: deleteForm.numberOfContacts}, deleteForm.numberOfContacts) }}
-            </p>
-            <p v-else>
-              {{ t('settings.personalization_genders_modal_delete_question_default') }}
-            </p>
-            <form-select
-              :id="'deleteNewId'"
-              v-model="deleteForm.newId"
-              :options="genders"
-              :required="true"
-              :title="''"
-              :excluded-id="deleteForm.id"
-            />
-          </div>
-        </div>
-      </form>
-      <template #button>
-        <a class="btn" href="" @click.prevent="closeDeleteModal()">
-          {{ t('app.cancel') }}
-        </a>
-        <a v-if="deleteForm.numberOfContacts === 0 && ! deleteForm.isDefault"
-           class="btn btn-primary"
-           href=""
-           @click.prevent="trash()"
-        >
-          {{ t('app.delete') }}
-        </a>
-        <a v-else class="btn btn-primary" href="" @click.prevent="trashAndReplace()">
-          {{ t('app.delete') }}
-        </a>
-      </template>
-    </monica-modal>
 
     <!-- Change default Gender -->
     <monica-modal v-model="defaultGenderModalOpen" :title="t('settings.personalization_genders_modal_default')">
@@ -150,6 +101,7 @@ import { useI18n } from 'vue-i18n';
 import { useModal } from 'vue-final-modal';
 import CreateModal from './genders/CreateModal.vue';
 import EditModal from './genders/EditModal.vue';
+import DeleteModal from './genders/DeleteModal.vue';
 
 export default {
 
@@ -160,7 +112,8 @@ export default {
     const { t } = useI18n();
     const createModal = useModal({ component: CreateModal, attrs: {} });
     const editModal = useModal({ component: EditModal, attrs: {} });
-    return { t, createModal, editModal };
+    const deleteModal = useModal({ component: DeleteModal, attrs: {} });
+    return { t, createModal, editModal, deleteModal };
   },
 
   data() {
@@ -168,18 +121,7 @@ export default {
       genders: [],
       genderTypes: [],
 
-      errorMessage: '',
-
-      deleteForm: {
-        id: '',
-        name: '',
-        isDefault: false,
-        numberOfContacts: 0,
-        newId: 0
-      },
-
       defaultGenderId: null,
-      showDeleteModal: false,
       defaultGenderModalOpen: false,
     };
   },
@@ -228,10 +170,6 @@ export default {
         });
     },
 
-    closeDeleteModal() {
-      this.showDeleteModal = false;
-    },
-
     closeDefaultGenderModal() {
       this.defaultGenderModalOpen = false;
     },
@@ -263,37 +201,15 @@ export default {
       this.editModal.open();
     },
 
-    showDelete(gender) {
-      this.errorMessage = '';
-      this.deleteForm.name = gender.name;
-      this.deleteForm.id = gender.id.toString();
-      this.deleteForm.isDefault = gender.isDefault;
-      this.deleteForm.numberOfContacts = gender.numberOfContacts;
-
-      this.showDeleteModal = true;
-    },
-
-    trash() {
-      axios.delete('settings/personalization/genders/' + this.deleteForm.id)
-        .then(response => {
-          this.closeDeleteModal();
-          this.getGenders();
-        });
-    },
-
-    trashAndReplace() {
-      axios.delete('settings/personalization/genders/' + this.deleteForm.id + '/replaceby/' + this.deleteForm.newId)
-        .then(response => {
-          this.closeDeleteModal();
-          this.getGenders();
-        })
-        .catch(error => {
-          if (typeof error.response.data === 'object') {
-            this.errorMessage = error.response.data.message;
-          } else {
-            this.errorMessage = this.t('app.error_try_again');
-          }
-        });
+    openDelete(gender) {
+      this.deleteModal.patchOptions({
+        attrs: {
+          gender,
+          genders: this.genders,
+          onSaved: () => this.getGenders(),
+        },
+      });
+      this.deleteModal.open();
     },
 
     updateDefaultGender() {
