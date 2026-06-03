@@ -365,6 +365,21 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     const modal = page.locator('.monica-modal__panel').filter({ hasText: 'Add gender type' });
     await expect(modal).toBeVisible();
 
+    // Phase 1 of #724 cutover guard: confirm the modal is rendered via
+    // vue-final-modal's <ModalsContainer /> driven by useModal(), not the
+    // back-compat v-model-on-inline-MonicaModal path. The visual surface
+    // is identical between the two, so we read vfm's dynamicModals
+    // registry directly — only the useModal() path populates it.
+    const useModalSpawned = await page.evaluate(() => {
+      const app = (document.getElementById('app') as { __vue_app__?: { _context: { provides: object } } })?.__vue_app__;
+      const provides = app?._context?.provides ?? {};
+      const vfmKey = Object.getOwnPropertySymbols(provides).find((s) => String(s) === 'Symbol(vfm)');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const vfm = vfmKey ? (provides as any)[vfmKey] : null;
+      return vfm?.dynamicModals?.length ?? 0;
+    });
+    expect(useModalSpawned).toBeGreaterThan(0);
+
     // The "Name" field — first text input inside the modal. form-input
     // generates dynamic IDs (`+_uid`) so we target by position rather than id.
     await modal.locator('input[type="text"]').first().fill(newGenderName);

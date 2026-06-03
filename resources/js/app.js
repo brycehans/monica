@@ -14,7 +14,7 @@ import './bootstrap';
  */
 
 import { createApp } from 'vue';
-import { createVfm } from 'vue-final-modal';
+import { createVfm, ModalsContainer } from 'vue-final-modal';
 import 'vue-final-modal/style.css';
 import Notifications from '@kyvg/vue3-notification';
 import FloatingVue from 'floating-vue';
@@ -136,6 +136,7 @@ common.loadLanguage(window.Laravel.locale, true).then((i18n) => {
   app.component('Avatar', Avatar);
   app.component('Confirm', Confirm);
   app.component('MonicaModal', MonicaModal);
+  app.component('ModalsContainer', ModalsContainer);
 
   // Form elements
   app.component('FormInput', FormInput);

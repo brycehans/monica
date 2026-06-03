@@ -21,6 +21,7 @@
   <body data-account-id={{ auth()->user()->account_id }} class="marketing register bg-gray-monica">
 
       <div id="app">
+        <modals-container></modals-container>
         @yield('content')
       </div>
 
