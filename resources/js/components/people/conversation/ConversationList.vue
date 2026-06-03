@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import { VueGoodTable } from 'vue-good-table-next';
 
 export default {
@@ -45,28 +46,33 @@ export default {
     },
   },
 
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   data() {
     return {
       conversations: [],
 
       columns: [
         {
-          label: this.$t('app.date'),
+          label: this.t('app.date'),
           field: 'happened_at',
           tdClass: 'vgt-table-date',
         },
         {
-          label: this.$t('app.type'),
+          label: this.t('app.type'),
           field: 'contact_field_type',
           width: '110px',
         },
         {
-          label: this.$t('people.conversation_list_table_messages'),
+          label: this.t('people.conversation_list_table_messages'),
           field: 'message_count',
           width: '110px',
         },
         {
-          label: this.$t('people.conversation_list_table_content'),
+          label: this.t('people.conversation_list_table_content'),
           field: 'content',
         }
       ],

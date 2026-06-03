@@ -68,6 +68,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment-timezone';
 
 export default {
@@ -80,6 +81,11 @@ export default {
       type: Object,
       default: null,
     },
+  },
+
+  setup() {
+    const { locale } = useI18n();
+    return { locale };
   },
 
   data() {
@@ -105,7 +111,7 @@ export default {
     },
 
     formatDate(dateAsString) {
-      moment.locale(this.$i18n.locale);
+      moment.locale(this.locale);
       moment.tz.setDefault('UTC');
 
       var date = moment.tz(moment(dateAsString), this.$root.timezone);

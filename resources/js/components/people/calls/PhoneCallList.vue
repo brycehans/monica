@@ -255,6 +255,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 import Emotion from '../Emotion.vue';
 
@@ -272,6 +273,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -347,7 +353,7 @@ export default {
 
           this.$notify({
             group: 'main',
-            title: this.$t('people.calls_add_success'),
+            title: this.t('people.calls_add_success'),
             text: '',
             type: 'success'
           });
@@ -364,7 +370,7 @@ export default {
 
           this.$notify({
             group: 'main',
-            title: this.$t('app.default_save_success'),
+            title: this.t('app.default_save_success'),
             text: '',
             type: 'success'
           });

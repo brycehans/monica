@@ -153,6 +153,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 
 export default {
@@ -180,6 +181,11 @@ export default {
         return [];
       }
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -283,7 +289,7 @@ export default {
 
           this.$notify({
             group: 'main',
-            title: this.$t('people.life_event_create_success'),
+            title: this.t('people.life_event_create_success'),
             text: '',
             type: 'success'
           });

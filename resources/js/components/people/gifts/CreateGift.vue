@@ -224,6 +224,7 @@
 
 <script>
 
+import { useI18n } from 'vue-i18n';
 import FormErrors from '../../partials/FormErrors.vue';
 import PhotoUpload from '../photo/PhotoUpload.vue';
 import { useVuelidate } from '@vuelidate/core';
@@ -258,7 +259,10 @@ export default {
     },
   },
 
-  setup: () => ({ v$: useVuelidate() }),
+  setup() {
+    const { t } = useI18n();
+    return { v$: useVuelidate(), t };
+  },
 
   data() {
     return {
@@ -392,7 +396,7 @@ export default {
       // shared prototype like vue 2 did), so it dies with the proxy once
       // vm.close() emits 'cancel' and the parent flips its v-if. Resolve
       // the toast string here while the proxy is still alive.
-      const successTitle = this.$t('people.gifts_add_success');
+      const successTitle = this.t('people.gifts_add_success');
 
       const vm = this;
       axios[method](url, this.newGift)
@@ -437,7 +441,7 @@ export default {
       if (error.response && typeof error.response.data === 'object') {
         this.errors = _.flatten(_.toArray(error.response.data));
       } else {
-        this.errors = [this.$t('app.error_try_again'), error.message];
+        this.errors = [this.t('app.error_try_again'), error.message];
       }
     },
 
