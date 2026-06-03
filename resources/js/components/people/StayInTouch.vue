@@ -22,20 +22,20 @@
 
     <!-- Contact doesn't have a frequency set -->
     <a v-if="!isActive" class="pointer" href="" @click.prevent="showUpdate">
-      {{ $t('people.stay_in_touch_modal_title') }}
+      {{ t('people.stay_in_touch_modal_title') }}
     </a>
 
     <!-- Contact has a frequency set -->
     <div v-else class="di">
-      <span v-tooltip.bottom="$t('people.stay_in_touch_next_date', { date: formatDate(nextTriggerDate) })" class="bb dashed dib pointer nowrap-link">
-        {{ $t('people.stay_in_touch_frequency', { count: frequencyInput }, frequencyInput) }}
+      <span v-tooltip.bottom="t('people.stay_in_touch_next_date', { date: formatDate(nextTriggerDate) })" class="bb dashed dib pointer nowrap-link">
+        {{ t('people.stay_in_touch_frequency', { count: frequencyInput }, frequencyInput) }}
       </span>
       <a class="pointer" href="" @click.prevent="showUpdate">
-        {{ $t('app.edit') }}
+        {{ t('app.edit') }}
       </a>
     </div>
 
-    <monica-modal v-model="showUpdateModal" :title="$t('people.stay_in_touch_modal_title')">
+    <monica-modal v-model="showUpdateModal" :title="t('people.stay_in_touch_modal_title')">
       <div class="tc mw-100">
         <svg viewBox="0 0 423 74" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <defs />
@@ -117,11 +117,11 @@
                   </g>
                 </svg>
               </div>
-              <div v-html="$t('settings.personalisation_paid_upgrade_vue', {url: 'settings/subscriptions' })"></div>
+              <div v-html="t('settings.personalisation_paid_upgrade_vue', {url: 'settings/subscriptions' })"></div>
             </div>
           </div>
           <p class="mt3 b mb3" :class="[ dirltr ? 'tl' : 'tr' ]">
-            {{ $t('people.stay_in_touch_modal_desc', { firstname: firstName }) }}
+            {{ t('people.stay_in_touch_modal_desc', { firstname: firstName }) }}
           </p>
           <div class="mb2">
             <form-toggle v-model="stateInput" class="mr2" />
@@ -157,10 +157,10 @@
       <template #button>
         <div class="tc">
           <a class="btn" href="" @click.prevent="closeModal()">
-            {{ $t('app.cancel') }}
+            {{ t('app.cancel') }}
           </a>
           <a class="btn btn-primary" href="" @click.prevent="update()">
-            {{ $t('app.save') }}
+            {{ t('app.save') }}
           </a>
         </div>
       </template>

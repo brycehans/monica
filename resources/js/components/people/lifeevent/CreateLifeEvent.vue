@@ -7,20 +7,20 @@
       <ul v-if="view === 'types' || view === 'add'" class="ba b--gray-monica pa2 mb2">
         <li class="di">
           <a class="pointer" href="" @click.prevent="view = 'categories'">
-            {{ $t('people.life_event_create_category') }}
+            {{ t('people.life_event_create_category') }}
           </a>
         </li>
         <li v-if="view === 'types'" class="di">
-          > {{ $t('people.life_event_category_' + activeCategory.default_life_event_category_key) }}
+          > {{ t('people.life_event_category_' + activeCategory.default_life_event_category_key) }}
         </li>
         <template v-else-if="view === 'add'">
           <li class="di">
             &gt; <a class="pointer" href="" @click.prevent="view = 'types'">
-              {{ $t('people.life_event_category_' + activeCategory.default_life_event_category_key) }}
+              {{ t('people.life_event_category_' + activeCategory.default_life_event_category_key) }}
             </a>
           </li>
           <li class="di">
-            &gt; {{ $t('people.life_event_create_life_event') }}
+            &gt; {{ t('people.life_event_create_life_event') }}
           </li>
         </template>
       </ul>
@@ -33,7 +33,7 @@
             <div class="dib mr2">
               <img :src="'img/people/life-events/categories/' + category.default_life_event_category_key + '.svg'" :alt="category.default_life_event_category_key" style="min-width: 12px;" />
             </div>
-            {{ $t('people.life_event_category_' + category.default_life_event_category_key) }}
+            {{ t('people.life_event_category_' + category.default_life_event_category_key) }}
 
             <svg class="absolute life-event-add-arrow" width="10" height="13" viewBox="0 0 10 13" fill="none"
                  xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +53,7 @@
               {{ type.name }}
             </template>
             <template v-else>
-              {{ $t('people.life_event_sentence_' + type.default_life_event_type_key) }}
+              {{ t('people.life_event_sentence_' + type.default_life_event_type_key) }}
             </template>
 
             <svg class="absolute life-event-add-arrow" width="10" height="13" viewBox="0 0 10 13" fill="none"
@@ -76,14 +76,14 @@
             {{ activeType.name }}
           </template>
           <template v-else>
-            {{ $t('people.life_event_sentence_' + activeType.default_life_event_type_key) }}
+            {{ t('people.life_event_sentence_' + activeType.default_life_event_type_key) }}
           </template>
         </h3>
 
         <!-- This field will be the same for every life event type no matter what, as the date is the only required field -->
         <div class="ph4 pv3 mb3 mb0-ns bb b--gray-monica">
           <label for="year" class="mr2">
-            {{ $t('people.life_event_date_it_happened') }}
+            {{ t('people.life_event_date_it_happened') }}
           </label>
           <div class="flex mb3">
             <div class="mr2">
@@ -115,7 +115,7 @@
             </div>
           </div>
           <p class="f6">
-            {{ $t('people.life_event_create_date') }}
+            {{ t('people.life_event_create_date') }}
           </p>
         </div>
 
@@ -128,7 +128,7 @@
             :name="'addReminder'"
             :dclass="[ dirltr ? 'mr3' : 'ml3' ]"
           >
-            {{ $t('people.life_event_create_add_yearly_reminder') }}
+            {{ t('people.life_event_create_add_yearly_reminder') }}
           </form-checkbox>
         </div>
 
@@ -137,12 +137,12 @@
           <div class="flex-ns justify-between">
             <div>
               <a class="btn btn-secondary tc w-auto-ns w-100 mb2 pb0-ns" href="" @click.prevent="$emit('dismissModal')">
-                {{ $t('app.cancel') }}
+                {{ t('app.cancel') }}
               </a>
             </div>
             <div>
               <button class="btn btn-primary w-auto-ns w-100 mb2 pb0-ns" @click="store()">
-                {{ $t('app.add') }}
+                {{ t('app.add') }}
               </button>
             </div>
           </div>

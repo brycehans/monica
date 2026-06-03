@@ -4,13 +4,13 @@
 
     <!-- Title -->
     <div>
-      <img src="/img/people/gifts.svg" :alt="$t('people.gifts_title')" class="icon-section icon-tasks" />
+      <img src="/img/people/gifts.svg" :alt="t('people.gifts_title')" class="icon-section icon-tasks" />
       <h3>
-        {{ $t('people.gifts_title') }}
+        {{ t('people.gifts_title') }}
         <a v-cy-name="'add-gift-button'" href="" class="btn f6 pt2" :class="[ dirltr ? 'fr' : 'fl' ]"
            @click.prevent="displayCreateGift = true"
         >
-          {{ $t('people.gifts_add_gift') }}
+          {{ t('people.gifts_add_gift') }}
         </a>
       </h3>
     </div>
@@ -33,21 +33,21 @@
           <p class="di pointer" :class="[activeTab === 'idea' ? 'b' : 'black-50', dirltr ? 'mr3' : 'ml3']"
              @click.prevent="setActiveTab('idea')"
           >
-            {{ $t('people.gifts_ideas') }} ({{ ideas.length }})
+            {{ t('people.gifts_ideas') }} ({{ ideas.length }})
           </p>
         </li>
         <li class="di">
           <p class="di pointer" :class="[activeTab === 'offered' ? 'b' : 'black-50', dirltr ? 'mr3' : 'ml3']"
              @click.prevent="setActiveTab('offered')"
           >
-            {{ $t('people.gifts_offered') }} ({{ offered.length }})
+            {{ t('people.gifts_offered') }} ({{ offered.length }})
           </p>
         </li>
         <li class="di">
           <p class="di pointer" :class="[activeTab === 'received' ? 'b' : 'black-50', dirltr ? 'mr3' : 'ml3']"
              @click.prevent="setActiveTab('received')"
           >
-            {{ $t('people.gifts_received') }} ({{ received.length }})
+            {{ t('people.gifts_received') }} ({{ received.length }})
           </p>
         </li>
       </ul>
@@ -59,10 +59,10 @@
         >
           <div :class="dirltr ? 'fl' : 'fr'">
             <a v-if="gift.status === 'idea'" class="di" href="" @click.prevent="toggle(gift)">
-              {{ $t('people.gifts_mark_offered') }}
+              {{ t('people.gifts_mark_offered') }}
             </a>
             <a v-if="gift.status === 'offered'" class="di" href="" @click.prevent="toggle(gift)">
-              {{ $t('people.gifts_offered_as_an_idea') }}
+              {{ t('people.gifts_offered_as_an_idea') }}
             </a>
           </div>
 
@@ -70,12 +70,12 @@
             <a v-cy-name="'edit-gift-button-' + gift.id" :class="dirltr ? 'mr1' : 'ml1'" class="di" href=""
                @click.prevent="gift.edit = true"
             >
-              {{ $t('app.edit') }}
+              {{ t('app.edit') }}
             </a>
             <a v-cy-name="'delete-gift-button-' + gift.id" :class="dirltr ? 'mr1' : 'ml1'" class="di" href=""
                @click.prevent="showDeleteModal(gift)"
             >
-              {{ $t('app.delete') }}
+              {{ t('app.delete') }}
             </a>
           </div>
         </gift>
@@ -92,18 +92,18 @@
       </div>
     </div>
 
-    <monica-modal v-model="showModal" :title="$t('people.gifts_delete_title')">
+    <monica-modal v-model="showModal" :title="t('people.gifts_delete_title')">
       <form>
         <div class="mb4">
-          {{ $t('people.gifts_delete_confirmation') }}
+          {{ t('people.gifts_delete_confirmation') }}
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a v-cy-name="'modal-delete-gift-button-' + giftToTrash.id" class="btn btn-primary" href="" @click.prevent="trash(giftToTrash)">
-          {{ $t('app.delete') }}
+          {{ t('app.delete') }}
         </a>
       </template>
     </monica-modal>
@@ -111,6 +111,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import Gift from './Gift.vue';
 import CreateGift from './CreateGift.vue';
 import moment from 'moment';
@@ -143,6 +144,11 @@ export default {
       type: Boolean,
       default: true,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

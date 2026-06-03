@@ -13,10 +13,10 @@
       <template #button>
         <div class="flex-ns justify-between">
           <a class="btn mt2" href="" @click.prevent="close">
-            {{ $t('app.cancel') }}
+            {{ t('app.cancel') }}
           </a>
           <button v-cy-name="'confirm-' + name" class="btn btn-primary w-auto-ns w100 mt2 pb0-ns" @click="confirm($event)">
-            {{ $t('app.confirm') }}
+            {{ t('app.confirm') }}
           </button>
         </div>
       </template>
@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   props: {
@@ -44,6 +46,11 @@ export default {
       type: [String, Array],
       default: '',
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

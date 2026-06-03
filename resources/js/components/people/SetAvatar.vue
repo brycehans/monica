@@ -1,6 +1,6 @@
 <template>
   <div class="pa4-ns ph3 pv2 bb b--gray-monica">
-    <p>{{ $t('people.avatar_question') }}</p>
+    <p>{{ t('people.avatar_question') }}</p>
     <div class="mb3 mb0-ns">
       <!-- Default avatar -->
       <form-radio
@@ -11,7 +11,7 @@
         :iclass="dirltr ? 'mr2' : 'ml2'"
       >
         <template #label>
-          {{ $t('people.avatar_default_avatar') }}
+          {{ t('people.avatar_default_avatar') }}
         </template>
         <template #extra>
           <img class="mb4 pa2 ba b--gray-monica br3" style="width: 150px" :src="defaultUrl" alt="" />
@@ -28,7 +28,7 @@
         :iclass="dirltr ? 'mr2' : 'ml2'"
       >
         <template #label>
-          <span v-html="$t('people.avatar_gravatar')"></span>
+          <span v-html="t('people.avatar_gravatar')"></span>
         </template>
         <template #extra>
           <img class="mb4 pa2 ba b--gray-monica br3" style="width: 150px" :src="gravatarUrl" alt="" />
@@ -45,7 +45,7 @@
         :iclass="dirltr ? 'mr2' : 'ml2'"
       >
         <template #label>
-          {{ $t('people.avatar_current') }}
+          {{ t('people.avatar_current') }}
         </template>
         <template #extra>
           <img class="mb4 pa2 ba b--gray-monica br3" style="width: 150px" :src="photoUrl" alt="" />
@@ -62,10 +62,10 @@
         :disabled="hasReachedAccountStorageLimit"
       >
         <template #label>
-          {{ $t('people.avatar_photo') }}
+          {{ t('people.avatar_photo') }}
           <span v-if="hasReachedAccountStorageLimit">
             <a href="settings/subscriptions">
-              {{ $t('app.upgrade') }}
+              {{ t('app.upgrade') }}
             </a>
           </span>
         </template>
@@ -78,13 +78,13 @@
                  @change="uploadImg($event)"
           />
           <small class="form-text text-muted">
-            {{ $t('people.information_edit_max_size2', { size: maxUploadSize }) }}
+            {{ t('people.information_edit_max_size2', { size: maxUploadSize }) }}
           </small>
           <img v-if="croppedImgUrl" class="mb4 pa2 ba b--gray-monica br3" style="width: 150px" :src="croppedImgUrl" alt="" />
         </template>
       </form-radio>
     </div>
-    <monica-modal v-model="showCropModal" :title="$t('people.avatar_crop_new_avatar_photo')" :blocking="true">
+    <monica-modal v-model="showCropModal" :title="t('people.avatar_crop_new_avatar_photo')" :blocking="true">
       <vue-cropper v-if="uploadedImgUrl"
                    ref="clipper"
                    :key="uploadedImgUrl"
@@ -95,10 +95,10 @@
       />
       <template #button>
         <a class="btn" href="" @click.prevent="cancelCrop">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="setCroppedImg">
-          {{ $t('app.done') }}
+          {{ t('app.done') }}
         </a>
       </template>
     </monica-modal>
@@ -106,6 +106,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
 export default {
@@ -138,6 +139,11 @@ export default {
       type: Number,
       default: 10000,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

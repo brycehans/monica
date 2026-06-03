@@ -4,14 +4,14 @@
 
     <div class="w-100 dt">
       <div class="sidebar-box-title">
-        <h3>{{ $t('people.pets_title') }}</h3>
+        <h3>{{ t('people.pets_title') }}</h3>
       </div>
       <div v-if="pets.length > 0" class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
         <a v-if="!editMode" class="pointer" href="" @click.prevent="editMode = true">
-          {{ $t('app.edit') }}
+          {{ t('app.edit') }}
         </a>
         <a v-else class="pointer" href="" @click.prevent="resetState">
-          {{ $t('app.done') }}
+          {{ t('app.done') }}
         </a>
       </div>
     </div>
@@ -19,7 +19,7 @@
     <!-- Add button when box is empty -->
     <p v-if="pets.length === 0 && !addMode" class="mb0">
       <a class="pointer" href="" @click.prevent="toggleAdd">
-        {{ $t('app.add') }}
+        {{ t('app.add') }}
       </a>
     </p>
 
@@ -28,7 +28,7 @@
       <li v-for="(pet, i) in pets" :key="pet.id" class="mb2">
         <div v-show="!pet.edit" class="w-100 dt">
           <div class="dtc">
-            {{ $t('people.pets_' + pet.category_name) }}
+            {{ t('people.pets_' + pet.category_name) }}
             <span v-if="pet.name">
               - {{ pet.name }}
             </span>
@@ -44,26 +44,26 @@
           <form class="measure center">
             <div class="mt3">
               <label :for="'edit-category' + i" class="db fw6 lh-copy f6">
-                {{ $t('people.pets_kind') }}
+                {{ t('people.pets_kind') }}
               </label>
               <select :id="'edit-category' + i" v-model="updateForm.pet_category_id" class="db w-100 h2">
                 <option v-for="petCategory in petCategories" :key="petCategory.id" :value="petCategory.id">
-                  {{ $t('people.pets_' + petCategory.name) }}
+                  {{ t('people.pets_' + petCategory.name) }}
                 </option>
               </select>
             </div>
             <div class="mt3">
               <label :for="'edit-name' + i" class="db fw6 lh-copy f6">
-                {{ $t('people.pets_name') }}
+                {{ t('people.pets_name') }}
               </label>
               <input :id="'edit-name' + i" v-model="updateForm.name" class="pa2 db w-100" type="text" @keyup.enter="update(pet)" />
             </div>
             <div class="lh-copy mt3">
               <a class="btn btn-primary" href="" @click.prevent="update(pet)">
-                {{ $t('app.save') }}
+                {{ t('app.save') }}
               </a>
               <a class="btn" href="" @click.prevent="toggleEdit(pet)">
-                {{ $t('app.cancel') }}
+                {{ t('app.cancel') }}
               </a>
             </div>
           </form>
@@ -71,7 +71,7 @@
       </li>
       <li v-if="editMode && !addMode">
         <a class="pointer" href="" @click.prevent="toggleAdd">
-          {{ $t('app.add') }}
+          {{ t('app.add') }}
         </a>
       </li>
     </ul>
@@ -81,17 +81,17 @@
       <form class="measure center">
         <div class="mt3">
           <label for="add-category" class="db fw6 lh-copy f6">
-            {{ $t('people.pets_kind') }}
+            {{ t('people.pets_kind') }}
           </label>
           <select id="add-category" v-model="createForm.pet_category_id" class="db w-100 h2">
             <option v-for="petCategory in petCategories" :key="petCategory.id" :value="petCategory.id">
-              {{ $t('people.pets_' + petCategory.name) }}
+              {{ t('people.pets_' + petCategory.name) }}
             </option>
           </select>
         </div>
         <div class="mt3">
           <label for="add-name" class="db fw6 lh-copy f6">
-            {{ $t('people.pets_name') }}
+            {{ t('people.pets_name') }}
           </label>
           <input id="add-name" v-model="createForm.name" class="pa2 db w-100" type="text" @keyup.enter="store"
                  @keyup.esc="resetState"
@@ -99,10 +99,10 @@
         </div>
         <div class="lh-copy mt3">
           <a class="btn btn-primary" href="" @click.prevent="store">
-            {{ $t('app.add') }}
+            {{ t('app.add') }}
           </a>
           <a class="btn" href="" @click.prevent="resetState">
-            {{ $t('app.cancel') }}
+            {{ t('app.cancel') }}
           </a>
         </div>
       </form>

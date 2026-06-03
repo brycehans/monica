@@ -3,14 +3,14 @@
     <notifications group="activityTypes" position="bottom right" />
 
     <h3 class="with-actions">
-      {{ $t('settings.personalization_activity_type_category_title') }}
+      {{ t('settings.personalization_activity_type_category_title') }}
       <a v-if="!limited" v-cy-name="'add-activity-type-category-button'" class="btn nt2" :class="[ dirltr ? 'fr' : 'fl' ]" href=""
          @click.prevent="showCreateCategoryModal"
       >
-        {{ $t('settings.personalization_activity_type_category_add') }}
+        {{ t('settings.personalization_activity_type_category_add') }}
       </a>
     </h3>
-    <p>{{ $t('settings.personalization_activity_type_category_description') }}</p>
+    <p>{{ t('settings.personalization_activity_type_category_description') }}</p>
 
     <div v-if="limited" v-cy-name="'activity-type-premium-message'" class="mt3 mb3 form-information-message br2">
       <div class="pa3 flex">
@@ -21,7 +21,7 @@
             </g>
           </svg>
         </div>
-        <div v-html="$t('settings.personalisation_paid_upgrade_vue', {url: 'settings/subscriptions' })"></div>
+        <div v-html="t('settings.personalisation_paid_upgrade_vue', {url: 'settings/subscriptions' })"></div>
       </div>
     </div>
 
@@ -29,12 +29,12 @@
       <div class="dt-row">
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.personalization_activity_type_category_table_name') }}
+            {{ t('settings.personalization_activity_type_category_table_name') }}
           </div>
         </div>
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
           <div class="pa2 b">
-            {{ $t('settings.personalization_activity_type_category_table_actions') }}
+            {{ t('settings.personalization_activity_type_category_table_actions') }}
           </div>
         </div>
       </div>
@@ -86,7 +86,7 @@
                 <a v-cy-name="'add-activity-type-button-for-category-'+activityTypeCategory.id" class="pointer" href=""
                    @click.prevent="showCreateTypeModal(activityTypeCategory)"
                 >
-                  {{ $t('settings.personalization_activity_type_add_button') }}
+                  {{ t('settings.personalization_activity_type_add_button') }}
                 </a>
               </div>
             </div>
@@ -96,7 +96,7 @@
     </div>
 
     <!-- Create Activity Type Category -->
-    <monica-modal v-model="createCategoryModalOpen" :title="$t('settings.personalization_activity_type_category_modal_add')">
+    <monica-modal v-model="createCategoryModalOpen" :title="t('settings.personalization_activity_type_category_modal_add')">
       <form @submit.prevent="storeCategory()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -105,22 +105,22 @@
             v-model="createCategoryForm.name"
             :input-type="'text'"
             :required="true"
-            :title="$t('settings.personalization_activity_type_category_modal_question')"
+            :title="t('settings.personalization_activity_type_category_modal_question')"
           />
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeCategoryModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a v-cy-name="'add-activity-type-category-save-button'" class="btn btn-primary" href="" @click.prevent="storeCategory()">
-          {{ $t('app.save') }}
+          {{ t('app.save') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Update Activity Type Category -->
-    <monica-modal v-model="showUpdateCategoryModal" :title="$t('settings.personalization_activity_type_category_modal_edit')">
+    <monica-modal v-model="showUpdateCategoryModal" :title="t('settings.personalization_activity_type_category_modal_edit')">
       <form @submit.prevent="updateCategory()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -129,22 +129,22 @@
             v-model="updateCategoryForm.name"
             :input-type="'text'"
             :required="true"
-            :title="$t('settings.personalization_activity_type_category_modal_question')"
+            :title="t('settings.personalization_activity_type_category_modal_question')"
           />
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeUpdateCategoryModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a v-cy-name="'update-activity-type-category-button'" class="btn btn-primary" href="" @click.prevent="updateCategory()">
-          {{ $t('app.update') }}
+          {{ t('app.update') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Create Activity Type -->
-    <monica-modal v-model="createTypeModalOpen" :title="$t('settings.personalization_activity_type_modal_add')">
+    <monica-modal v-model="createTypeModalOpen" :title="t('settings.personalization_activity_type_modal_add')">
       <form @submit.prevent="storeType()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -153,22 +153,22 @@
             v-model="createTypeForm.name"
             :input-type="'text'"
             :required="true"
-            :title="$t('settings.personalization_activity_type_modal_question')"
+            :title="t('settings.personalization_activity_type_modal_question')"
           />
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeCreateTypeModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a v-cy-name="'add-type-button'" class="btn btn-primary" href="" @click.prevent="storeType()">
-          {{ $t('app.save') }}
+          {{ t('app.save') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Update Activity Type -->
-    <monica-modal v-model="showUpdateTypeModal" :title="$t('settings.personalization_activity_type_modal_edit')">
+    <monica-modal v-model="showUpdateTypeModal" :title="t('settings.personalization_activity_type_modal_edit')">
       <form @submit.prevent="updateType()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -177,22 +177,22 @@
             v-model="updateTypeForm.name"
             :input-type="'text'"
             :required="true"
-            :title="$t('settings.personalization_activity_type_modal_question')"
+            :title="t('settings.personalization_activity_type_modal_question')"
           />
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeUpdateTypeModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a v-cy-name="'update-type-button'" class="btn btn-primary" href="" @click.prevent="updateType()">
-          {{ $t('app.update') }}
+          {{ t('app.update') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Delete Activiy type category -->
-    <monica-modal v-model="showDeleteCategoryModal" :title="$t('settings.personalization_activity_type_category_modal_delete')">
+    <monica-modal v-model="showDeleteCategoryModal" :title="t('settings.personalization_activity_type_category_modal_delete')">
       <form>
         <div v-if="errorMessage !== ''" class="form-error-message mb3">
           <div class="pa2">
@@ -203,22 +203,22 @@
         </div>
         <div class="mb4">
           <p class="mb2">
-            {{ $t('settings.personalization_activity_type_category_modal_delete_desc') }}
+            {{ t('settings.personalization_activity_type_category_modal_delete_desc') }}
           </p>
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteCategoryModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a v-cy-name="'delete-category-button'" class="btn btn-primary" href="" @click.prevent="destroyCategory()">
-          {{ $t('app.delete') }}
+          {{ t('app.delete') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Delete Activiy type  -->
-    <monica-modal v-model="showDeleteTypeModal" :title="$t('settings.personalization_activity_type_modal_delete')">
+    <monica-modal v-model="showDeleteTypeModal" :title="t('settings.personalization_activity_type_modal_delete')">
       <form>
         <div v-if="errorMessage !== ''" class="form-error-message mb3">
           <div class="pa2">
@@ -229,16 +229,16 @@
         </div>
         <div class="mb4">
           <p class="mb2">
-            {{ $t('settings.personalization_activity_type_modal_delete_desc') }}
+            {{ t('settings.personalization_activity_type_modal_delete_desc') }}
           </p>
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteTypeModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a v-cy-name="'delete-type-button'" class="btn btn-primary" href="" @click.prevent="destroyType()">
-          {{ $t('app.delete') }}
+          {{ t('app.delete') }}
         </a>
       </template>
     </monica-modal>

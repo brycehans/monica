@@ -22,7 +22,7 @@
         <span class="black-50 mr1 ml1">
           •
         </span>
-        {{ $t('people.gifts_for', { name: gift.recipient.complete_name }) }}
+        {{ t('people.gifts_for', { name: gift.recipient.complete_name }) }}
       </span>
     </p>
 
@@ -49,7 +49,7 @@
         •
       </span>
       <a v-if="gift.comment" class="pointer" href="" @click.prevent="comment = !comment">
-        {{ $t('people.gifts_view_comment') }}
+        {{ t('people.gifts_view_comment') }}
       </a>
       <div v-if="comment" class="mb1 mt1">
         {{ gift.comment }}
@@ -62,7 +62,7 @@
 
     <!-- MODAL ZOOM PHOTO -->
     <monica-modal v-model="showModalPhoto">
-      <img :src="url" :alt="$t('people.photo_title')" class="mw-90 h-auto mb3" />
+      <img :src="url" :alt="t('people.photo_title')" class="mw-90 h-auto mb3" />
     </monica-modal>
   </div>
 </template>
@@ -84,8 +84,8 @@ export default {
   },
 
   setup() {
-    const { locale } = useI18n();
-    return { locale };
+    const { t, locale } = useI18n();
+    return { t, locale };
   },
 
   data() {

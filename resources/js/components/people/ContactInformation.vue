@@ -3,22 +3,22 @@
     <div class="w-100 dt">
       <div class="sidebar-box-title">
         <h3>
-          {{ $t('people.contact_info_title') }}
+          {{ t('people.contact_info_title') }}
         </h3>
       </div>
       <div v-if="contactInformationData.length > 0" class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
         <a v-if="!editMode" class="pointer" href="" @click.prevent="editMode = true">
-          {{ $t('app.edit') }}
+          {{ t('app.edit') }}
         </a>
         <a v-else class="pointer" href="" @click.prevent="resetState">
-          {{ $t('app.done') }}
+          {{ t('app.done') }}
         </a>
       </div>
     </div>
 
     <p v-if="contactInformationData.length === 0 && !addMode" class="mb0">
       <a class="pointer" href="" @click.prevent="toggleAdd">
-        {{ $t('app.add') }}
+        {{ t('app.add') }}
       </a>
     </p>
 
@@ -51,17 +51,17 @@
               <form-input
                 id="contact-content"
                 v-model="updateForm.data"
-                :title="$t('people.contact_info_form_content')"
+                :title="t('people.contact_info_form_content')"
                 iclass="pa2 db w-100"
                 :input-type="'text'"
               />
             </div>
             <div class="lh-copy mt3">
               <a class="btn btn-primary" href="" @click.prevent="update(contactInformation)">
-                {{ $t('app.save') }}
+                {{ t('app.save') }}
               </a>
               <a class="btn" href="" @click.prevent="toggleEdit(contactInformation)">
-                {{ $t('app.cancel') }}
+                {{ t('app.cancel') }}
               </a>
             </div>
           </form>
@@ -69,7 +69,7 @@
       </li>
       <li v-if="editMode && !addMode">
         <a class="pointer" href="" @click.prevent="toggleAdd">
-          {{ $t('app.add') }}
+          {{ t('app.add') }}
         </a>
       </li>
     </ul>
@@ -78,8 +78,8 @@
       <form class="measure center" @submit.prevent="store">
         <div class="mt3">
           <label for="add-contact-type" class="db fw6 lh-copy f6">
-            {{ $t('people.contact_info_form_contact_type') }} <a class="fr normal" href="settings/personalization" target="_blank">
-              {{ $t('people.contact_info_form_personalize') }}
+            {{ t('people.contact_info_form_contact_type') }} <a class="fr normal" href="settings/personalization" target="_blank">
+              {{ t('people.contact_info_form_personalize') }}
             </a>
           </label>
           <select id="add-contact-type" v-model="createForm.contact_field_type_id" class="db w-100 h2">
@@ -90,16 +90,16 @@
         </div>
         <div class="mt3">
           <label class="db fw6 lh-copy f6">
-            {{ $t('people.contact_info_form_content') }}
+            {{ t('people.contact_info_form_content') }}
           </label>
           <input v-model="createForm.data" class="pa2 db w-100" type="text" />
         </div>
         <div class="lh-copy mt3">
           <a class="btn btn-primary" href="" @click.prevent="store">
-            {{ $t('app.add') }}
+            {{ t('app.add') }}
           </a>
           <a class="btn" href="" @click.prevent="resetState">
-            {{ $t('app.cancel') }}
+            {{ t('app.cancel') }}
           </a>
         </div>
       </form>

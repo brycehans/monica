@@ -9,42 +9,42 @@
 
 <template>
   <div>
-    <h3>{{ $t('settings.recovery_title') }}</h3>
+    <h3>{{ t('settings.recovery_title') }}</h3>
     <div class="form-group">
       <a class="btn btn-primary" href="" @click.prevent="showRecoveryModal">
-        {{ $t('settings.recovery_show') }}
+        {{ t('settings.recovery_show') }}
       </a>
     </div>
 
-    <monica-modal v-model="recoveryModalOpen" :title="$t('settings.recovery_title')">
+    <monica-modal v-model="recoveryModalOpen" :title="t('settings.recovery_title')">
       <notifications group="recovery" position="top middle" :duration="5000" width="400" />
 
-      <p>{{ $t('settings.recovery_help_intro') }}</p>
+      <p>{{ t('settings.recovery_help_intro') }}</p>
       <p :class="[ dirltr ? 'ml3' : 'mr3' ]">
         <span v-for="code in codes" :key="code.id" v-cy-name="'recovery-' + code.id">
           <pre class="code" :class="[ code.used ? 'used' : '' ]" :title="[ code.used ? usedHelp : '']">{{ code.recovery }}</pre>
         </span>
       </p>
-      <p>{{ $t('settings.recovery_help_information') }}</p>
+      <p>{{ t('settings.recovery_help_information') }}</p>
       <template #button>
         <span :class="[ dirltr ? 'fl' : 'fr' ]">
           <a class="btn" href="" @click.prevent="generateNewCodes">
-            {{ $t('settings.recovery_generate') }}
+            {{ t('settings.recovery_generate') }}
           </a>
           <br />
           <small class="form-text text-muted">
-            {{ $t('settings.recovery_generate_help') }}
+            {{ t('settings.recovery_generate_help') }}
           </small>
         </span>
         <span :class="[ dirltr ? 'fr' : 'fl' ]">
           <a class="btn btn-primary" :title="copyHelp" href="" @click.prevent="copyIntoClipboard">
-            {{ $t('app.copy') }}
+            {{ t('app.copy') }}
           </a>
           <!--
-            <a @click.prevent="download" class="btn" href="">{{ $t('app.download') }}</a>
+            <a @click.prevent="download" class="btn" href="">{{ t('app.download') }}</a>
             -->
           <a class="btn" href="" @click.prevent="closeRecoveryModal">
-            {{ $t('app.close') }}
+            {{ t('app.close') }}
           </a>
         </span>
       </template>

@@ -29,7 +29,7 @@
             <div class="pv3">
               <div class="flex-ns justify-between">
                 <button v-cy-name="'save-entry-button'" class="btn btn-primary w-auto-ns w-100 mb2 pb0-ns" @click="saveComment()">
-                  {{ $t('app.save') }}
+                  {{ t('app.save') }}
                 </button>
               </div>
             </div>
@@ -40,7 +40,7 @@
               {{ day.comment }}
             </p>
             <p v-if="!day.comment" class="mb2">
-              {{ $t('journal.journal_entry_rate') }}
+              {{ t('journal.journal_entry_rate') }}
             </p>
           </div>
 
@@ -109,16 +109,16 @@
           <div class="flex-none w-90 mt2 pt0 pr3 pb2">
             <ul class="f7">
               <li class="di">
-                {{ $t('journal.journal_entry_rate') }}
+                {{ t('journal.journal_entry_rate') }}
               </li>
               <li class="di">
                 <a v-cy-name="'entry-edit-button-' + journalEntry.id" class="pointer" :href="'journal/day/' + journalEntry.id + '/edit'" @click.prevent="editingComment">
-                  {{ $t('app.edit') }}
+                  {{ t('app.edit') }}
                 </a>
               </li>
               <li class="di">
                 <a v-cy-name="'entry-delete-button-' + journalEntry.id" class="pointer" href="" @click.prevent="destroy()">
-                  {{ $t('app.delete') }}
+                  {{ t('app.delete') }}
                 </a>
               </li>
             </ul>
@@ -130,6 +130,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   props: {
@@ -137,6 +139,11 @@ export default {
       type: Object,
       default: null,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

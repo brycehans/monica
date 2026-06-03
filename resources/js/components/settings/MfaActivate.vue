@@ -2,26 +2,26 @@
   <div>
     <notifications group="mfa" position="bottom right" :duration="5000" width="400" />
 
-    <h3>{{ $t('settings.2fa_otp_title') }}</h3>
+    <h3>{{ t('settings.2fa_otp_title') }}</h3>
 
     <div class="form-group">
       <a v-if="selectActivated" class="btn btn-warning" href="" @click.prevent="showDisableModal">
-        {{ $t('settings.2fa_disable_title') }}
+        {{ t('settings.2fa_disable_title') }}
       </a>
       <a v-else class="btn btn-primary" href="" @click.prevent="showEnableModal">
-        {{ $t('settings.2fa_enable_title') }}
+        {{ t('settings.2fa_enable_title') }}
       </a>
     </div>
 
-    <monica-modal v-model="enableModalOpen" :title="$t('settings.2fa_otp_title')">
+    <monica-modal v-model="enableModalOpen" :title="t('settings.2fa_otp_title')">
       <form @submit.prevent="register()">
-        <p>{{ $t('settings.2fa_enable_description') }}</p>
+        <p>{{ t('settings.2fa_enable_description') }}</p>
 
         <div class="panel-body">
-          {{ $t('settings.2fa_enable_otp') }}
+          {{ t('settings.2fa_enable_otp') }}
           <div v-html="image"></div>
           <p>
-            {{ $t('settings.2fa_enable_otp_help') }}
+            {{ t('settings.2fa_enable_otp_help') }}
             <code id="secretkey">
               {{ secret }}
             </code>
@@ -30,12 +30,12 @@
 
         <div class="form-group">
           <p>
-            {{ $t('settings.2fa_enable_otp_validate') }}
+            {{ t('settings.2fa_enable_otp_validate') }}
           </p>
           <form-input
             :id="'one_time_password1'"
             v-model="one_time_password"
-            :title="$t('auth.2fa_one_time_password')"
+            :title="t('auth.2fa_one_time_password')"
             :input-type="'number'"
             :width="100"
             :required="true"
@@ -44,23 +44,23 @@
       </form>
       <template #button>
         <a id="verify1" class="btn btn-primary" href="" @click.prevent="register()">
-          {{ $t('app.verify') }}
+          {{ t('app.verify') }}
         </a>
         <a class="btn" href="" @click.prevent="closeEnableModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
       </template>
     </monica-modal>
 
-    <monica-modal v-model="disableModalOpen" :title="$t('settings.2fa_otp_title')">
+    <monica-modal v-model="disableModalOpen" :title="t('settings.2fa_otp_title')">
       <form @submit.prevent="register()">
-        <p>{{ $t('settings.2fa_disable_description') }}</p>
+        <p>{{ t('settings.2fa_disable_description') }}</p>
 
         <div class="form-group">
           <form-input
             :id="'one_time_password2'"
             v-model="one_time_password"
-            :title="$t('auth.2fa_one_time_or_recuperation')"
+            :title="t('auth.2fa_one_time_or_recuperation')"
             :input-type="'text'"
             :width="100"
             :required="true"
@@ -69,10 +69,10 @@
       </form>
       <template #button>
         <a id="verify2" class="btn btn-primary" href="" @click.prevent="unregister()">
-          {{ $t('app.verify') }}
+          {{ t('app.verify') }}
         </a>
         <a class="btn" href="" @click.prevent="closeDisableModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
       </template>
     </monica-modal>

@@ -27,7 +27,7 @@
 <template>
   <div class="pa4-ns ph3 pv2 mb3 mb0-ns bb b--gray-monica">
     <p class="mb2 b">
-      {{ $t('people.conversation_add_what_was_said') }}
+      {{ t('people.conversation_add_what_was_said') }}
     </p>
     <div class="pa3 ba b--gray-monica br3 conversation-block">
       <div v-for="message in messages" :key="message.uid" class="relative">
@@ -45,7 +45,7 @@
       </div>
       <p class="tc mb0">
         <a class="btn btn-secondary pointer" href="" @click.prevent="addMessage">
-          {{ $t('people.conversation_add_another') }}
+          {{ t('people.conversation_add_another') }}
         </a>
       </p>
       <input type="hidden" name="messages" :value="messages.map(a => a.uid)" />
@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   props: {
@@ -65,6 +67,11 @@ export default {
       type: Array,
       default: () => [],
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

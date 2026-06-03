@@ -34,7 +34,7 @@ input[type=text]:focus {
     </ul>
     <div v-show="participants.length !== 0" class="ba b--gray-monica">
       <span class="db bb b--gray-monica pa2">
-        <input v-model="search" type="text" :placeholder="$t('app.filter')" class="br2 f5 w-100 ba b--black-20 pa2 outline-0" />
+        <input v-model="search" type="text" :placeholder="t('app.filter')" class="br2 f5 w-100 ba b--black-20 pa2 outline-0" />
       </span>
       <ul class="overflow-auto participant-list">
         <li v-for="fparticipant in filteredList"
@@ -50,6 +50,7 @@ input[type=text]:focus {
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 
 export default {
 
@@ -62,6 +63,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

@@ -3,9 +3,9 @@
     <notifications group="lifeEventTypes" position="bottom right" />
 
     <h3 class="with-actions">
-      {{ $t('settings.personalization_life_event_category_title') }}
+      {{ t('settings.personalization_life_event_category_title') }}
     </h3>
-    <p>{{ $t('settings.personalization_life_event_category_description') }}</p>
+    <p>{{ t('settings.personalization_life_event_category_description') }}</p>
 
     <div v-if="limited" class="mt3 mb3 form-information-message br2">
       <div class="pa3 flex">
@@ -16,7 +16,7 @@
             </g>
           </svg>
         </div>
-        <div v-html="$t('settings.personalisation_paid_upgrade_vue', {url: 'settings/subscriptions' })"></div>
+        <div v-html="t('settings.personalisation_paid_upgrade_vue', {url: 'settings/subscriptions' })"></div>
       </div>
     </div>
 
@@ -24,12 +24,12 @@
       <div class="dt-row">
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.personalization_live_event_category_table_name') }}
+            {{ t('settings.personalization_live_event_category_table_name') }}
           </div>
         </div>
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
           <div class="pa2 b">
-            {{ $t('settings.personalization_live_event_category_table_actions') }}
+            {{ t('settings.personalization_live_event_category_table_actions') }}
           </div>
         </div>
       </div>
@@ -42,7 +42,7 @@
           <div class="dt-row hover bb b--light-gray">
             <div class="dtc">
               <div class="pa2 b">
-                <strong>{{ $t('people.life_event_category_' + lifeEventCategory.default_life_event_category_key) }}</strong>
+                <strong>{{ t('people.life_event_category_' + lifeEventCategory.default_life_event_category_key) }}</strong>
               </div>
             </div>
             <div class="dtc">
@@ -55,7 +55,7 @@
                   {{ lifeEventType.name }}
                 </template>
                 <template v-else>
-                  {{ $t('people.life_event_sentence_' + lifeEventType.default_life_event_type_key) }}
+                  {{ t('people.life_event_sentence_' + lifeEventType.default_life_event_type_key) }}
                 </template>
               </div>
             </div>
@@ -72,7 +72,7 @@
                 <a class="pointer" href=""
                    @click.prevent="showCreateType(lifeEventCategory)"
                 >
-                  {{ $t('settings.personalization_life_event_type_add_button') }}
+                  {{ t('settings.personalization_life_event_type_add_button') }}
                 </a>
               </div>
             </div>
@@ -82,7 +82,7 @@
     </div>
 
     <!-- Create Life Event Type -->
-    <monica-modal v-model="showCreateTypeModal" :title="$t('settings.personalization_life_event_type_modal_add')">
+    <monica-modal v-model="showCreateTypeModal" :title="t('settings.personalization_life_event_type_modal_add')">
       <form @submit.prevent="storeType()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -91,22 +91,22 @@
             v-model="createTypeForm.name"
             :input-type="'text'"
             :required="true"
-            :title="$t('settings.personalization_life_event_type_modal_question')"
+            :title="t('settings.personalization_life_event_type_modal_question')"
           />
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeCreateTypeModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="storeType()">
-          {{ $t('app.save') }}
+          {{ t('app.save') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Update Life Event Type -->
-    <monica-modal v-model="showUpdateTypeModal" :title="$t('settings.personalization_life_event_type_modal_edit')">
+    <monica-modal v-model="showUpdateTypeModal" :title="t('settings.personalization_life_event_type_modal_edit')">
       <form @submit.prevent="updateType()">
         <div class="mb4">
           <p class="b mb2"></p>
@@ -115,22 +115,22 @@
             v-model="updateTypeForm.name"
             :input-type="'text'"
             :required="true"
-            :title="$t('settings.personalization_life_event_type_modal_question')"
+            :title="t('settings.personalization_life_event_type_modal_question')"
           />
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeUpdateTypeModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="updateType()">
-          {{ $t('app.update') }}
+          {{ t('app.update') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Delete Life Event type  -->
-    <monica-modal v-model="showDeleteTypeModal" :title="$t('settings.personalization_life_event_type_modal_delete')">
+    <monica-modal v-model="showDeleteTypeModal" :title="t('settings.personalization_life_event_type_modal_delete')">
       <form>
         <div v-if="errorMessage !== ''" class="form-error-message mb3">
           <div class="pa2">
@@ -141,16 +141,16 @@
         </div>
         <div class="mb4">
           <p class="mb2">
-            {{ $t('settings.personalization_life_event_type_modal_delete_desc') }}
+            {{ t('settings.personalization_life_event_type_modal_delete_desc') }}
           </p>
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteTypeModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="destroyType()">
-          {{ $t('app.delete') }}
+          {{ t('app.delete') }}
         </a>
       </template>
     </monica-modal>

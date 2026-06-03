@@ -58,7 +58,7 @@
       <h3 v-if="title" class="monica-modal__title">
         {{ title }}
       </h3>
-      <a v-if="!blocking" class="monica-modal__close pointer" href="" :aria-label="$t('app.close')" @click.prevent="$emit('update:modelValue', false)">&times;</a>
+      <a v-if="!blocking" class="monica-modal__close pointer" href="" :aria-label="t('app.close')" @click.prevent="$emit('update:modelValue', false)">&times;</a>
       <div class="monica-modal__body">
         <slot ></slot>
       </div>
@@ -70,6 +70,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import { VueFinalModal } from 'vue-final-modal';
 
 export default {
@@ -86,5 +87,10 @@ export default {
   },
 
   emits: ['update:modelValue', 'open', 'close'],
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
 };
 </script>

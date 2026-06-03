@@ -17,30 +17,30 @@
 <template>
   <div>
     <h3 class="mb3">
-      {{ $t('settings.api_personal_access_tokens') }}
+      {{ t('settings.api_personal_access_tokens') }}
       <a class="btn nt2" :class="[ dirltr ? 'fr' : 'fl' ]" href="" @click.prevent="showCreateTokenForm">
-        {{ $t('settings.api_token_create_new') }}
+        {{ t('settings.api_token_create_new') }}
       </a>
     </h3>
 
-    <p>{{ $t('settings.api_pao_description') }}</p>
+    <p>{{ t('settings.api_pao_description') }}</p>
 
     <!-- No Tokens Notice -->
     <p v-if="tokens.length === 0" class="mb0">
-      {{ $t('settings.api_token_not_created') }}
+      {{ t('settings.api_token_not_created') }}
     </p>
 
     <div v-else class="dt w-75 collapse br--top br--bottom">
-      <em>{{ $t('settings.api_token_title') }}</em>
+      <em>{{ t('settings.api_token_title') }}</em>
       <div class="dt-row">
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.api_token_name') }}
+            {{ t('settings.api_token_name') }}
           </div>
         </div>
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
           <div class="pa2 b">
-            {{ $t('settings.personalization_contact_field_type_table_actions') }}
+            {{ t('settings.personalization_contact_field_type_table_actions') }}
           </div>
         </div>
       </div>
@@ -48,14 +48,14 @@
       <div v-for="token in tokens" :key="token.id" class="dt-row bb b--light-gray">
         <!-- Client Name -->
         <div class="dtc">
-          <div v-tooltip="$t('settings.api_token_expire', { date: token.expires_at })" class="pa2">
+          <div v-tooltip="t('settings.api_token_expire', { date: token.expires_at })" class="pa2">
             {{ token.name }}
           </div>
         </div>
 
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
           <div class="pa2">
-            <span class="pointer" @click="revoke(token)">{{ $t('app.delete') }}</span>
+            <span class="pointer" @click="revoke(token)">{{ t('app.delete') }}</span>
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@
 
     <!-- Create Token Modal -->
     <monica-modal v-model="showModalCreateToken"
-                  :title="$t('settings.api_token_create')" @open="_focusInput"
+                  :title="t('settings.api_token_create')" @open="_focusInput"
     >
       <!-- Form Errors -->
       <form-errors :errors="form.errors" />
@@ -79,7 +79,7 @@
             :name="'name'"
             :iclass="'br2 f5 w-50 ba b--black-40 pa2 outline-0'"
             :required="true"
-            :title="$t('settings.api_token_name')"
+            :title="t('settings.api_token_name')"
             :validator="v$.form.name"
           />
         </div>
@@ -87,7 +87,7 @@
         <!-- Scopes -->
         <div v-if="scopes.length > 0" class="form-group">
           <label class="col-md-4 col-form-label">
-            {{ $t('settings.api_token_scopes') }}
+            {{ t('settings.api_token_scopes') }}
           </label>
 
           <div class="col-md-auto">
@@ -109,18 +109,18 @@
       <!-- Modal Actions -->
       <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
-          {{ $t('app.close') }}
+          {{ t('app.close') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="store">
-          {{ $t('app.create') }}
+          {{ t('app.create') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Access Token Modal -->
-    <monica-modal v-model="showModalAccessToken" :title="$t('settings.api_token_title')">
+    <monica-modal v-model="showModalAccessToken" :title="t('settings.api_token_title')">
       <notifications group="passport-personal-access-token" position="middle" :duration="5000" width="400" />
-      <p>{{ $t('settings.api_token_help') }}</p>
+      <p>{{ t('settings.api_token_help') }}</p>
 
       <div class="flex-auto access-key overflow-y-scroll" style="max-height: 400px;" @click.prevent="copyIntoClipboard(accessToken)">
         <pre><code>{{ accessToken }}</code></pre>
@@ -128,11 +128,11 @@
 
       <!-- Modal Actions -->
       <template #button>
-        <a class="btn btn-primary" :title="$t('settings.dav_copy_help')" href="" @click.prevent="copyIntoClipboard(accessToken)">
-          {{ $t('app.copy') }}
+        <a class="btn btn-primary" :title="t('settings.dav_copy_help')" href="" @click.prevent="copyIntoClipboard(accessToken)">
+          {{ t('app.copy') }}
         </a>
         <a class="btn" href="" @click.prevent="closeModal">
-          {{ $t('app.close') }}
+          {{ t('app.close') }}
         </a>
       </template>
     </monica-modal>

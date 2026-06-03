@@ -1,6 +1,6 @@
 <template>
   <div v-if="apierror || errors.length > 0" class="alert alert-danger">
-    <p>{{ $t('app.error_title') }}</p>
+    <p>{{ t('app.error_title') }}</p>
     <template v-if="apierror">
       <ul v-if="apimessage">
         <li v-for="error in errors[0].message" :key="error.id">
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
   name: 'FormErrors',
 
@@ -36,6 +38,12 @@ export default {
       default: () => [],
     },
   },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   computed: {
     apierror() {
       return _.isObject(this.errors[0]) && this.errors[0].error_code !== undefined;

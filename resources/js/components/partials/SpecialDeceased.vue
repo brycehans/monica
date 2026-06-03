@@ -12,7 +12,7 @@
         :dclass="'flex mb2'"
       >
         <template #label>
-          {{ $t('people.deceased_mark_person_deceased') }}
+          {{ t('people.deceased_mark_person_deceased') }}
         </template>
       </form-checkbox>
       <div v-show="deceased" :class="[ dirltr ? 'ml4' : 'mr4' ]">
@@ -24,7 +24,7 @@
           @change="_focusDate()"
         >
           <template #label>
-            {{ $t('people.deceased_know_date') }}
+            {{ t('people.deceased_know_date') }}
           </template>
         </form-checkbox>
         <div v-show="dateKnown" :class="[ dirltr ? 'ml4' : 'mr4' ]">
@@ -32,7 +32,7 @@
             :id="'deceased_date'"
             ref="deaceasedday"
             v-model="selectedDate"
-            :label="$t('people.deceased_date_label')"
+            :label="t('people.deceased_date_label')"
             :show-calendar-on-focus="true"
             :locale="locale"
             :validator="v$.selectedDate"
@@ -43,7 +43,7 @@
               :value="true"
               :model="reminder"
             >
-              {{ $t('people.deceased_add_reminder') }}
+              {{ t('people.deceased_add_reminder') }}
             </form-checkbox>
           </div>
         </div>
@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 import { useVuelidate } from '@vuelidate/core';
 import { required, numeric, helpers } from '@vuelidate/validators';
@@ -80,7 +81,10 @@ export default {
     },
   },
 
-  setup: () => ({ v$: useVuelidate() }),
+  setup() {
+    const { t } = useI18n();
+    return { v$: useVuelidate(), t };
+  },
 
   data() {
     return {

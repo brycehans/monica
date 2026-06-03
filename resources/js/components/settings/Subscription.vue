@@ -9,23 +9,23 @@
 
       <div v-if="paymentSucceeded">
         <h1 class="text-xl mt-2 mb-4 text-gray-700">
-          {{ $t('settings.subscriptions_payment_succeeded_title') }}
+          {{ t('settings.subscriptions_payment_succeeded_title') }}
         </h1>
         <p v-if="successMessage" class="mb-6">
           {{ successMessage }}
         </p>
         <p v-else class="mb-6">
-          {{ $t('settings.subscriptions_payment_succeeded') }}
+          {{ t('settings.subscriptions_payment_succeeded') }}
         </p>
       </div>
 
       <div v-else-if="paymentCancelled">
         <h1 class="text-xl mt-2 mb-4 text-gray-700">
-          {{ $t('settings.subscriptions_payment_cancelled_title') }}
+          {{ t('settings.subscriptions_payment_cancelled_title') }}
         </h1>
 
         <p class="mb-6">
-          {{ $t('settings.subscriptions_payment_cancelled') }}
+          {{ t('settings.subscriptions_payment_cancelled') }}
         </p>
       </div>
 
@@ -38,7 +38,7 @@
               :input-type="'text'"
               :iclass="'br3 b--black-30 ba pa3 w-100 f4'"
               :required="true"
-              :title="$t('settings.subscriptions_upgrade_name')"
+              :title="t('settings.subscriptions_upgrade_name')"
             />
           </div>
 
@@ -48,12 +48,12 @@
               v-model="zip"
               :input-type="'text'"
               :iclass="'br3 b--black-30 ba pa3 w-100 f4'"
-              :title="$t('settings.subscriptions_upgrade_zip')"
+              :title="t('settings.subscriptions_upgrade_zip')"
             />
           </div>
 
           <label for="card-element">
-            {{ $t('settings.subscriptions_upgrade_credit') }}
+            {{ t('settings.subscriptions_upgrade_credit') }}
           </label>
           <div id="card-element">
             <!-- a Stripe Element will be inserted here. -->
@@ -65,14 +65,14 @@
           class="btn btn-primary w-100 mt3"
           :disabled="paymentProcessing"
           @click.prevent="confirm ? confirmPayment() : subscribe()"
-          v-html="$t('settings.subscriptions_upgrade_submit', { amount: amount })"
+          v-html="t('settings.subscriptions_upgrade_submit', { amount: amount })"
         >
         </button>
       </div>
       <a v-if="paymentProcessed" :href="callback"
          class="btn btn-secondary w-100 tc"
       >
-        {{ $t('app.go_back') }}
+        {{ t('app.go_back') }}
       </a>
     </div>
     <input type="hidden" name="_token" :value="token" />
@@ -246,7 +246,7 @@ export default {
           // The card has been verified successfully...
           self.paymentProcessed = true;
           self.paymentSucceeded = true;
-          self.successMessage = self.$t('settings.subscriptions_payment_success');
+          self.successMessage = self.t('settings.subscriptions_payment_success');
           self.notify(self.successMessage, true);
           self.processPayment(result.setupIntent);
         }
@@ -282,7 +282,7 @@ export default {
         } else {
           self.paymentProcessed = true;
           self.paymentSucceeded = true;
-          self.successMessage = self.$t('settings.subscriptions_payment_success');
+          self.successMessage = self.t('settings.subscriptions_payment_success');
           self.notify(self.successMessage, true);
           setTimeout(function () {
             window.location = self.callback;

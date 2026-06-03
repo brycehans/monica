@@ -36,7 +36,7 @@
       <!-- edit button -->
       <li v-show="contactTags.length > 0" class="di">
         <a v-show="!editMode" class="pointer" href="" @click.prevent="enterEditMode">
-          {{ $t('app.edit') }}
+          {{ t('app.edit') }}
         </a>
       </li>
 
@@ -47,7 +47,7 @@
                  v-model="search"
                  type="text"
                  class="di br2 f5 ba b--black-40 pa2 outline-0"
-                 :placeholder="$t('people.tag_add_search')"
+                 :placeholder="t('people.tag_add_search')"
                  @keydown.down="onArrowDown"
                  @keydown.up="onArrowUp"
                  @keydown.enter="onEnter"
@@ -68,17 +68,17 @@
         </div>
 
         <a class="pointer" href="" @click.prevent="search = ''; editMode = false; isOpen = false;">
-          {{ $t('app.close') }}
+          {{ t('app.close') }}
         </a>
       </li>
 
       <!-- case of no tags -->
       <li v-show="contactTags.length === 0 && !editMode" class="di">
         <span class="i mr2">
-          {{ $t('people.tag_no_tags') }}
+          {{ t('people.tag_no_tags') }}
         </span>
         <a v-show="!editMode" class="pointer" href="" @click.prevent="enterEditMode">
-          {{ $t('people.tag_add') }}
+          {{ t('people.tag_add') }}
         </a>
       </li>
     </ul>
@@ -86,6 +86,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 
 export default {
@@ -98,6 +99,12 @@ export default {
       default: '',
     },
   },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   data() {
     return {
       allTags: [],
