@@ -39,26 +39,40 @@ export async function loginAsAdmin(page: Page): Promise<void> {
   await page.waitForURL('**/dashboard');
 }
 
-export type FreshUser = { userId: string; accountId: string };
+export type FreshUser = { userId: string; accountId: string; email: string };
 
 export async function loginAsFreshUser(page: Page): Promise<FreshUser> {
+  const user = await createFreshUser();
+  // /_dusk/login returns 200 with an empty body. Use page.request rather
+  // than page.goto so the empty / non-HTML response doesn't trip navigation;
+  // cookies still persist into the page context.
+  const response = await page.request.get(`/_dusk/login/${user.userId}`);
+  if (!response.ok()) {
+    throw new Error(`/_dusk/login/${user.userId} returned ${response.status()}`);
+  }
+  return user;
+}
+
+/**
+ * Mint a fresh user without driving the Dusk login bridge. Used by specs
+ * that need to act as a logged-out visitor (e.g. password reset).
+ */
+export async function createFreshUser(): Promise<FreshUser> {
   // PHP versions with display_errors=on interleave deprecation warnings with
   // the command's stdout; the user id is always the last non-empty line. See
   // #592 for the cypress equivalent that taught us this.
   const userId = lastLine(artisan('setup:frontendtestuser'));
-  // /_dusk/login returns 200 with an empty body. Use page.request rather
-  // than page.goto so the empty / non-HTML response doesn't trip navigation;
-  // cookies still persist into the page context.
-  const response = await page.request.get(`/_dusk/login/${userId}`);
-  if (!response.ok()) {
-    throw new Error(`/_dusk/login/${userId} returned ${response.status()}`);
-  }
-  // Look up the user's account_id so callers that need to setPremium on the
-  // isolated account can target it without falling back to admin.
-  const accountId = lastLine(
-    artisan('tinker', '--execute', `echo App\\Models\\User\\User::find(${userId})->account_id;`),
+  // Look up account_id + email so callers can target the isolated account
+  // and address it in flows that route through email (reset, verify, etc.).
+  const out = lastLine(
+    artisan(
+      'tinker',
+      '--execute',
+      `$u = App\\Models\\User\\User::find(${userId}); echo $u->account_id . '|' . $u->email;`,
+    ),
   );
-  return { userId, accountId };
+  const [accountId, email] = out.split('|');
+  return { userId, accountId, email };
 }
 
 function lastLine(stdout: string): string {

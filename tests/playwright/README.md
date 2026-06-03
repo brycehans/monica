@@ -20,6 +20,8 @@ Standalone Playwright suite for verifying the user-facing app. Two distinct sets
    - `audit-log.spec.ts` — contact-create surfaces in `/settings/auditlogs` (#731 A.3)
    - `account-export.spec.ts` — JSON + SQL export submit, complete, and download with the right filename (#731 A.4)
    - `account-import-vcard.spec.ts` — vCard upload lands an imported contact on `/people` (#731 A.5)
+   - `password-reset.spec.ts` — Mailhog-delivered reset token round-trips through `/password/reset` (#731 A.1)
+   - `email-verification.spec.ts` — Mailhog-delivered signed verify URL marks the account verified (#731 A.2)
 
 ## Why it's a separate suite
 
