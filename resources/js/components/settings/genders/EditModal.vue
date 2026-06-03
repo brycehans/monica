@@ -1,10 +1,10 @@
 <template>
   <monica-modal
     :model-value="modelValue"
-    :title="t('settings.personalization_genders_modal_add')"
+    :title="t('settings.personalization_genders_modal_edit')"
     @update:model-value="(v) => $emit('update:modelValue', v)"
   >
-    <form @submit.prevent="store">
+    <form @submit.prevent="update">
       <div class="form-group">
         <div class="form-group">
           <form-input
@@ -45,8 +45,8 @@
       <a class="btn" href="" @click.prevent="cancel">
         {{ t('app.cancel') }}
       </a>
-      <a class="btn btn-primary" href="" @click.prevent="store">
-        {{ t('app.save') }}
+      <a class="btn btn-primary" href="" @click.prevent="update">
+        {{ t('app.update') }}
       </a>
     </template>
   </monica-modal>
@@ -55,16 +55,17 @@
 <script>
 import { useI18n } from 'vue-i18n';
 
-// useModal()/ModalsContainer drive open/close via the modelValue prop.
-// We forward that to MonicaModal and emit update:modelValue back out so
-// ModalsContainer learns when the user dismisses the modal — without that
-// link useModal() thinks the modal is still open, keepAlive=false never
-// destroys the instance, and the next open() shows stale data.
+// See genders/CreateModal.vue for the modelValue contract rationale.
+// Re-mount each open is critical here: form is initialized from `gender`
+// in data(), so the parent's patchOptions({ attrs: { gender } }) only
+// produces the right form state when the SFC actually remounts. The
+// update:modelValue=false on cancel/save is what lets useModal() splice
+// this entry out of dynamicModals so the next open() gets a fresh mount.
 export default {
   props: {
     modelValue: { type: Boolean, default: false },
+    gender: { type: Object, required: true },
     genderTypes: { type: Array, default: () => [] },
-    defaultGenderType: { type: Object, default: null },
   },
 
   emits: ['update:modelValue', 'saved'],
@@ -77,9 +78,10 @@ export default {
   data() {
     return {
       form: {
-        name: '',
-        type: this.defaultGenderType?.type ?? '',
-        isDefault: false,
+        id: this.gender.id.toString(),
+        name: this.gender.name,
+        type: this.gender.type,
+        isDefault: this.gender.isDefault,
         errors: [],
       },
     };
@@ -98,8 +100,8 @@ export default {
     cancel() {
       this.$emit('update:modelValue', false);
     },
-    store() {
-      return axios.post('settings/personalization/genders', this.form)
+    update() {
+      return axios.put('settings/personalization/genders/' + this.form.id, this.form)
         .then(() => {
           this.$emit('saved');
           this.$emit('update:modelValue', false);
