@@ -18,40 +18,40 @@
     <notifications group="passport-clients" position="top middle" :duration="5000" width="400" />
 
     <h3 class="mb3">
-      {{ $t('settings.api_oauth_clients') }}
+      {{ t('settings.api_oauth_clients') }}
       <a class="btn nt2" :class="[ dirltr ? 'fr' : 'fl' ]" href="" @click.prevent="showCreateClientForm">
-        {{ $t('settings.api_oauth_create_new') }}
+        {{ t('settings.api_oauth_create_new') }}
       </a>
     </h3>
-    <p>{{ $t('settings.api_oauth_clients_desc') }}</p>
-    <p v-html="$t('settings.api_oauth_clients_desc2', { url: 'https://laravel.com/docs/master/passport#requesting-tokens' })"></p>
+    <p>{{ t('settings.api_oauth_clients_desc') }}</p>
+    <p v-html="t('settings.api_oauth_clients_desc2', { url: 'https://laravel.com/docs/master/passport#requesting-tokens' })"></p>
 
     <!-- Current Clients -->
     <p v-if="clients.length === 0" class="mb0">
-      {{ $t('settings.api_oauth_not_created') }}
+      {{ t('settings.api_oauth_not_created') }}
     </p>
 
     <div v-else class="dt w-100 collapse br--top br--bottom">
-      <em>{{ $t('settings.api_oauth_title') }}</em>
+      <em>{{ t('settings.api_oauth_title') }}</em>
       <div class="dt-row">
         <div class="dtc w-20">
           <div class="pa2 b">
-            {{ $t('settings.api_oauth_clientid') }}
+            {{ t('settings.api_oauth_clientid') }}
           </div>
         </div>
         <div class="dtc w-20">
           <div class="pa2 b">
-            {{ $t('settings.api_oauth_name') }}
+            {{ t('settings.api_oauth_name') }}
           </div>
         </div>
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.api_oauth_secret') }}
+            {{ t('settings.api_oauth_secret') }}
           </div>
         </div>
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
           <div class="pa2 b">
-            {{ $t('settings.personalization_contact_field_type_table_actions') }}
+            {{ t('settings.personalization_contact_field_type_table_actions') }}
           </div>
         </div>
       </div>
@@ -76,7 +76,7 @@
           <div class="pa2 flex flex-auto">
             <code dir="ltr">{{ client.secret }}</code>
             <em class="fa fa-clipboard pointer" :class="[ dirltr ? 'ml2' : 'mr2' ]"
-                :title="$t('settings.dav_copy_help')"
+                :title="t('settings.dav_copy_help')"
                 @click="copyIntoClipboard(client.secret)"
             ></em>
           </div>
@@ -93,7 +93,7 @@
 
     <!-- Create Client Modal -->
     <monica-modal v-model="showModalClient"
-                  :title="form.id ? $t('settings.api_oauth_edit') : $t('settings.api_oauth_create')"
+                  :title="form.id ? t('settings.api_oauth_edit') : t('settings.api_oauth_create')"
                   @open="_focusInput"
     >
       <!-- Form Errors -->
@@ -110,13 +110,13 @@
               v-model="form.name"
               :iclass="'br2 f5 w-50 ba b--black-40 pa2 outline-0'"
               :required="true"
-              :title="$t('settings.api_oauth_name')"
+              :title="t('settings.api_oauth_name')"
               :validator="v$.form.name"
               @submit="store"
             />
 
             <span class="help-block">
-              {{ $t('settings.api_oauth_name_help') }}
+              {{ t('settings.api_oauth_name_help') }}
             </span>
           </div>
         </div>
@@ -129,13 +129,13 @@
               v-model="form.redirect"
               :iclass="'br2 f5 w-50 ba b--black-40 pa2 outline-0'"
               :required="true"
-              :title="$t('settings.api_oauth_redirecturl')"
+              :title="t('settings.api_oauth_redirecturl')"
               :validator="v$.form.redirect"
               @submit="store"
             />
 
             <span class="help-block">
-              {{ $t('settings.api_oauth_redirecturl_help') }}
+              {{ t('settings.api_oauth_redirecturl_help') }}
             </span>
           </div>
         </div>
@@ -144,10 +144,10 @@
       <!-- Modal Actions -->
       <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
-          {{ $t('app.close') }}
+          {{ t('app.close') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="store">
-          {{ form.id ? $t('app.save') : $t('app.create') }}
+          {{ form.id ? t('app.save') : t('app.create') }}
         </a>
       </template>
     </monica-modal>
@@ -159,9 +159,9 @@
       access-token one-shot pattern.
     -->
     <monica-modal v-model="showModalClientSecret"
-                  :title="$t('settings.api_oauth_secret_title')"
+                  :title="t('settings.api_oauth_secret_title')"
     >
-      <p>{{ $t('settings.api_oauth_secret_help') }}</p>
+      <p>{{ t('settings.api_oauth_secret_help') }}</p>
 
       <div class="flex-auto access-key overflow-y-scroll" cy-name="client-secret-display"
            style="max-height: 400px;" @click.prevent="copyIntoClipboard(clientSecret)"
@@ -170,13 +170,13 @@
       </div>
 
       <template #button>
-        <a class="btn btn-primary" :title="$t('settings.dav_copy_help')" href=""
+        <a class="btn btn-primary" :title="t('settings.dav_copy_help')" href=""
            @click.prevent="copyIntoClipboard(clientSecret)"
         >
-          {{ $t('app.copy') }}
+          {{ t('app.copy') }}
         </a>
         <a class="btn" href="" @click.prevent="closeSecretModal">
-          {{ $t('app.close') }}
+          {{ t('app.close') }}
         </a>
       </template>
     </monica-modal>

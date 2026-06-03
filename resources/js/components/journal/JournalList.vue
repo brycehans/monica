@@ -13,31 +13,31 @@
       <div class="filter mb-4">
         <div class="d-flex pb-2">
           <div class="dt">
-            <label for="start-date">{{ $t('journal.start_date') }}:</label>
+            <label for="start-date">{{ t('journal.start_date') }}:</label>
             <input id="start-date" v-model="startDate" type="date" class="form-control" />
           </div>
           <div class="dt pl-2">
-            <label for="end-date py-2">{{ $t('journal.end_date') }}:</label>
+            <label for="end-date py-2">{{ t('journal.end_date') }}:</label>
             <input id="end-date" v-model="endDate" type="date" class="form-control" />
           </div>
           <div class="dt pl-2">
-            <label for="per-page">{{ $t('journal.per_page') }}:</label>
+            <label for="per-page">{{ t('journal.per_page') }}:</label>
             <input id="per-page" v-model="perPage" type="number" class="form-control" />
           </div>
           <div class="dt pl-2">
-            <label for="sort-order">{{ $t('journal.sort_order') }} :</label>
+            <label for="sort-order">{{ t('journal.sort_order') }} :</label>
             <select id="sort-order" v-model="sortOrder" class="form-control">
               <option value="asc">
-                {{ $t('journal.ascending') }}
+                {{ t('journal.ascending') }}
               </option>
               <option value="desc">
-                {{ $t('journal.descending') }}
+                {{ t('journal.descending') }}
               </option>
             </select>
           </div>
         </div>
         <button class="btn btn-primary" @click="getEntries">
-          {{ $t('journal.apply_filter') }}
+          {{ t('journal.apply_filter') }}
         </button>
       </div>
 
@@ -71,10 +71,10 @@
       >
         <p class="mb0 pointer" @click="loadMore()">
           <span v-if="!loadingMore">
-            {{ $t('app.load_more') }}
+            {{ t('app.load_more') }}
           </span>
           <span v-else class="black-50">
-            {{ $t('app.loading') }}
+            {{ t('app.loading') }}
           </span>
         </p>
       </div>
@@ -83,27 +83,34 @@
            class="br3 ba b--gray-monica bg-white pr3 pb3 pt3 mb3 tc"
       >
         <div class="tc mb4">
-          <img src="/img/journal/blank.svg" :alt="$t('journal.journal_empty')" />
+          <img src="/img/journal/blank.svg" :alt="t('journal.journal_empty')" />
         </div>
         <h3>
-          {{ $t('journal.journal_blank_cta') }}
+          {{ t('journal.journal_blank_cta') }}
         </h3>
-        <p>{{ $t('journal.journal_blank_description') }}</p>
+        <p>{{ t('journal.journal_blank_description') }}</p>
       </div>
     </div>
 
     <!-- Right sidebar -->
     <div :class="[dirltr ? 'fl' : 'fr']" class="w-30-ns w-100 pa2">
       <a v-cy-name="'add-entry-button'" href="journal/add" class="btn btn-primary w-100 mb4">
-        {{ $t('journal.journal_add') }}
+        {{ t('journal.journal_add') }}
       </a>
-      <p>{{ $t('journal.journal_description') }}</p>
+      <p>{{ t('journal.journal_description') }}</p>
     </div>
   </div>
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   data() {
     return {
       journalEntries: [],

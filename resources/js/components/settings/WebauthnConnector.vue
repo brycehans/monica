@@ -9,7 +9,7 @@
     <notifications group="webauthn" position="top middle" :duration="5000" width="400" />
 
     <div v-if="method === 'register-modal'">
-      <h3>{{ $t('settings.webauthn_title') }}</h3>
+      <h3>{{ t('settings.webauthn_title') }}</h3>
 
       <div v-if="currentkeys !== null">
         <ul class="table">
@@ -22,12 +22,12 @@
             </div>
             <div class="table-cell time w-50">
               <template v-if="key.counter > 0">
-                {{ $t('settings.webauthn_last_use', {timestamp: formatTime(key.updated_at)}) }}
+                {{ t('settings.webauthn_last_use', {timestamp: formatTime(key.updated_at)}) }}
               </template>
             </div>
             <div class="table-cell actions">
               <a class="pointer" href="" @click.prevent="showDeleteModal(key.id)">
-                {{ $t('app.delete') }}
+                {{ t('app.delete') }}
               </a>
             </div>
           </li>
@@ -37,7 +37,7 @@
       <slot></slot>
 
       <a v-if="isSupported" class="btn btn-primary" href="" @click.prevent="showRegisterModal">
-        {{ $t('settings.webauthn_enable_description') }}
+        {{ t('settings.webauthn_enable_description') }}
       </a>
       <small v-else>
         {{ notSupportedMessage() }}
@@ -45,16 +45,16 @@
 
 
       <monica-modal v-model="registerModalOpen"
-                    :title="$t('settings.webauthn_title')"
+                    :title="t('settings.webauthn_title')"
       >
         <div v-if="registerTab === '1'">
           <p>
-            {{ $t('settings.webauthn_key_name_help') }}
+            {{ t('settings.webauthn_key_name_help') }}
           </p>
           <form-input
             :id="'keyName'"
             v-model="keyName"
-            :title="$t('settings.webauthn_key_name')"
+            :title="t('settings.webauthn_key_name')"
             :value="keyName"
             :input-type="'text'"
             :width="150"
@@ -70,7 +70,7 @@
               </p>
               <p>
                 <a href="" @click.prevent="startRegister()">
-                  {{ $t('app.retry') }}
+                  {{ t('app.retry') }}
                 </a>
               </p>
             </div>
@@ -85,30 +85,30 @@
 
           <div v-if="errorMessage === ''" class="tc">
             <img src="https://ssl.gstatic.com/accounts/strongauth/Challenge_2SV-Gnubby_graphic.png"
-                 :alt="$t('settings.webauthn_insertKey')"
+                 :alt="t('settings.webauthn_insertKey')"
             />
           </div>
 
           <div v-if="errorMessage === ''" class="pa2">
             <p>
-              {{ $t('settings.webauthn_insertKey') }}
+              {{ t('settings.webauthn_insertKey') }}
             </p>
             <p>
-              {{ $t('settings.webauthn_buttonAdvise') }}
+              {{ t('settings.webauthn_buttonAdvise') }}
               <br />
-              {{ $t('settings.webauthn_noButtonAdvise') }}
+              {{ t('settings.webauthn_noButtonAdvise') }}
             </p>
           </div>
         </div>
         <template #button>
           <a v-if="registerTab === '1'" class="btn" href="" @click.prevent="showRegisterModalTab('2');startRegister();">
-            {{ $t('pagination.next') }}
+            {{ t('pagination.next') }}
           </a>
           <a v-else class="btn" href="" @click.prevent="showRegisterModalTab('1')">
-            {{ $t('pagination.previous') }}
+            {{ t('pagination.previous') }}
           </a>
           <a class="btn" href="" @click.prevent="closeRegisterModal()">
-            {{ $t('app.cancel') }}
+            {{ t('app.cancel') }}
           </a>
         </template>
       </monica-modal>
@@ -121,7 +121,7 @@
           </p>
           <p>
             <a href="" @click.prevent="start()">
-              {{ $t('app.retry') }}
+              {{ t('app.retry') }}
             </a>
           </p>
         </div>
@@ -136,18 +136,18 @@
 
       <div class="tc">
         <img src="https://ssl.gstatic.com/accounts/strongauth/Challenge_2SV-Gnubby_graphic.png"
-             :alt="$t('settings.webauthn_insertKey')"
+             :alt="t('settings.webauthn_insertKey')"
         />
       </div>
 
       <div class="pa2">
         <p>
-          {{ $t('settings.webauthn_insertKey') }}
+          {{ t('settings.webauthn_insertKey') }}
         </p>
         <p>
-          {{ $t('settings.webauthn_buttonAdvise') }}
+          {{ t('settings.webauthn_buttonAdvise') }}
           <br />
-          {{ $t('settings.webauthn_noButtonAdvise') }}
+          {{ t('settings.webauthn_noButtonAdvise') }}
         </p>
       </div>
     </div>
@@ -155,15 +155,15 @@
     <monica-modal v-model="showDelete" title="Remove a key">
       <form>
         <div class="mb4">
-          {{ $t('settings.webauthn_delete_confirmation') }}
+          {{ t('settings.webauthn_delete_confirmation') }}
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn" href="" @click.prevent="webauthnRemove(keyToTrash)">
-          {{ $t('app.delete') }}
+          {{ t('app.delete') }}
         </a>
       </template>
     </monica-modal>
@@ -356,7 +356,7 @@ export default {
         .then(response => {
           self.currentkeys.splice(self.currentkeys.indexOf(self.currentkeys.find(item => item.id === response.data.id)), 1);
           self.success = true;
-          self.notify(self.$t('settings.webauthn_delete_success'), true);
+          self.notify(self.t('settings.webauthn_delete_success'), true);
           self.closeDeleteModal();
         }).catch(error => {
           self.errorMessage = error.response.data.message;

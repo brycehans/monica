@@ -20,7 +20,7 @@
             :color="'success'"
             :full-class="'p-default p-fill p-curve'"
           >
-            {{ $t('people.gifts_add_gift_idea') }}
+            {{ t('people.gifts_add_gift_idea') }}
           </form-radio>
 
           <form-radio
@@ -32,7 +32,7 @@
             :color="'info'"
             :full-class="'p-default p-fill p-curve'"
           >
-            {{ $t('people.gifts_add_gift_already_offered') }}
+            {{ t('people.gifts_add_gift_already_offered') }}
           </form-radio>
 
           <form-radio
@@ -44,7 +44,7 @@
             :color="'warning'"
             :full-class="'p-default p-fill p-curve'"
           >
-            {{ $t('people.gifts_add_gift_received') }}
+            {{ t('people.gifts_add_gift_received') }}
           </form-radio>
         </div>
 
@@ -57,7 +57,7 @@
             :maxlength="255"
             :required="true"
             :class="'dtc pr2'"
-            :title="$t('people.gifts_add_gift_name')"
+            :title="t('people.gifts_add_gift_name')"
             :validator="v$.newGift.name"
             @submit="store"
           />
@@ -67,22 +67,22 @@
         <div v-show="displayMenu" class="bb b--gray-monica pv3 mb3">
           <ul class="list">
             <li v-show="!displayComment" class="di pointer" :class="dirltr ? 'mr3' : 'ml3'">
-              <a href="" @click.prevent="displayComment = true">{{ $t('people.gifts_add_comment') }}</a>
+              <a href="" @click.prevent="displayComment = true">{{ t('people.gifts_add_comment') }}</a>
             </li>
             <li v-show="!displayUrl" class="di pointer" :class="dirltr ? 'mr3' : 'ml3'">
-              <a href="" @click.prevent="displayUrl = true">{{ $t('people.gifts_add_link') }}</a>
+              <a href="" @click.prevent="displayUrl = true">{{ t('people.gifts_add_link') }}</a>
             </li>
             <li v-show="!displayAmount" class="di pointer" :class="dirltr ? 'mr3' : 'ml3'">
-              <a href="" @click.prevent="displayAmount = true; newGift.amount = 0;">{{ $t('people.gifts_add_value') }}</a>
+              <a href="" @click.prevent="displayAmount = true; newGift.amount = 0;">{{ t('people.gifts_add_value') }}</a>
             </li>
             <li v-if="familyContacts.length > 0" v-show="!displayRecipient" class="di pointer" :class="dirltr ? 'mr3' : 'ml3'">
-              <a href="" @click.prevent="displayRecipient = true">{{ $t('people.gifts_add_recipient') }}</a>
+              <a href="" @click.prevent="displayRecipient = true">{{ t('people.gifts_add_recipient') }}</a>
             </li>
             <li v-if="!reachLimit" v-show="!displayUpload" class="di pointer" :class="dirltr ? 'mr3' : 'ml3'">
-              <a href="" @click.prevent="() => { displayUpload = true; $refs.upload.showUploadZone(); }">{{ $t('people.gifts_add_photo') }}</a>
+              <a href="" @click.prevent="() => { displayUpload = true; $refs.upload.showUploadZone(); }">{{ t('people.gifts_add_photo') }}</a>
             </li>
             <li v-show="!displayDate" class="di pointer" :class="dirltr ? 'mr3' : 'ml3'">
-              <a href="" @click.prevent="displayDate = true">{{ $t('people.gifts_add_date') }}</a>
+              <a href="" @click.prevent="displayDate = true">{{ t('people.gifts_add_date') }}</a>
             </li>
           </ul>
         </div>
@@ -94,7 +94,7 @@
             v-model="newGift.comment"
             :input-type="'text'"
             :class="'dtc pr2'"
-            :title="$t('people.gifts_add_comment')"
+            :title="t('people.gifts_add_comment')"
             @submit="store"
           />
         </div>
@@ -106,7 +106,7 @@
             v-model="newGift.url"
             :input-type="'text'"
             :class="'dtc pr2'"
-            :title="$t('people.gifts_add_link')"
+            :title="t('people.gifts_add_link')"
             :placeholder="'https://'"
             @submit="store"
           />
@@ -120,7 +120,7 @@
             :show-calendar-on-focus="true"
             :locale="locale"
             :class="[ dirltr ? 'fl dtc pr2' : 'fr dtc pr2' ]"
-            :label="$t('people.gifts_add_date')"
+            :label="t('people.gifts_add_date')"
             @submit="store"
           />
         </div>
@@ -132,7 +132,7 @@
             v-model="newGift.amount"
             :input-type="'number'"
             :class="'dtc pr2'"
-            :title="$t('people.gifts_add_value')"
+            :title="t('people.gifts_add_value')"
             :required="displayAmount"
             step=".01"
             @submit="store"
@@ -146,12 +146,12 @@
             :name="'has_recipient'"
             @change="(val) => { if (val) { $refs.recipient.focus() } }"
           >
-            {{ $t('people.gifts_add_someone', {name: ''}) }}
+            {{ t('people.gifts_add_someone', {name: ''}) }}
           </form-checkbox>
           <form-select
             ref="recipient"
             v-model="newGift.recipient_id"
-            :label="$t('people.gifts_add_recipient_field')"
+            :label="t('people.gifts_add_recipient_field')"
             :options="familyContacts"
             :validator="v$.newGift.recipient_id"
             @input="hasRecipient = true"
@@ -160,7 +160,7 @@
 
         <div v-show="displayUpload" class="dt dt--fixed pb3 mb3 bb b--gray-monica">
           <span class="mb2 b">
-            {{ $t('people.gifts_add_photo_title') }}
+            {{ t('people.gifts_add_photo_title') }}
           </span>
 
           <photo-upload
@@ -184,7 +184,7 @@
                     <ul>
                       <li>
                         <a class="pointer" href="" @click.prevent="deletePhoto(photo)">
-                          {{ $t('people.photo_delete') }}
+                          {{ t('people.photo_delete') }}
                         </a>
                       </li>
                     </ul>
@@ -192,7 +192,7 @@
                 </div>
                 <div v-else class="ba br3 photo-upload-zone mb3 pa3">
                   <div class="tc dib w-100 relative">
-                    {{ $t('app.file_selected', {count: photos.length}, photos.length) }}
+                    {{ t('app.file_selected', {count: photos.length}, photos.length) }}
                   </div>
                 </div>
               </div>
@@ -207,12 +207,12 @@
           <div class="flex-ns justify-between">
             <div class="">
               <a class="btn btn-secondary tc w-auto-ns w-100 mb2 pb0-ns" @click.prevent="close">
-                {{ $t('app.cancel') }}
+                {{ t('app.cancel') }}
               </a>
             </div>
             <div class="">
               <button class="btn btn-primary w-auto-ns w-100 mb2 pb0-ns" @click.prevent="store">
-                {{ gift ? $t('app.update') : $t('app.add') }}
+                {{ gift ? t('app.update') : t('app.add') }}
               </button>
             </div>
           </div>

@@ -5,7 +5,7 @@
 
     <!-- Right column: showing logs -->
     <div :class="[ dirltr ? 'fl' : 'fr' ]" class="journal-calendar-content">
-      <div v-tooltip.top="$t('journal.journal_created_at', { date: entry.created_at })"
+      <div v-tooltip.top="t('journal.journal_created_at', { date: entry.created_at })"
            class="br3 ba b--gray-monica bg-white pr3 pb3 pt3 mb3 journal-line"
       >
         <div class="flex">
@@ -23,7 +23,7 @@
           <div class="flex-auto">
             <p class="mb1">
               <span class="pr2 f6 avenir">
-                {{ $t('journal.journal_entry_type_journal') }}
+                {{ t('journal.journal_entry_type_journal') }}
               </span>
             </p>
             <h3 class="mb1">
@@ -35,12 +35,12 @@
             <ul class="f7">
               <li class="di">
                 <a v-cy-name="'entry-edit-button-' + entry.id" class="pointer" :href="'journal/entries/' + entry.id + '/edit'">
-                  {{ $t('app.edit') }}
+                  {{ t('app.edit') }}
                 </a>
               </li>
               <li class="di">
-                <confirm v-cy-name="'entry-delete-button-' + entry.id" :message="$t('journal.delete_confirmation')" @confirm="trash()">
-                  {{ $t('app.delete') }}
+                <confirm v-cy-name="'entry-delete-button-' + entry.id" :message="t('journal.delete_confirmation')" @confirm="trash()">
+                  {{ t('app.delete') }}
                 </confirm>
               </li>
             </ul>
@@ -52,6 +52,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import Confirm from '../../partials/Confirm.vue';
 
 export default {
@@ -65,6 +66,11 @@ export default {
       type: Object,
       default: null,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

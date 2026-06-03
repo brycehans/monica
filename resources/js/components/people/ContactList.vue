@@ -41,16 +41,16 @@
         page: 1,
         perPageDropdown: perPageDropdown,
         mode: 'pages',
-        nextLabel: $t('people.people_search_next'),
-        prevLabel: $t('people.people_search_prev'),
-        rowsPerPageLabel: $t('people.people_search_rows_per_page'),
-        ofLabel: $t('people.people_search_of'),
-        pageLabel: $t('people.people_search_page'),
-        allLabel: $t('people.people_search_all'),
+        nextLabel: t('people.people_search_next'),
+        prevLabel: t('people.people_search_prev'),
+        rowsPerPageLabel: t('people.people_search_rows_per_page'),
+        ofLabel: t('people.people_search_of'),
+        pageLabel: t('people.people_search_page'),
+        allLabel: t('people.people_search_all'),
       }"
       :search-options="{
         enabled: true,
-        placeholder: $t('people.people_search'),
+        placeholder: t('people.people_search'),
       }"
       @page-change="onPageChange"
       @per-page-change="onPerPageChange"
@@ -59,10 +59,10 @@
     >
       <template #emptystate>
         <div v-if="!ready" class="vgt-center-align vgt-text-disabled h3">
-          {{ $t('app.loading') }}
+          {{ t('app.loading') }}
         </div>
         <div v-else class="vgt-center-align vgt-text-disabled h3">
-          {{ $t('people.people_search_no_results') }}
+          {{ t('people.people_search_no_results') }}
         </div>
       </template>
       <template #table-row="props">

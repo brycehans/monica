@@ -2,14 +2,14 @@
   <div>
     <div class="ph4 pv3 mb3 mb0-ns bb b--gray-monica">
       <label for="event-name" class="mr2">
-        {{ $t('people.life_event_create_default_title') }}
+        {{ t('people.life_event_create_default_title') }}
       </label>
       <input id="event-name" v-model="defaultEvent.name" autofocus class="br2 f5 w-100 ba b--black-40 pa2 outline-0" @input="broadcastContentChange" />
     </div>
 
     <div class="ph4 pv3 mb3 mb0-ns bb b--gray-monica">
       <label for="description" class="mr2">
-        {{ $t('people.life_event_create_default_story') }}
+        {{ t('people.life_event_create_default_story') }}
       </label>
       <form-textarea
         id="description"
@@ -17,7 +17,7 @@
         :required="false"
         :no-label="true"
         :rows="4"
-        :placeholder="$t('people.life_event_create_default_description')"
+        :placeholder="t('people.life_event_create_default_description')"
         @input="broadcastContentChange"
       />
     </div>
@@ -25,9 +25,15 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 
 export default {
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   data() {
     return {
       defaultEvent: {

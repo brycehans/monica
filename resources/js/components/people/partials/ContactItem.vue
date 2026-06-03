@@ -75,12 +75,14 @@
     <div class="avatar avatar-initials avatar-new">
       +
     </div>
-    {{ $t('people.people_add_new') }}
+    {{ t('people.people_add_new') }}
     <span></span>
   </div>
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
   props: {
     item: {
@@ -97,6 +99,12 @@ export default {
       default: 'avatar',
     }
   },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   data() {
     return {
       check: true,

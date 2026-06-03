@@ -18,13 +18,13 @@
         <!-- RATE BOX -->
         <div class="flex items-center">
           <div class="fl w-70 f3 pl2">
-            {{ $t('journal.journal_rate') }}
+            {{ t('journal.journal_rate') }}
           </div>
           <div class="w-30">
             <div class="flex items-center h-100">
               <div class="flex-none w-100" :class="[ dirltr ? 'tr' : 'tl' ]">
                 <button type="button"
-                     :aria-label="$t('journal.journal_rate_sad')"
+                     :aria-label="t('journal.journal_rate_sad')"
                      :aria-pressed="day.rate === 1"
                      class="pointer bn bg-transparent pa0"
                      @click="showComment(1)"
@@ -70,7 +70,7 @@
                 </button>
 
                 <button type="button"
-                     :aria-label="$t('journal.journal_rate_medium')"
+                     :aria-label="t('journal.journal_rate_medium')"
                      :aria-pressed="day.rate === 2"
                      class="pointer bn bg-transparent pa0"
                      @click="showComment(2)"
@@ -116,7 +116,7 @@
                 </button>
 
                 <button type="button"
-                     :aria-label="$t('journal.journal_rate_happy')"
+                     :aria-label="t('journal.journal_rate_happy')"
                      :aria-pressed="day.rate === 3"
                      class="pointer bn bg-transparent pa0"
                      @click="showComment(3)"
@@ -173,20 +173,20 @@
             :id="'comment'"
             v-model="day.comment"
             :required="false"
-            :label="$t('journal.journal_add_comment')"
+            :label="t('journal.journal_add_comment')"
             :rows="4"
-            :placeholder="$t('people.life_event_create_default_description')"
+            :placeholder="t('people.life_event_create_default_description')"
           />
           <div class="pv3">
             <div class="flex-ns justify-between">
               <div>
                 <a class="btn btn-secondary tc w-auto-ns w-100 mb2 pb0-ns" href="" @click.prevent="dismiss()">
-                  {{ $t('app.cancel') }}
+                  {{ t('app.cancel') }}
                 </a>
               </div>
               <div>
                 <button v-cy-name="'save-entry-button'" class="btn btn-primary w-auto-ns w-100 mb2 pb0-ns" @click="rate()">
-                  {{ $t('app.save') }}
+                  {{ t('app.save') }}
                 </button>
               </div>
             </div>
@@ -197,7 +197,7 @@
       <!-- COME BACK LATER BOX -->
       <div v-if="hasRated === 'justNow'" :key="'comeback'" class="flex items-center">
         <div class="w-70 f3 pl2">
-          {{ $t('journal.journal_come_back') }}
+          {{ t('journal.journal_come_back') }}
         </div>
       </div>
     </transition-group>
@@ -205,7 +205,14 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   data() {
     return {
       day: {

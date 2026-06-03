@@ -3,40 +3,40 @@
     <notifications group="main" position="bottom right" />
 
     <h3 class="with-actions">
-      {{ $t('settings.personalization_contact_field_type_title') }}
+      {{ t('settings.personalization_contact_field_type_title') }}
       <a class="btn nt2" :class="[ dirltr ? 'fr' : 'fl' ]" href="" @click.prevent="add">
-        {{ $t('settings.personalization_contact_field_type_add') }}
+        {{ t('settings.personalization_contact_field_type_add') }}
       </a>
     </h3>
-    <p>{{ $t('settings.personalization_contact_field_type_description') }}</p>
+    <p>{{ t('settings.personalization_contact_field_type_description') }}</p>
 
     <div v-if="submitted" class="pa2 ba b--yellow mb3 mt3 br2 bg-washed-yellow">
-      {{ $t('settings.personalization_contact_field_type_add_success') }}
+      {{ t('settings.personalization_contact_field_type_add_success') }}
     </div>
 
     <div v-if="edited" class="pa2 ba b--yellow mb3 mt3 br2 bg-washed-yellow">
-      {{ $t('settings.personalization_contact_field_type_edit_success') }}
+      {{ t('settings.personalization_contact_field_type_edit_success') }}
     </div>
 
     <div v-if="deleted" class="pa2 ba b--yellow mb3 mt3 br2 bg-washed-yellow">
-      {{ $t('settings.personalization_contact_field_type_delete_success') }}
+      {{ t('settings.personalization_contact_field_type_delete_success') }}
     </div>
 
     <div class="dt dt--fixed w-100 collapse br--top br--bottom">
       <div class="dt-row">
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.personalization_contact_field_type_table_name') }}
+            {{ t('settings.personalization_contact_field_type_table_name') }}
           </div>
         </div>
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.personalization_contact_field_type_table_protocol') }}
+            {{ t('settings.personalization_contact_field_type_table_protocol') }}
           </div>
         </div>
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
           <div class="pa2 b">
-            {{ $t('settings.personalization_contact_field_type_table_actions') }}
+            {{ t('settings.personalization_contact_field_type_table_actions') }}
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@
 
     <!-- Create Contact field type -->
     <monica-modal v-model="showModalCreateContactFieldType"
-                  :title="$t('settings.personalization_contact_field_type_modal_title')"
+                  :title="t('settings.personalization_contact_field_type_modal_title')"
                   @open="_focusCreateInput"
     >
       <!-- Form Errors -->
@@ -79,7 +79,7 @@
               ref="createName"
               v-model="createForm.name"
               :required="true"
-              :title="$t('settings.personalization_contact_field_type_modal_name')"
+              :title="t('settings.personalization_contact_field_type_modal_name')"
               @submit="store"
             />
           </div>
@@ -92,12 +92,12 @@
               v-model="createForm.protocol"
               :placeholder="'mailto:'"
               :required="true"
-              :title="$t('settings.personalization_contact_field_type_modal_protocol')"
+              :title="t('settings.personalization_contact_field_type_modal_protocol')"
               @submit="store"
             />
 
             <small class="form-text text-muted">
-              {{ $t('settings.personalization_contact_field_type_modal_protocol_help') }}
+              {{ t('settings.personalization_contact_field_type_modal_protocol_help') }}
             </small>
           </div>
         </div>
@@ -109,29 +109,29 @@
               v-model="createForm.icon"
               :placeholder="'fa fa-address-book-o'"
               :required="true"
-              :title="$t('settings.personalization_contact_field_type_modal_icon')"
+              :title="t('settings.personalization_contact_field_type_modal_icon')"
               @submit="store"
             />
 
             <small class="form-text text-muted">
-              {{ $t('settings.personalization_contact_field_type_modal_icon_help') }}
+              {{ t('settings.personalization_contact_field_type_modal_icon_help') }}
             </small>
           </div>
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="store">
-          {{ $t('app.save') }}
+          {{ t('app.save') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Edit Contact field type -->
     <monica-modal v-model="showModalEditContactFieldType"
-                  :title="$t('settings.personalization_contact_field_type_modal_edit_title')"
+                  :title="t('settings.personalization_contact_field_type_modal_edit_title')"
                   @open="_focusEditInput"
     >
       <!-- Form Errors -->
@@ -145,7 +145,7 @@
               ref="editName"
               v-model="editForm.name"
               :required="true"
-              :title="$t('settings.personalization_contact_field_type_modal_name')"
+              :title="t('settings.personalization_contact_field_type_modal_name')"
               @submit="update"
             />
           </div>
@@ -158,12 +158,12 @@
               v-model="editForm.protocol"
               :placeholder="'mailto:'"
               :required="true"
-              :title="$t('settings.personalization_contact_field_type_modal_protocol')"
+              :title="t('settings.personalization_contact_field_type_modal_protocol')"
               @submit="update"
             />
 
             <small class="form-text text-muted">
-              {{ $t('settings.personalization_contact_field_type_modal_protocol_help') }}
+              {{ t('settings.personalization_contact_field_type_modal_protocol_help') }}
             </small>
           </div>
         </div>
@@ -175,39 +175,39 @@
               v-model="editForm.icon"
               :placeholder="'fa fa-address-book-o'"
               :required="true"
-              :title="$t('settings.personalization_contact_field_type_modal_icon')"
+              :title="t('settings.personalization_contact_field_type_modal_icon')"
               @submit="update"
             />
 
             <small class="form-text text-muted">
-              {{ $t('settings.personalization_contact_field_type_modal_icon_help') }}
+              {{ t('settings.personalization_contact_field_type_modal_icon_help') }}
             </small>
           </div>
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="update">
-          {{ $t('app.edit') }}
+          {{ t('app.edit') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Delete Contact field type -->
     <monica-modal v-model="showModalDeleteContactFieldType"
-                  :title="$t('settings.personalization_contact_field_type_modal_delete_title')"
+                  :title="t('settings.personalization_contact_field_type_modal_delete_title')"
     >
       <p>
-        {{ $t('settings.personalization_contact_field_type_modal_delete_description') }}
+        {{ t('settings.personalization_contact_field_type_modal_delete_description') }}
       </p>
       <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="trash">
-          {{ $t('app.delete') }}
+          {{ t('app.delete') }}
         </a>
       </template>
     </monica-modal>

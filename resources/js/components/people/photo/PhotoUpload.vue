@@ -34,7 +34,7 @@
         </div>
         <div class="tc dib w-100 relative">
           <button class="btn">
-            {{ $t('people.photo_upload_zone_cta') }}
+            {{ t('people.photo_upload_zone_cta') }}
           </button>
           <input id="file" ref="file" type="file" class="absolute o-0 w-100 h-100 pointer" style="left:0;"
                  @change="handleFileUpload($event)"
@@ -46,13 +46,13 @@
     <!-- LAST STEP OF PHOTO UPLOAD -->
     <div v-if="displayUploadProgress" class="ba br3 photo-upload-zone mb3 pa3">
       <p class="tc mb1">
-        {{ $t('people.document_upload_zone_progress') }}
+        {{ t('people.document_upload_zone_progress') }}
       </p>
       <div class="tc mb1">
         <progress max="100" :value.prop="uploadPercentage"></progress>
       </div>
       <p class="tc f6 mb0">
-        {{ $t('app.percent_uploaded', {percent: uploadPercentage}) }}
+        {{ t('app.percent_uploaded', {percent: uploadPercentage}) }}
       </p>
     </div>
 
@@ -69,7 +69,7 @@
           </svg>
         </div>
         <p class="tc mb3">
-          {{ $t('people.document_upload_zone_error') }}
+          {{ t('people.document_upload_zone_error') }}
         </p>
         <p class="tc">
           <input id="file" ref="file" type="file" @change="handleFileUpload($event)" />
@@ -80,6 +80,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
   props: {
     hash: {
@@ -98,6 +100,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

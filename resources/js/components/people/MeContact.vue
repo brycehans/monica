@@ -10,7 +10,7 @@ div >>> .avatar-small {
 <template>
   <div>
     <div v-if="!limited" class="flex fr">
-      <a class="btn btn-primary" href="" @click.prevent="openModal">{{ $t('settings.me_select') }}</a>
+      <a class="btn btn-primary" href="" @click.prevent="openModal">{{ t('settings.me_select') }}</a>
     </div>
     <div v-if="meContact" class="dib pointer ml2 fl collapse">
       <span class="dt-row">
@@ -25,32 +25,32 @@ div >>> .avatar-small {
       </span>
     </div>
     <div v-else class="dib pointer fl">
-      {{ $t('settings.me_no_contact') }}<br />
-      <a v-if="!limited" href="" @click.prevent="openModal">{{ $t('settings.me_select_click') }}</a>
-      <div v-else v-html="$t('settings.personalisation_paid_upgrade_vue', {url: 'settings/subscriptions' })"></div>
+      {{ t('settings.me_no_contact') }}<br />
+      <a v-if="!limited" href="" @click.prevent="openModal">{{ t('settings.me_select_click') }}</a>
+      <div v-else v-html="t('settings.personalisation_paid_upgrade_vue', {url: 'settings/subscriptions' })"></div>
     </div>
     <div class="cb"></div>
 
-    <monica-modal v-model="showModal" :title="$t('settings.me_select')">
+    <monica-modal v-model="showModal" :title="t('settings.me_select')">
       <form>
         <contact-select
           v-model="newContact"
           :required="true"
-          :title="$t('settings.me_choose')"
+          :title="t('settings.me_choose')"
           :name="'me_contact_id'"
-          :placeholder="$t('settings.me_choose_placeholder')"
+          :placeholder="t('settings.me_choose_placeholder')"
           :default-options="existingContacts"
         />
       </form>
       <template #button>
         <a class="btn fl" href="" @click.prevent="remove">
-          {{ $t('settings.me_remove_contact') }}
+          {{ t('settings.me_remove_contact') }}
         </a>
         <a class="btn" href="" @click.prevent="closeModal">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="save">
-          {{ $t('app.save') }}
+          {{ t('app.save') }}
         </a>
       </template>
     </monica-modal>
@@ -58,6 +58,8 @@ div >>> .avatar-small {
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
   components: {
   },
@@ -75,6 +77,11 @@ export default {
       type: Boolean,
       default: true,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

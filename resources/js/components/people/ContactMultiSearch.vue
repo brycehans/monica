@@ -24,7 +24,7 @@
           </div>
           <div class="table-cell actions">
             <a class="pointer" href="" @click.prevent="remove(contact)">
-              {{ $t('app.delete') }}
+              {{ t('app.delete') }}
             </a>
           </div>
 
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import ContactAutosuggest from './partials/ContactAutosuggest.vue';
 import ContactMultiItem from './partials/ContactMultiItem.vue';
 
@@ -69,6 +70,11 @@ export default {
       type: Array,
       default: () => []
     }
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

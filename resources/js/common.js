@@ -48,11 +48,13 @@ import pluralization from './pluralization.js';
 export default {
   i18n: createI18n({
     legacy: false,
-    // Keeps `$t` / `$tc` injected on every component instance so Options API
-    // call sites work during the Phase 2 per-component migration to
-    // `useI18n()`. Default is already true; pinned explicitly to make the
-    // intent visible while the legacy surface is being walked down (#744).
-    globalInjection: true,
+    // Phase 2 of #744 walked every call site (scripts + templates) down to
+    // setup()-scoped `useI18n()` bindings — both `this.$t` and template
+    // `{{ $t(...) }}` are now `this.t` / `{{ t(...) }}` resolving through
+    // each component's own `useI18n()`. With the surface clean, drop the
+    // legacy `$t` / `$i18n` global injection: any future stray `$t` fails
+    // fast at runtime instead of silently using the backstop.
+    globalInjection: false,
     locale: 'en',
     fallbackLocale: 'en',
     messages: {'en': messages},

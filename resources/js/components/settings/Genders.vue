@@ -3,33 +3,33 @@
     <notifications group="main" position="bottom right" />
 
     <h3 class="mb3">
-      {{ $t('settings.personalization_genders_title') }}
+      {{ t('settings.personalization_genders_title') }}
       <a class="btn nt2" :class="[ dirltr ? 'fr' : 'fl' ]" href="" @click.prevent="showCreateModal">
-        {{ $t('settings.personalization_genders_add') }}
+        {{ t('settings.personalization_genders_add') }}
       </a>
     </h3>
-    <p>{{ $t('settings.personalization_genders_desc') }}</p>
+    <p>{{ t('settings.personalization_genders_desc') }}</p>
 
     <div class="dt dt--fixed w-100 collapse br--top br--bottom">
       <div class="dt-row">
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.personalization_genders_table_name') }}
+            {{ t('settings.personalization_genders_table_name') }}
           </div>
         </div>
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.personalization_genders_table_sex') }}
+            {{ t('settings.personalization_genders_table_sex') }}
           </div>
         </div>
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.personalization_genders_table_default') }}
+            {{ t('settings.personalization_genders_table_default') }}
           </div>
         </div>
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
           <div class="pa2 b">
-            {{ $t('settings.personalization_contact_field_type_table_actions') }}
+            {{ t('settings.personalization_contact_field_type_table_actions') }}
           </div>
         </div>
       </div>
@@ -41,19 +41,19 @@
           <div class="pa2">
             {{ gender.name }}
             <span class="i">
-              {{ $t('settings.personalization_genders_list_contact_number', { count: gender.numberOfContacts }, gender.numberOfContacts) }}
+              {{ t('settings.personalization_genders_list_contact_number', { count: gender.numberOfContacts }, gender.numberOfContacts) }}
             </span>
           </div>
         </div>
         <div class="dtc">
           <div class="pa2">
-            {{ $t('settings.personalization_genders_' + gender.type.toLowerCase()) }}
+            {{ t('settings.personalization_genders_' + gender.type.toLowerCase()) }}
           </div>
         </div>
         <div class="dtc">
           <div class="pa2">
             <template v-if="gender.isDefault">
-              {{ $t('settings.personalization_genders_default') }}
+              {{ t('settings.personalization_genders_default') }}
             </template>
           </div>
         </div>
@@ -66,11 +66,11 @@
       </div>
     </div>
     <div class="mt2" :class="[ dirltr ? 'tr' : 'tl' ]">
-      <a class="pointer" href="" @click.prevent="showDefaultGenderModal">{{ $t('settings.personalization_genders_make_default') }}</a>
+      <a class="pointer" href="" @click.prevent="showDefaultGenderModal">{{ t('settings.personalization_genders_make_default') }}</a>
     </div>
 
     <!-- Create Gender type -->
-    <monica-modal v-model="createModalOpen" :title="$t('settings.personalization_genders_modal_add')">
+    <monica-modal v-model="createModalOpen" :title="t('settings.personalization_genders_modal_add')">
       <form @submit.prevent="store()">
         <div class="form-group">
           <div class="form-group">
@@ -79,10 +79,10 @@
               v-model="createForm.name"
               :input-type="'text'"
               :required="true"
-              :title="$t('settings.personalization_genders_modal_name')"
+              :title="t('settings.personalization_genders_modal_name')"
             />
             <small class="form-text text-muted">
-              {{ $t('settings.personalization_genders_modal_name_help') }}
+              {{ t('settings.personalization_genders_modal_name_help') }}
             </small>
           </div>
           <div class="form-group">
@@ -91,10 +91,10 @@
               v-model="createForm.type"
               :options="genderTypes"
               :required="true"
-              :title="$t('settings.personalization_genders_modal_sex')"
+              :title="t('settings.personalization_genders_modal_sex')"
             />
             <small class="form-text text-muted">
-              {{ $t('settings.personalization_genders_modal_sex_help') }}
+              {{ t('settings.personalization_genders_modal_sex_help') }}
             </small>
           </div>
           <div class="form-group">
@@ -103,23 +103,23 @@
               v-model="createForm.isDefault"
               :labels="toggleOptions"
               :required="true"
-              :title="$t('settings.personalization_genders_modal_default')"
+              :title="t('settings.personalization_genders_modal_default')"
             />
           </div>
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="store()">
-          {{ $t('app.save') }}
+          {{ t('app.save') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Edit gender type -->
-    <monica-modal v-model="showUpdateModal" :title="$t('settings.personalization_genders_modal_edit')">
+    <monica-modal v-model="showUpdateModal" :title="t('settings.personalization_genders_modal_edit')">
       <form @submit.prevent="update(updatedGender)">
         <div class="form-group">
           <div class="form-group">
@@ -128,10 +128,10 @@
               v-model="updateForm.name"
               :input-type="'text'"
               :required="true"
-              :title="$t('settings.personalization_genders_modal_name')"
+              :title="t('settings.personalization_genders_modal_name')"
             />
             <small class="form-text text-muted">
-              {{ $t('settings.personalization_genders_modal_name_help') }}
+              {{ t('settings.personalization_genders_modal_name_help') }}
             </small>
           </div>
           <div class="form-group">
@@ -140,10 +140,10 @@
               v-model="updateForm.type"
               :options="genderTypes"
               :required="true"
-              :title="$t('settings.personalization_genders_modal_sex')"
+              :title="t('settings.personalization_genders_modal_sex')"
             />
             <small class="form-text text-muted">
-              {{ $t('settings.personalization_genders_modal_sex_help') }}
+              {{ t('settings.personalization_genders_modal_sex_help') }}
             </small>
           </div>
           <div class="form-group">
@@ -152,23 +152,23 @@
               v-model="updateForm.isDefault"
               :labels="toggleOptions"
               :required="true"
-              :title="$t('settings.personalization_genders_modal_default')"
+              :title="t('settings.personalization_genders_modal_default')"
             />
           </div>
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeUpdateModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="update(updatedGender)">
-          {{ $t('app.update') }}
+          {{ t('app.update') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Delete Gender type -->
-    <monica-modal v-model="showDeleteModal" :title="$t('settings.personalization_genders_modal_delete')">
+    <monica-modal v-model="showDeleteModal" :title="t('settings.personalization_genders_modal_delete')">
       <form>
         <div v-if="errorMessage !== ''" class="form-error-message mb3">
           <div class="pa2">
@@ -179,14 +179,14 @@
         </div>
         <div class="mb4">
           <p class="mb2">
-            {{ $t('settings.personalization_genders_modal_delete_desc', {name: deleteForm.name}) }}
+            {{ t('settings.personalization_genders_modal_delete_desc', {name: deleteForm.name}) }}
           </p>
           <div v-if="deleteForm.numberOfContacts !== 0 || deleteForm.isDefault">
             <p v-if="deleteForm.numberOfContacts !== 0">
-              {{ $t('settings.personalization_genders_modal_delete_question', {count: deleteForm.numberOfContacts}, deleteForm.numberOfContacts) }}
+              {{ t('settings.personalization_genders_modal_delete_question', {count: deleteForm.numberOfContacts}, deleteForm.numberOfContacts) }}
             </p>
             <p v-else>
-              {{ $t('settings.personalization_genders_modal_delete_question_default') }}
+              {{ t('settings.personalization_genders_modal_delete_question_default') }}
             </p>
             <form-select
               :id="'deleteNewId'"
@@ -201,23 +201,23 @@
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeDeleteModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a v-if="deleteForm.numberOfContacts === 0 && ! deleteForm.isDefault"
            class="btn btn-primary"
            href=""
            @click.prevent="trash()"
         >
-          {{ $t('app.delete') }}
+          {{ t('app.delete') }}
         </a>
         <a v-else class="btn btn-primary" href="" @click.prevent="trashAndReplace()">
-          {{ $t('app.delete') }}
+          {{ t('app.delete') }}
         </a>
       </template>
     </monica-modal>
 
     <!-- Change default Gender -->
-    <monica-modal v-model="defaultGenderModalOpen" :title="$t('settings.personalization_genders_modal_default')">
+    <monica-modal v-model="defaultGenderModalOpen" :title="t('settings.personalization_genders_modal_default')">
       <form>
         <div class="form-group">
           <div class="form-group">
@@ -226,17 +226,17 @@
               v-model="defaultGenderId"
               :options="genders"
               :required="true"
-              :title="$t('settings.personalization_genders_select_default')"
+              :title="t('settings.personalization_genders_select_default')"
             />
           </div>
         </div>
       </form>
       <template #button>
         <a class="btn" href="" @click.prevent="closeDefaultGenderModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a class="btn btn-primary" href="" @click.prevent="updateDefaultGender()">
-          {{ $t('app.save') }}
+          {{ t('app.save') }}
         </a>
       </template>
     </monica-modal>

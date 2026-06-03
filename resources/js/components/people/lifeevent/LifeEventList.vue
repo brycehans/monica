@@ -459,11 +459,11 @@
           </svg>
         </div>
         <p class="tc mb4 measure center">
-          {{ $t('people.life_event_blank', { name: contactName }) }}
+          {{ t('people.life_event_blank', { name: contactName }) }}
         </p>
         <div class="tc">
           <a class="mb4 btn" href="" @click.prevent="showAdd = true">
-            {{ $t('people.life_event_list_cta') }}
+            {{ t('people.life_event_list_cta') }}
           </a>
         </div>
       </div>
@@ -472,14 +472,14 @@
     <!-- TITLE -->
     <div v-else>
       <h3 class="mb3 relative">
-        🎭 {{ $t('people.life_event_list_title') }}
+        🎭 {{ t('people.life_event_list_title') }}
 
         <span class="absolute" style="top: -5px; right: 0;">
           <a v-if="showAdd" class="btn edit-information" href="" @click.prevent="showAdd = false">
-            {{ $t('app.cancel') }}
+            {{ t('app.cancel') }}
           </a>
           <a v-else class="btn edit-information" href="" @click.prevent="showAdd = true">
-            {{ $t('people.life_event_list_cta') }}
+            {{ t('people.life_event_list_cta') }}
           </a>
         </span>
       </h3>
@@ -513,14 +513,14 @@
                   {{ lifeEvent.life_event_type_name }}
                 </template>
                 <template v-else>
-                  {{ $t('people.life_event_sentence_' + lifeEvent.default_life_event_type_key) }}
+                  {{ t('people.life_event_sentence_' + lifeEvent.default_life_event_type_key) }}
                 </template>
               </span> {{ lifeEvent.name }}
             </p>
             <p>{{ lifeEvent.note }}</p>
             <p class="f7">
               <a class="pointer" href="" @click.prevent="showDeleteModal(lifeEvent)">
-                {{ $t('app.delete') }}
+                {{ t('app.delete') }}
               </a>
             </p>
           </div>
@@ -529,20 +529,20 @@
     </div>
 
     <!-- Delete confirmation modal -->
-    <monica-modal v-model="showDeleteLifeEventModal" :title="$t('people.life_event_delete_title')">
+    <monica-modal v-model="showDeleteLifeEventModal" :title="t('people.life_event_delete_title')">
       <form>
         <div class="mb4">
           <p class="mb2">
-            {{ $t('people.life_event_delete_description') }}
+            {{ t('people.life_event_delete_description') }}
           </p>
         </div>
       </form>
       <template #button>
         <a class="btn center" href="" @click.prevent="closeDeleteModal()">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a v-cy-name="'delete-life-event-button'" class="btn btn-primary" href="" @click.prevent="destroy(lifeEventToDelete)">
-          {{ $t('app.delete') }}
+          {{ t('app.delete') }}
         </a>
       </template>
     </monica-modal>

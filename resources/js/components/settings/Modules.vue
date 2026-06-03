@@ -3,10 +3,10 @@
     <notifications group="main" position="bottom right" />
 
     <h3 class="mb3">
-      {{ $t('settings.personalization_module_title') }}
+      {{ t('settings.personalization_module_title') }}
     </h3>
     <p>
-      {{ $t('settings.personalization_module_desc') }}
+      {{ t('settings.personalization_module_desc') }}
     </p>
 
     <div v-if="limited" class="mt3 mb3 form-information-message br2">
@@ -18,7 +18,7 @@
             </g>
           </svg>
         </div>
-        <div v-html="$t('settings.personalisation_paid_upgrade_vue', {url: 'settings/subscriptions' })"></div>
+        <div v-html="t('settings.personalisation_paid_upgrade_vue', {url: 'settings/subscriptions' })"></div>
       </div>
     </div>
 
@@ -26,12 +26,12 @@
       <div class="dt-row">
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.personalization_contact_field_type_table_name') }}
+            {{ t('settings.personalization_contact_field_type_table_name') }}
           </div>
         </div>
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
           <div class="pa2 b">
-            {{ $t('settings.personalization_contact_field_type_table_actions') }}
+            {{ t('settings.personalization_contact_field_type_table_actions') }}
           </div>
         </div>
       </div>

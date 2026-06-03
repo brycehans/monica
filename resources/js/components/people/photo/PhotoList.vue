@@ -8,33 +8,33 @@
   <div>
     <div class="">
       <h3>
-        📄 {{ $t('people.photo_list_title') }}
+        📄 {{ t('people.photo_list_title') }}
         <span v-if="reachLimit === 'false'" class="fr relative" style="top: -7px;">
           <a v-if="!onUpload" class="btn" href=""
              @click.prevent="() => { onUpload = true; $refs.upload.showUploadZone(); }"
           >
-            {{ $t('people.photo_list_cta') }}
+            {{ t('people.photo_list_cta') }}
           </a>
           <a v-else class="btn" href=""
              @click.prevent="() => { onUpload = false; $refs.upload.cancelUpload(); }"
           >
-            {{ $t('app.cancel') }}
+            {{ t('app.cancel') }}
           </a>
         </span>
       </h3>
     </div>
 
     <p v-show="reachLimit === 'true'">
-      {{ $t('settings.storage_upgrade_notice') }}
+      {{ t('settings.storage_upgrade_notice') }}
     </p>
 
     <!-- EMPTY STATE -->
     <div v-if="!onUpload && photos.length === 0" class="ltr w-100 pt2">
       <div class="section-blank">
         <h3 class="mb4 mt3">
-          {{ $t('people.photo_list_blank_desc') }}
+          {{ t('people.photo_list_blank_desc') }}
         </h3>
-        <img src="/img/people/photos/photos_empty.svg" :alt="$t('people.photo_title')" class="w-50 center" />
+        <img src="/img/people/photos/photos_empty.svg" :alt="t('people.photo_title')" class="w-50 center" />
       </div>
     </div>
 
@@ -58,23 +58,23 @@
             <div class="pt2">
               <ul>
                 <li v-show="currentPhotoIdAsAvatar === photo.id">
-                  🤩 {{ $t('people.photo_current_profile_pic') }}
+                  🤩 {{ t('people.photo_current_profile_pic') }}
                 </li>
                 <li v-show="currentPhotoIdAsAvatar !== photo.id">
                   <a class="pointer" @click.prevent="makeProfilePicture(photo)">
-                    {{ $t('people.photo_make_profile_pic') }}
+                    {{ t('people.photo_make_profile_pic') }}
                   </a>
                 </li>
                 <li v-show="confirmDestroyPhotoId !== photo.id">
                   <a class="pointer" href="" @click.prevent="confirmDestroyPhotoId = photo.id">
-                    {{ $t('people.photo_delete') }}
+                    {{ t('people.photo_delete') }}
                   </a>
                 </li>
                 <li v-show="confirmDestroyPhotoId === photo.id">
                   <a class="pointer" href="" @click.prevent="confirmDestroyPhotoId = 0">
-                    {{ $t('app.cancel') }}
+                    {{ t('app.cancel') }}
                   </a> <a class="pointer" href="" @click.prevent="deletePhoto(photo)">
-                    {{ $t('app.delete_confirm') }}
+                    {{ t('app.delete_confirm') }}
                   </a>
                 </li>
               </ul>
@@ -89,19 +89,19 @@
       <div class="modal-mask">
         <div class="modal-wrapper">
           <div class="modal-container">
-            <img :src="url" :alt="$t('people.photo_title')" class="mw-90 h-auto mb3" />
+            <img :src="url" :alt="t('people.photo_title')" class="mw-90 h-auto mb3" />
 
             <ul class="list pl0 tc">
               <li class="di mr3">
-                <a v-if="canShowPrev" class="pointer" @click="displayPrev">{{ $t('people.photo_previous') }}</a>
+                <a v-if="canShowPrev" class="pointer" @click="displayPrev">{{ t('people.photo_previous') }}</a>
               </li>
               <li class="di mr3">
                 <button class="btn" @click="showModal = false">
-                  {{ $t('app.close') }}
+                  {{ t('app.close') }}
                 </button>
               </li>
               <li class="di">
-                <a v-if="canShowNext" class="pointer" @click="displayNext">{{ $t('people.photo_next') }}</a>
+                <a v-if="canShowNext" class="pointer" @click="displayNext">{{ t('people.photo_next') }}</a>
               </li>
             </ul>
           </div>

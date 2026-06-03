@@ -73,13 +73,15 @@
       <div class="avatar avatar-initials avatar-no-results">
         .
       </div>
-      {{ $t('people.people_search_no_results') }}
+      {{ t('people.people_search_no_results') }}
       <span></span>
     </div>
   </div>
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
   props: {
     item: {
@@ -88,6 +90,12 @@ export default {
       default: null,
     },
   },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   data() {
     return {
       check: true,

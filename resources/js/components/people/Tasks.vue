@@ -1,16 +1,16 @@
 <template>
   <div>
     <div>
-      <img src="/img/people/tasks.svg" :alt="$t('people.tasks_title')" class="icon-section icon-tasks" />
+      <img src="/img/people/tasks.svg" :alt="t('people.tasks_title')" class="icon-section icon-tasks" />
       <h3>
-        {{ $t('people.section_personal_tasks') }}
+        {{ t('people.section_personal_tasks') }}
 
         <span v-if="tasks.length !== 0" class="f6 pt2" :class="[ dirltr ? 'fr' : 'fl' ]">
           <a v-if="!editMode" v-cy-name="'task-toggle-edit-mode'" class="pointer" href="" @click.prevent="editMode = true">
-            {{ $t('app.edit') }}
+            {{ t('app.edit') }}
           </a>
           <a v-else v-cy-name="'task-toggle-edit-mode'" class="pointer" href="" @click.prevent="editMode = false">
-            {{ $t('app.done') }}
+            {{ t('app.done') }}
           </a>
         </span>
       </h3>
@@ -19,10 +19,10 @@
     <div :class="[editMode ? 'bg-washed-yellow b--yellow ba pa2' : '']">
       <!-- EMPTY STATE -->
       <div v-if="tasks.length === 0 && !addMode" v-cy-name="'task-blank-state'" class="tc bg-near-white b--moon-gray pa3">
-        <p>{{ $t('people.tasks_blank_title') }}</p>
+        <p>{{ t('people.tasks_blank_title') }}</p>
         <p>
           <a v-cy-name="'add-task-button'" class="pointer" href="" @click.prevent="toggleAddMode">
-            {{ $t('people.tasks_add_task') }}
+            {{ t('people.tasks_add_task') }}
           </a>
         </p>
       </div>
@@ -52,13 +52,13 @@
           <form v-show="task.edit" class="bg-near-white pa2 br2 mt3 mb3">
             <div>
               <label :for="'edit-title' + i" class="db fw6 lh-copy f6">
-                {{ $t('people.tasks_form_title') }}
+                {{ t('people.tasks_form_title') }}
               </label>
               <input :id="'edit-title' + i" v-model="task.title" class="pa2 db w-100" type="text" @keyup.esc="editMode = false" />
             </div>
             <div class="mt3">
               <label :for="'edit-description' + i" class="db fw6 lh-copy f6">
-                {{ $t('people.tasks_form_description') }}
+                {{ t('people.tasks_form_description') }}
               </label>
               <textarea :id="'edit-description' + i"
                         v-model="task.description"
@@ -70,10 +70,10 @@
             </div>
             <div class="lh-copy mt3">
               <a class="btn btn-primary" href="" @click.prevent="update(task, true)">
-                {{ $t('app.update') }}
+                {{ t('app.update') }}
               </a>
               <a class="btn" href="" @click.prevent="toggleEditMode(task)">
-                {{ $t('app.cancel') }}
+                {{ t('app.cancel') }}
               </a>
             </div>
           </form>
@@ -83,7 +83,7 @@
       <!-- ADD TASK TO ENTER ADD MODE -->
       <div v-if="!updateMode && !addMode && tasks.length !== 0" class="bg-near-white pa2 br2 mt3 mb3">
         <a class="pointer" href="" @click.prevent="toggleAddMode">
-          {{ $t('people.tasks_add_task') }}
+          {{ t('people.tasks_add_task') }}
         </a>
       </div>
 
@@ -92,7 +92,7 @@
         <form class="bg-near-white pa2 br2 mt3 mb3">
           <div>
             <label for="add-title" class="db fw6 lh-copy f6">
-              {{ $t('people.tasks_form_title') }}
+              {{ t('people.tasks_form_title') }}
             </label>
             <input id="add-title" v-model="newTask.title" v-cy-name="'task-add-title'" class="pa2 db w-100" type="text"
                    @keyup.esc="addMode = false"
@@ -100,16 +100,16 @@
           </div>
           <div class="mt3">
             <label for="add-description" class="db fw6 lh-copy f6">
-              {{ $t('people.tasks_form_description') }}
+              {{ t('people.tasks_form_description') }}
             </label>
             <textarea id="add-description" v-model="newTask.description" class="pa2 db w-100" type="text" @keyup.esc="addMode = false"></textarea>
           </div>
           <div class="lh-copy mt3">
             <a v-cy-name="'save-task-button'" class="btn btn-primary" href="" @click.prevent="store">
-              {{ $t('app.add') }}
+              {{ t('app.add') }}
             </a>
             <a class="btn" href="" @click.prevent="addMode = false">
-              {{ $t('app.cancel') }}
+              {{ t('app.cancel') }}
             </a>
           </div>
         </form>

@@ -15,7 +15,7 @@
           @change="event => { _saveOption(); }"
         >
           <template #label>
-            {{ $t('people.information_edit_unknown') }}
+            {{ t('people.information_edit_unknown') }}
           </template>
         </form-radio>
         <form-radio
@@ -27,7 +27,7 @@
           @change="event => { if (selectedOptionSave !== 'approximate') {_focusAge();} _saveOption(); }"
         >
           <template #label>
-            {{ $t('people.information_edit_probably') }}
+            {{ t('people.information_edit_probably') }}
           </template>
           <template v-if="selectedOption === 'approximate'" #extra>
             <form-input
@@ -50,7 +50,7 @@
           @change="event => { if (selectedOptionSave !== 'almost') {_focusMonth();} _saveOption(); }"
         >
           <template #label>
-            {{ $t('people.information_edit_not_year') }}
+            {{ t('people.information_edit_not_year') }}
           </template>
           <template v-if="selectedOption === 'almost'" #extra>
             <div class="mt2 flex">
@@ -81,7 +81,7 @@
           @change="event => { if (selectedOptionSave !== 'exact') {_focusBirthday();} _saveOption(); }"
         >
           <template #label>
-            {{ $t('people.information_edit_exact') }}
+            {{ t('people.information_edit_exact') }}
           </template>
           <template v-if="selectedOption === 'exact'" #extra>
             <form-date
@@ -90,7 +90,7 @@
               v-model="selectedDate"
               :show-calendar-on-focus="true"
               :locale="locale"
-              :label="$t('people.information_edit_birthdate_label')"
+              :label="t('people.information_edit_birthdate_label')"
               :class="[ dirltr ? 'fl' : 'fr', 'mt2' ]"
               :validator="v$.selectedDate"
             />
@@ -108,7 +108,7 @@
           :dclass="[ 'flex', dirltr ? 'mr2' : 'ml2' ]"
         >
           <template #label>
-            {{ $t('people.people_add_reminder_for_birthday') }}
+            {{ t('people.people_add_reminder_for_birthday') }}
           </template>
         </form-checkbox>
       </div>
@@ -117,6 +117,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 import { useVuelidate } from '@vuelidate/core';
 import { required, numeric, helpers } from '@vuelidate/validators';
@@ -164,7 +165,10 @@ export default {
     },
   },
 
-  setup: () => ({ v$: useVuelidate() }),
+  setup() {
+    const { t } = useI18n();
+    return { v$: useVuelidate(), t };
+  },
 
   data() {
     return {

@@ -2,7 +2,7 @@
   <div class="di f5 normal">
     <notifications group="favorite" position="top middle" width="400" />
 
-    <button type="button" v-tooltip.top="$t('people.set_favorite')" :aria-label="$t('people.set_favorite')"
+    <button type="button" v-tooltip.top="t('people.set_favorite')" :aria-label="t('people.set_favorite')"
             :aria-pressed="isFavorite" class="pointer bn bg-transparent pa0 di" @click="store(!isFavorite)"
     >
     <svg v-if="!isFavorite" v-cy-name="'set-favorite'" width="23"

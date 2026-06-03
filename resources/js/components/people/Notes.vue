@@ -11,14 +11,14 @@
     <div>
       <div>
         <form class="bg-near-white pa2 br2 mb3">
-          <textarea v-model="newNote.body" v-cy-name="'add-note-textarea'" class="w-100 br2 pa2 b--light-gray" :placeholder="$t('people.notes_add_cta')" @focus="addMode = true"
+          <textarea v-model="newNote.body" v-cy-name="'add-note-textarea'" class="w-100 br2 pa2 b--light-gray" :placeholder="t('people.notes_add_cta')" @focus="addMode = true"
                     @keyup.esc="addMode = false"
           ></textarea>
           <a v-if="addMode" v-cy-name="'add-note-button'" class="pointer btn btn-primary" href="" @click.prevent="store">
-            {{ $t('app.add') }}
+            {{ t('app.add') }}
           </a>
           <a v-if="addMode" v-cy-name="'cancel-note-button'" class="pointer btn btn-secondary" href="" @click.prevent="addMode = false">
-            {{ $t('app.cancel') }}
+            {{ t('app.cancel') }}
           </a>
         </form>
       </div>
@@ -33,17 +33,17 @@
             <div class="pa2 cf bt b--black-10 br--bottom f7 lh-copy">
               <div class="fl w-50">
                 <div class="f5 di mr1">
-                  <em v-tooltip.top="$t('people.notes_favorite')" class="pointer" :class="[note.is_favorited ? 'fa fa-star' : 'fa fa-star-o']" @click="toggleFavorite(note)"></em>
+                  <em v-tooltip.top="t('people.notes_favorite')" class="pointer" :class="[note.is_favorited ? 'fa fa-star' : 'fa fa-star-o']" @click="toggleFavorite(note)"></em>
                 </div>
                 {{ note.created_at_short }}
               </div>
               <div class="fl w-50 tr">
                 <a v-cy-name="'edit-note-button-' + note.id" class="pointer" href="" @click.prevent="toggleEditMode(note)">
-                  {{ $t('app.edit') }}
+                  {{ t('app.edit') }}
                 </a>
                 |
                 <a v-cy-name="'delete-note-button-' + note.id" class="pointer" href="" @click.prevent="showDelete(note)">
-                  {{ $t('app.delete') }}
+                  {{ t('app.delete') }}
                 </a>
               </div>
             </div>
@@ -53,7 +53,7 @@
           <form v-show="note.edit" class="bg-near-white pa2 br2 mt3 mb3">
             <textarea v-model="note.body" v-cy-name="'edit-note-body-' + note.id" class="w-100 br2 pa2 b--light-gray" @keyup.esc="note.edit = false"></textarea>
             <a v-cy-name="'edit-mode-note-button-' + note.id" class="pointer btn btn-primary" href="" @click.prevent="update(note)">
-              {{ $t('app.update') }}
+              {{ t('app.update') }}
             </a>
           </form>
         </li>
@@ -62,19 +62,19 @@
 
     <!-- Delete Note modal -->
     <monica-modal v-model="showDeleteNoteModal" v-cy-name="'modal-delete-note'"
-                  :title="$t('people.notes_delete_title')"
+                  :title="t('people.notes_delete_title')"
     >
       <p>
-        {{ $t('people.notes_delete_confirmation') }}
+        {{ t('people.notes_delete_confirmation') }}
       </p>
       <template #button>
         <a class="btn" href="" @click.prevent="closeModal">
-          {{ $t('app.cancel') }}
+          {{ t('app.cancel') }}
         </a>
         <a v-cy-name="'delete-mode-note-button-' + deleteNote.id" class="btn btn-primary" href=""
            @click.prevent="trash(deleteNote)"
         >
-          {{ $t('app.delete') }}
+          {{ t('app.delete') }}
         </a>
       </template>
     </monica-modal>

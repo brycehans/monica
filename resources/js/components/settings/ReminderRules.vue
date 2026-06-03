@@ -3,22 +3,22 @@
     <notifications group="main" position="bottom right" />
 
     <h3 class="mb3">
-      {{ $t('settings.personalization_reminder_rule_title') }}
+      {{ t('settings.personalization_reminder_rule_title') }}
     </h3>
     <p>
-      {{ $t('settings.personalization_reminder_rule_desc') }}
+      {{ t('settings.personalization_reminder_rule_desc') }}
     </p>
 
     <div class="dt dt--fixed w-100 collapse br--top br--bottom">
       <div class="dt-row">
         <div class="dtc">
           <div class="pa2 b">
-            {{ $t('settings.personalization_contact_field_type_table_name') }}
+            {{ t('settings.personalization_contact_field_type_table_name') }}
           </div>
         </div>
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
           <div class="pa2 b">
-            {{ $t('settings.personalization_contact_field_type_table_actions') }}
+            {{ t('settings.personalization_contact_field_type_table_actions') }}
           </div>
         </div>
       </div>
@@ -26,7 +26,7 @@
       <div v-for="reminderRule in reminderRules" :key="reminderRule.id" class="dt-row bb b--light-gray">
         <div class="dtc">
           <div class="pa2">
-            {{ $t('settings.personalization_reminder_rule_line', {count: reminderRule.number_of_days_before}, reminderRule.number_of_days_before) }}
+            {{ t('settings.personalization_reminder_rule_line', {count: reminderRule.number_of_days_before}, reminderRule.number_of_days_before) }}
           </div>
         </div>
         <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">

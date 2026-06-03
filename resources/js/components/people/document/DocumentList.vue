@@ -75,28 +75,28 @@
   <div>
     <div class="">
       <h3>
-        📄 {{ $t('people.document_list_title') }}
+        📄 {{ t('people.document_list_title') }}
 
         <span v-show="reachLimit === 'false'" class="fr relative" style="top: -7px;">
           <a v-if="displayUploadZone === false && displayUploadError === false && displayUploadProgress === false" class="btn edit-information" html="" @click.prevent="displayUploadZone = true">
-            {{ $t('people.document_list_cta') }}
+            {{ t('people.document_list_cta') }}
           </a>
           <a v-if="displayUploadZone || displayUploadError || displayUploadProgress" class="btn edit-information" href="" @click.prevent="displayUploadZone = false; displayUploadError = false; displayUploadProgress = false">
-            {{ $t('app.cancel') }}
+            {{ t('app.cancel') }}
           </a>
         </span>
       </h3>
     </div>
 
     <p v-show="reachLimit === 'true'">
-      {{ $t('settings.storage_upgrade_notice') }}
+      {{ t('settings.storage_upgrade_notice') }}
     </p>
 
     <!-- EMPTY STATE -->
     <div v-if="displayUploadZone === false && displayUploadError === false && displayUploadProgress === false && documents.length === 0" class="ltr w-100 pt2">
       <div class="section-blank">
         <h3 class="mb0">
-          {{ $t('people.document_list_blank_desc') }}
+          {{ t('people.document_list_blank_desc') }}
         </h3>
       </div>
     </div>
@@ -145,7 +145,7 @@
         </div>
         <div class="tc dib w-100 relative">
           <button class="btn">
-            {{ $t('people.document_upload_zone_cta') }}
+            {{ t('people.document_upload_zone_cta') }}
           </button>
           <input id="file" ref="file" type="file" class="absolute o-0 w-100 h-100 pointer" style="left:0;"
                  @change="handleFileUpload()"
@@ -157,7 +157,7 @@
     <!-- LAST STEP OF DOCUMENT UPLOAD -->
     <div v-if="displayUploadProgress" class="ba br3 document-upload-zone mb3 pa3">
       <p class="tc mb1">
-        {{ $t('people.document_upload_zone_progress') }}
+        {{ t('people.document_upload_zone_progress') }}
       </p>
       <div class="tc mb1">
         <progress max="100" :value.prop="uploadPercentage"></progress>
@@ -180,7 +180,7 @@
           </svg>
         </div>
         <p class="tc mb3">
-          {{ $t('people.document_upload_zone_error') }}
+          {{ t('people.document_upload_zone_error') }}
         </p>
         <p class="tc">
           <input id="file" ref="file" type="file" @change="handleFileUpload()" />
@@ -215,12 +215,12 @@
           <ul v-if="modalToDisplay === document.id" class="absolute bg-white z-max pv1 document-action-menu">
             <li class="tc">
               <a class="pv2 pointer ph3 inline-flex items-center w-100 no-underline document-action-menu-item" :href="document.link" target="_blank" @click="downloadDocument(document)">
-                {{ $t('app.download') }}
+                {{ t('app.download') }}
               </a>
             </li>
             <li class="tc">
               <a class="pv2 pointer ph3 inline-flex items-center no-underline w-100 document-action-menu-item delete" href="" @click.prevent="deleteDocument(document)">
-                {{ $t('app.delete') }}
+                {{ t('app.delete') }}
               </a>
             </li>
           </ul>
@@ -248,8 +248,8 @@ export default {
   },
 
   setup() {
-    const { locale } = useI18n();
-    return { locale };
+    const { t, locale } = useI18n();
+    return { t, locale };
   },
 
   data() {

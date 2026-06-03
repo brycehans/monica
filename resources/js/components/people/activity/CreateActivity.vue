@@ -10,7 +10,7 @@
               :id="'summary'"
               v-model="newActivity.summary"
               :input-type="'text'"
-              :title="$t('people.activities_add_title', { name: name })"
+              :title="t('people.activities_add_title', { name: name })"
               :required="true"
             />
           </div>
@@ -18,7 +18,7 @@
           <!-- WHEN -->
           <div class="dtc">
             <p class="mb2 b">
-              {{ $t('people.activities_add_date_occured') }}
+              {{ t('people.activities_add_date_occured') }}
             </p>
             <div class="di">
               <div class="dib">
@@ -38,16 +38,16 @@
         <div v-show="!displayDescription || !displayEmotions || !displayCategory || !displayParticipants" class="bb b--gray-monica pv3 mb3">
           <ul class="list">
             <li v-show="!displayDescription" class="di pointer mr3 nowrap-link">
-              <a href="" @click.prevent="displayDescription = true">{{ $t('people.activities_add_more_details') }}</a>
+              <a href="" @click.prevent="displayDescription = true">{{ t('people.activities_add_more_details') }}</a>
             </li>
             <li v-show="!displayEmotions" class="di pointer mr3 nowrap-link">
-              <a href="" @click.prevent="displayEmotions = true">{{ $t('people.activities_add_emotions') }}</a>
+              <a href="" @click.prevent="displayEmotions = true">{{ t('people.activities_add_emotions') }}</a>
             </li>
             <li v-show="!displayCategory" class="di pointer mr3 nowrap-link">
-              <a v-cy-name="'activities_add_category'" href="" @click.prevent="displayCategory = true">{{ $t('people.activities_add_category') }}</a>
+              <a v-cy-name="'activities_add_category'" href="" @click.prevent="displayCategory = true">{{ t('people.activities_add_category') }}</a>
             </li>
             <li v-show="!displayParticipants" class="di pointer nowrap-link">
-              <a href="" @click.prevent="displayParticipants = true">{{ $t('people.activities_add_participants_cta') }}</a>
+              <a href="" @click.prevent="displayParticipants = true">{{ t('people.activities_add_participants_cta') }}</a>
             </li>
           </ul>
         </div>
@@ -59,13 +59,13 @@
             :required="true"
             :no-label="true"
             :rows="4"
-            :title="$t('people.activities_summary')"
-            :placeholder="$t('people.conversation_add_content')"
+            :title="t('people.activities_summary')"
+            :placeholder="t('people.conversation_add_content')"
             @contentChange="updateDescription($event)"
           />
           <p class="f6">
-            {{ $t('app.markdown_description') }} <a href="https://guides.github.com/features/mastering-markdown/" rel="noopener noreferrer" target="_blank">
-              {{ $t('app.markdown_link') }}
+            {{ t('app.markdown_description') }} <a href="https://guides.github.com/features/mastering-markdown/" rel="noopener noreferrer" target="_blank">
+              {{ t('app.markdown_link') }}
             </a>
           </p>
         </div>
@@ -73,7 +73,7 @@
         <!-- EMOTIONS -->
         <div v-if="displayEmotions" class="bb b--gray-monica pb3 mb3">
           <label>
-            {{ $t('people.activities_add_emotions_title') }}
+            {{ t('people.activities_add_emotions_title') }}
           </label>
           <emotion
             class="pv2"
@@ -86,14 +86,14 @@
         <div v-if="displayCategory" class="bb b--gray-monica pb3 mb3">
           <activity-type-list
             v-model="newActivity.activity_type_id"
-            :title="$t('people.activities_add_pick_activity')"
+            :title="t('people.activities_add_pick_activity')"
           />
         </div>
 
         <!-- PARTICPANTS -->
         <div v-if="displayParticipants" class="bb b--gray-monica pb3 mb3">
           <label>
-            {{ $t('people.activities_add_participants', {name: name}) }}
+            {{ t('people.activities_add_participants', {name: name}) }}
           </label>
           <participant
             :hash="hash"
@@ -109,12 +109,12 @@
           <div class="flex-ns justify-between">
             <div class="">
               <a class="btn btn-secondary tc w-auto-ns w-100 mb2 pb0-ns" @click.prevent="close()">
-                {{ $t('app.cancel') }}
+                {{ t('app.cancel') }}
               </a>
             </div>
             <div class="">
               <button v-cy-name="'save-activity-button'" class="btn btn-primary w-auto-ns w-100 mb2 pb0-ns" @click.prevent="store()">
-                {{ activity ? $t('app.save') : $t('app.add') }}
+                {{ activity ? t('app.save') : t('app.add') }}
               </button>
             </div>
           </div>

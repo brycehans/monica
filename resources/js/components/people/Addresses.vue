@@ -3,15 +3,15 @@
     <div class="w-100 dt">
       <div class="sidebar-box-title">
         <h3>
-          {{ $t('people.contact_address_title') }}
+          {{ t('people.contact_address_title') }}
         </h3>
       </div>
       <div v-if="contactAddresses.length > 0" class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
         <a v-if="!editMode" class="pointer" href="" @click.prevent="editMode = true">
-          {{ $t('app.edit') }}
+          {{ t('app.edit') }}
         </a>
         <a v-else class="pointer" href="" @click.prevent="toggleEditExcept(-1); resetState();">
-          {{ $t('app.done') }}
+          {{ t('app.done') }}
         </a>
       </div>
     </div>
@@ -19,7 +19,7 @@
     <!-- EMPTY BOX - DISPLAY ADD BUTTON -->
     <p v-if="contactAddresses.length === 0 && !addMode" class="mb0">
       <a class="pointer" href="" @click.prevent="toggleAdd">
-        {{ $t('app.add') }}
+        {{ t('app.add') }}
       </a>
     </p>
 
@@ -61,7 +61,7 @@
               <form-input
                 :id="'name' + i"
                 v-model="updateForm.name"
-                :title="$t('people.contact_address_form_name')"
+                :title="t('people.contact_address_form_name')"
                 input-type="text"
                 :required="false"
                 :iclass="'pa2 db w-100'"
@@ -71,7 +71,7 @@
               <form-input
                 :id="'street' + i"
                 v-model="updateForm.street"
-                :title="$t('people.contact_address_form_street')"
+                :title="t('people.contact_address_form_street')"
                 input-type="text"
                 :required="false"
               />
@@ -80,7 +80,7 @@
               <form-input
                 :id="'city' + i"
                 v-model="updateForm.city"
-                :title="$t('people.contact_address_form_city')"
+                :title="t('people.contact_address_form_city')"
                 input-type="text"
                 :required="false"
               />
@@ -89,7 +89,7 @@
               <form-input
                 :id="'province' + i"
                 v-model="updateForm.province"
-                :title="$t('people.contact_address_form_province')"
+                :title="t('people.contact_address_form_province')"
                 input-type="text"
                 :required="false"
               />
@@ -98,7 +98,7 @@
               <form-input
                 :id="'postal_code' + i"
                 v-model="updateForm.postal_code"
-                :title="$t('people.contact_address_form_postal_code')"
+                :title="t('people.contact_address_form_postal_code')"
                 input-type="text"
                 :required="false"
               />
@@ -107,7 +107,7 @@
               <form-select
                 :id="'name' + i"
                 v-model="updateForm.country"
-                :title="$t('people.contact_address_form_country')"
+                :title="t('people.contact_address_form_country')"
                 :options="countries"
                 :required="false"
               />
@@ -116,7 +116,7 @@
               <form-input
                 :id="'latitude' + i"
                 v-model="updateForm.latitude"
-                :title="$t('people.contact_address_form_latitude')"
+                :title="t('people.contact_address_form_latitude')"
                 input-type="number"
                 step="0.0000001"
                 :required="false"
@@ -126,7 +126,7 @@
               <form-input
                 :id="'longitude' + i"
                 v-model="updateForm.longitude"
-                :title="$t('people.contact_address_form_longitude')"
+                :title="t('people.contact_address_form_longitude')"
                 input-type="number"
                 step="0.0000001"
                 :required="false"
@@ -134,10 +134,10 @@
             </div>
             <div class="lh-copy mt3">
               <a class="btn btn-primary" href="" @click.prevent="update(contactAddress)">
-                {{ $t('app.save') }}
+                {{ t('app.save') }}
               </a>
               <a class="btn" href="" @click.prevent="toggleEdit(contactAddress)">
-                {{ $t('app.cancel') }}
+                {{ t('app.cancel') }}
               </a>
             </div>
           </form>
@@ -147,7 +147,7 @@
       <!-- ADD BUTTON ONLY WHEN EDIT MODE IS AVAILABLE  -->
       <li v-if="editMode && !addMode">
         <a class="pointer" href="" @click.prevent="toggleAdd">
-          {{ $t('app.add') }}
+          {{ t('app.add') }}
         </a>
       </li>
     </ul>
@@ -160,7 +160,7 @@
           <form-input
             id="name"
             v-model="createForm.name"
-            :title="$t('people.contact_address_form_name')"
+            :title="t('people.contact_address_form_name')"
             input-type="text"
             :required="false"
             :iclass="'pa2 db w-100'"
@@ -170,7 +170,7 @@
           <form-input
             id="street"
             v-model="createForm.street"
-            :title="$t('people.contact_address_form_street')"
+            :title="t('people.contact_address_form_street')"
             input-type="text"
             :required="false"
           />
@@ -179,7 +179,7 @@
           <form-input
             id="city"
             v-model="createForm.city"
-            :title="$t('people.contact_address_form_city')"
+            :title="t('people.contact_address_form_city')"
             input-type="text"
             :required="false"
           />
@@ -188,7 +188,7 @@
           <form-input
             id="province"
             v-model="createForm.province"
-            :title="$t('people.contact_address_form_province')"
+            :title="t('people.contact_address_form_province')"
             input-type="text"
             :required="false"
           />
@@ -197,7 +197,7 @@
           <form-input
             id="postal_code"
             v-model="createForm.postal_code"
-            :title="$t('people.contact_address_form_postal_code')"
+            :title="t('people.contact_address_form_postal_code')"
             input-type="text"
             :required="false"
           />
@@ -206,7 +206,7 @@
           <form-select
             id="name"
             v-model="createForm.country"
-            :title="$t('people.contact_address_form_country')"
+            :title="t('people.contact_address_form_country')"
             :options="countries"
             :required="false"
           />
@@ -215,7 +215,7 @@
           <form-input
             id="latitude"
             v-model="createForm.latitude"
-            :title="$t('people.contact_address_form_latitude')"
+            :title="t('people.contact_address_form_latitude')"
             input-type="number"
             step="0.0000001"
             :required="false"
@@ -225,7 +225,7 @@
           <form-input
             id="longitude"
             v-model="createForm.longitude"
-            :title="$t('people.contact_address_form_longitude')"
+            :title="t('people.contact_address_form_longitude')"
             input-type="number"
             step="0.0000001"
             :required="false"
@@ -233,10 +233,10 @@
         </div>
         <div class="lh-copy mt3">
           <a class="btn btn-primary" href="" @click.prevent="store">
-            {{ $t('app.add') }}
+            {{ t('app.add') }}
           </a>
           <a class="btn" href="" @click.prevent="resetState">
-            {{ $t('app.cancel') }}
+            {{ t('app.cancel') }}
           </a>
         </div>
       </form>

@@ -37,7 +37,7 @@
           <div class="flex-auto">
             <p class="mb1">
               <span class="pr2 f6 avenir">
-                {{ $t('journal.journal_entry_type_activity') }}: {{ activity.activity_type }}
+                {{ t('journal.journal_entry_type_activity') }}: {{ activity.activity_type }}
               </span>
             </p>
             <p class="mb1">
@@ -52,7 +52,7 @@
           <template v-if="activity.description">
             <div class="flex-none w-5 pointer" @click="toggleDescription()">
               <div class="flex justify-center items-center h-100">
-                <svg v-tooltip.top="$t('journal.journal_show_comment')" width="16px" height="13px" viewBox="0 0 16 13" version="1.1"
+                <svg v-tooltip.top="t('journal.journal_show_comment')" width="16px" height="13px" viewBox="0 0 16 13" version="1.1"
                      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="flex-none"
                 >
                   <defs />
@@ -82,14 +82,14 @@
 
           <div class="flex-none w-30 mt2 pt1 pb2">
             <p class="mb0 f6 gray">
-              {{ $t('journal.journal_created_automatically') }}
+              {{ t('journal.journal_created_automatically') }}
             </p>
           </div>
 
           <!-- Avatars of the attendees -->
           <div class="flex-auto w-60 tr mt2 pa1 pr3 pb2">
             <span class="f6 gray">
-              {{ $t('app.with') }}
+              {{ t('app.with') }}
             </span>
             <div v-for="attendees in activity.attendees" :key="attendees.id" class="dib pointer ml2" @click="redirect(attendees)">
               <img v-tooltip.bottom="attendees.complete_name" :src="attendees.information.avatar.url" class="br3 journal-avatar-small" :alt="attendees.complete_name" />
@@ -102,6 +102,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   props: {
@@ -109,6 +111,11 @@ export default {
       type: Object,
       default: null,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {

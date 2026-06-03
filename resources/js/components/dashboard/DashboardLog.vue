@@ -5,16 +5,16 @@
     <div class="pa3 bb b--gray-monica tc">
       <ul>
         <li :class="[activeTab === 'calls' ? 'di pointer mr3 b' : 'di pointer mr3 black-50']" @click.prevent="setActiveTab('calls')">
-          {{ $t('dashboard.tab_recent_calls') }}
+          {{ t('dashboard.tab_recent_calls') }}
         </li>
         <li :class="[activeTab === 'notes' ? 'di pointer mr3 b' : 'di pointer mr3 black-50']" @click.prevent="setActiveTab('notes')">
-          {{ $t('dashboard.tab_favorite_notes') }}
+          {{ t('dashboard.tab_favorite_notes') }}
         </li>
         <li :class="[activeTab === 'debts' ? 'di pointer mr3 b' : 'di pointer mr3 black-50']" @click.prevent="setActiveTab('debts')">
-          {{ $t('dashboard.tab_debts') }}
+          {{ t('dashboard.tab_debts') }}
         </li>
         <li :class="[activeTab === 'tasks' ? 'di pointer mr3 b' : 'di pointer mr3 black-50']" @click.prevent="setActiveTab('tasks')">
-          {{ $t('dashboard.tab_tasks') }}
+          {{ t('dashboard.tab_tasks') }}
         </li>
       </ul>
     </div>
@@ -49,7 +49,7 @@
 
         <!-- Calls: Blank state -->
         <div v-if="calls.length === 0" class="tc mt4 mb4">
-          <p>{{ $t('dashboard.tab_calls_blank') }}</p>
+          <p>{{ t('dashboard.tab_calls_blank') }}</p>
         </div>
       </div>
 
@@ -106,7 +106,7 @@
 
         <!-- Notes: Blank state -->
         <div v-if="notes.length === 0" class="tc mt4 mb4">
-          <p>{{ $t('dashboard.notes_title') }}</p>
+          <p>{{ t('dashboard.notes_title') }}</p>
         </div>
       </div>
 
@@ -131,14 +131,14 @@
               <span class="mr1 black-50">
                 •
               </span>
-              {{ $t('dashboard.debts_you_owe') }}
+              {{ t('dashboard.debts_you_owe') }}
             </span>
           </li>
         </ul>
 
         <!-- Debts: Blank state -->
         <div v-else class="tc mt4 mb4">
-          <p>{{ $t('dashboard.tab_debts_blank') }}</p>
+          <p>{{ t('dashboard.tab_debts_blank') }}</p>
         </div>
       </div>
 
@@ -147,12 +147,12 @@
         <ul class="tc mb3">
           <li class="di mr4">
             <span :class="[contactRelatedTasksView === true ? 'b' : 'pointer']" @click.prevent="contactRelatedTasksView = true">
-              {{ $t('dashboard.tasks_tab_your_contacts') }} ({{ contactRelated(tasks).length }})
+              {{ t('dashboard.tasks_tab_your_contacts') }} ({{ contactRelated(tasks).length }})
             </span>
           </li>
           <li class="di">
             <span :class="[contactRelatedTasksView === true ? 'pointer' : 'b']" @click.prevent="contactRelatedTasksView = false">
-              {{ $t('dashboard.tasks_tab_your_tasks') }} ({{ customNotCompleted(tasks).length }})
+              {{ t('dashboard.tasks_tab_your_tasks') }} ({{ customNotCompleted(tasks).length }})
             </span>
           </li>
         </ul>
@@ -161,15 +161,15 @@
         <div v-show="taskAddMode" class="br3 pa2 ba b--gray-monica mb3">
           <div class="flex items-center mb2">
             <input type="checkbox" disabled class="di mr2 pb2" />
-            <input v-model="newTask.title" type="text" class="bt-0 br-0 bl-0 w-100 di bb b--gray-monica pt2 pb2" :placeholder="$t('dashboard.tasks_add_task_placeholder')" @keyup.enter="saveTask()"
+            <input v-model="newTask.title" type="text" class="bt-0 br-0 bl-0 w-100 di bb b--gray-monica pt2 pb2" :placeholder="t('dashboard.tasks_add_task_placeholder')" @keyup.enter="saveTask()"
                    @keyup.esc="taskAddMode = false"
             />
             <a class="pointer" href="" @click.prevent="taskAddMode = false; newTask.title=''">
-              {{ $t('app.cancel') }}
+              {{ t('app.cancel') }}
             </a>
           </div>
           <div class="f7 relative" style="left: 20px;">
-            <span v-html="$t('dashboard.tasks_add_note')"></span>
+            <span v-html="t('dashboard.tasks_add_note')"></span>
           </div>
         </div>
 
@@ -200,16 +200,16 @@
           <div v-if="customNotCompleted(tasks).length === 0" class="tc mt4 mb4">
             <p class="mb4">
               <a v-show="!taskAddMode" class="btn pointer" href="" @click.prevent="taskAddMode = true">
-                {{ $t('dashboard.task_add_cta') }}
+                {{ t('dashboard.task_add_cta') }}
               </a>
             </p>
-            <img src="/img/dashboard/blank_your_tasks.svg" :alt="$t('dashboard.tasks_tab_your_tasks')" />
+            <img src="/img/dashboard/blank_your_tasks.svg" :alt="t('dashboard.tasks_tab_your_tasks')" />
           </div>
 
           <!-- Add a task -->
           <p v-if="customNotCompleted(tasks).length !== 0">
             <a v-show="!taskAddMode" class="pointer" href="" @click.prevent="taskAddMode = true">
-              {{ $t('dashboard.task_add_cta') }}
+              {{ t('dashboard.task_add_cta') }}
             </a>
           </p>
 
@@ -225,17 +225,17 @@
                 {{ task.title }}
               </form-checkbox>
               <a v-show="showTaskAction === task.id" class="pointer mr1" href="" @click.prevent="confirmDestroyTask = task.id">
-                {{ $t('app.delete') }}
+                {{ t('app.delete') }}
               </a>
               <ul v-show="confirmDestroyTask === task.id" class="di">
                 <li class="di">
                   <a class="pointer mr1" href="" @click.prevent="confirmDestroyTask = 0">
-                    {{ $t('app.cancel') }}
+                    {{ t('app.cancel') }}
                   </a>
                 </li>
                 <li class="di">
                   <a class="pointer red" href="" @click.prevent="destroyTask(task)">
-                    {{ $t('app.delete_confirm') }}
+                    {{ t('app.delete_confirm') }}
                   </a>
                 </li>
               </ul>
@@ -253,17 +253,17 @@
                 {{ task.title }}
               </form-checkbox>
               <a v-show="showTaskAction === task.id" class="pointer mr1" href="" @click.prevent="confirmDestroyTask = task.id">
-                {{ $t('app.delete') }}
+                {{ t('app.delete') }}
               </a>
               <ul v-show="confirmDestroyTask === task.id" class="di">
                 <li class="di">
                   <a class="pointer mr1" href="" @click.prevent="confirmDestroyTask = 0">
-                    {{ $t('app.cancel') }}
+                    {{ t('app.cancel') }}
                   </a>
                 </li>
                 <li class="di">
                   <a class="pointer red" href="" @click.prevent="destroyTask(task)">
-                    {{ $t('app.delete_confirm') }}
+                    {{ t('app.delete_confirm') }}
                   </a>
                 </li>
               </ul>
