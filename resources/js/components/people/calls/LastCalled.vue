@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
   props: {
     hash: {
@@ -15,6 +17,11 @@ export default {
     }
   },
 
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   data() {
     return {
       lastCalled: '',
@@ -24,14 +31,14 @@ export default {
   computed: {
     lastCalledMessage() {
       if (!this.initialValue && !this.lastCalled) {
-        return this.$t('people.last_called_empty');
+        return this.t('people.last_called_empty');
       }
 
       if (!this.lastCalled) {
-        return this.$t('people.last_talked_to', {date: this.initialValue});
+        return this.t('people.last_talked_to', {date: this.initialValue});
       }
 
-      return this.$t('people.last_talked_to', {date: this.lastCalled});
+      return this.t('people.last_talked_to', {date: this.lastCalled});
     }
   },
 

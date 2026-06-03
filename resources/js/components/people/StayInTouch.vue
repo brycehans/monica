@@ -169,6 +169,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import { useVuelidate } from '@vuelidate/core';
 import { required, numeric } from '@vuelidate/validators';
 import moment from 'moment-timezone';
@@ -203,7 +204,10 @@ export default {
     },
   },
 
-  setup: () => ({ v$: useVuelidate() }),
+  setup() {
+    const { t, locale } = useI18n();
+    return { v$: useVuelidate(), t, locale };
+  },
 
   validations() {
     return {
@@ -248,7 +252,7 @@ export default {
     },
 
     formatDate(dateAsString) {
-      moment.locale(this.$i18n.locale);
+      moment.locale(this.locale);
       moment.tz.setDefault('UTC');
       var date = moment.tz(moment(dateAsString), this.$root.timezone);
       return date.format('LL');
@@ -268,7 +272,7 @@ export default {
 
       // check if you need a subscription to access this feature
       if (this.limited) {
-        this.errorMessage = this.$t('people.stay_in_touch_premium');
+        this.errorMessage = this.t('people.stay_in_touch_premium');
         return;
       }
 
@@ -286,14 +290,14 @@ export default {
 
           this.$notify({
             group: 'main',
-            title: this.$t('app.default_save_success'),
+            title: this.t('app.default_save_success'),
             text: '',
             width: '500px',
             type: 'success'
           });
         })
         .catch(error => {
-          this.errorMessage = this.$t('app.error_save');
+          this.errorMessage = this.t('app.error_save');
         });
     },
 

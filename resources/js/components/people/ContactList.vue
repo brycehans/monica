@@ -106,6 +106,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import { VueGoodTable } from 'vue-good-table-next';
 import ContactItem from './partials/ContactItem.vue';
 
@@ -127,6 +128,11 @@ export default {
     },
   },
 
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
+
   data() {
     return {
       contacts: [],
@@ -144,17 +150,17 @@ export default {
 
       columns: [
         {
-          label: this.$t('app.contact_list_avatar'),
+          label: this.t('app.contact_list_avatar'),
           field: 'avatar',
           width: '70px',
           sortable: false,
         },
         {
-          label: this.$t('app.contact_list_name'),
+          label: this.t('app.contact_list_name'),
           field: 'name',
         },
         {
-          label: this.$t('app.contact_list_description'),
+          label: this.t('app.contact_list_description'),
           field: 'description',
         }
       ],

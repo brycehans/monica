@@ -113,6 +113,7 @@
 
 <script>
 
+import { useI18n } from 'vue-i18n';
 import PhotoUpload from './PhotoUpload.vue';
 
 export default {
@@ -138,6 +139,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -180,7 +186,7 @@ export default {
     handleNewPhoto(photo) {
       this.$notify({
         group: 'main',
-        title: this.$t('app.default_save_success'),
+        title: this.t('app.default_save_success'),
         text: '',
         type: 'success'
       });
@@ -194,7 +200,7 @@ export default {
           this.photos.splice(this.photos.indexOf(photo), 1);
           this.$notify({
             group: 'main',
-            title: this.$t('app.default_save_success'),
+            title: this.t('app.default_save_success'),
             text: '',
             type: 'success'
           });

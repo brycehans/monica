@@ -111,6 +111,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   props: {
@@ -118,6 +120,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -184,7 +191,7 @@ export default {
 
           this.$notify({
             group: 'main',
-            title: this.$t('people.pets_create_success'),
+            title: this.t('people.pets_create_success'),
             text: '',
             type: 'success'
           });
@@ -220,7 +227,7 @@ export default {
 
           this.$notify({
             group: 'main',
-            title: this.$t('people.pets_update_success'),
+            title: this.t('people.pets_update_success'),
             text: '',
             type: 'success'
           });
@@ -234,7 +241,7 @@ export default {
 
           this.$notify({
             group: 'main',
-            title: this.$t('people.pets_delete_success'),
+            title: this.t('people.pets_delete_success'),
             text: '',
             type: 'success'
           });

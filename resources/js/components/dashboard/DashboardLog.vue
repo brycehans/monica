@@ -276,6 +276,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 import Avatar from '../partials/Avatar.vue';
 
@@ -290,6 +291,11 @@ export default {
       type: String,
       default: 'calls',
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -426,7 +432,7 @@ export default {
         .then(response => {
           this.$notify({
             group: 'main',
-            title: this.$t('app.default_save_success'),
+            title: this.t('app.default_save_success'),
             text: '',
             type: 'success'
           });
@@ -441,7 +447,7 @@ export default {
           this.getTasks();
           this.$notify({
             group: 'main',
-            title: this.$t('app.default_save_success'),
+            title: this.t('app.default_save_success'),
             text: '',
             type: 'success'
           });
