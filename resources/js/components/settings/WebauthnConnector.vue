@@ -171,6 +171,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment-timezone';
 import { startRegistration, startAuthentication, browserSupportsWebAuthn } from '@simplewebauthn/browser';
 
@@ -204,6 +205,11 @@ export default {
     },
   },
 
+  setup() {
+    const { t, locale } = useI18n();
+    return { t, locale };
+  },
+
   data() {
     return {
       isSupported: true,
@@ -233,9 +239,9 @@ export default {
     _errorMessage(name, message) {
       switch (name) {
       case 'InvalidStateError':
-        return this.$t('settings.webauthn_error_already_used');
+        return this.t('settings.webauthn_error_already_used');
       case 'NotAllowedError':
-        return this.$t('settings.webauthn_error_not_allowed');
+        return this.t('settings.webauthn_error_not_allowed');
       default:
         return message;
       }
@@ -243,9 +249,9 @@ export default {
 
     notSupportedMessage() {
       if (! window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        return this.$t('settings.webauthn_not_secured');
+        return this.t('settings.webauthn_not_secured');
       }
-      return this.$t('settings.webauthn_not_supported');
+      return this.t('settings.webauthn_not_supported');
     },
 
     start() {
@@ -311,7 +317,7 @@ export default {
           name: this.keyName,
         });
         this.success = true;
-        this.notify(this.$t('settings.webauthn_success'), true);
+        this.notify(this.t('settings.webauthn_success'), true);
         this.currentkeys.push({
           id: response.data.result.id,
           name: response.data.result.name,
@@ -337,7 +343,7 @@ export default {
       try {
         const response = await axios.post('webauthn/auth', { ...assertionResp });
         this.success = true;
-        this.notify(this.$t('settings.webauthn_success'), true);
+        this.notify(this.t('settings.webauthn_success'), true);
         window.location = response.data.callback;
       } catch (error) {
         this.errorMessage = error.message ? error.message : error.response.data.message;
@@ -367,7 +373,7 @@ export default {
     },
 
     formatTime(value) {
-      moment.locale(this.$i18n.locale);
+      moment.locale(this.locale);
       moment.tz.setDefault('UTC');
 
       var t = moment(value);

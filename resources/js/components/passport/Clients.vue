@@ -184,6 +184,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import FormErrors from '../partials/FormErrors.vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, url } from '@vuelidate/validators';
@@ -194,7 +195,10 @@ export default {
     FormErrors,
   },
 
-  setup: () => ({ v$: useVuelidate() }),
+  setup() {
+    const { t } = useI18n();
+    return { v$: useVuelidate(), t };
+  },
 
   data() {
     return {
@@ -321,7 +325,7 @@ export default {
           if (typeof error.response.data === 'object') {
             form.errors = _.flatten(_.toArray(error.response.data));
           } else {
-            form.errors = [this.$t('app.error_try_again')];
+            form.errors = [this.t('app.error_try_again')];
           }
         });
     },
@@ -376,7 +380,7 @@ export default {
     copyIntoClipboard(text) {
       navigator.clipboard.writeText(text)
         .then(() => {
-          this.notify(this.$t('settings.dav_clipboard_copied'), true);
+          this.notify(this.t('settings.dav_clipboard_copied'), true);
         })
         .catch(() => { /* silent on permission denial / non-secure context */ });
     },

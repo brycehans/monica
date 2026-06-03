@@ -158,6 +158,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   components: {
@@ -168,6 +170,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -233,7 +240,7 @@ export default {
 
     showEditType(type, categoryId) {
       this.updateTypeForm.id = type.id;
-      this.updateTypeForm.name = type.name ? type.name : this.$t('people.life_event_sentence_' + type.default_life_event_type_key);
+      this.updateTypeForm.name = type.name ? type.name : this.t('people.life_event_sentence_' + type.default_life_event_type_key);
       this.updateTypeForm.life_event_category_id = categoryId;
 
       this.showUpdateTypeModal = true;
@@ -258,7 +265,7 @@ export default {
           this.createTypeForm.name = '';
           this.getLifeEventCategories();
 
-          this.notify(this.$t('app.default_save_success'), true);
+          this.notify(this.t('app.default_save_success'), true);
         });
     },
 
@@ -269,7 +276,7 @@ export default {
           this.updateTypeForm.name = '';
           this.getLifeEventCategories();
 
-          this.notify(this.$t('app.default_save_success'), true);
+          this.notify(this.t('app.default_save_success'), true);
         });
     },
 
@@ -280,7 +287,7 @@ export default {
           this.destroyTypeForm.id = '';
           this.getLifeEventCategories();
 
-          this.notify(this.$t('app.default_save_success'), true);
+          this.notify(this.t('app.default_save_success'), true);
         })
         .catch(error => {
           this.errorMessage = error.response.data.message;

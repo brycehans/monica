@@ -59,6 +59,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   props: {
@@ -66,6 +68,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -97,7 +104,7 @@ export default {
         .then(response => {
           this.$notify({
             group: 'main',
-            title: this.$t('settings.personalization_module_save'),
+            title: this.t('settings.personalization_module_save'),
             text: '',
             type: 'success'
           });

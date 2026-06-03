@@ -82,6 +82,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   props: {
@@ -125,6 +127,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -205,7 +212,7 @@ export default {
     handleError(error) {
       if (error.code === 'parameter_invalid_empty' &&
             error.param === 'payment_method_data[billing_details][name]') {
-        this.errors = this.$t('settings.subscriptions_payment_error_name');
+        this.errors = this.t('settings.subscriptions_payment_error_name');
       } else {
         this.errors = error.message;
       }

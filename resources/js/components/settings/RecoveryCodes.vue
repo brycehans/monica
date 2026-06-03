@@ -53,9 +53,16 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   components: {
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -70,10 +77,10 @@ export default {
       return this.$root.htmldir === 'ltr';
     },
     usedHelp() {
-      return this.$t('settings.recovery_already_used_help');
+      return this.t('settings.recovery_already_used_help');
     },
     copyHelp() {
-      return this.$t('settings.recovery_copy_help');
+      return this.t('settings.recovery_copy_help');
     },
   },
 
@@ -106,13 +113,13 @@ export default {
     copyIntoClipboard() {
       navigator.clipboard.writeText(this.getDataStream())
         .then(() => {
-          this.notify(this.$t('settings.recovery_clipboard'), true);
+          this.notify(this.t('settings.recovery_clipboard'), true);
         })
         .catch(() => { /* silent on permission denial / non-secure context */ });
     },
 
     getDataStream() {
-      var text = this.$t('settings.recovery_help_intro')+'\n';
+      var text = this.t('settings.recovery_help_intro')+'\n';
       var i = 1;
       this.codes.forEach(code => {
         if (code.used) {
