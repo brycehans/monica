@@ -125,6 +125,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 import ActivityTypeList from './ActivityTypeList.vue';
 import Emotion from '../Emotion.vue';
@@ -156,6 +157,11 @@ export default {
       type: Object,
       default: null,
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -259,7 +265,7 @@ export default {
 
           this.$notify({
             group: 'main',
-            title: this.$t('people.activities_add_success'),
+            title: this.t('people.activities_add_success'),
             text: '',
             type: 'success'
           });
@@ -283,7 +289,7 @@ export default {
       if (error.response && typeof error.response.data === 'object') {
         this.errors = _.flatten(_.toArray(error.response.data));
       } else {
-        this.errors = [this.$t('app.error_try_again'), error.message];
+        this.errors = [this.t('app.error_try_again'), error.message];
       }
     },
   }

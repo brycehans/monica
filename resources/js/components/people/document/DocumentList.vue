@@ -231,6 +231,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment-timezone';
 
 export default {
@@ -244,6 +245,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+
+  setup() {
+    const { locale } = useI18n();
+    return { locale };
   },
 
   data() {
@@ -293,7 +299,7 @@ export default {
     },
 
     formatTime(dateAsString) {
-      moment.locale(this.$i18n.locale);
+      moment.locale(this.locale);
 
       var date = moment(dateAsString);
       return date.format('ll');

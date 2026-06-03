@@ -145,6 +145,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import moment from 'moment-timezone';
 
 export default {
@@ -158,6 +159,11 @@ export default {
       type: Number,
       default: -1,
     },
+  },
+
+  setup() {
+    const { t, locale } = useI18n();
+    return { t, locale };
   },
 
   data() {
@@ -232,7 +238,7 @@ export default {
           this.tasks.push(response.data);
           this.$notify({
             group: 'main',
-            title: this.$t('app.default_save_success'),
+            title: this.t('app.default_save_success'),
             text: '',
             type: 'success'
           });
@@ -256,7 +262,7 @@ export default {
           }
           this.$notify({
             group: 'main',
-            title: this.$t('app.default_save_success'),
+            title: this.t('app.default_save_success'),
             text: '',
             type: 'success'
           });
@@ -264,7 +270,7 @@ export default {
     },
 
     formatDate(dateAsString) {
-      moment.locale(this.$i18n.locale);
+      moment.locale(this.locale);
       moment.tz.setDefault('UTC');
 
       var date = moment.tz(moment(dateAsString), this.$root.timezone);

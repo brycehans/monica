@@ -245,6 +245,8 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
 
   props: {
@@ -252,6 +254,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
 
   data() {
@@ -416,7 +423,7 @@ export default {
           if (typeof error.response.data === 'object') {
             form.errors = _.flatten(_.toArray(error.response.data));
           } else {
-            form.errors = [this.$t('app.error_try_again')];
+            form.errors = [this.t('app.error_try_again')];
           }
         });
     },
