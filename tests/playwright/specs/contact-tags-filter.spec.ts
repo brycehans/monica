@@ -66,13 +66,12 @@ test.describe('Monica v4 — contact tags filter', () => {
     await expect(rows.filter({ hasText: 'Alice' })).toHaveCount(1);
     await expect(rows.filter({ hasText: 'Bob' })).toHaveCount(1);
 
-    // Sidebar tag chip — `.sidebar .pretty-tag a` renders one anchor per
-    // tag whose contact_count > 0. Scoping to .sidebar excludes the active
-    // filter banner's `.pretty-tag` (which is rendered without an inner
-    // anchor) and any future chip variants elsewhere on the page.
+    // Sidebar tag chip — one anchor per tag whose contact_count > 0.
+    // data-testid="people-tag-chip" sits on the anchor (index.blade.php:138).
+    // Filter by visible text so the spec selects this run's unique marker.
     const sidebarChip = page
-      .locator('.sidebar .pretty-tag')
-      .getByRole('link', { name: tagName });
+      .getByTestId('people-tag-chip')
+      .filter({ hasText: tagName });
     await expect(sidebarChip).toBeVisible();
 
     // -- Apply filter: click the sidebar chip
@@ -81,7 +80,10 @@ test.describe('Monica v4 — contact tags filter', () => {
     // in the address bar). Escape the brackets for the regex.
     await expect(page).toHaveURL(new RegExp(`/people\\?tags\\[\\]=${tagName}`));
 
-    const banner = page.locator('.clear-filter');
+    // Active-filter banner — data-testid on the <p class="clear-filter">
+    // (index.blade.php:52). The `$tagLess` sibling banner uses no testid,
+    // so this locator only matches the tag-filter variant.
+    const banner = page.getByTestId('people-active-tag-filter');
     await expect(banner).toContainText('Showing all the contacts tagged with');
     await expect(banner.getByText(tagName)).toBeVisible();
 
@@ -92,7 +94,7 @@ test.describe('Monica v4 — contact tags filter', () => {
     // -- Clear filter: click the banner anchor (plain <a href="/people">)
     await banner.getByRole('link', { name: 'Clear filter' }).click();
     await expect(page).toHaveURL(/\/people$/);
-    await expect(page.locator('.clear-filter')).toHaveCount(0);
+    await expect(page.getByTestId('people-active-tag-filter')).toHaveCount(0);
 
     const clearedRows = page.locator('table.vgt-table tbody tr');
     await expect(clearedRows.filter({ hasText: 'Alice' })).toHaveCount(1);
