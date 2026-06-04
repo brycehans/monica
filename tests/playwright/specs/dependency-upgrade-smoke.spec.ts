@@ -77,8 +77,13 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     // The contact list links use /people/h:<hash>. Count is approximate (seed
     // generates >= 20) — we just want to confirm it's not empty.
-    const contactLinks = await page.locator('a[href*="/people/h:"]').count();
-    expect(contactLinks).toBeGreaterThan(10);
+    //
+    // Use expect.poll() rather than a raw `.count()` so the assertion retries
+    // while Vue paints the list. A naked `.count()` runs once, sees 0 on a
+    // cold or under-load rig where the SPA hasn't finished mounting, and
+    // fails despite the page being healthy.
+    const contactLinks = page.locator('a[href*="/people/h:"]');
+    await expect.poll(() => contactLinks.count()).toBeGreaterThan(10);
 
     consoleGate.assertNoUnknownErrors('/people');
   });
@@ -382,10 +387,26 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
     // The "Name" field — first text input inside the modal. form-input
     // generates dynamic IDs (`+_uid`) so we target by position rather than id.
-    await modal.locator('input[type="text"]').first().fill(newGenderName);
+    const nameInput = modal.locator('input[type="text"]').first();
+    await nameInput.fill(newGenderName);
+    // Anchor: wait for the bound value to read back before clicking Save.
+    // Without this, the click can fire before Vue's v-model has propagated
+    // createForm.name; the server then sees an empty name, validation
+    // rejects, and the modal stays open — the original L347 flake mode.
+    await expect(nameInput).toHaveValue(newGenderName);
 
     // The "Save" action is an <a class="btn btn-primary"> with text "Save".
+    // Wait on the POST round-trip so the assertion below isn't racing the
+    // modal close animation against the network. apiResource is the
+    // standard REST shape: POST /settings/personalization/genders.
+    const savePost = page.waitForResponse(
+      (r) =>
+        r.url().endsWith('/settings/personalization/genders')
+        && r.request().method() === 'POST',
+    );
     await modal.getByRole('link', { name: 'Save', exact: true }).click();
+    const saveResponse = await savePost;
+    expect(saveResponse.status()).toBeLessThan(400);
 
     // Modal closes and the new gender appears in the table.
     await expect(modal).toBeHidden();
