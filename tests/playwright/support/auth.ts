@@ -54,6 +54,37 @@ export async function loginAsFreshUser(page: Page): Promise<FreshUser> {
 }
 
 /**
+ * Mint a fresh user, force a known bcrypt password on them, and return
+ * the plaintext alongside the FreshUser shape. Used by specs that need
+ * to drive the /login form (e.g. to engage the 2FA challenge gate —
+ * the /_dusk/login bridge bypasses it).
+ *
+ * The factory in `setup:frontendtestuser` writes a random password we
+ * never see; one extra tinker shellout reshapes the user into a known
+ * state without touching the artisan command itself.
+ */
+export async function createFreshUserWithPassword(
+  plainPassword: string,
+): Promise<FreshUser & { password: string }> {
+  const user = await createFreshUser();
+  // bcrypt() lives on the global helper namespace; tinker eval picks it
+  // up without an explicit import. Using single-quote PHP string so
+  // plainPassword can contain $ or " without escaping (we still reject
+  // single quotes below to keep the call site honest).
+  if (plainPassword.includes("'")) {
+    throw new Error('createFreshUserWithPassword: plainPassword cannot contain single quotes');
+  }
+  artisan(
+    'tinker',
+    '--execute',
+    `$u = App\\Models\\User\\User::find(${user.userId}); ` +
+      `$u->password = bcrypt('${plainPassword}'); ` +
+      `$u->save();`,
+  );
+  return { ...user, password: plainPassword };
+}
+
+/**
  * Mint a fresh user without driving the Dusk login bridge. Used by specs
  * that need to act as a logged-out visitor (e.g. password reset).
  */
