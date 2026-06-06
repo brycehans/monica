@@ -64,15 +64,15 @@ test.describe('Monica v4 — personal access tokens CRUD', () => {
     // shape so a config change in the keypair doesn't false-positive.
     expect(accessToken.length).toBeGreaterThan(40);
 
-    // Reload to dismiss the modal and pick up the persisted token from
-    // the server. The footer "Close" button is wired to closeModal() which
-    // calls $refs.form.reset() — but $refs.form was unmounted when the
-    // create modal closed, so closeModal throws before the boolean reset
-    // ever runs (vue 2 → 3 unmount-ordering footgun; see #771). Reload
-    // sidesteps the broken control AND gives a stronger assertion: the
-    // row is present because the token round-tripped to the database,
-    // not because of local-array push() from the create response.
-    await page.reload();
+    // Dismiss the access-token modal via its footer Close button. The
+    // handler is shared closeModal() — see PersonalAccessTokens.vue:226 —
+    // which calls $refs.form?.reset() (the optional chain matters: by
+    // this point the create modal's slot is unmounted, so $refs.form is
+    // undefined; without `?.` closeModal threw and the modal stayed
+    // visible — see #771). Target by `.btn` to disambiguate from the
+    // modal-chrome `×` (also has accessible name "Close" via aria-label).
+    await tokenModal.locator('a.btn', { hasText: 'Close' }).click();
+    await expect(tokenModal).toBeHidden();
 
     // -- List: the new token row renders with its name + a Delete action.
     const row = page.locator('.dt-row', { hasText: tokenName });

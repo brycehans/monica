@@ -224,7 +224,14 @@ export default {
      * Close all modals.
      */
     closeModal() {
-      this.$refs.form.reset();
+      // $refs.form is the <form ref="form"> inside the create-modal slot.
+      // After a successful create, showAccessToken() flips
+      // showModalCreateToken = false, which unmounts that slot under
+      // vue-final-modal — so when the access-token modal's footer Close
+      // calls closeModal(), $refs.form is undefined. Without the optional
+      // chain, .reset() threw and the booleans below never ran, leaving
+      // the modal visible. See #771 for the trace.
+      this.$refs.form?.reset();
       this.v$.$reset();
       this.showModalCreateToken = false;
       this.showModalAccessToken = false;
