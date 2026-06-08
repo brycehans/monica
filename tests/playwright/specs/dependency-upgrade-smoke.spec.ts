@@ -632,14 +632,16 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     consoleGate.assertNoUnknownErrors('/settings/security');
   });
 
-  test('webauthn registration: virtual authenticator drives the register wire shape (swap contract for #710)', async ({ page, context }) => {
+  test('webauthn registration end-to-end: register persists row, remove-modal deletes it (swap contract for #710; covers #786 wa.2)', async ({ page, context }) => {
     // SWAP CONTRACT — locks in @simplewebauthn/browser's POST /webauthn/keys
     // wire shape against what web-auth/webauthn-lib's PHP server expects.
     //
     // What this exercises:
     //   1. POST /webauthn/keys/options  (server generates challenge + opts) → 200
     //   2. navigator.credentials.create() via a CDP-supplied virtual authenticator
-    //   3. POST /webauthn/keys           (registration request body)
+    //   3. POST /webauthn/keys           (registration → 201 + persisted row)
+    //   4. row appears in /settings/security
+    //   5. DELETE /webauthn/keys/{id}   (remove-modal flow → 204 + row gone)
     //
     // Semantic asserts below mirror the server's decoder chain:
     //   - id            → Base64UrlSafe::decodeNoPadding   (strict)
@@ -651,17 +653,13 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // string ending in `=`. SimpleWebAuthn always emits base64url-no-padding,
     // which round-trips cleanly through both paths.
     //
-    // We deliberately do NOT assert /webauthn/keys returns 201. Pre-#711 it
-    // was the HTTP origin getting rejected by web-auth/webauthn-lib's
-    // CheckOrigin step. Post-#711 (HTTPS via the Caddy sidecar), CheckOrigin
-    // passes — but the request now reaches a TypeError in
-    // asbiin/laravel-webauthn 5.5.0's CredentialAttestationValidator
-    // (declared return type PublicKeyCredentialSource, actual return
-    // CredentialRecord under webauthn-lib 5.3+). The vendor fix lives in
-    // asbiin/laravel-webauthn 6.0.0; bump tracked in #789. Once that lands,
-    // the 201 + persist + DELETE strengthening (and #786 wa.2's
-    // remove-modal coverage) come along for free. The wire shape IS the
-    // contract here; server-side acceptance is gated independently.
+    // The 201 + row + DELETE round-trip became possible across two
+    // dependency moves: #711 (Caddy sidecar — HTTPS origin so
+    // CheckOrigin passes) and #789 (asbiin/laravel-webauthn 6.0.0 —
+    // CredentialAttestationValidator return type aligned with
+    // webauthn-lib 5.3's CredentialRecord). Before #789 the request 500'd
+    // with a TypeError after CheckOrigin passed; this spec was limited to
+    // shape-only checks.
     const cdp = await context.newCDPSession(page);
     await cdp.send('WebAuthn.enable');
     const { authenticatorId } = await cdp.send('WebAuthn.addVirtualAuthenticator', {
@@ -697,6 +695,8 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
         r.url().endsWith('/webauthn/keys/options') && r.request().method() === 'POST');
       const storeReq = page.waitForRequest((r) =>
         /\/webauthn\/keys$/.test(r.url()) && r.method() === 'POST');
+      const storeResp = page.waitForResponse((r) =>
+        /\/webauthn\/keys$/.test(r.url()) && r.request().method() === 'POST');
 
       await modal.getByRole('link', { name: 'Next' }).click();
 
@@ -738,10 +738,46 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       const attBytes = decodeBase64UrlNoPadding(requestBody.response.attestationObject);
       const major = attBytes[0] >> 5;
       expect(major).toBe(5);
+
+      // Server accepts the registration: 201 + JSON envelope with the new
+      // WebauthnKey model. Response shape comes from asbiin/laravel-webauthn's
+      // RegisterSuccessResponse::jsonResponse: { result: <model>, callback }.
+      const storeResponse = await storeResp;
+      expect(storeResponse.status()).toBe(201);
+      const storeBody = await storeResponse.json();
+      const keyId = storeBody?.result?.id;
+      expect(typeof keyId).toBe('number');
+
+      // The Vue connector reactively appends the new key to its `currentkeys`
+      // list, so the row is visible without a fresh navigation.
+      const row = page.locator('li.table-row').filter({ hasText: keyName });
+      await expect(row).toBeVisible();
+
+      // Drive the remove-key modal (closes #786 wa.2 — the WA.2 thread
+      // deferred from #781). The modal is a separate <monica-modal> with
+      // title "Remove a key"; scope by that body copy so we don't collide
+      // with the still-mounted register modal.
+      await row.getByRole('link', { name: /^Delete$/i }).click();
+
+      const deleteModal = page.locator('.monica-modal__panel').filter({ hasText: 'Remove a key' }).first();
+      await expect(deleteModal).toBeVisible();
+
+      const deleteResp = page.waitForResponse((r) =>
+        /\/webauthn\/keys\/\d+$/.test(r.url()) && r.request().method() === 'DELETE');
+
+      await deleteModal.getByRole('link', { name: /^Delete$/i }).click();
+
+      const deleteResponse = await deleteResp;
+      // asbiin/laravel-webauthn's DestroyResponse::toResponse returns 204
+      // No Content for JSON callers.
+      expect(deleteResponse.status()).toBe(204);
+      expect(deleteResponse.url()).toMatch(new RegExp(`/webauthn/keys/${keyId}$`));
+
+      // Row gone — the splice on `currentkeys` removes it from the rendered
+      // list. (Single-key path, so the indexOf-undefined bug in
+      // WebauthnConnector.vue:357 doesn't bite here; flagged in #786 body.)
+      await expect(row).toHaveCount(0);
     } finally {
-      // Detach the virtual authenticator. (No DB row to clean up — the
-      // vendor TypeError described in the test comment 500s registration
-      // before the model is persisted.)
       await cdp.send('WebAuthn.removeVirtualAuthenticator', { authenticatorId });
       await cdp.detach();
     }
