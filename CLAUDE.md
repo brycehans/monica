@@ -101,6 +101,12 @@ Standard Laravel + Vue monolith. Worth knowing before changing things:
 - Commit messages are lowercase.
 - The upstream codebase follows a soft form of [object calisthenics](http://www.slideshare.net/guilhermeblanco/object-calisthenics-applied-to-php): one indentation level per method, no `else`, short classes, document public methods. Match the style of nearby code rather than treating these as hard rules.
 
+## Review rules
+
+Fork-internal review rules live under `docs/review-rules/`. Read these before reviewing or writing Vue SFC changes:
+
+- [`vue3-proxy-after-unmount.md`](docs/review-rules/vue3-proxy-after-unmount.md) — Vue 2 → 3 cutover footgun: `$t` / `$refs` / `$emit('update')` after self-unmount across a `.then` or `await` boundary crashes silently. Both flavours documented with a reviewer checklist. Closes #743.
+
 ## Composer wrinkles
 
 **`spatie/ray` and `spatie/laravel-ray` are explicitly suppressed.** They were stowaway transitive deps (zero callers anywhere in `vendor/`) pulled in via `psalm/plugin-laravel → orchestra/testbench → orchestra/workbench`. The root `composer.json` declares them in `replace`, and `composer.lock` has been hand-pruned to drop them and their now-orphaned transitive deps (`rector/rector`, the `zbateson/*` chain, `pimple/pimple`, `symfony/polyfill-iconv`).
