@@ -1,28 +1,29 @@
 <template>
   <monica-modal
     :model-value="modelValue"
-    :title="t('settings.personalization_genders_modal_default')"
+    :title="t('settings.personalization_life_event_type_modal_delete')"
     @update:model-value="sync"
   >
     <form>
-      <div class="form-group">
-        <div class="form-group">
-          <form-select
-            :id="''"
-            v-model="selectedId"
-            :options="genders"
-            :required="true"
-            :title="t('settings.personalization_genders_select_default')"
-          />
+      <div v-if="errorMessage !== ''" class="form-error-message mb3">
+        <div class="pa2">
+          <p class="mb0">
+            {{ errorMessage }}
+          </p>
         </div>
+      </div>
+      <div class="mb4">
+        <p class="mb2">
+          {{ t('settings.personalization_life_event_type_modal_delete_desc') }}
+        </p>
       </div>
     </form>
     <template #button>
       <a class="btn" href="" @click.prevent="cancel">
         {{ t('app.cancel') }}
       </a>
-      <a class="btn btn-primary" href="" @click.prevent="save">
-        {{ t('app.save') }}
+      <a class="btn btn-primary" href="" @click.prevent="destroy">
+        {{ t('app.delete') }}
       </a>
     </template>
   </monica-modal>
@@ -36,8 +37,7 @@ import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 export default {
   props: {
     modelValue: { type: Boolean, default: false },
-    genders: { type: Array, default: () => [] },
-    defaultId: { type: Number, default: null },
+    type: { type: Object, required: true },
   },
 
   emits: ['update:modelValue', 'saved'],
@@ -50,13 +50,20 @@ export default {
 
   data() {
     return {
-      selectedId: this.defaultId,
+      form: {
+        id: this.type.id,
+      },
+      errorMessage: '',
     };
   },
 
   methods: {
-    save() {
-      return axios.put('settings/personalization/genders/default/' + this.selectedId).then(this.finish);
+    destroy() {
+      return axios.delete('settings/personalization/lifeeventtypes/' + this.form.id)
+        .then(this.finish)
+        .catch((error) => {
+          this.errorMessage = error.response.data.message;
+        });
     },
   },
 };
