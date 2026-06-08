@@ -2,7 +2,7 @@
   <monica-modal
     :model-value="modelValue"
     :title="t('settings.personalization_genders_modal_edit')"
-    @update:model-value="(v) => $emit('update:modelValue', v)"
+    @update:model-value="sync"
   >
     <form @submit.prevent="update">
       <div class="form-group">
@@ -54,13 +54,9 @@
 
 <script>
 import { useI18n } from 'vue-i18n';
+import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
 // See genders/CreateModal.vue for the modelValue contract rationale.
-// Re-mount each open is critical here: form is initialized from `gender`
-// in data(), so the parent's patchOptions({ attrs: { gender } }) only
-// produces the right form state when the SFC actually remounts. The
-// update:modelValue=false on cancel/save is what lets useModal() splice
-// this entry out of dynamicModals so the next open() gets a fresh mount.
 export default {
   props: {
     modelValue: { type: Boolean, default: false },
@@ -70,9 +66,10 @@ export default {
 
   emits: ['update:modelValue', 'saved'],
 
-  setup() {
+  setup(_, { emit }) {
     const { t } = useI18n();
-    return { t };
+    const { cancel, finish, sync } = useModalSelfClose(emit);
+    return { t, cancel, finish, sync };
   },
 
   data() {
@@ -97,15 +94,8 @@ export default {
   },
 
   methods: {
-    cancel() {
-      this.$emit('update:modelValue', false);
-    },
     update() {
-      return axios.put('settings/personalization/genders/' + this.form.id, this.form)
-        .then(() => {
-          this.$emit('saved');
-          this.$emit('update:modelValue', false);
-        });
+      return axios.put('settings/personalization/genders/' + this.form.id, this.form).then(this.finish);
     },
   },
 };

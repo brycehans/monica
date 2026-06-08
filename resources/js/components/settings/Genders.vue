@@ -73,7 +73,7 @@
 
 <script>
 import { useI18n } from 'vue-i18n';
-import { useModal } from 'vue-final-modal';
+import { useRowModal } from '../../composables/useRowModal';
 import CreateModal from './genders/CreateModal.vue';
 import EditModal from './genders/EditModal.vue';
 import DeleteModal from './genders/DeleteModal.vue';
@@ -82,10 +82,10 @@ import SetDefaultModal from './genders/SetDefaultModal.vue';
 export default {
   setup() {
     const { t } = useI18n();
-    const createModal = useModal({ component: CreateModal, attrs: {} });
-    const editModal = useModal({ component: EditModal, attrs: {} });
-    const deleteModal = useModal({ component: DeleteModal, attrs: {} });
-    const setDefaultModal = useModal({ component: SetDefaultModal, attrs: {} });
+    const createModal = useRowModal(CreateModal);
+    const editModal = useRowModal(EditModal);
+    const deleteModal = useRowModal(DeleteModal);
+    const setDefaultModal = useRowModal(SetDefaultModal);
     return { t, createModal, editModal, deleteModal, setDefaultModal };
   },
 
@@ -134,47 +134,35 @@ export default {
     },
 
     openCreate() {
-      this.createModal.patchOptions({
-        attrs: {
-          genderTypes: this.genderTypes,
-          defaultGenderType: this.defaultGenderType,
-          onSaved: () => this.getGenders(),
-        },
+      this.createModal.open({
+        genderTypes: this.genderTypes,
+        defaultGenderType: this.defaultGenderType,
+        onSaved: () => this.getGenders(),
       });
-      this.createModal.open();
     },
 
     openSetDefault() {
-      this.setDefaultModal.patchOptions({
-        attrs: {
-          genders: this.genders,
-          defaultId: this.defaultGenderType?.id ?? null,
-          onSaved: () => this.getGenders(),
-        },
+      this.setDefaultModal.open({
+        genders: this.genders,
+        defaultId: this.defaultGenderType?.id ?? null,
+        onSaved: () => this.getGenders(),
       });
-      this.setDefaultModal.open();
     },
 
     openEdit(gender) {
-      this.editModal.patchOptions({
-        attrs: {
-          gender,
-          genderTypes: this.genderTypes,
-          onSaved: () => this.getGenders(),
-        },
+      this.editModal.open({
+        gender,
+        genderTypes: this.genderTypes,
+        onSaved: () => this.getGenders(),
       });
-      this.editModal.open();
     },
 
     openDelete(gender) {
-      this.deleteModal.patchOptions({
-        attrs: {
-          gender,
-          genders: this.genders,
-          onSaved: () => this.getGenders(),
-        },
+      this.deleteModal.open({
+        gender,
+        genders: this.genders,
+        onSaved: () => this.getGenders(),
       });
-      this.deleteModal.open();
     },
   }
 };
