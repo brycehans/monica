@@ -34,7 +34,7 @@ Standalone Playwright suite for verifying the user-facing app. Two distinct sets
 
 ## Running it
 
-From the **`docker-compose.dev.yml` rig running on `localhost:8082`**:
+From the **`docker-compose.dev.yml` rig running on `https://localhost:8443`** (Caddy sidecar terminates TLS in front of the Apache app container; the plain `http://localhost:8082` port also stays bound for quick health checks):
 
 ```bash
 # 1) Build the Vite assets on the host. The dev compose mounts
@@ -92,7 +92,7 @@ yarn run smoke:report    # open the HTML report after a failing run
 
 | Env var                  | Default                 | Purpose                                                                  |
 | ------------------------ | ----------------------- | ------------------------------------------------------------------------ |
-| `SMOKE_BASE_URL`         | `http://localhost:8082` | Where Monica is running                                                  |
+| `SMOKE_BASE_URL`         | `https://localhost:8443` | Where Monica is running (HTTPS via Caddy sidecar; HTTP on `:8082` also works) |
 | `SMOKE_ADMIN_EMAIL`      | `admin@admin.com`       | Login email (matches `setup:test` defaults)                              |
 | `SMOKE_ADMIN_PASSWORD`   | `admin0`                | Login password                                                           |
 | `SMOKE_ACCOUNT_ID`       | `1`                     | Account id used by `account:setpremium` for the admin-bound tests        |

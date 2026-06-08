@@ -59,10 +59,12 @@ yarn run e2e                 # playwright e2e suite (see tests/playwright/README
 Local dev via Docker:
 ```
 yarn install && yarn run prod                 # populate public/build/ on the host first (see note below)
-docker compose -f docker-compose.dev.yml up   # app on :8082, phpmyadmin :3000, mailhog :8025/:1025
+docker compose -f docker-compose.dev.yml up   # https://localhost:8443 (caddy) + http://localhost:8082 (apache), phpmyadmin :3000, mailhog :8025/:1025
 ```
 
 The dev compose mounts `./public/build:/var/www/html/public/build`, so the container's Apache serves whatever the host last built. **`yarn run prod` is a cold-start prereq** — without it the mount overlays the image's baked-in assets with an empty directory and every blade page 500s on the missing `manifest.json`. For iteration, `yarn run watch` rebuilds incrementally on file change.
+
+**HTTPS via Caddy sidecar (#711).** A `caddy:2-alpine` service terminates TLS on host `:8443` and reverse-proxies to Apache's internal `:80`. The cert is minted by Caddy's own internal CA and persisted in the `caddy_data` volume — no per-developer `mkcert` setup. The `:8082` HTTP port stays bound for quick health checks. Use the HTTPS origin when working on anything gated on `isSecureContext` (WebAuthn, Web Crypto's SubtleCrypto, Service Workers, PWA install, SharedArrayBuffer). The browser will warn until you trust Caddy's CA — run `docker compose -f docker-compose.dev.yml exec caddy caddy trust` and import the resulting root from the `caddy_data` volume, or just click through (Playwright already passes `ignoreHTTPSErrors`).
 
 **PHP-side edits and OpCache.** The dev image's PHP-FPM caches bytecode via OpCache. When you edit a `.php` file (controller, model, helper, etc.), `php artisan optimize:clear` clears Laravel-level caches but **does NOT invalidate OpCache** — Apache will keep serving the old bytecode. To pick up the new PHP, restart the container: `docker restart monica-app-1`. The mounted source is live (no `docker cp` needed) but the OpCache layer in front of it is not. Symptom: planted bugs in PHP don't reproduce until you restart. Vue/JS source edits don't hit this — they're rebundled by `yarn run prod`/`watch` and served via the public/build mount.
 
