@@ -2,7 +2,7 @@
   <monica-modal
     :model-value="modelValue"
     :title="t('settings.personalization_life_event_type_modal_add')"
-    @update:model-value="(v) => $emit('update:modelValue', v)"
+    @update:model-value="sync"
   >
     <form @submit.prevent="store">
       <div class="mb4">
@@ -29,6 +29,7 @@
 
 <script>
 import { useI18n } from 'vue-i18n';
+import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
 // See genders/CreateModal.vue for the modelValue contract rationale.
 export default {
@@ -39,9 +40,10 @@ export default {
 
   emits: ['update:modelValue', 'saved'],
 
-  setup() {
+  setup(_, { emit }) {
     const { t } = useI18n();
-    return { t };
+    const { cancel, finish, sync } = useModalSelfClose(emit);
+    return { t, cancel, finish, sync };
   },
 
   data() {
@@ -55,15 +57,8 @@ export default {
   },
 
   methods: {
-    cancel() {
-      this.$emit('update:modelValue', false);
-    },
     store() {
-      return axios.post('settings/personalization/lifeeventtypes', this.form)
-        .then(() => {
-          this.$emit('saved');
-          this.$emit('update:modelValue', false);
-        });
+      return axios.post('settings/personalization/lifeeventtypes', this.form).then(this.finish);
     },
   },
 };
