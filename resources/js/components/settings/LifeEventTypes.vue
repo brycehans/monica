@@ -80,91 +80,17 @@
         </li>
       </ul>
     </div>
-
-    <!-- Create Life Event Type -->
-    <monica-modal v-model="showCreateTypeModal" :title="t('settings.personalization_life_event_type_modal_add')">
-      <form @submit.prevent="storeType()">
-        <div class="mb4">
-          <p class="b mb2"></p>
-          <form-input
-            :id="'add-type-name'"
-            v-model="createTypeForm.name"
-            :input-type="'text'"
-            :required="true"
-            :title="t('settings.personalization_life_event_type_modal_question')"
-          />
-        </div>
-      </form>
-      <template #button>
-        <a class="btn" href="" @click.prevent="closeCreateTypeModal()">
-          {{ t('app.cancel') }}
-        </a>
-        <a class="btn btn-primary" href="" @click.prevent="storeType()">
-          {{ t('app.save') }}
-        </a>
-      </template>
-    </monica-modal>
-
-    <!-- Update Life Event Type -->
-    <monica-modal v-model="showUpdateTypeModal" :title="t('settings.personalization_life_event_type_modal_edit')">
-      <form @submit.prevent="updateType()">
-        <div class="mb4">
-          <p class="b mb2"></p>
-          <form-input
-            :id="'update-type-name'"
-            v-model="updateTypeForm.name"
-            :input-type="'text'"
-            :required="true"
-            :title="t('settings.personalization_life_event_type_modal_question')"
-          />
-        </div>
-      </form>
-      <template #button>
-        <a class="btn" href="" @click.prevent="closeUpdateTypeModal()">
-          {{ t('app.cancel') }}
-        </a>
-        <a class="btn btn-primary" href="" @click.prevent="updateType()">
-          {{ t('app.update') }}
-        </a>
-      </template>
-    </monica-modal>
-
-    <!-- Delete Life Event type  -->
-    <monica-modal v-model="showDeleteTypeModal" :title="t('settings.personalization_life_event_type_modal_delete')">
-      <form>
-        <div v-if="errorMessage !== ''" class="form-error-message mb3">
-          <div class="pa2">
-            <p class="mb0">
-              {{ errorMessage }}
-            </p>
-          </div>
-        </div>
-        <div class="mb4">
-          <p class="mb2">
-            {{ t('settings.personalization_life_event_type_modal_delete_desc') }}
-          </p>
-        </div>
-      </form>
-      <template #button>
-        <a class="btn" href="" @click.prevent="closeDeleteTypeModal()">
-          {{ t('app.cancel') }}
-        </a>
-        <a class="btn btn-primary" href="" @click.prevent="destroyType()">
-          {{ t('app.delete') }}
-        </a>
-      </template>
-    </monica-modal>
   </div>
 </template>
 
 <script>
 import { useI18n } from 'vue-i18n';
+import { useRowModal } from '../../composables/useRowModal';
+import CreateModal from './life-event-types/CreateModal.vue';
+import UpdateModal from './life-event-types/UpdateModal.vue';
+import DeleteModal from './life-event-types/DeleteModal.vue';
 
 export default {
-
-  components: {
-  },
-
   props: {
     limited: {
       type: Boolean,
@@ -174,34 +100,15 @@ export default {
 
   setup() {
     const { t } = useI18n();
-    return { t };
+    const createModal = useRowModal(CreateModal);
+    const updateModal = useRowModal(UpdateModal);
+    const deleteModal = useRowModal(DeleteModal);
+    return { t, createModal, updateModal, deleteModal };
   },
 
   data() {
     return {
       lifeEventCategories: [],
-      errorMessage: '',
-
-      createTypeForm: {
-        name: '',
-        life_event_category_id: '',
-        errors: []
-      },
-
-      updateTypeForm: {
-        id: '',
-        name: '',
-        life_event_category_id: '',
-        errors: []
-      },
-
-      destroyTypeForm: {
-        id: '',
-        errors: []
-      },
-      showCreateTypeModal: false,
-      showUpdateTypeModal: false,
-      showDeleteTypeModal: false,
     };
   },
 
@@ -228,70 +135,34 @@ export default {
     },
 
     showCreateType(category) {
-      this.showCreateTypeModal = true;
-      this.createTypeForm.life_event_category_id = category.id;
-    },
-
-    showDeleteType(type) {
-      this.destroyTypeForm.id = type.id;
-
-      this.showDeleteTypeModal = true;
+      this.createModal.open({
+        category,
+        onSaved: () => {
+          this.getLifeEventCategories();
+          this.notify(this.t('app.default_save_success'), true);
+        },
+      });
     },
 
     showEditType(type, categoryId) {
-      this.updateTypeForm.id = type.id;
-      this.updateTypeForm.name = type.name ? type.name : this.t('people.life_event_sentence_' + type.default_life_event_type_key);
-      this.updateTypeForm.life_event_category_id = categoryId;
-
-      this.showUpdateTypeModal = true;
-    },
-
-    closeCreateTypeModal() {
-      this.showCreateTypeModal = false;
-    },
-
-    closeUpdateTypeModal() {
-      this.showUpdateTypeModal = false;
-    },
-
-    closeDeleteTypeModal() {
-      this.showDeleteTypeModal = false;
-    },
-
-    storeType() {
-      axios.post('settings/personalization/lifeeventtypes', this.createTypeForm)
-        .then(response => {
-          this.showCreateTypeModal = false;
-          this.createTypeForm.name = '';
+      this.updateModal.open({
+        type,
+        categoryId,
+        onSaved: () => {
           this.getLifeEventCategories();
-
           this.notify(this.t('app.default_save_success'), true);
-        });
+        },
+      });
     },
 
-    updateType() {
-      axios.put('settings/personalization/lifeeventtypes/' + this.updateTypeForm.id, this.updateTypeForm)
-        .then(response => {
-          this.showUpdateTypeModal = false;
-          this.updateTypeForm.name = '';
+    showDeleteType(type) {
+      this.deleteModal.open({
+        type,
+        onSaved: () => {
           this.getLifeEventCategories();
-
           this.notify(this.t('app.default_save_success'), true);
-        });
-    },
-
-    destroyType() {
-      axios.delete('settings/personalization/lifeeventtypes/' + this.destroyTypeForm.id)
-        .then(response => {
-          this.showDeleteTypeModal = false;
-          this.destroyTypeForm.id = '';
-          this.getLifeEventCategories();
-
-          this.notify(this.t('app.default_save_success'), true);
-        })
-        .catch(error => {
-          this.errorMessage = error.response.data.message;
-        });
+        },
+      });
     },
 
     notify(text, success) {
