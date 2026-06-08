@@ -260,3 +260,109 @@ This plan is ready to execute in a fresh session. From this checkout:
 The phase-1 plan + decisions doc (`docs/plans/2026-06-03-vue-final-modal-usemodal.md`) is the source of truth for the SFC contract and test convention. Don't redrive those decisions; they're locked.
 
 If the smoke test fails after Task 4, the highest-probability cause is the `modelValue` contract — re-read `docs/plans/2026-06-03-vue-final-modal-usemodal.md` § "Decisions locked in phase 1" first decision. Second-highest cause is the `onSaved` callback being placed at the wrong nesting level in `patchOptions`.
+
+---
+
+## Mid-execution decision: composables introduced
+
+After Tasks 1-3 extracted the three SFCs against the raw `useModal()` shape from phase 1, the footgun surface (forgetting either close emit on the SFC side; misnesting `onSaved` outside `attrs` on the parent side) was addressed in this PR rather than deferred. Two composables landed:
+
+- `resources/js/composables/useModalSelfClose.js` — SFC-side helper returning `{ cancel, finish, sync }`. Forgetting the close emit is no longer a per-SFC author concern.
+- `resources/js/composables/useRowModal.js` — parent-side wrapper around `useModal` collapsing `patchOptions({ attrs })` + `open()` into a single `open(attrs)` call.
+
+Phase 1 (Genders.vue + its 4 SFCs) was retrofitted in the same PR to use the new composables. Phase 2's 3 SFCs use them too. All 30 colocated vitest specs pass against the new shape, and the phase-2 playwright smoke (`personalization-life-event-types-crud`) is green.
+
+### Recipe for phase 3+ (supersedes phase 1's raw-useModal recipe)
+
+**Per-modal SFC** (path: `resources/js/components/<area>/<feature>/<Name>Modal.vue`):
+
+```vue
+<template>
+  <monica-modal
+    :model-value="modelValue"
+    :title="t('...')"
+    @update:model-value="sync"
+  >
+    <form @submit.prevent="save">
+      ...
+    </form>
+    <template #button>
+      <a class="btn" href="" @click.prevent="cancel">{{ t('app.cancel') }}</a>
+      <a class="btn btn-primary" href="" @click.prevent="save">{{ t('app.save') }}</a>
+    </template>
+  </monica-modal>
+</template>
+
+<script>
+import { useI18n } from 'vue-i18n';
+import { useModalSelfClose } from '../../../composables/useModalSelfClose';
+
+export default {
+  props: {
+    modelValue: { type: Boolean, default: false },
+    // ... per-row props (object/array/scalar — whatever the row needs)
+  },
+  emits: ['update:modelValue', 'saved'],
+  setup(_, { emit }) {
+    const { t } = useI18n();
+    const { cancel, finish, sync } = useModalSelfClose(emit);
+    return { t, cancel, finish, sync };
+  },
+  data() {
+    return {
+      form: { /* derived from props */ },
+    };
+  },
+  methods: {
+    save() {
+      return axios.post('...', this.form).then(this.finish);
+    },
+  },
+};
+</script>
+```
+
+**Parent:**
+
+```js
+import { useRowModal } from '../../composables/useRowModal';
+import CreateModal from './<feature>/CreateModal.vue';
+
+setup() {
+  const { t } = useI18n();
+  const createModal = useRowModal(CreateModal);
+  return { t, createModal };
+}
+
+methods: {
+  openCreate(row) {
+    this.createModal.open({
+      row,
+      onSaved: () => this.refresh(),
+    });
+  },
+}
+```
+
+**Locked-in invariants (carry forward unchanged from phase 1):**
+
+- Per-row data lives in SFC `data()`, initialised from props. vfm's `keepAlive: false` default + the `update:modelValue=false` emit means each open re-mounts the SFC with fresh props. Don't switch this to `watch`/`computed`/`watchEffect` — `data()` is what makes "next open = fresh state" work.
+- SFC location convention: `resources/js/components/<area>/<feature>/<Name>Modal.vue` co-located with its parent.
+- `<monica-modal>` is still the visual leaf inside each SFC (preserves the `.monica-modal__panel` CSS playwright anchors on).
+- `<modals-container></modals-container>` (not self-closing) in `skeleton.blade.php` — already mounted.
+
+**Never re-introduce:**
+- Raw `useModal(...)` in a parent — go through `useRowModal`.
+- Raw `this.$emit('update:modelValue', false)` in an SFC — go through `useModalSelfClose`.
+- A `local show` boolean alongside vfm — the composables handle the lifecycle.
+- `keepAlive: true` on a `useRowModal` registration — would defeat the fresh-state invariant.
+
+### Test convention
+
+Per-SFC vitest spec at `<Name>Modal.spec.js`, asserting:
+- Initial state from props (different rows produce different state).
+- Each public method (axios shape + the `saved` emit + the `update:modelValue=false` close).
+- `cancel()` closes without `saved`.
+- Error branches set local state (e.g. `errorMessage`) without emitting `saved`.
+
+The composable returns are exposed on `vm`, so `w.vm.cancel()` / `w.vm.finish()` still work in specs.
