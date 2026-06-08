@@ -2,7 +2,7 @@
   <monica-modal
     :model-value="modelValue"
     :title="t('settings.personalization_genders_modal_delete')"
-    @update:model-value="(v) => $emit('update:modelValue', v)"
+    @update:model-value="sync"
   >
     <form>
       <div v-if="errorMessage !== ''" class="form-error-message mb3">
@@ -54,6 +54,7 @@
 
 <script>
 import { useI18n } from 'vue-i18n';
+import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
 // See genders/CreateModal.vue for the modelValue contract rationale.
 export default {
@@ -65,9 +66,10 @@ export default {
 
   emits: ['update:modelValue', 'saved'],
 
-  setup() {
+  setup(_, { emit }) {
     const { t } = useI18n();
-    return { t };
+    const { cancel, finish, sync } = useModalSelfClose(emit);
+    return { t, cancel, finish, sync };
   },
 
   data() {
@@ -84,22 +86,12 @@ export default {
   },
 
   methods: {
-    cancel() {
-      this.$emit('update:modelValue', false);
-    },
     trash() {
-      return axios.delete('settings/personalization/genders/' + this.form.id)
-        .then(() => {
-          this.$emit('saved');
-          this.$emit('update:modelValue', false);
-        });
+      return axios.delete('settings/personalization/genders/' + this.form.id).then(this.finish);
     },
     trashAndReplace() {
       return axios.delete('settings/personalization/genders/' + this.form.id + '/replaceby/' + this.form.newId)
-        .then(() => {
-          this.$emit('saved');
-          this.$emit('update:modelValue', false);
-        })
+        .then(this.finish)
         .catch((error) => {
           if (error?.response?.data && typeof error.response.data === 'object') {
             this.errorMessage = error.response.data.message;

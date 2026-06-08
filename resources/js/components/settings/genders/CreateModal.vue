@@ -2,7 +2,7 @@
   <monica-modal
     :model-value="modelValue"
     :title="t('settings.personalization_genders_modal_add')"
-    @update:model-value="(v) => $emit('update:modelValue', v)"
+    @update:model-value="sync"
   >
     <form @submit.prevent="store">
       <div class="form-group">
@@ -54,12 +54,11 @@
 
 <script>
 import { useI18n } from 'vue-i18n';
+import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
 // useModal()/ModalsContainer drive open/close via the modelValue prop.
-// We forward that to MonicaModal and emit update:modelValue back out so
-// ModalsContainer learns when the user dismisses the modal — without that
-// link useModal() thinks the modal is still open, keepAlive=false never
-// destroys the instance, and the next open() shows stale data.
+// `useModalSelfClose` encodes the close+saved emit contract so we can't
+// forget either side and leave a stale instance in dynamicModals.
 export default {
   props: {
     modelValue: { type: Boolean, default: false },
@@ -69,9 +68,10 @@ export default {
 
   emits: ['update:modelValue', 'saved'],
 
-  setup() {
+  setup(_, { emit }) {
     const { t } = useI18n();
-    return { t };
+    const { cancel, finish, sync } = useModalSelfClose(emit);
+    return { t, cancel, finish, sync };
   },
 
   data() {
@@ -95,15 +95,8 @@ export default {
   },
 
   methods: {
-    cancel() {
-      this.$emit('update:modelValue', false);
-    },
     store() {
-      return axios.post('settings/personalization/genders', this.form)
-        .then(() => {
-          this.$emit('saved');
-          this.$emit('update:modelValue', false);
-        });
+      return axios.post('settings/personalization/genders', this.form).then(this.finish);
     },
   },
 };

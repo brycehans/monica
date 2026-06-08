@@ -2,7 +2,7 @@
   <monica-modal
     :model-value="modelValue"
     :title="t('settings.personalization_genders_modal_default')"
-    @update:model-value="(v) => $emit('update:modelValue', v)"
+    @update:model-value="sync"
   >
     <form>
       <div class="form-group">
@@ -30,6 +30,7 @@
 
 <script>
 import { useI18n } from 'vue-i18n';
+import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
 // See genders/CreateModal.vue for the modelValue contract rationale.
 export default {
@@ -41,9 +42,10 @@ export default {
 
   emits: ['update:modelValue', 'saved'],
 
-  setup() {
+  setup(_, { emit }) {
     const { t } = useI18n();
-    return { t };
+    const { cancel, finish, sync } = useModalSelfClose(emit);
+    return { t, cancel, finish, sync };
   },
 
   data() {
@@ -53,15 +55,8 @@ export default {
   },
 
   methods: {
-    cancel() {
-      this.$emit('update:modelValue', false);
-    },
     save() {
-      return axios.put('settings/personalization/genders/default/' + this.selectedId)
-        .then(() => {
-          this.$emit('saved');
-          this.$emit('update:modelValue', false);
-        });
+      return axios.put('settings/personalization/genders/default/' + this.selectedId).then(this.finish);
     },
   },
 };
