@@ -1,0 +1,16 @@
+# Dev-only HTTPS terminator. Reverse-proxies https://localhost:8443 (host) to
+# the Apache app container on its internal :80. Issued by Caddy's own internal
+# CA, persisted in the `caddy_data` volume. See #711 for context — the dev
+# stack needs a secure-context origin so WebAuthn / Web Crypto / SW APIs work
+# locally without per-developer mkcert setup.
+#
+# Apache continues to serve plain HTTP on host :8082 for backward compat and
+# quick health checks; this sidecar is purely additive.
+{
+	auto_https disable_redirects
+}
+
+localhost {
+	tls internal
+	reverse_proxy app:80
+}

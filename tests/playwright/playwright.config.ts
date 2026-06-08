@@ -1,8 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// Base URL: defaults to the dev compose stack (docker-compose.dev.yml maps app:80 -> host:8082).
-// Override with SMOKE_BASE_URL for any other env (e.g. a Forge staging server).
-const baseURL = process.env.SMOKE_BASE_URL ?? 'http://localhost:8082';
+// Base URL: defaults to the dev compose stack's HTTPS terminator (Caddy
+// sidecar reverse-proxies https://localhost:8443 → app:80). HTTPS is the
+// default so secure-context browser APIs (WebAuthn, Web Crypto, SW, PWA)
+// behave the same as in production. Override with SMOKE_BASE_URL for any
+// other env (e.g. a Forge staging server). The HTTP host:8082 port is also
+// still bound for quick health checks.
+const baseURL = process.env.SMOKE_BASE_URL ?? 'https://localhost:8443';
 
 export default defineConfig({
   testDir: './specs',

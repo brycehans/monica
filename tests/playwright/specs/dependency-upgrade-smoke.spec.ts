@@ -651,13 +651,17 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     // string ending in `=`. SimpleWebAuthn always emits base64url-no-padding,
     // which round-trips cleanly through both paths.
     //
-    // We deliberately do NOT assert /webauthn/keys returns 201 — the dev stack
-    // is HTTP and web-auth/webauthn-lib's CheckOrigin step rejects non-HTTPS
-    // origins unless `localhost` is in `securedRelyingPartyId`, a knob
-    // asbiin/laravel-webauthn doesn't expose. The wire shape IS the contract;
-    // server-side acceptance is gated independently. If/when a dev-side
-    // localhost RP override lands (e.g. #711), this test can flip the final
-    // assertion to a 201 check without touching the semantic checks.
+    // We deliberately do NOT assert /webauthn/keys returns 201. Pre-#711 it
+    // was the HTTP origin getting rejected by web-auth/webauthn-lib's
+    // CheckOrigin step. Post-#711 (HTTPS via the Caddy sidecar), CheckOrigin
+    // passes — but the request now reaches a TypeError in
+    // asbiin/laravel-webauthn 5.5.0's CredentialAttestationValidator
+    // (declared return type PublicKeyCredentialSource, actual return
+    // CredentialRecord under webauthn-lib 5.3+). The vendor fix lives in
+    // asbiin/laravel-webauthn 6.0.0; bump tracked in #789. Once that lands,
+    // the 201 + persist + DELETE strengthening (and #786 wa.2's
+    // remove-modal coverage) come along for free. The wire shape IS the
+    // contract here; server-side acceptance is gated independently.
     const cdp = await context.newCDPSession(page);
     await cdp.send('WebAuthn.enable');
     const { authenticatorId } = await cdp.send('WebAuthn.addVirtualAuthenticator', {
@@ -735,8 +739,9 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
       const major = attBytes[0] >> 5;
       expect(major).toBe(5);
     } finally {
-      // Detach the virtual authenticator. (No DB row to clean up because the
-      // server rejects the registration with 422 — see note above.)
+      // Detach the virtual authenticator. (No DB row to clean up — the
+      // vendor TypeError described in the test comment 500s registration
+      // before the model is persisted.)
       await cdp.send('WebAuthn.removeVirtualAuthenticator', { authenticatorId });
       await cdp.detach();
     }
