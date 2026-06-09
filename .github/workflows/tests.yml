@@ -245,8 +245,24 @@ jobs:
       - name: Install Chrome Driver
         run: php artisan dusk:chrome-driver --detect
 
+      - name: Inspect Chrome Driver install (diagnostic)
+        run: |
+          ls -la vendor/laravel/dusk/bin/
+          file vendor/laravel/dusk/bin/chromedriver-linux 2>/dev/null || echo "no chromedriver-linux"
+          which google-chrome chromium chromium-browser 2>/dev/null || true
+          google-chrome --version 2>/dev/null || echo "no chrome"
+
       - name: Start Chrome Driver
-        run: ./vendor/laravel/dusk/bin/chromedriver-linux >/dev/null 2>&1 &
+        run: |
+          ./vendor/laravel/dusk/bin/chromedriver-linux --port=9515 >/tmp/chromedriver.log 2>&1 &
+          echo $! > /tmp/chromedriver.pid
+          sleep 2
+          if ! kill -0 "$(cat /tmp/chromedriver.pid)" 2>/dev/null; then
+            echo "chromedriver died — log:"
+            cat /tmp/chromedriver.log
+            exit 1
+          fi
+          curl -sS --max-time 5 http://localhost:9515/status || (echo "chromedriver not responding — log:"; cat /tmp/chromedriver.log; exit 1)
 
       - name: Run http server
         run: php -S localhost:8000 -t public >/dev/null 2>&1 &
