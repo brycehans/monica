@@ -378,7 +378,10 @@ export default {
     },
 
     updateLastCalled() {
-      this.$parent.$refs.lastCalledAttribute.getLastCalled();
+      // Called from axios .then handlers — if the parent (contact page) has
+      // unmounted between request and response, $parent or its refs are gone.
+      // Same root cause as #743: per-instance state is cleared at unmount.
+      this.$parent?.$refs?.lastCalledAttribute?.getLastCalled();
     },
 
     showEditBox(call) {
