@@ -39,19 +39,20 @@ already rely on it. No rewrite. No new vision. No competing roadmap.
 
 In rough priority order, the things we plan to do:
 
-1. Vue 3 migration (the v4 frontend is on Vue 2.7; Vue 2 reaches end-of-life and
-   blocks the rest of the JS toolchain at older majors)
-2. Continued security patches against the current dependency graph
+1. Continued security patches against the current dependency graph
    (`composer audit` and `yarn audit` reduction)
-3. Triage of the imported issue and PR queue, cherry-picking valuable
+2. Triage of the imported issue and PR queue, cherry-picking valuable
    community contributions that were never merged upstream
 
 Already landed in the modernization ladder:
 
 - PHP 8.4 compatibility
 - Modern Laravel (currently 12.x)
-- Modern Node / build chain (Vite + `@vitejs/plugin-vue2`; `yarn audit`
-  reduction is ongoing)
+- Modern Node / build chain (Vite 8 + `@vitejs/plugin-vue` 6)
+- Vue 2.7 → Vue 3.5 cutover, including the surrounding plugin swaps
+  (vue-i18n composition mode, `vue-final-modal`, `@vuelidate/core`,
+  `@vuepic/vue-datepicker`, `@vueform/multiselect`, `floating-vue`,
+  `@kyvg/vue3-notification`)
 
 Things we will not do:
 
