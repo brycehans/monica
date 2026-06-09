@@ -16,17 +16,20 @@ successor work. Those existing v4 deployments still need:
 - working Docker images and build pipelines
 - responses to bug reports
 
-This fork exists to provide exactly that — **nothing more, nothing less**.
-The goal is to keep v4 alive, secure, and runnable for the people who
-already rely on it. No rewrite. No new vision. No competing roadmap.
+This fork exists to provide exactly that, while modernizing the codebase's
+internals enough to keep contributing to it pleasant. The goal is to keep
+v4 alive, secure, runnable, and maintainable for the people who already
+rely on it. No new features. No UI redesigns. No competing roadmap.
 
 ## What this fork is not
 
 - **Not a hostile fork.** We have no quarrel with upstream. We hold the
   Monica maintainers in the highest regard for nearly a decade of work
   that made any of this possible.
-- **Not a rewrite.** We are intentionally *not* redesigning the codebase.
-  Stability is the feature.
+- **Not a user-facing rewrite.** We are not redesigning the UI, adding
+  new features, or changing the data model. Internal modernization that
+  keeps user-facing behaviour identical (Composition API, TypeScript on
+  the frontend, dropping Bootstrap 4 + jQuery) is in scope.
 - **Not the official Monica.** The Monica name and brand belong to
   Monica HQ SAS. This is a community maintenance fork distributed under
   the original AGPL-3.0-or-later license.
@@ -43,6 +46,9 @@ In rough priority order, the things we plan to do:
    (`composer audit` and `yarn audit` reduction)
 2. Triage of the imported issue and PR queue, cherry-picking valuable
    community contributions that were never merged upstream
+3. Internal modernization of the frontend layer: Options API →
+   Composition API, TypeScript adoption, dropping Bootstrap 4 + jQuery
+   in favour of Tachyons. Constraint: zero user-facing behaviour change.
 
 Already landed in the modernization ladder:
 
@@ -58,8 +64,9 @@ Things we will not do:
 
 - New features beyond what is needed to keep existing functionality
   working on modern infrastructure
-- Architectural refactors
-- UI redesigns
+- UI redesigns or changes to user-facing behaviour
+- Full-SPA conversion — the Blade-rendered pages with Vue-component
+  islands architecture stays
 - Forking the name, the docs, the marketing site, or the hosted product
 
 For specific in/out decisions that aren't obvious from the code (e.g. which
