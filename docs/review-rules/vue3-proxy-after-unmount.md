@@ -2,7 +2,7 @@
 
 > Closes #743. First exemplar: #742 (CreateGift two-microtask crash). Related: #771 → #773 (PAT modal `$refs.form` TypeError).
 >
-> **Status:** Flavour 1 (`$t` after unmount) is structurally resolved by #744 (vue-i18n composition-mode migration — `t` is closure-captured by `useI18n()` and survives instance teardown). Flavour 2 (`$refs.X.method()` after unmount) is the remaining live concern; the deferred sweep was done in [this PR] and its findings are folded into the audit table below.
+> **Status:** Flavour 1 (`$t` after unmount) is structurally resolved by #744 (vue-i18n composition-mode migration — `t` is closure-captured by `useI18n()` and survives instance teardown). Flavour 2 (`$refs.X.method()` after unmount) is the remaining live concern; the deferred sweep was done in #795 and its findings are folded into the audit table below.
 
 When a Vue component fires a method that triggers its own unmount — typical patterns are `this.close()`, `this.$emit('cancel')`, mutating a parent-controlled state prop that flips a `v-if` off — **everything else on that instance dies on the next microtask**: `this.$refs`, `this.$emit('update', ...)`, `this.$nextTick`, and data reads via `this.someProp`. Anything past the unmount line in the same call stack is fine (still inside one microtask). Anything *after* a `then` / `await` boundary is not.
 
@@ -82,7 +82,7 @@ Greped every `vm = this` capture across `resources/js/` at the time of #742 — 
 
 Made moot by #744 — `$t` no longer exists in components.
 
-## Flavour-2 audit (deferred from #771, completed in [this PR])
+## Flavour-2 audit (deferred from #771, completed in #795)
 
 Greped `$refs\.\w+\.` across `resources/js/components/` — 28 method-call sites in 17 files. Classification:
 
