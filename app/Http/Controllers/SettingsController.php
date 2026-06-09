@@ -14,7 +14,6 @@ use App\Models\Contact\Contact;
 use App\Jobs\AddContactFromVCard;
 use App\Models\Account\ImportJob;
 use App\Models\Account\Invitation;
-use App\Services\User\EmailChange;
 use App\Exceptions\StripeException;
 use App\Http\Requests\ImportsRequest;
 use Illuminate\Http\RedirectResponse;
@@ -26,6 +25,7 @@ use App\Http\Requests\InvitationRequest;
 use App\Services\Contact\Tag\DestroyTag;
 use App\Services\Account\Settings\ResetAccount;
 use App\Services\Account\Settings\DestroyAccount;
+use App\Services\Account\Settings\UpdateUserSettings;
 use PragmaRX\Google2FALaravel\Facade as Google2FA;
 use App\Http\Resources\Contact\ContactShort as ContactResource;
 use App\Http\Resources\Settings\WebauthnKey\WebauthnKey as WebauthnKeyResource;
@@ -92,34 +92,21 @@ class SettingsController extends Controller
     {
         $user = $request->user();
 
-        $user->update(
-            $request->only([
-                'first_name',
-                'last_name',
-                'timezone',
-                'locale',
-                'currency_id',
-                'name_order',
-                'fluid_container',
-                'temperature_scale',
-            ])
-        );
-
-        if ($user->email !== $request->input('email')) {
-            app(EmailChange::class)->execute([
-                'account_id' => $user->account_id,
-                'email' => $request->input('email'),
-                'user_id' => $user->id,
-            ]);
-        }
-
-        if (! AccountHelper::hasLimitations($user->account) && $request->input('me_contact_id')) {
-            $user->me_contact_id = $request->input('me_contact_id');
-            $user->save();
-        }
-
-        $user->account->default_time_reminder_is_sent = $request->input('reminder_time');
-        $user->account->save();
+        app(UpdateUserSettings::class)->execute([
+            'account_id' => $user->account_id,
+            'user_id' => $user->id,
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'email' => $request->input('email'),
+            'timezone' => $request->input('timezone'),
+            'locale' => $request->input('locale'),
+            'currency_id' => $request->input('currency_id'),
+            'name_order' => $request->input('name_order'),
+            'fluid_container' => $request->input('fluid_container'),
+            'temperature_scale' => $request->input('temperature_scale'),
+            'reminder_time' => $request->input('reminder_time'),
+            'me_contact_id' => $request->input('me_contact_id'),
+        ]);
 
         return redirect()->route('settings.index')
             ->with('status', trans('settings.settings_success', [], $request['locale']));

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
-use PragmaRX\Google2FALaravel\Facade as Google2FA;
 
 class Validate2faController extends Controller
 {
@@ -25,11 +24,5 @@ class Validate2faController extends Controller
         }
 
         return redirect()->route('login');
-    }
-
-    public static function loginCallback()
-    {
-        app('pragmarx.google2fa')->setStateless(false);
-        Google2FA::login();
     }
 }

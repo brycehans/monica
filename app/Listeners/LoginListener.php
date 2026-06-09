@@ -7,7 +7,7 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
 use LaravelWebauthn\Facades\Webauthn;
 use LaravelWebauthn\Events\WebauthnLogin;
-use App\Http\Controllers\Auth\Validate2faController;
+use PragmaRX\Google2FALaravel\Facade as Google2FA;
 use PragmaRX\Google2FALaravel\Events\LoginSucceeded;
 use Illuminate\Contracts\Auth\Authenticatable as User;
 
@@ -93,7 +93,8 @@ class LoginListener
     private function registerGoogle2fa(User $user)
     {
         if (config('google2fa.enabled') && ! empty($user->google2fa_secret)) {
-            Validate2faController::loginCallback();
+            app('pragmarx.google2fa')->setStateless(false);
+            Google2FA::login();
         }
     }
 

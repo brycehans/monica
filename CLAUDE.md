@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A community maintenance fork of Monica v4 (Laravel 12 + Vue 3.5 personal CRM). The default branch is `4.x`, pinned to the upstream v4.1.2 release (`32028ce`) plus a maintenance ladder of follow-on fixes (PHP 8.4, Laravel 12, Vue 3.5, Vite 8). See `README.md` for the full posture; the short version is: **stability is the feature, no new features, no rewrite, no UI redesign.**
+A community maintenance fork of Monica v4 (Laravel 12 + Vue 3.5 personal CRM). The default branch is `4.x`, pinned to the upstream v4.1.2 release (`32028ce`) plus a maintenance ladder of follow-on fixes (PHP 8.4, Laravel 12, Vue 3.5, Vite 8). See `README.md` for the full posture; the short version is: **no new features, no UI redesign, no full-SPA conversion — but internal modernization (Composition API, TypeScript on the frontend, dropping Bootstrap 4 + jQuery, service-layer cleanup) is explicitly in scope.**
 
 If `CLAUDE.local.md` and `.migration/` exist in your working tree, they hold fork-local context that isn't checked in — read them first when present. The triage workbench in `.migration/triage.db` is a SQLite mirror of the upstream issue tracker; it's where decisions about the imported backlog live before anything is applied to the fork on GitHub.
 
@@ -86,7 +86,7 @@ Standard Laravel + Vue monolith. Worth knowing before changing things:
 - `Contacts/`, `Settings/`, `Account/`, `Auth/`, `Settings/`, `DAV/` — server-rendered Blade views in `resources/views/`.
 - `DAV/` is the CardDAV/CalDAV surface via `sabre/dav` + `monicahq/laravel-sabre`.
 
-**Frontend is mixed-paradigm.** Most pages are Blade templates with islands of Vue 3 components mounted by `resources/js/app.js` (via `createApp(...)`). Components live in `resources/js/components/` and are still on the Options API — composition-API rewrites were explicitly out of scope for the cutover (#702) and remain so. **Do not introduce jQuery for new behaviour** (the existing jQuery is legacy); use Vue. New CSS should prefer Tachyons utility classes over new SASS — Bootstrap is being phased out.
+**Frontend is mixed-paradigm.** Most pages are Blade templates with islands of Vue 3 components mounted by `resources/js/app.js` (via `createApp(...)`). Components live in `resources/js/components/`. As of 2026-06 all 82 SFCs are still on the Options API — Composition API conversion was out of scope for the Vue 3 cutover (#702) but is now an active modernization track (see `## Fork-specific scope` below). New components or files being touched substantively should land in `<script setup lang="ts">`. **Do not introduce jQuery for new behaviour** (the existing jQuery is legacy Bootstrap-plugin glue and is on the removal list); use Vue. New CSS should prefer Tachyons utility classes over new SASS — Bootstrap 4 is being phased out.
 
 **Localization.** Source strings live in `resources/lang/en/*.php`. Crowdin owns every other locale — don't edit non-`en` files by hand. Strings used in Vue need `php artisan lang:generate` to be regenerated into JS, then `yarn run prod` to bundle them. PHP side uses `trans('file.key')`. Vue side uses `vue-i18n` in composition mode — destructure `t` from `useI18n()` in `setup()` and call `t('file.key')` (plural form: `t('file.key', namedParams, count)`). There is no template `$t` fallback — `globalInjection: false`. The legacy `$tc` helper is gone (dropped from vue-i18n 11's legacy mode and from composition mode entirely; use `t` with the count argument).
 
@@ -126,6 +126,7 @@ Anything not on the modernization ladder is out of scope. The ladder, in rough p
 
 1. Continued security patches against the current dependency graph (`composer audit` / `yarn audit` reduction)
 2. Triage of the imported issue and PR queue
+3. **Frontend modernization** (active): Options API → Composition API with TypeScript adoption on the .vue side; typing the shared `.js` modules in `resources/js/` first so their types flow into the eventual Vue rewrites; dropping Bootstrap 4 + jQuery in favour of Tachyons-only. Constraint: zero user-facing behaviour change.
 
 Already landed (kept here as context for older docs that may still list these as "things we plan to do"):
 
@@ -134,13 +135,13 @@ Already landed (kept here as context for older docs that may still list these as
 - Modern Node / build chain (Vite 8 + `@vitejs/plugin-vue 6`)
 - Vue 2.7 → Vue 3.5 cutover (#730) and post-cutover cleanups: vue-i18n composition-mode migration (#744 + #746/#755/#756/#757/#758), `vue-final-modal` `useModal()` composable (#724), Vitest harness (#759)
 
-Hard constraints carried in from the README and `CLAUDE.local.md`:
+Hard constraints:
 
-- **No new features.** Stability is the feature.
-- **No architectural refactors.** Match upstream's structure.
-- **No UI redesigns.**
+- **No new features.** User-facing functionality is frozen at the upstream v4.1.2 surface plus the bug fixes that have shipped in this fork. Internal refactors that don't change behaviour are fine.
+- **No UI redesigns.** Visual design and information architecture stay as upstream shipped them. Class swaps (Bootstrap → Tachyons) that produce visually-equivalent output are not UI redesigns.
+- **No full-SPA conversion.** The Blade-rendered pages with Vue-component islands architecture stays. Refactors inside that hybrid (Composition API, TypeScript, dropping Bootstrap/jQuery, service-layer cleanup) are explicitly in scope.
 
-If you're being asked to do something that doesn't fit one of those rungs, stop and confirm with the user before proceeding.
+If you're being asked to do something that doesn't fit those constraints, stop and confirm with the user before proceeding.
 
 ## Triage workbench
 
