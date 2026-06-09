@@ -423,7 +423,12 @@ export default {
 
     storePhoto(response) {
       const vm = this;
-      return this.$refs.upload.forceFileUpload()
+      // $refs.upload is under v-show, so usually live — but storePhoto runs
+      // inside store()'s axios .then chain, and if the modal closes before
+      // the save resolves the ref evaporates.
+      const upload = this.$refs.upload;
+      if (!upload) return Promise.resolve(response);
+      return upload.forceFileUpload()
         .then(photo => {
           if (photo !== undefined) {
             axios.put(`people/${this.hash}/gifts/${response.data.data.id}/photo/${photo.id}`);
@@ -450,7 +455,7 @@ export default {
         .then(response => {
           this.photos.splice(this.photos.indexOf(photo), 1);
           if (this.photos.length === 0) {
-            this.$refs.upload.showUploadZone();
+            this.$refs.upload?.showUploadZone();
           }
         });
     },
