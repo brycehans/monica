@@ -235,22 +235,16 @@ jobs:
         run: php artisan route:cache
 
     # Browser stack — install ChromeDriver via Dusk's bundled downloader,
-    # then start it manually in the background so it's listening on :9515
-    # by the time the first test connects. DuskTestCase::prepare() also
-    # calls startChromeDriver() via Symfony Process::start(), but that one
-    # races with the first test's webdriver request (Process::start() returns
-    # before chromedriver has bound the port). Starting it here gives it a
-    # head start while `php artisan dusk` is booting; the second start fails
-    # silently to bind 9515 and the first one continues to serve.
+    # then start it manually so it's bound on :9515 *before* `php artisan
+    # dusk` connects. DuskTestCase::prepare()'s own startChromeDriver()
+    # uses Symfony Process::start() which forks and returns immediately —
+    # without a readiness wait the first RemoteWebDriver::create() hits
+    # `Connection refused` and every test errors out. The 2-second sleep +
+    # /status probe is the actual fix; explicit `--port=9515` matches
+    # Dusk's default DriverUrl. Log to /tmp on failure so the next
+    # regression isn't silenced by `>/dev/null 2>&1`.
       - name: Install Chrome Driver
         run: php artisan dusk:chrome-driver --detect
-
-      - name: Inspect Chrome Driver install (diagnostic)
-        run: |
-          ls -la vendor/laravel/dusk/bin/
-          file vendor/laravel/dusk/bin/chromedriver-linux 2>/dev/null || echo "no chromedriver-linux"
-          which google-chrome chromium chromium-browser 2>/dev/null || true
-          google-chrome --version 2>/dev/null || echo "no chrome"
 
       - name: Start Chrome Driver
         run: |
@@ -258,11 +252,10 @@ jobs:
           echo $! > /tmp/chromedriver.pid
           sleep 2
           if ! kill -0 "$(cat /tmp/chromedriver.pid)" 2>/dev/null; then
-            echo "chromedriver died — log:"
-            cat /tmp/chromedriver.log
-            exit 1
+            echo "chromedriver died — log:"; cat /tmp/chromedriver.log; exit 1
           fi
-          curl -sS --max-time 5 http://localhost:9515/status || (echo "chromedriver not responding — log:"; cat /tmp/chromedriver.log; exit 1)
+          curl -sS --max-time 5 http://localhost:9515/status \
+            || (echo "chromedriver not responding — log:"; cat /tmp/chromedriver.log; exit 1)
 
       - name: Run http server
         run: php -S localhost:8000 -t public >/dev/null 2>&1 &
