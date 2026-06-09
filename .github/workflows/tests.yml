@@ -234,12 +234,19 @@ jobs:
       - name: Cache route
         run: php artisan route:cache
 
-    # Browser stack — install ChromeDriver via Dusk's bundled downloader.
-    # DuskTestCase::prepare() calls startChromeDriver() at test boot, so no
-    # manual `chromedriver-linux &` step is needed (the upstream workflow had
-    # one; it was redundant and broke when paths drifted — see issue #618).
+    # Browser stack — install ChromeDriver via Dusk's bundled downloader,
+    # then start it manually in the background so it's listening on :9515
+    # by the time the first test connects. DuskTestCase::prepare() also
+    # calls startChromeDriver() via Symfony Process::start(), but that one
+    # races with the first test's webdriver request (Process::start() returns
+    # before chromedriver has bound the port). Starting it here gives it a
+    # head start while `php artisan dusk` is booting; the second start fails
+    # silently to bind 9515 and the first one continues to serve.
       - name: Install Chrome Driver
         run: php artisan dusk:chrome-driver --detect
+
+      - name: Start Chrome Driver
+        run: ./vendor/laravel/dusk/bin/chromedriver-linux >/dev/null 2>&1 &
 
       - name: Run http server
         run: php -S localhost:8000 -t public >/dev/null 2>&1 &
