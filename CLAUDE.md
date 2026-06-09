@@ -4,18 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A community maintenance fork of Monica v4 (Laravel 12 + Vue 2.7 personal CRM, with a Vue 3 migration on the modernization ladder). The default branch is `4.x`, pinned to the upstream v4.1.2 release (`32028ce`) plus a small number of follow-on fixes. See `README.md` for the full posture; the short version is: **stability is the feature, no new features, no rewrite, no UI redesign.**
+A community maintenance fork of Monica v4 (Laravel 12 + Vue 3.5 personal CRM). The default branch is `4.x`, pinned to the upstream v4.1.2 release (`32028ce`) plus a maintenance ladder of follow-on fixes (PHP 8.4, Laravel 12, Vue 3.5, Vite 8). See `README.md` for the full posture; the short version is: **stability is the feature, no new features, no rewrite, no UI redesign.**
 
 If `CLAUDE.local.md` and `.migration/` exist in your working tree, they hold fork-local context that isn't checked in — read them first when present. The triage workbench in `.migration/triage.db` is a SQLite mirror of the upstream issue tracker; it's where decisions about the imported backlog live before anything is applied to the fork on GitHub.
 
 ## Stack
 
 - **PHP 8.4**, **Laravel 12**, **Composer** — see `.tool-versions`, `composer.json`.
-- **Node 20**, **Yarn 1.22**, **Vite ~7** + **@vitejs/plugin-vue2** — see `package.json`. (`vitejs/vite-plugin-vue2` is archived upstream; the v8 ceiling on Vite is what keeps us at vite ~7. Vue 3 migration lifts that.)
-- **Vue 2.7** (current line; Vue 3 migration is a planned ladder rung — see "Fork-specific scope"), Bootstrap 4 + Tachyons, vue-i18n.
+- **Node 20**, **Yarn 1.22**, **Vite 8** + **@vitejs/plugin-vue 6** — see `package.json`.
+- **Vue 3.5** (cutover from 2.7 shipped in #730), Bootstrap 4 + Tachyons, **vue-i18n 10** in composition mode (`legacy: false`, `globalInjection: false` — `useI18n()` everywhere, no template `$t` fallback).
 - **MySQL** is the only supported database. Postgres/SQLite are not tested.
 - Static analysis: **PHPStan** + **Larastan** (`phpstan.neon`) runs after the PHPUnit suite via `yarn run test` (the `posttest` hook). Psalm was retired in #647 — it had been pulled in phase 2 because v5 crashed on PHP 8.4, and re-enablement at v6 didn't justify the dev-dep surface once PHPStan/Larastan were carrying the load. See `composer.json` `extra.fork-notes.psalm-retired`.
 - E2E: **Playwright** (`tests/playwright/`) for the UI surface, and Laravel **Dusk** (`tests/Browser/`) for auth / 2FA / DAV.
+- JS unit/component tests: **Vitest** + **@vue/test-utils** (`yarn run test:js`) — introduced in #759 to replace the retired Cypress component harness.
 
 ## Common commands
 
@@ -52,6 +53,8 @@ vendor/bin/phpunit tests/Unit/Services/Contact/SomeServiceTest.php  # single fil
 vendor/bin/phpstan analyse
 php artisan dusk             # browser tests (needs Chrome + a running app)
 yarn run e2e                 # playwright e2e suite (see tests/playwright/README.md)
+yarn run test:js             # vitest run (vue component + js unit tests)
+yarn run test:js:watch       # vitest watch mode
 ```
 
 `yarn run test` always re-migrates a fresh testing DB first (`pretest` hook). The `phpunit.xml` testsuites group tests by area (`Api`, `Feature`, `Commands-Other`, `Commands-Scheduling`, `Unit-Models`, `Unit-Services`) — useful for running one slice via `phpunit --testsuite Unit-Services`.
@@ -83,9 +86,9 @@ Standard Laravel + Vue monolith. Worth knowing before changing things:
 - `Contacts/`, `Settings/`, `Account/`, `Auth/`, `Settings/`, `DAV/` — server-rendered Blade views in `resources/views/`.
 - `DAV/` is the CardDAV/CalDAV surface via `sabre/dav` + `monicahq/laravel-sabre`.
 
-**Frontend is mixed-paradigm.** Most pages are Blade templates with islands of Vue 2 components mounted by `resources/js/app.js`. Components live in `resources/js/components/`. **Do not introduce jQuery for new behaviour** (the existing jQuery is legacy); use Vue. New CSS should prefer Tachyons utility classes over new SASS — Bootstrap is being phased out.
+**Frontend is mixed-paradigm.** Most pages are Blade templates with islands of Vue 3 components mounted by `resources/js/app.js` (via `createApp(...)`). Components live in `resources/js/components/` and are still on the Options API — composition-API rewrites were explicitly out of scope for the cutover (#702) and remain so. **Do not introduce jQuery for new behaviour** (the existing jQuery is legacy); use Vue. New CSS should prefer Tachyons utility classes over new SASS — Bootstrap is being phased out.
 
-**Localization.** Source strings live in `resources/lang/en/*.php`. Crowdin owns every other locale — don't edit non-`en` files by hand. Strings used in Vue need `php artisan lang:generate` to be regenerated into JS, then `yarn run prod` to bundle them. PHP side uses `trans('file.key')`; Vue side uses `$t('file.key')` / `$tc(...)` for plurals.
+**Localization.** Source strings live in `resources/lang/en/*.php`. Crowdin owns every other locale — don't edit non-`en` files by hand. Strings used in Vue need `php artisan lang:generate` to be regenerated into JS, then `yarn run prod` to bundle them. PHP side uses `trans('file.key')`. Vue side uses `vue-i18n` in composition mode — destructure `t` from `useI18n()` in `setup()` and call `t('file.key')` (plural form: `t('file.key', namedParams, count)`). There is no template `$t` fallback — `globalInjection: false`. The legacy `$tc` helper is gone (dropped from vue-i18n 11's legacy mode and from composition mode entirely; use `t` with the count argument).
 
 **Migrations should not use Eloquent.** Data manipulation inside a migration should go through raw SQL or the query builder (`DB::table(...)`). Eloquent models drift; migrations need to keep working forever. This is enforced socially, not by tooling.
 
@@ -121,15 +124,15 @@ Full root cause: see `composer.json` `extra.fork-notes.replace-spatie-ray` and i
 
 Anything not on the modernization ladder is out of scope. The ladder, in rough priority order (from `README.md`):
 
-1. Vue 3 migration
-2. Continued security patches against the current dependency graph (`composer audit` / `yarn audit` reduction)
-3. Triage of the imported issue and PR queue
+1. Continued security patches against the current dependency graph (`composer audit` / `yarn audit` reduction)
+2. Triage of the imported issue and PR queue
 
 Already landed (kept here as context for older docs that may still list these as "things we plan to do"):
 
 - PHP 8.4 compatibility
 - Modern Laravel (currently 12.x)
-- Modern Node / build chain (Vite + plugin-vue2; `yarn audit` reduction ongoing)
+- Modern Node / build chain (Vite 8 + `@vitejs/plugin-vue 6`)
+- Vue 2.7 → Vue 3.5 cutover (#730) and post-cutover cleanups: vue-i18n composition-mode migration (#744 + #746/#755/#756/#757/#758), `vue-final-modal` `useModal()` composable (#724), Vitest harness (#759)
 
 Hard constraints carried in from the README and `CLAUDE.local.md`:
 
