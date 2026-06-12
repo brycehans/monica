@@ -1,4 +1,4 @@
-import { env } from './boot.ts';
+import { env } from './boot';
 
 /**
  * Add cy-name and cy-items directives.

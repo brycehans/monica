@@ -6,7 +6,7 @@
  */
 
 import './bootstrap';
-import { locale, htmldir, timezone, profileDefaultView } from './boot.ts';
+import { locale, htmldir, timezone, profileDefaultView } from './boot';
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
