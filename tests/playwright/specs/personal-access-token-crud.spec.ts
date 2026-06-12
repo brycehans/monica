@@ -24,8 +24,16 @@
 
 import { test, expect } from '../support/console-gate';
 import { loginAsFreshUser } from '../support/auth';
+import { artisan } from '../support/artisan';
 
 test.describe('Monica v4 — personal access tokens CRUD', () => {
+  test.beforeAll(() => {
+    // Ensure a Passport personal access client exists. setup:test does not
+    // run passport:install, so a fresh env 500s on POST oauth/personal-access-tokens
+    // without this. Creating an extra client when one already exists is harmless.
+    artisan('passport:client', '--personal', '--no-interaction', '--name=Personal Access Client');
+  });
+
   test('create token surfaces plain bearer once, revoke removes the row', async ({ page, consoleGate }) => {
     await loginAsFreshUser(page);
     await page.goto('/settings/api');

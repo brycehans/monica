@@ -54,6 +54,11 @@ docker compose -f docker-compose.dev.yml up -d
 docker compose -f docker-compose.dev.yml exec --user www-data app \
   sh -c 'printf "yes\n20\n" | php artisan setup:test'
 
+# 3b) Create the Passport personal access client (needed by personal-access-token-crud.spec.ts).
+#     setup:test does not run passport:install. Skip if you already ran it.
+docker compose -f docker-compose.dev.yml exec --user www-data app \
+  php artisan passport:client --personal --no-interaction --name="Personal Access Client"
+
 # 4) Run the smoke from this directory
 cd tests/playwright
 yarn install
