@@ -1,7 +1,11 @@
 import { vi, beforeEach } from 'vitest';
 
-// Components read window.Laravel at mount time (timezone, locale, htmldir).
-window.Laravel = { locale: 'en', htmldir: 'ltr', timezone: 'UTC' };
+// boot.js reads boot data from a <script type="application/json" id="boot-data"> element.
+const bootEl = document.createElement('script');
+bootEl.type = 'application/json';
+bootEl.id = 'boot-data';
+bootEl.textContent = JSON.stringify({ locale: 'en', htmldir: 'ltr', timezone: 'UTC', env: 'testing' });
+document.head.appendChild(bootEl);
 
 // lodash is a global via bootstrap.js — provide the bits the modals use.
 globalThis._ = {

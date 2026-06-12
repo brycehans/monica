@@ -8,14 +8,12 @@
     <title>@yield('title', trans('app.application_title'))</title>
     <link rel="manifest" href="manifest.webmanifest">
 
+    <script type="application/json" id="boot-data">{!! \Safe\json_encode([
+        'locale' => \App::getLocale(),
+        'htmldir' => htmldir(),
+    ]) !!}</script>
     @vite(['resources/sass/app-' . htmldir() . '.scss', 'resources/js/app.js'])
     <link rel="shortcut icon" href="img/favicon.png">
-    <script>
-      window.Laravel = {!! \Safe\json_encode([
-          'locale' => \App::getLocale(),
-          'htmldir' => htmldir(),
-      ]); !!}
-    </script>
   </head>
 
   <body data-account-id={{ auth()->user()->account_id }} class="marketing register bg-gray-monica">

@@ -6,6 +6,7 @@
  */
 
 import './bootstrap';
+import { locale, htmldir } from './boot';
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -20,11 +21,11 @@ import FormInput from './components/partials/form/Input.vue';
 import ContactSearch from './components/people/ContactSearch.vue';
 import common from './common';
 
-common.loadLanguage(window.Laravel.locale, true).then((i18n) => {
+common.loadLanguage(locale, true).then((i18n) => {
   const app = createApp({
     data() {
       return {
-        htmldir: window.Laravel.htmldir,
+        htmldir: htmldir,
         locale: i18n.global.locale,
       };
     },

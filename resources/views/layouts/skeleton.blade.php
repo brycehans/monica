@@ -29,15 +29,13 @@
 
     <link rel="shortcut icon" sizes="196x196" href="img/icons/favicon-196.png">
 
-    <script>
-      window.Laravel = {!! \Safe\json_encode([
-          'locale' => \App::getLocale(),
-          'htmldir' => htmldir(),
-          'profileDefaultView' => auth()->user()->profile_active_tab,
-          'timezone' => auth()->user()->timezone,
-          'env' => \App::environment(),
-      ]); !!}
-    </script>
+    <script type="application/json" id="boot-data">{!! \Safe\json_encode([
+        'locale' => \App::getLocale(),
+        'htmldir' => htmldir(),
+        'profileDefaultView' => auth()->user()->profile_active_tab,
+        'timezone' => auth()->user()->timezone,
+        'env' => \App::environment(),
+    ]) !!}</script>
   </head>
   <body data-account-id="{{ auth()->user()->account_id }}" class="bg-gray-monica min-vh-100 flex flex-column">
 

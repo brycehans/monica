@@ -6,6 +6,7 @@
  */
 
 import './bootstrap';
+import { locale, htmldir, timezone, profileDefaultView } from './boot';
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -99,18 +100,18 @@ import testingDirectives from './testing';
 import common from './common';
 import methods from './methods';
 
-common.loadLanguage(window.Laravel.locale, true).then((i18n) => {
+common.loadLanguage(locale, true).then((i18n) => {
   const app = createApp({
     data() {
       return {
-        htmldir: window.Laravel.htmldir,
-        timezone: window.Laravel.timezone,
+        htmldir: htmldir,
+        timezone: timezone,
         locale: i18n.global.locale,
         reminders_frequency: 'once',
         accept_invite_user: false,
         date_met_the_contact: 'known',
         global_relationship_form_new_contact: true,
-        global_profile_default_view: window.Laravel.profileDefaultView,
+        global_profile_default_view: profileDefaultView,
       };
     },
     methods,

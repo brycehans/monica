@@ -1,3 +1,5 @@
+import { env } from './boot';
+
 /**
  * Add cy-name and cy-items directives.
  * These are only active on local or testing environment.
@@ -5,7 +7,7 @@
 
 function makeTestingDirective(attrName) {
   const apply = (el, binding) => {
-    if (window.Laravel.env != 'production') {
+    if (env != 'production') {
       el.setAttribute(attrName, String(binding.value));
     }
   };
