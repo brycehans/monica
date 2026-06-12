@@ -31,6 +31,8 @@
     "@faker-js/faker": "^10.0.0",
     "@fullhuman/postcss-purgecss": "^8.0.0",
     "@snyk/protect": "^1.1305.0",
+    "@types/jquery": "^4.0.1",
+    "@types/lodash": "^4.17.24",
     "@vitejs/plugin-vue": "^6.0",
     "@vue/test-utils": "^2",
     "cross-env": "^10.1.0",
@@ -40,10 +42,12 @@
     "happy-dom": "^20.9.0",
     "laravel-vite-plugin": "^3.1",
     "postcss": "^8.5.15",
+    "typescript": "^6.0.3",
     "vite": "^8.0.16",
     "vite-plugin-static-copy": "^3",
     "vitest": "^4.1.8",
-    "vue-eslint-parser": "^10"
+    "vue-eslint-parser": "^10",
+    "vue-tsc": "^3.3.4"
   },
   "dependencies": {
     "@kyvg/vue3-notification": "^3.4",
