@@ -87,8 +87,8 @@ jobs:
           # never load these assets — the files don't need to exist on disk.
           cat > public/build/manifest.json <<'JSON'
           {
-            "resources/js/app.js":        {"file": "assets/app.js",        "src": "resources/js/app.js",        "isEntry": true, "name": "app"},
-            "resources/js/stripe.js":     {"file": "assets/stripe.js",     "src": "resources/js/stripe.js",     "isEntry": true, "name": "stripe"},
+            "resources/js/app.ts":        {"file": "assets/app.js",        "src": "resources/js/app.ts",        "isEntry": true, "name": "app"},
+            "resources/js/stripe.ts":     {"file": "assets/stripe.js",     "src": "resources/js/stripe.ts",     "isEntry": true, "name": "stripe"},
             "resources/sass/app-ltr.scss":{"file": "assets/app-ltr.css",   "src": "resources/sass/app-ltr.scss","isEntry": true, "name": "app-ltr"},
             "resources/sass/app-rtl.scss":{"file": "assets/app-rtl.css",   "src": "resources/sass/app-rtl.scss","isEntry": true, "name": "app-rtl"},
             "resources/sass/stripe.scss": {"file": "assets/stripe.css",    "src": "resources/sass/stripe.scss", "isEntry": true, "name": "stripe-css"}

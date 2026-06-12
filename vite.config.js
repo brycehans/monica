@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     laravel({
       input: [
-        'resources/js/app.js',
-        'resources/js/stripe.js',
+        'resources/js/app.ts',
+        'resources/js/stripe.ts',
         'resources/sass/app-ltr.scss',
         'resources/sass/app-rtl.scss',
         'resources/sass/stripe.scss',
@@ -74,7 +74,7 @@ export default defineConfig(({ mode }) => ({
           content: [
             './resources/views/**/*.blade.php',
             './resources/js/**/*.vue',
-            './resources/js/**/*.js',
+            './resources/js/**/*.{js,ts}',
             './app/**/*.php',
           ],
           // Vendor CSS class prefixes that PurgeCSS can't statically observe

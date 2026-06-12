@@ -12,7 +12,7 @@
         'locale' => \App::getLocale(),
         'htmldir' => htmldir(),
     ]) !!}</script>
-    @vite(['resources/sass/app-' . htmldir() . '.scss', 'resources/js/app.js'])
+    @vite(['resources/sass/app-' . htmldir() . '.scss', 'resources/js/app.ts'])
     <link rel="shortcut icon" href="img/favicon.png">
   </head>
 

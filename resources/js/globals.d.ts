@@ -14,4 +14,12 @@ declare global {
     marked: typeof MarkedFn;
     DOMPurify: typeof DOMPurify;
   }
+
+  // Bootstrap assigns window.$ = jQuery, so bare `$` is available globally.
+  // @types/jquery uses `export = jQuery` (module syntax) and doesn't declare
+  // ambient globals — we do it here so TypeScript accepts `$(document).ready()`.
+  // eslint-disable-next-line no-var
+  var $: JQueryStatic;
+  // eslint-disable-next-line no-var
+  var jQuery: JQueryStatic;
 }

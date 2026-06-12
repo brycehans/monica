@@ -17,7 +17,7 @@
     @vite(['resources/sass/app-' . htmldir() . '.scss'])
     {{-- Required only for the Upgrade account page --}}
     @if (Route::currentRouteName() == 'settings.subscriptions.upgrade' || Route::currentRouteName() == 'settings.subscriptions.confirm')
-      @vite(['resources/sass/stripe.scss', 'resources/js/stripe.js'])
+      @vite(['resources/sass/stripe.scss', 'resources/js/stripe.ts'])
     @endif
 
     <link rel="shortcut icon" href="img/favicon.png">
@@ -56,7 +56,7 @@
          (those load stripe.js via the @vite() call in <head> instead). --}}
     @if (Route::currentRouteName() != 'settings.subscriptions.upgrade' && Route::currentRouteName() != 'settings.subscriptions.confirm')
       @push('scripts')
-        @vite(['resources/js/app.js'])
+        @vite(['resources/js/app.ts'])
       @endpush
     @endif
 
