@@ -17,13 +17,16 @@
 // Template wires `@update:model-value="sync"` on <monica-modal>, the cancel
 // button uses `@click.prevent="cancel"`, and the success path calls
 // `axios.post(...).then(this.finish)`.
-export function useModalSelfClose(emit) {
+
+type Emit = (event: string, ...args: unknown[]) => void;
+
+export function useModalSelfClose(emit: Emit) {
   return {
-    cancel: () => emit('update:modelValue', false),
+    cancel: (_?: unknown) => emit('update:modelValue', false),
     finish: () => {
       emit('saved');
       emit('update:modelValue', false);
     },
-    sync: (v) => emit('update:modelValue', v),
+    sync: (v: boolean) => emit('update:modelValue', v),
   };
 }

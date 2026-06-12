@@ -8,20 +8,27 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const useModalSpy = vi.fn();
 
 vi.mock('vue-final-modal', () => ({
-  useModal: (...args) => useModalSpy(...args),
+  useModal: (...args: unknown[]) => useModalSpy(...args),
 }));
 
-import { useRowModal } from './useRowModal.js';
+import { useRowModal } from './useRowModal';
 
 const FakeComponent = { name: 'FakeModal' };
 
-function createFakeModal() {
-  const options = { attrs: {} };
+type FakeModal = {
+  options: { attrs: Record<string, unknown> };
+  open: ReturnType<typeof vi.fn>;
+  close: ReturnType<typeof vi.fn>;
+  patchOptions: ReturnType<typeof vi.fn>;
+};
+
+function createFakeModal(): FakeModal {
+  const options: { attrs: Record<string, unknown> } = { attrs: {} };
   return {
     options,
     open: vi.fn(),
     close: vi.fn(),
-    patchOptions: vi.fn((patch) => {
+    patchOptions: vi.fn((patch: { attrs?: Record<string, unknown> }) => {
       if (patch?.attrs) {
         for (const [k, v] of Object.entries(patch.attrs)) {
           options.attrs[k] = v;
@@ -32,7 +39,7 @@ function createFakeModal() {
 }
 
 describe('useRowModal', () => {
-  let fake;
+  let fake: FakeModal;
 
   beforeEach(() => {
     fake = createFakeModal();

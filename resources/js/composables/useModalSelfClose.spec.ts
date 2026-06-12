@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { useModalSelfClose } from './useModalSelfClose.js';
+import { useModalSelfClose } from './useModalSelfClose';
 
 describe('useModalSelfClose', () => {
   it('cancel() emits update:modelValue=false', () => {

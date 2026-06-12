@@ -1,4 +1,5 @@
 import { useModal } from 'vue-final-modal';
+import type { Component } from 'vue';
 
 // Parent-side helper for registering a per-row modal once and opening it
 // with row-specific props. Hides the patchOptions({ attrs: ... }) shape so
@@ -23,12 +24,12 @@ import { useModal } from 'vue-final-modal';
 // the next mount — a stale listener that fires when the wrong row saves.
 // We clear `options.attrs` between opens so each call starts from a clean
 // slate; callers don't have to remember to pass every key every time.
-export function useRowModal(component) {
+export function useRowModal(component: Component) {
   const modal = useModal({ component, attrs: {} });
   return {
-    open(attrs = {}) {
-      for (const key of Object.keys(modal.options.attrs)) {
-        delete modal.options.attrs[key];
+    open(attrs: Record<string, unknown> = {}) {
+      for (const key of Object.keys(modal.options.attrs as Record<string, unknown>)) {
+        delete (modal.options.attrs as Record<string, unknown>)[key];
       }
       modal.patchOptions({ attrs });
       modal.open();
