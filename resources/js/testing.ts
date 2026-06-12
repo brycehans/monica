@@ -1,3 +1,4 @@
+import type { App, DirectiveBinding } from 'vue';
 import { env } from './boot';
 
 /**
@@ -5,9 +6,9 @@ import { env } from './boot';
  * These are only active on local or testing environment.
  */
 
-function makeTestingDirective(attrName) {
-  const apply = (el, binding) => {
-    if (env != 'production') {
+function makeTestingDirective(attrName: string) {
+  const apply = (el: Element, binding: DirectiveBinding) => {
+    if (env !== 'production') {
       el.setAttribute(attrName, String(binding.value));
     }
   };
@@ -18,7 +19,7 @@ function makeTestingDirective(attrName) {
 }
 
 export default {
-  install(app) {
+  install(app: App) {
     app.directive('cy-name', makeTestingDirective('cy-name'));
     app.directive('cy-items', makeTestingDirective('cy-items'));
   },
