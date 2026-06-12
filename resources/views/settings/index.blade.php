@@ -39,7 +39,7 @@
             </div>
             @endif
 
-            <form action="{{ route('settings.save') }}" method="POST">
+            <form action="{{ route('settings.save') }}" method="POST" novalidate>
               @csrf
 
               {{-- id --}}

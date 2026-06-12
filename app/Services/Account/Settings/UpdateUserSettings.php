@@ -33,7 +33,7 @@ class UpdateUserSettings extends BaseService
                 'string',
                 Rule::in(['fahrenheit', 'celsius']),
             ],
-            'reminder_time' => 'required|integer|min:0|max:23',
+            'reminder_time' => 'nullable|integer|min:0|max:23',
             'me_contact_id' => 'nullable|integer',
         ];
     }
@@ -78,8 +78,10 @@ class UpdateUserSettings extends BaseService
             $user->save();
         }
 
-        $user->account->default_time_reminder_is_sent = $data['reminder_time'];
-        $user->account->save();
+        if (! is_null($data['reminder_time'] ?? null)) {
+            $user->account->default_time_reminder_is_sent = $data['reminder_time'];
+            $user->account->save();
+        }
 
         return $user;
     }

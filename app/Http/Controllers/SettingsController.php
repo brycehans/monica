@@ -104,7 +104,7 @@ class SettingsController extends Controller
             'name_order' => $request->input('name_order'),
             'fluid_container' => $request->input('fluid_container'),
             'temperature_scale' => $request->input('temperature_scale'),
-            'reminder_time' => $request->input('reminder_time'),
+            'reminder_time' => is_null($request->input('reminder_time')) ? null : (int) $request->input('reminder_time'),
             'me_contact_id' => $request->input('me_contact_id'),
         ]);
 
