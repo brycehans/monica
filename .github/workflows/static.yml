@@ -43,3 +43,21 @@ jobs:
 
       - name: Run phpstan
         run: vendor/bin/phpstan analyse
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Install yarn dependencies
+        run: yarn inst
+
+      - name: Run vue-tsc
+        run: yarn vue-tsc --noEmit
