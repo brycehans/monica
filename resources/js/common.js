@@ -43,7 +43,7 @@ window.DOMPurify = DOMPurify;
 
 // i18n
 import messages from '../../public/js/langs/en.json';
-import pluralization from './pluralization.js';
+import pluralization from './pluralization';
 
 export default {
   i18n: createI18n({
