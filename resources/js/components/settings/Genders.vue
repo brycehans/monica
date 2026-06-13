@@ -115,13 +115,16 @@ onMounted(async () => {
 });
 
 async function getGenders() {
-  const response = await axios.get<Gender[]>('settings/personalization/genders');
-  genders.value = response.data;
+  // The endpoint sorts via Collator::asort which leaves non-sequential integer
+  // keys, so Laravel serialises the response as a JSON object, not an array.
+  // Unwrap with Object.values to restore an array (was _.toArray pre-conversion).
+  const response = await axios.get<Record<string, Gender>>('settings/personalization/genders');
+  genders.value = Object.values(response.data);
 }
 
 async function getGenderTypes() {
-  const response = await axios.get<GenderType[]>('settings/personalization/genderTypes');
-  genderTypes.value = response.data;
+  const response = await axios.get<Record<string, GenderType>>('settings/personalization/genderTypes');
+  genderTypes.value = Object.values(response.data);
 }
 
 function openCreate() {
