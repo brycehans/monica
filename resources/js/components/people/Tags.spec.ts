@@ -1,0 +1,63 @@
+import { describe, it, expect, vi } from 'vitest';
+import { flushPromises, mount } from '@vue/test-utils';
+import Tags from './Tags.vue';
+
+vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (k: string) => k }) }));
+vi.mock('../../composables/useHtmlDir', () => ({ useHtmlDir: () => ({ dirltr: true }) }));
+vi.mock('moment', () => ({
+  default: () => ({ format: () => 'mock-timestamp' }),
+}));
+
+describe('Tags', () => {
+  it('fetches tags and contact tags on mount', async () => {
+    (globalThis.axios.get as ReturnType<typeof vi.fn>)
+      .mockResolvedValue({ data: { data: [] } });
+    const w = mount(Tags, { props: { hash: 'abc123' } });
+    await flushPromises();
+    expect(globalThis.axios.get).toHaveBeenCalledWith('tags');
+    expect(globalThis.axios.get).toHaveBeenCalledWith('people/abc123/tags');
+  });
+
+  it('removeTag splices the tag and calls store', async () => {
+    const tag = { id: 1, name: 'friend' };
+    (globalThis.axios.get as ReturnType<typeof vi.fn>)
+      .mockResolvedValue({ data: { data: [tag] } });
+    const w = mount(Tags, { props: { hash: 'abc123' } });
+    await flushPromises();
+    await w.vm.removeTag(tag);
+    expect(w.vm.contactTags).not.toContain(tag);
+    expect(globalThis.axios.post).toHaveBeenCalledWith(
+      'people/abc123/tags/update',
+      expect.any(Array),
+    );
+  });
+
+  it('filterResults excludes tags already in contactTags and is case-insensitive', async () => {
+    (globalThis.axios.get as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({ data: { data: [{ id: 1, name: 'Friend' }, { id: 2, name: 'Family' }] } })
+      .mockResolvedValueOnce({ data: { data: [{ id: 1, name: 'Friend' }] } });
+    const w = mount(Tags, { props: { hash: 'abc123' } });
+    await flushPromises();
+    // Drive search via the onChange pathway to avoid clobbering reactive refs.
+    await w.find('input[type="text"]').setValue('f');
+    w.vm.onChange();
+    expect(w.vm.results).toHaveLength(1);
+    expect(w.vm.results[0].name).toBe('Family');
+  });
+
+  it('onEscape resets arrowCounter, closes dropdown, clears search', async () => {
+    (globalThis.axios.get as ReturnType<typeof vi.fn>)
+      .mockResolvedValue({ data: { data: [] } });
+    const w = mount(Tags, { props: { hash: 'abc123' } });
+    await flushPromises();
+    // Enter edit mode so the input is rendered, then type to open the dropdown.
+    await w.vm.enterEditMode();
+    await w.find('input[type="text"]').setValue('foo');
+    w.vm.onChange();
+    expect(w.vm.isOpen).toBe(true);
+    w.vm.onEscape();
+    expect(w.vm.arrowCounter).toBe(-1);
+    expect(w.vm.isOpen).toBe(false);
+    expect(w.vm.search).toBe('');
+  });
+});
