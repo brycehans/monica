@@ -204,74 +204,51 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-export default {
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  data() {
-    return {
-      day: {
-        rate: '',
-        comment: ''
-      },
+const emit = defineEmits<{
+  (e: 'hasRated', data: unknown): void
+}>();
 
-      hasRated: 'notYet',
+const day = ref<{ rate: number; comment: string }>({ rate: 0, comment: '' });
+const hasRated = ref<'notYet' | 'addComment' | 'justNow' | true>('notYet');
+const showSadSmileyColor = ref(false);
+const showMediocreSmileyColor = ref(false);
+const showHappySmileyColor = ref(false);
 
-      showSadSmileyColor: false,
-      showMediocreSmileyColor: false,
-      showHappySmileyColor: false,
-    };
-  },
+onMounted(hasAlreadyRatedToday);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+async function hasAlreadyRatedToday() {
+  const response = await axios.get('journal/hasRated');
+  hasRated.value = response.data;
+}
 
-  mounted() {
-    this.prepareComponent();
-  },
+function showComment(rate: number) {
+  day.value.rate = rate;
+  hasRated.value = 'addComment';
+}
 
-  methods: {
-    prepareComponent() {
-      this.hasAlreadyRatedToday();
-    },
+function dismiss() {
+  hasRated.value = 'notYet';
+  day.value.rate = 0;
+  day.value.comment = '';
+}
 
-    hasAlreadyRatedToday() {
-      axios.get('journal/hasRated')
-        .then(response => {
-          this.hasRated = response.data;
-        });
-    },
+async function rate() {
+  hasRated.value = 'justNow';
+  const response = await axios.post('journal/day', day.value);
+  showSadSmileyColor.value = false;
+  showMediocreSmileyColor.value = false;
+  showHappySmileyColor.value = false;
+  emit('hasRated', response.data);
+}
 
-    showComment(rate) {
-      this.day.rate = rate;
-      this.hasRated = 'addComment';
-    },
-
-    dismiss() {
-      this.hasRated = 'notYet';
-      this.day.rate = 0;
-      this.day.comment = '';
-    },
-
-    rate() {
-      this.hasRated = 'justNow';
-
-      axios.post('journal/day', this.day)
-        .then(response => {
-          this.showSadSmileyColor = false;
-          this.showMediocreSmileyColor = false;
-          this.showHappySmileyColor = false;
-          this.$emit('hasRated', response.data);
-        });
-    },
-  }
-};
+defineExpose({ hasRated, day, showComment, dismiss, rate });
 </script>
