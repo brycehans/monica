@@ -60,4 +60,41 @@ describe('Tags', () => {
     expect(w.vm.isOpen).toBe(false);
     expect(w.vm.search).toBe('');
   });
+
+  it('onEnter pushes a new tag with the search text and clears state', async () => {
+    (globalThis.axios.get as ReturnType<typeof vi.fn>)
+      .mockResolvedValue({ data: { data: [] } });
+    const w = mount(Tags, { props: { hash: 'abc123' } });
+    await flushPromises();
+    w.vm.search = 'newtag';
+    w.vm.onEnter();
+    expect(w.vm.contactTags).toEqual([
+      expect.objectContaining({ name: 'newtag', id: 'mock-timestamp' }),
+    ]);
+    expect(w.vm.search).toBe('');
+    expect(w.vm.isOpen).toBe(false);
+    expect(w.vm.arrowCounter).toBe(-1);
+  });
+
+  it('onEnter does nothing when search is empty', async () => {
+    (globalThis.axios.get as ReturnType<typeof vi.fn>)
+      .mockResolvedValue({ data: { data: [] } });
+    const w = mount(Tags, { props: { hash: 'abc123' } });
+    await flushPromises();
+    w.vm.search = '';
+    w.vm.onEnter();
+    expect(w.vm.contactTags).toEqual([]);
+  });
+
+  it('setResult pushes the result tag and clears search', async () => {
+    (globalThis.axios.get as ReturnType<typeof vi.fn>)
+      .mockResolvedValue({ data: { data: [] } });
+    const w = mount(Tags, { props: { hash: 'abc123' } });
+    await flushPromises();
+    const result = { id: 42, name: 'Family' };
+    w.vm.setResult(result);
+    expect(w.vm.contactTags).toContainEqual(result);
+    expect(w.vm.search).toBe('');
+    expect(w.vm.isOpen).toBe(false);
+  });
 });

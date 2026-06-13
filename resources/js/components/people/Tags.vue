@@ -16,7 +16,7 @@
 </style>
 
 <template>
-  <div class="tc">
+  <div ref="root" class="tc">
     <!-- list of existing tags -->
     <ul>
       <li v-for="tag in contactTags" :key="tag.id" class="di mr2">
@@ -86,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick, useTemplateRef, getCurrentInstance } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import moment from 'moment';
@@ -105,7 +105,7 @@ const { t } = useI18n();
 const { dirltr } = useHtmlDir();
 
 const tagsInput = useTemplateRef<HTMLInputElement>('tags');
-const instance = getCurrentInstance();
+const rootEl = useTemplateRef<HTMLElement>('root');
 
 const allTags = ref<Tag[]>([]);
 const contactTags = ref<Tag[]>([]);
@@ -115,10 +115,7 @@ const results = ref<Tag[]>([]);
 const isOpen = ref(false);
 const arrowCounter = ref(0);
 
-let rootEl: HTMLElement | null = null;
-
 onMounted(() => {
-  rootEl = (instance?.proxy?.$el as HTMLElement) ?? null;
   getExistingTags();
   getContactTags();
   document.addEventListener('click', handleClickOutside);
@@ -209,7 +206,7 @@ async function store() {
 }
 
 function handleClickOutside(evt: MouseEvent) {
-  if (rootEl && !rootEl.contains(evt.target as Node)) {
+  if (rootEl.value && !rootEl.value.contains(evt.target as Node)) {
     isOpen.value = false;
     arrowCounter.value = -1;
   }
