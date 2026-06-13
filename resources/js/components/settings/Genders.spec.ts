@@ -92,7 +92,34 @@ describe('Genders', () => {
     await w.find('a.btn').trigger('click');
 
     expect(openSpies.create).toHaveBeenCalledTimes(1);
-    // No gender has isDefault=true → defaultGenderType is undefined → passed through as such
-    expect(openSpies.create.mock.calls[0][0].defaultGenderType).toBeUndefined();
+    // No gender has isDefault=true → fall back to genders[0] so the create
+    // modal can preselect a `type`. Without this, the server's validation
+    // rejects the form (covered by tests/playwright/specs/dependency-upgrade-smoke
+    // gender create flow).
+    const defaultPassed = openSpies.create.mock.calls[0][0].defaultGenderType;
+    expect(defaultPassed).toBeDefined();
+    // Object.values on integer-like string keys iterates in numeric ASC order
+    // (not insertion order), so genders[0] = id 1 ("Man").
+    expect(defaultPassed.id).toBe(1);
+  });
+
+  it('prefers an explicitly-marked default over genders[0] when present', async () => {
+    const withExplicitDefault = {
+      '0': { id: 1, name: 'Man', type: 'M', isDefault: false, numberOfContacts: 0 },
+      '1': { id: 2, name: 'Woman', type: 'F', isDefault: true, numberOfContacts: 0 },
+    };
+    (globalThis.axios.get as ReturnType<typeof vi.fn>)
+      .mockImplementation((url: string) => {
+        if (url === 'settings/personalization/genders') {
+          return Promise.resolve({ data: withExplicitDefault });
+        }
+        return Promise.resolve({ data: {} });
+      });
+
+    const w = mountWithStubs(Genders);
+    await flushPromises();
+    await w.find('a.btn').trigger('click');
+
+    expect(openSpies.create.mock.calls[0][0].defaultGenderType.id).toBe(2);
   });
 });

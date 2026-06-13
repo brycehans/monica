@@ -106,9 +106,15 @@ const setDefaultModal = useRowModal(SetDefaultModal);
 const genders = ref<Gender[]>([]);
 const genderTypes = ref<GenderType[]>([]);
 
-const defaultGenderType = computed<Gender | undefined>(() =>
-  genders.value.find(g => g.isDefault === true)
-);
+// Fallback to genders[0] when no row is explicitly marked default. The
+// create modal binds form.type to defaultGenderType?.type and the server
+// validates that type is present, so returning undefined here triggers
+// a 422 on the first POST. Matches the pre-conversion _.findIndex + index
+// fallback behaviour (verified by the e2e gender-create spec).
+const defaultGenderType = computed<Gender | undefined>(() => {
+  const explicit = genders.value.find(g => g.isDefault === true);
+  return explicit ?? genders.value[0];
+});
 
 onMounted(async () => {
   await Promise.all([getGenders(), getGenderTypes()]);
