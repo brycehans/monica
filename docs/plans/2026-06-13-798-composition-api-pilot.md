@@ -1212,8 +1212,11 @@ Surface inventory of `_.toArray` callsites in the codebase as of this pilot:
 Bulk-conversion task list: open #798-followup with the Participant.vue trap noted explicitly.
 
 ### defineExpose
-- Always add `defineExpose({...})` exposing all state refs and methods so unit tests can access them via `w.vm.foo`
-- Remove from final commit only if the component is exclusively tested via playwright/browser
+- **Default: NO `defineExpose`.** `<script setup>` closes refs by design — exposing them recreates the Options API's encapsulation problem one renamed-state-field at a time. The pilot initially shipped Tags / RateDay / MfaActivate with `defineExpose({...everything})`; the convention was flipped after the final review (Tags.vue dropped its expose in the same commit that template-drove its spec, with no test rewrite — see `Tags.spec.ts` for the pattern).
+- **When to expose:** only when a parent template needs to call a child method (rare in this codebase — most parent↔child traffic is via props + emits), or when there is a load-bearing test path that's genuinely impossible template-driven (extremely rare).
+- **Spec style that supports this:** drive interactions via `w.find(...).trigger('click')`, `w.find('input').setValue(...).trigger('input')`, `w.find('input').trigger('keydown', { key: 'Escape' })`. Assert on `w.text()`, `w.findAll(...).length`, and the inline `element.style.display === 'none'` for `v-show` checks (happy-dom's `isVisible()` is unreliable for `v-show`). Use `w.emitted('eventName')` for emit assertions.
+- **Keyboard event gotcha:** `trigger('keydown.esc')` doesn't reliably trigger Vue's `@keydown.esc` modifier in happy-dom; use `trigger('keydown', { key: 'Escape' })` instead.
+- **RateDay / MfaActivate still carry `defineExpose`** — flagged as cleanup before the bulk migration. Convert each to template-driven specs as part of the bulk-conversion ticket, not as a follow-up to this PR.
 
 ### Effort estimate (actual vs. projected)
 | Component | Projected | Actual |

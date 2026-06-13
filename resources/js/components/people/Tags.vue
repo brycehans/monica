@@ -211,11 +211,4 @@ function handleClickOutside(evt: MouseEvent) {
     arrowCounter.value = -1;
   }
 }
-
-// Exposed for white-box testing only — not part of the component's public contract.
-defineExpose({
-  allTags, contactTags, editMode, search, results, isOpen, arrowCounter,
-  enterEditMode, removeTag, onChange, onEnter, onArrowDown, onArrowUp,
-  onEscape, setResult, filterResults, store,
-});
 </script>
