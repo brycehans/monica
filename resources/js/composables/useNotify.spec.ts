@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const mockNotify = vi.hoisted(() => vi.fn());
 vi.mock('@kyvg/vue3-notification', () => ({ notify: mockNotify }));
@@ -6,6 +6,10 @@ vi.mock('@kyvg/vue3-notification', () => ({ notify: mockNotify }));
 import { useNotify } from './useNotify';
 
 describe('useNotify', () => {
+  beforeEach(() => {
+    mockNotify.mockClear();
+  });
+
   it('returns the notify fn from @kyvg/vue3-notification', () => {
     const { notify } = useNotify();
     expect(notify).toBe(mockNotify);
