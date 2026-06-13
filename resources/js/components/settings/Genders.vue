@@ -71,99 +71,99 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import { useRowModal } from '../../composables/useRowModal';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 import CreateModal from './genders/CreateModal.vue';
 import EditModal from './genders/EditModal.vue';
 import DeleteModal from './genders/DeleteModal.vue';
 import SetDefaultModal from './genders/SetDefaultModal.vue';
 
-export default {
-  setup() {
-    const { t } = useI18n();
-    const createModal = useRowModal(CreateModal);
-    const editModal = useRowModal(EditModal);
-    const deleteModal = useRowModal(DeleteModal);
-    const setDefaultModal = useRowModal(SetDefaultModal);
-    return { t, createModal, editModal, deleteModal, setDefaultModal };
-  },
+interface Gender {
+  id: number;
+  name: string;
+  type: string;
+  isDefault: boolean;
+  numberOfContacts: number;
+}
 
-  data() {
-    return {
-      genders: [],
-      genderTypes: [],
-    };
-  },
+interface GenderType {
+  id: string;
+  name: string;
+}
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-    defaultGenderType() {
-      const defaultGender = _.findIndex(this.genders, ['isDefault', true]);
-      return this.genders[defaultGender >= 0 ? defaultGender : 0];
-    }
-  },
+const createModal = useRowModal(CreateModal);
+const editModal = useRowModal(EditModal);
+const deleteModal = useRowModal(DeleteModal);
+const setDefaultModal = useRowModal(SetDefaultModal);
 
-  mounted() {
-    this.prepareComponent();
-  },
+const genders = ref<Gender[]>([]);
+const genderTypes = ref<GenderType[]>([]);
 
-  methods: {
-    prepareComponent() {
-      Promise.all([
-        this.getGenders(),
-        this.getGenderTypes()
-      ]);
-    },
+// Fallback to genders[0] when no row is explicitly marked default. The
+// create modal binds form.type to defaultGenderType?.type and the server
+// validates that type is present, so returning undefined here triggers
+// a 422 on the first POST. Matches the pre-conversion _.findIndex + index
+// fallback behaviour (verified by the e2e gender-create spec).
+const defaultGenderType = computed<Gender | undefined>(() => {
+  const explicit = genders.value.find(g => g.isDefault === true);
+  return explicit ?? genders.value[0];
+});
 
-    getGenders() {
-      return axios.get('settings/personalization/genders')
-        .then(response => {
-          this.genders = _.toArray(response.data);
-        });
-    },
+onMounted(async () => {
+  await Promise.all([getGenders(), getGenderTypes()]);
+});
 
-    getGenderTypes() {
-      return axios.get('settings/personalization/genderTypes')
-        .then(response => {
-          this.genderTypes = _.toArray(response.data);
-        });
-    },
+async function getGenders() {
+  // The endpoint sorts via Collator::asort which leaves non-sequential integer
+  // keys, so Laravel serialises the response as a JSON object, not an array.
+  // Unwrap with Object.values to restore an array (was _.toArray pre-conversion).
+  // The ?? {} guards against a null/undefined response — Object.values(null)
+  // throws TypeError and would surface as a render crash on a degraded fetch.
+  const response = await axios.get<Record<string, Gender> | null>('settings/personalization/genders');
+  genders.value = Object.values(response.data ?? {});
+}
 
-    openCreate() {
-      this.createModal.open({
-        genderTypes: this.genderTypes,
-        defaultGenderType: this.defaultGenderType,
-        onSaved: () => this.getGenders(),
-      });
-    },
+async function getGenderTypes() {
+  const response = await axios.get<Record<string, GenderType> | null>('settings/personalization/genderTypes');
+  genderTypes.value = Object.values(response.data ?? {});
+}
 
-    openSetDefault() {
-      this.setDefaultModal.open({
-        genders: this.genders,
-        defaultId: this.defaultGenderType?.id ?? null,
-        onSaved: () => this.getGenders(),
-      });
-    },
+function openCreate() {
+  createModal.open({
+    genderTypes: genderTypes.value,
+    defaultGenderType: defaultGenderType.value,
+    onSaved: () => getGenders(),
+  });
+}
 
-    openEdit(gender) {
-      this.editModal.open({
-        gender,
-        genderTypes: this.genderTypes,
-        onSaved: () => this.getGenders(),
-      });
-    },
+function openSetDefault() {
+  setDefaultModal.open({
+    genders: genders.value,
+    defaultId: defaultGenderType.value?.id ?? null,
+    onSaved: () => getGenders(),
+  });
+}
 
-    openDelete(gender) {
-      this.deleteModal.open({
-        gender,
-        genders: this.genders,
-        onSaved: () => this.getGenders(),
-      });
-    },
-  }
-};
+function openEdit(gender: Gender) {
+  editModal.open({
+    gender,
+    genderTypes: genderTypes.value,
+    onSaved: () => getGenders(),
+  });
+}
+
+function openDelete(gender: Gender) {
+  deleteModal.open({
+    gender,
+    genders: genders.value,
+    onSaved: () => getGenders(),
+  });
+}
 </script>

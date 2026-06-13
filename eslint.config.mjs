@@ -1,5 +1,6 @@
 import globals from 'globals';
 import pluginVue from 'eslint-plugin-vue';
+import tsParser from '@typescript-eslint/parser';
 
 export default [
   // plugin-vue v9's `vue/recommended` resolved to vue2 rules; v10's `flat/recommended`
@@ -9,6 +10,15 @@ export default [
     languageOptions: {
       ecmaVersion: 12,
       sourceType: 'module',
+      // vue-eslint-parser tokenises SFCs and delegates `<script>` block parsing
+      // to the inner parser declared here. The Composition API pilot lands the
+      // first `<script setup lang="ts">` blocks; without @typescript-eslint/parser
+      // ESLint chokes on `interface`, type annotations, and optional-chaining
+      // type narrowing. Vanilla JS files keep working because vue-eslint-parser
+      // falls back to espree for non-`lang="ts"` scripts.
+      parserOptions: {
+        parser: tsParser,
+      },
       globals: {
         ...globals.browser,
       },

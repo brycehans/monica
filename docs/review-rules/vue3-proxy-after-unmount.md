@@ -6,7 +6,7 @@
 
 When a Vue component fires a method that triggers its own unmount — typical patterns are `this.close()`, `this.$emit('cancel')`, mutating a parent-controlled state prop that flips a `v-if` off — **everything else on that instance dies on the next microtask**: `this.$refs`, `this.$emit('update', ...)`, `this.$nextTick`, and data reads via `this.someProp`. Anything past the unmount line in the same call stack is fine (still inside one microtask). Anything *after* a `then` / `await` boundary is not.
 
-This is the predictable consequence of how Vue 3 installs per-instance state on `instance.ctx`, which Vue clears at unmount. The historical `$t` flavour (Flavour 1, below) had the same root cause via vue-i18n's legacy-mode `$t` binding on `instance.ctx` — code that worked for years on Vue 2 + vue-i18n@8 (where bindings sat on `Vue.prototype`) started crashing on the cutover (#730). Migrating to vue-i18n composition mode (#744) closed that subclass: `t` is now a setup-time closure, not a proxy property. The `$refs` flavour remains because Vue clears `instance.refs` at unmount and there is no equivalent escape hatch for components still using Options-API `this.$refs` (composition-API code can use `useTemplateRef()` to closure-capture; that's not on the ladder).
+This is the predictable consequence of how Vue 3 installs per-instance state on `instance.ctx`, which Vue clears at unmount. The historical `$t` flavour (Flavour 1, below) had the same root cause via vue-i18n's legacy-mode `$t` binding on `instance.ctx` — code that worked for years on Vue 2 + vue-i18n@8 (where bindings sat on `Vue.prototype`) started crashing on the cutover (#730). Migrating to vue-i18n composition mode (#744) closed that subclass: `t` is now a setup-time closure, not a proxy property. The `$refs` flavour remains for Options-API SFCs because Vue clears `instance.refs` at unmount and there is no equivalent escape hatch for `this.$refs`. Composition-API code can use `useTemplateRef()` to closure-capture — that's now on the ladder per the #798 pilot, and Tags.vue is the first user (the row in the audit table below is annotated accordingly).
 
 For background, the original vue-i18n issues that surfaced the proxy-clear behavior: [vue-i18n#1440](https://github.com/kazupon/vue-i18n/issues/1440), [vue-i18n#184](https://github.com/kazupon/vue-i18n/issues/184).
 
@@ -99,7 +99,7 @@ Greped `$refs\.\w+\.` across `resources/js/components/` — 28 method-call sites
 | `settings/ContactFieldTypes.vue:384,394` | `setTimeout(() => vm.$refs.X.focus(), 10)` | No | Settings page, no unmount path |
 | `passport/PersonalAccessTokens.vue:246` | same setTimeout focus idiom | No | Same reasoning |
 | `passport/Clients.vue:253` | same setTimeout focus idiom | No | Same reasoning |
-| `people/Tags.vue:158` | `$nextTick(() => $refs.tags.focus())` after `editMode = true` | No | Self-toggle, same component |
+| `people/Tags.vue` (pre-#804) | `$nextTick(() => $refs.tags.focus())` after `editMode = true` | No | Self-toggle, same component — **resolved structurally** in #804: converted to `useTemplateRef<HTMLInputElement>('tags')` + `await nextTick()`, closure-captured so survives instance teardown regardless of unmount timing |
 | `people/SetAvatar.vue:188,191,205` | `getCroppedCanvas()`, `uploadedImg.files` | No | Synchronous, within same click handler, clipper mounted while modal open |
 | `people/document/DocumentList.vue:297` | `$refs.file.files[0]` in change handler | No | Live during the input's own change event |
 | `people/gifts/CreateGift.vue:82,147` | inline template handlers, refs always-mounted via `v-show` or same `v-if` parent | No | Refs always live at the click moment |
@@ -114,7 +114,7 @@ Five sites required fixes (one already done in #771, four in this PR). The rest 
 
 ## Forcing function
 
-The `$refs` flavour goes away when components migrate to `useTemplateRef()` in `setup()` — closure-captured, survives instance teardown. That requires either `<script setup>` or composition-API rewrites, both explicitly out of scope per #702. Until then, this rule stands.
+The `$refs` flavour goes away when components migrate to `useTemplateRef()` in `setup()` — closure-captured, survives instance teardown. That requires `<script setup>` or composition-API rewrites; previously out of scope per #702, now in scope per the #798 pilot. 4 of 82 SFCs are converted (#804); 78 remain. Until each SFC is converted, this rule applies to the remaining Options-API SFCs.
 
 The `$t` flavour is already gone — see Flavour 1 status note above.
 

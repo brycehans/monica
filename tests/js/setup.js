@@ -24,6 +24,10 @@ document.head.appendChild(bootEl);
 globalThis._ = {
   toArray: (x) => Array.isArray(x) ? x : Object.values(x ?? {}),
   findIndex: (arr, pred) => {
+    if (Array.isArray(pred)) {
+      const [key, val] = pred;
+      return (arr ?? []).findIndex((it) => it[key] === val);
+    }
     if (typeof pred === 'object') {
       return (arr ?? []).findIndex((it) => Object.entries(pred).every(([k, v]) => it[k] === v));
     }

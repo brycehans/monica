@@ -16,7 +16,7 @@
 </style>
 
 <template>
-  <div class="tc">
+  <div ref="root" class="tc">
     <!-- list of existing tags -->
     <ul>
       <li v-for="tag in contactTags" :key="tag.id" class="di mr2">
@@ -85,156 +85,130 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, nextTick, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import moment from 'moment';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-export default {
+interface Tag {
+  id: string | number;
+  name: string;
+}
 
-  name: 'Tags',
+const props = defineProps<{
+  hash?: string;
+}>();
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const tagsInput = useTemplateRef<HTMLInputElement>('tags');
+const rootEl = useTemplateRef<HTMLElement>('root');
 
-  data() {
-    return {
-      allTags: [],
-      availableTags: [],
-      contactTags: [],
-      editMode: false,
-      search: '',
-      results: [],
-      isOpen: false,
-      arrowCounter: 0,
-    };
-  },
+const allTags = ref<Tag[]>([]);
+const contactTags = ref<Tag[]>([]);
+const editMode = ref(false);
+const search = ref('');
+const results = ref<Tag[]>([]);
+const isOpen = ref(false);
+const arrowCounter = ref(0);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+onMounted(() => {
+  getExistingTags();
+  getContactTags();
+  document.addEventListener('click', handleClickOutside);
+});
 
-  mounted() {
-    this.prepareComponent();
-    document.addEventListener('click', this.handleClickOutside);
-  },
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 
-  unmounted() {
-    document.removeEventListener('click', this.handleClickOutside);
-  },
+async function getExistingTags() {
+  const response = await axios.get<{ data: Tag[] }>('tags');
+  allTags.value = response.data.data;
+}
 
-  methods: {
-    prepareComponent() {
-      this.getExistingTags();
-      this.getContactTags();
-    },
+async function getContactTags() {
+  const response = await axios.get<{ data: Tag[] }>('people/' + props.hash + '/tags');
+  contactTags.value = response.data.data;
+}
 
-    getExistingTags() {
-      axios.get('tags')
-        .then(response => {
-          this.allTags = response.data.data;
-        });
-    },
+async function enterEditMode() {
+  editMode.value = true;
+  await nextTick();
+  tagsInput.value?.focus();
+}
 
-    getContactTags() {
-      axios.get('people/' + this.hash + '/tags')
-        .then(response => {
-          this.contactTags = response.data.data;
-        });
-    },
+function removeTag(tag: Tag) {
+  contactTags.value.splice(contactTags.value.indexOf(tag), 1);
+  store();
+}
 
-    enterEditMode() {
-      this.editMode = true;
-      this.$nextTick(() => this.$refs.tags.focus());
-    },
+function onChange() {
+  isOpen.value = true;
+  filterResults();
+}
 
-    removeTag(tag) {
-      this.contactTags.splice(this.contactTags.indexOf(tag), 1);
-      this.store();
-    },
-
-    onChange() {
-      this.isOpen = true;
-      this.filterResults();
-    },
-
-    onEnter() {
-      if (this.search !== '') {
-        this.contactTags.push({
-          id: moment().format(), // we just need a random ID here
-          name: this.search
-        });
-        this.arrowCounter = -1;
-        this.isOpen = false;
-        this.search = '';
-        this.store();
-      }
-    },
-
-    onArrowDown() {
-      if (this.arrowCounter < this.results.length) {
-        this.arrowCounter = this.arrowCounter + 1;
-        this.search = this.results[this.arrowCounter].name;
-      }
-    },
-
-    onArrowUp() {
-      if (this.arrowCounter > 0) {
-        this.arrowCounter = this.arrowCounter - 1;
-        this.search = this.results[this.arrowCounter].name;
-      }
-    },
-
-    onEscape() {
-      this.arrowCounter = -1;
-      this.isOpen = false;
-      this.search = '';
-    },
-
-    setResult(result) {
-      this.search = '';
-      this.isOpen = false;
-      this.contactTags.push(result);
-      this.store();
-    },
-
-    filterResults() {
-      var me = this.contactTags;
-      var search = _.toLower(this.search);
-      this.results = this.allTags.filter(item => _.toLower(item.name).indexOf(search) > -1
-                                                  && _.findIndex(me, t => t.name === item.name) < 0);
-    },
-
-    filterAllTags() {
-      var me = this.contactTags;
-      this.availableTags = this.allTags.filter((item) => {
-        return !me.includes(item);
-      });
-    },
-
-    store() {
-      axios.post('people/' + this.hash + '/tags/update', this.contactTags)
-        .then(response => {
-          this.getExistingTags();
-        });
-    },
-
-    handleClickOutside(evt) {
-      if (!this.$el.contains(evt.target)) {
-        this.isOpen = false;
-        this.arrowCounter = -1;
-      }
-    }
+function onEnter() {
+  if (search.value !== '') {
+    contactTags.value.push({
+      id: moment().format(),
+      name: search.value,
+    });
+    arrowCounter.value = -1;
+    isOpen.value = false;
+    search.value = '';
+    store();
   }
-};
+}
+
+function onArrowDown() {
+  if (arrowCounter.value < results.value.length) {
+    arrowCounter.value = arrowCounter.value + 1;
+    search.value = results.value[arrowCounter.value].name;
+  }
+}
+
+function onArrowUp() {
+  if (arrowCounter.value > 0) {
+    arrowCounter.value = arrowCounter.value - 1;
+    search.value = results.value[arrowCounter.value].name;
+  }
+}
+
+function onEscape() {
+  arrowCounter.value = -1;
+  isOpen.value = false;
+  search.value = '';
+}
+
+function setResult(result: Tag) {
+  search.value = '';
+  isOpen.value = false;
+  contactTags.value.push(result);
+  store();
+}
+
+function filterResults() {
+  const lowerSearch = search.value.toLowerCase();
+  results.value = allTags.value.filter(
+    item =>
+      item.name.toLowerCase().includes(lowerSearch) &&
+      contactTags.value.findIndex(t => t.name === item.name) < 0,
+  );
+}
+
+async function store() {
+  await axios.post('people/' + props.hash + '/tags/update', contactTags.value);
+  getExistingTags();
+}
+
+function handleClickOutside(evt: MouseEvent) {
+  if (rootEl.value && !rootEl.value.contains(evt.target as Node)) {
+    isOpen.value = false;
+    arrowCounter.value = -1;
+  }
+}
 </script>
