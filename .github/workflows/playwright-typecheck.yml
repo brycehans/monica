@@ -1,0 +1,37 @@
+name: Playwright typecheck
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'tests/playwright/**/*.ts'
+      - 'tests/playwright/tsconfig.json'
+      - 'tests/playwright/package.json'
+
+concurrency:
+  group: Playwright typecheck ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    name: tsc (playwright workspace)
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+          cache-dependency-path: tests/playwright/yarn.lock
+
+      - name: Install playwright workspace dependencies
+        working-directory: tests/playwright
+        run: yarn install --frozen-lockfile
+
+      - name: Run typecheck
+        working-directory: tests/playwright
+        run: yarn run typecheck
