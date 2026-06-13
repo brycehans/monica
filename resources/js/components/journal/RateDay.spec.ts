@@ -1,20 +1,21 @@
 import { describe, it, expect, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import RateDay from './RateDay.vue';
 
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (k: string) => k }) }));
 vi.mock('../../composables/useHtmlDir', () => ({ useHtmlDir: () => ({ dirltr: true }) }));
 
 describe('RateDay', () => {
-  it('hasRated starts as notYet after mount fetches notYet', async () => {
+  it('fetches journal/hasRated on mount', async () => {
     (globalThis.axios.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: 'notYet' });
     const w = mount(RateDay);
-    await w.vm.$nextTick();
-    // Template: v-if="hasRated !== true" should render the rating box
+    await flushPromises();
+    expect(globalThis.axios.get).toHaveBeenCalledWith('journal/hasRated');
     expect(w.html()).toContain('journal.journal_rate');
   });
 
   it('showComment sets rate and transitions to addComment state', () => {
+    (globalThis.axios.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: 'notYet' });
     const w = mount(RateDay);
     w.vm.showComment(2);
     expect(w.vm.hasRated).toBe('addComment');
@@ -22,6 +23,7 @@ describe('RateDay', () => {
   });
 
   it('dismiss resets to notYet with cleared day', () => {
+    (globalThis.axios.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: 'notYet' });
     const w = mount(RateDay);
     w.vm.showComment(1);
     w.vm.dismiss();

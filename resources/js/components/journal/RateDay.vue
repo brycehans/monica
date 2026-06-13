@@ -213,8 +213,14 @@ import { useHtmlDir } from '../../composables/useHtmlDir';
 const { t } = useI18n();
 const { dirltr } = useHtmlDir();
 
+interface JournalEntry {
+  id: number;
+  rate: number;
+  comment: string;
+}
+
 const emit = defineEmits<{
-  (e: 'hasRated', data: unknown): void
+  (e: 'hasRated', data: JournalEntry): void
 }>();
 
 const day = ref<{ rate: number; comment: string }>({ rate: 0, comment: '' });
@@ -226,7 +232,7 @@ const showHappySmileyColor = ref(false);
 onMounted(hasAlreadyRatedToday);
 
 async function hasAlreadyRatedToday() {
-  const response = await axios.get('journal/hasRated');
+  const response = await axios.get<'notYet' | 'addComment' | 'justNow' | true>('journal/hasRated');
   hasRated.value = response.data;
 }
 
@@ -250,5 +256,6 @@ async function rate() {
   emit('hasRated', response.data);
 }
 
+// Exposed for white-box testing only — not part of the component's public contract.
 defineExpose({ hasRated, day, showComment, dismiss, rate });
 </script>
