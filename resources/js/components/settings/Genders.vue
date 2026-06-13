@@ -71,99 +71,89 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import { useRowModal } from '../../composables/useRowModal';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 import CreateModal from './genders/CreateModal.vue';
 import EditModal from './genders/EditModal.vue';
 import DeleteModal from './genders/DeleteModal.vue';
 import SetDefaultModal from './genders/SetDefaultModal.vue';
 
-export default {
-  setup() {
-    const { t } = useI18n();
-    const createModal = useRowModal(CreateModal);
-    const editModal = useRowModal(EditModal);
-    const deleteModal = useRowModal(DeleteModal);
-    const setDefaultModal = useRowModal(SetDefaultModal);
-    return { t, createModal, editModal, deleteModal, setDefaultModal };
-  },
+interface Gender {
+  id: number;
+  name: string;
+  type: string;
+  isDefault: boolean;
+  numberOfContacts: number;
+}
 
-  data() {
-    return {
-      genders: [],
-      genderTypes: [],
-    };
-  },
+interface GenderType {
+  id: string;
+  name: string;
+}
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-    defaultGenderType() {
-      const defaultGender = _.findIndex(this.genders, ['isDefault', true]);
-      return this.genders[defaultGender >= 0 ? defaultGender : 0];
-    }
-  },
+const createModal = useRowModal(CreateModal);
+const editModal = useRowModal(EditModal);
+const deleteModal = useRowModal(DeleteModal);
+const setDefaultModal = useRowModal(SetDefaultModal);
 
-  mounted() {
-    this.prepareComponent();
-  },
+const genders = ref<Gender[]>([]);
+const genderTypes = ref<GenderType[]>([]);
 
-  methods: {
-    prepareComponent() {
-      Promise.all([
-        this.getGenders(),
-        this.getGenderTypes()
-      ]);
-    },
+const defaultGenderType = computed<Gender | undefined>(() => {
+  const idx = genders.value.findIndex(g => g.isDefault === true);
+  return genders.value[idx >= 0 ? idx : 0];
+});
 
-    getGenders() {
-      return axios.get('settings/personalization/genders')
-        .then(response => {
-          this.genders = _.toArray(response.data);
-        });
-    },
+onMounted(() => {
+  Promise.all([getGenders(), getGenderTypes()]);
+});
 
-    getGenderTypes() {
-      return axios.get('settings/personalization/genderTypes')
-        .then(response => {
-          this.genderTypes = _.toArray(response.data);
-        });
-    },
+async function getGenders() {
+  const response = await axios.get<Gender[]>('settings/personalization/genders');
+  genders.value = response.data;
+}
 
-    openCreate() {
-      this.createModal.open({
-        genderTypes: this.genderTypes,
-        defaultGenderType: this.defaultGenderType,
-        onSaved: () => this.getGenders(),
-      });
-    },
+async function getGenderTypes() {
+  const response = await axios.get<GenderType[]>('settings/personalization/genderTypes');
+  genderTypes.value = response.data;
+}
 
-    openSetDefault() {
-      this.setDefaultModal.open({
-        genders: this.genders,
-        defaultId: this.defaultGenderType?.id ?? null,
-        onSaved: () => this.getGenders(),
-      });
-    },
+function openCreate() {
+  createModal.open({
+    genderTypes: genderTypes.value,
+    defaultGenderType: defaultGenderType.value,
+    onSaved: () => getGenders(),
+  });
+}
 
-    openEdit(gender) {
-      this.editModal.open({
-        gender,
-        genderTypes: this.genderTypes,
-        onSaved: () => this.getGenders(),
-      });
-    },
+function openSetDefault() {
+  setDefaultModal.open({
+    genders: genders.value,
+    defaultId: defaultGenderType.value?.id ?? null,
+    onSaved: () => getGenders(),
+  });
+}
 
-    openDelete(gender) {
-      this.deleteModal.open({
-        gender,
-        genders: this.genders,
-        onSaved: () => this.getGenders(),
-      });
-    },
-  }
-};
+function openEdit(gender: Gender) {
+  editModal.open({
+    gender,
+    genderTypes: genderTypes.value,
+    onSaved: () => getGenders(),
+  });
+}
+
+function openDelete(gender: Gender) {
+  deleteModal.open({
+    gender,
+    genders: genders.value,
+    onSaved: () => getGenders(),
+  });
+}
 </script>
