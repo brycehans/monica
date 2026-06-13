@@ -106,13 +106,12 @@ const setDefaultModal = useRowModal(SetDefaultModal);
 const genders = ref<Gender[]>([]);
 const genderTypes = ref<GenderType[]>([]);
 
-const defaultGenderType = computed<Gender | undefined>(() => {
-  const idx = genders.value.findIndex(g => g.isDefault === true);
-  return genders.value[idx >= 0 ? idx : 0];
-});
+const defaultGenderType = computed<Gender | undefined>(() =>
+  genders.value.find(g => g.isDefault === true)
+);
 
-onMounted(() => {
-  Promise.all([getGenders(), getGenderTypes()]);
+onMounted(async () => {
+  await Promise.all([getGenders(), getGenderTypes()]);
 });
 
 async function getGenders() {
