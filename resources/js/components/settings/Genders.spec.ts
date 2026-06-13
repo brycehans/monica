@@ -122,4 +122,21 @@ describe('Genders', () => {
 
     expect(openSpies.create.mock.calls[0][0].defaultGenderType.id).toBe(2);
   });
+
+  it('survives a null response body (Object.values(null) would otherwise throw)', async () => {
+    // Degraded-fetch hardening. Object.values(null) throws TypeError, which
+    // would surface as an uncaught render crash. The ?? {} fallback keeps the
+    // component mountable so the empty-state UI shows instead.
+    (globalThis.axios.get as ReturnType<typeof vi.fn>)
+      .mockResolvedValue({ data: null });
+
+    const w = mountWithStubs(Genders);
+    await flushPromises();
+
+    expect(w.exists()).toBe(true);
+    // The i18n stub returns the key, so we look for the title key rather
+    // than its translation. What matters is the component mounted and didn't
+    // explode on null response data.
+    expect(w.text()).toContain('settings.personalization_genders_title');
+  });
 });
