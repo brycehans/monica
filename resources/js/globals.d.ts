@@ -22,4 +22,10 @@ declare global {
   var $: JQueryStatic;
   // eslint-disable-next-line no-var
   var jQuery: JQueryStatic;
+  // bootstrap.ts assigns window.axios = axios, and tests/js/setup.js mirrors
+  // that onto globalThis so legacy Options API assertions referencing bare
+  // `axios.post` keep working. Declared here so `globalThis.axios` typechecks
+  // in spec files without a per-file `(globalThis as any)` cast.
+  // eslint-disable-next-line no-var
+  var axios: AxiosStatic;
 }
