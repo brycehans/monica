@@ -41,4 +41,26 @@ describe('MfaActivate', () => {
     expect(w.vm.image).toBe('<svg/>');
     expect(w.vm.secret).toBe('ABC123');
   });
+
+  it('register() calls notify with success on 2fa-enable success', async () => {
+    (globalThis.axios.post as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: { success: true },
+    });
+    const w = mount(MfaActivate, { props: { activated: false } });
+    await w.vm.register();
+    expect(mockNotify).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'success', group: 'mfa' })
+    );
+  });
+
+  it('register() calls notify with error when axios throws', async () => {
+    (globalThis.axios.post as ReturnType<typeof vi.fn>).mockRejectedValueOnce({
+      response: { data: { message: 'invalid code' } },
+    });
+    const w = mount(MfaActivate, { props: { activated: false } });
+    await w.vm.register();
+    expect(mockNotify).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'error', group: 'mfa', title: 'invalid code' })
+    );
+  });
 });
