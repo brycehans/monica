@@ -71,9 +71,14 @@ interface Module {
   active: boolean;
 }
 
-defineProps<{
-  limited?: boolean;
-}>();
+withDefaults(
+  defineProps<{
+    limited?: boolean;
+  }>(),
+  {
+    limited: false,
+  },
+);
 
 const { t } = useI18n();
 const { dirltr } = useHtmlDir();

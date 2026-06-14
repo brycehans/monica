@@ -151,6 +151,7 @@ import axios from 'axios';
 import moment from 'moment-timezone';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { useNotify } from '../../composables/useNotify';
+import { collectionValues } from '../../api/collection';
 import { timezone as bootTimezone } from '../../boot';
 
 interface Task {
@@ -226,10 +227,7 @@ function toggleEditMode(task: Task) {
 
 async function index() {
   const response = await axios.get('people/' + props.hash + '/tasks');
-  // Laravel may serialise the task collection as an object (key-by-id) or an
-  // array; Object.values flattens both. Same trap as Participant.vue.
-  const raw = Object.values(response.data ?? {}) as Task[];
-  tasks.value = raw.map((task) => ({ ...task, disabled: false }));
+  tasks.value = collectionValues<Task>(response.data).map((task) => ({ ...task, disabled: false }));
 }
 
 async function store() {

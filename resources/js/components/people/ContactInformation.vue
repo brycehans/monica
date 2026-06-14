@@ -112,6 +112,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import { useHtmlDir } from '../../composables/useHtmlDir';
+import { validationErrorsFromAxios } from '../../api/errors';
 
 interface ContactFieldType {
   id: number | string;
@@ -194,12 +195,7 @@ async function persistClient(method: 'post' | 'put' | 'delete', uri: string, for
     }
     await getContactInformationData();
   } catch (error: unknown) {
-    const data = (error as { response?: { data?: unknown } })?.response?.data;
-    if (data && typeof data === 'object') {
-      form.errors = Object.values(data ?? {}).flat() as string[];
-    } else {
-      form.errors = [t('app.error_try_again')];
-    }
+    form.errors = validationErrorsFromAxios(error, t('app.error_try_again'));
   }
 }
 

@@ -118,26 +118,11 @@ import moment from 'moment';
 import Gift from './Gift.vue';
 import CreateGift from './CreateGift.vue';
 import { useHtmlDir } from '../../../composables/useHtmlDir';
+import type { Gift as GiftRecord } from './types';
 
 interface FamilyContact {
   id: number;
   complete_name?: string;
-}
-
-interface GiftRecord {
-  id: number;
-  status: string;
-  name: string;
-  date?: string | null;
-  comment?: string | null;
-  url?: string | null;
-  amount?: number | null;
-  amount_with_currency?: string;
-  recipient?: { id?: number; complete_name?: string } | null;
-  contact?: { id: number };
-  photos: { id: number; link: string }[];
-  contact_id?: number;
-  edit?: boolean;
 }
 
 const props = withDefaults(

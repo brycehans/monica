@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import axios from 'axios';
+import { collectionValues } from '../../../api/collection';
 
 interface ActivityType {
   id: string | number;
@@ -57,12 +58,9 @@ onMounted(async () => {
 
 async function getActivities() {
   const response = await axios.get('activityCategories');
-  // response.data may be object-keyed (Collation::asort style) or an array;
-  // Object.values handles both. The downstream Object.assign({}, list)
-  // reproduces the original lodash behaviour of producing an int-keyed
-  // object for the form-select grouped options.
-  const apiCategories = Object.values(response.data ?? {}) as ApiCategory[];
-  const list: OptGroup[] = apiCategories.map((a) => ({
+  // Object.assign({}, list) reproduces the original lodash behaviour of
+  // producing an int-keyed object for form-select's grouped options.
+  const list: OptGroup[] = collectionValues<ApiCategory>(response.data).map((a) => ({
     name: a.name,
     options: a.types,
   }));

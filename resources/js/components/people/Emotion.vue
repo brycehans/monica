@@ -98,11 +98,7 @@
 import { ref, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
-
-interface Emotion {
-  id: number;
-  name: string;
-}
+import type { Emotion } from './types';
 
 const props = withDefaults(
   defineProps<{

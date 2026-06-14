@@ -53,6 +53,7 @@ input[type=text]:focus {
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
+import { collectionValues } from '../../api/collection';
 
 interface Participant {
   id: number;
@@ -97,10 +98,7 @@ onMounted(async () => {
 
 async function getParticipants() {
   const response = await axios.get('people/' + props.hash + '/activities/contacts');
-  // Collation-style endpoint: Laravel serializes the integer-keyed Collection
-  // as a JSON object. Object.values flattens it back to an array. Naive
-  // `response.data as Participant[]` would break here (see pilot doc).
-  participants.value = Object.values(response.data ?? {}) as Participant[];
+  participants.value = collectionValues<Participant>(response.data);
 }
 
 function select(participant: Participant) {

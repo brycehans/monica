@@ -73,22 +73,7 @@ import { useI18n } from 'vue-i18n';
 import moment from 'moment-timezone';
 import { useHtmlDir } from '../../../composables/useHtmlDir';
 import { timezone as bootTimezone } from '../../../boot';
-
-interface Photo {
-  id: number;
-  link: string;
-}
-
-interface Gift {
-  url?: string | null;
-  name?: string;
-  date?: string | null;
-  recipient?: { complete_name?: string } | null;
-  photos?: Photo[];
-  amount?: number | null;
-  amount_with_currency?: string;
-  comment?: string | null;
-}
+import type { Gift, Photo } from './types';
 
 defineProps<{
   gift: Gift;

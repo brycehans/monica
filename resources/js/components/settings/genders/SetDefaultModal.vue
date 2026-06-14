@@ -40,11 +40,18 @@ interface Gender {
   isDefault: boolean;
 }
 
-const props = defineProps<{
-  modelValue?: boolean;
-  genders?: Gender[];
-  defaultId?: number | null;
-}>();
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    genders?: Gender[];
+    defaultId?: number | null;
+  }>(),
+  {
+    modelValue: false,
+    genders: () => [],
+    defaultId: null,
+  },
+);
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;

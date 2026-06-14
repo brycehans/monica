@@ -38,10 +38,15 @@ interface LifeEventCategory {
   default_life_event_category_key?: string;
 }
 
-const props = defineProps<{
-  modelValue?: boolean;
-  category: LifeEventCategory;
-}>();
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    category: LifeEventCategory;
+  }>(),
+  {
+    modelValue: false,
+  },
+);
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;

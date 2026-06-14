@@ -65,11 +65,17 @@ interface Gender {
   numberOfContacts: number;
 }
 
-const props = defineProps<{
-  modelValue?: boolean;
-  gender: Gender;
-  genders?: Gender[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    gender: Gender;
+    genders?: Gender[];
+  }>(),
+  {
+    modelValue: false,
+    genders: () => [],
+  },
+);
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;

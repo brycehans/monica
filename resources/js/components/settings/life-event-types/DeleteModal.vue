@@ -40,10 +40,15 @@ interface LifeEventType {
   name?: string;
 }
 
-const props = defineProps<{
-  modelValue?: boolean;
-  type: LifeEventType;
-}>();
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    type: LifeEventType;
+  }>(),
+  {
+    modelValue: false,
+  },
+);
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;

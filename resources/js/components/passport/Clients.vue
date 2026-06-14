@@ -192,6 +192,7 @@ import { required, url } from '@vuelidate/validators';
 import FormErrors from '../partials/FormErrors.vue';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { useNotify } from '../../composables/useNotify';
+import { validationErrorsFromAxios } from '../../api/errors';
 
 interface Client {
   id: number | string;
@@ -289,12 +290,7 @@ async function persistClient(method: 'post' | 'put', uri: string, f: ClientForm)
       closeModal();
     }
   } catch (error: unknown) {
-    const data = (error as { response?: { data?: unknown } })?.response?.data;
-    if (data && typeof data === 'object') {
-      f.errors = Object.values(data ?? {}).flat() as string[];
-    } else {
-      f.errors = [t('app.error_try_again')];
-    }
+    f.errors = validationErrorsFromAxios(error, t('app.error_try_again'));
   }
 }
 

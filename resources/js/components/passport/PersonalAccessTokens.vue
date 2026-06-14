@@ -148,6 +148,7 @@ import { required } from '@vuelidate/validators';
 import FormErrors from '../partials/FormErrors.vue';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { useNotify } from '../../composables/useNotify';
+import { validationErrorsFromAxios } from '../../api/errors';
 
 interface PersonalAccessToken {
   id: number | string;
@@ -249,12 +250,7 @@ async function store() {
     tokens.value.push(response.data.token);
     showAccessToken(response.data.accessToken);
   } catch (error: unknown) {
-    const data = (error as { response?: { data?: unknown } })?.response?.data;
-    if (data && typeof data === 'object') {
-      form.errors = Object.values(data ?? {}).flat() as string[];
-    } else {
-      form.errors = [t('app.error_try_again')];
-    }
+    form.errors = validationErrorsFromAxios(error, t('app.error_try_again'));
   }
 }
 

@@ -232,32 +232,13 @@ import FormErrors from '../../partials/FormErrors.vue';
 import PhotoUpload from '../photo/PhotoUpload.vue';
 import { useHtmlDir } from '../../../composables/useHtmlDir';
 import { useNotify } from '../../../composables/useNotify';
+import { validationErrorsFromAxios } from '../../../api/errors';
 import { locale as bootLocale } from '../../../boot';
+import type { Gift as GiftRecord, Photo } from './types';
 
 interface FamilyContact {
   id: number;
   complete_name?: string;
-}
-
-interface Photo {
-  id: number;
-  link: string;
-}
-
-interface GiftRecord {
-  id: number;
-  name: string;
-  status: string;
-  comment?: string | null;
-  url?: string | null;
-  amount?: number | null;
-  amount_with_currency?: string;
-  date?: string | null;
-  recipient?: { id?: number; complete_name?: string } | null;
-  contact?: { id: number };
-  photos: Photo[];
-  contact_id?: number;
-  edit?: boolean;
 }
 
 interface PhotoUploadInstance {
@@ -444,12 +425,8 @@ async function storePhoto<R extends { data: { data: GiftRecord } }>(response: R)
 }
 
 function _errorHandle(error: unknown) {
-  const e = error as { response?: { data?: unknown }; message?: string };
-  if (e.response && typeof e.response.data === 'object' && e.response.data !== null) {
-    errors.value = Object.values(e.response.data ?? {}).flat() as string[];
-  } else {
-    errors.value = [t('app.error_try_again'), e.message ?? ''];
-  }
+  const e = error as { message?: string };
+  errors.value = validationErrorsFromAxios(error, [t('app.error_try_again'), e.message ?? '']);
 }
 
 async function deletePhoto(photo: Photo) {

@@ -265,11 +265,7 @@ import Emotion from '../Emotion.vue';
 import { useHtmlDir } from '../../../composables/useHtmlDir';
 import { useNotify } from '../../../composables/useNotify';
 import { locale as bootLocale } from '../../../boot';
-
-interface EmotionRecord {
-  id: number;
-  name: string;
-}
+import type { Emotion as EmotionRecord } from '../types';
 
 interface Call {
   id: number;

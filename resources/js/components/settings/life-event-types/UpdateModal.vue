@@ -39,11 +39,16 @@ interface LifeEventType {
   default_life_event_type_key?: string;
 }
 
-const props = defineProps<{
-  modelValue?: boolean;
-  type: LifeEventType;
-  categoryId: number;
-}>();
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    type: LifeEventType;
+    categoryId: number;
+  }>(),
+  {
+    modelValue: false,
+  },
+);
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;

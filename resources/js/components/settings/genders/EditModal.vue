@@ -71,11 +71,17 @@ interface GenderType {
   type?: string;
 }
 
-const props = defineProps<{
-  modelValue?: boolean;
-  gender: Gender;
-  genderTypes?: GenderType[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    gender: Gender;
+    genderTypes?: GenderType[];
+  }>(),
+  {
+    modelValue: false,
+    genderTypes: () => [],
+  },
+);
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;

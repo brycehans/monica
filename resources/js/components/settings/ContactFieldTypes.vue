@@ -221,6 +221,7 @@ import axios from 'axios';
 import FormErrors from '../partials/FormErrors.vue';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { useNotify } from '../../composables/useNotify';
+import { validationErrorsFromAxios } from '../../api/errors';
 
 interface ContactFieldType {
   id: number | string;
@@ -304,12 +305,7 @@ async function persistClient(method: 'post' | 'put' | 'delete', uri: string, for
     else if (flag === 'edited') edited.value = true;
     else deleted.value = true;
   } catch (error: unknown) {
-    const data = (error as { response?: { data?: unknown } })?.response?.data;
-    if (data && typeof data === 'object') {
-      form.errors = Object.values(data ?? {}).flat() as string[];
-    } else {
-      form.errors = [t('app.error_try_again')];
-    }
+    form.errors = validationErrorsFromAxios(error, t('app.error_try_again'));
   }
 }
 

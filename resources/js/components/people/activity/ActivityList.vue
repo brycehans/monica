@@ -146,16 +146,12 @@ import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 import CreateActivity from './CreateActivity.vue';
 import { useHtmlDir } from '../../../composables/useHtmlDir';
+import type { Emotion } from '../types';
 
 interface Attendee {
   id: number;
   hash_id: string;
   complete_name: string;
-}
-
-interface Emotion {
-  id: number;
-  name: string;
 }
 
 interface ActivityType {

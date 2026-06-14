@@ -135,12 +135,9 @@ import FormErrors from '../../partials/FormErrors.vue';
 import Participant from '../Participant.vue';
 import { useHtmlDir } from '../../../composables/useHtmlDir';
 import { useNotify } from '../../../composables/useNotify';
+import { validationErrorsFromAxios } from '../../../api/errors';
+import type { Emotion as EmotionRecord } from '../types';
 import { locale as bootLocale } from '../../../boot';
-
-interface EmotionRecord {
-  id: number;
-  name: string;
-}
 
 interface Attendee {
   id: number;
@@ -293,11 +290,7 @@ function updateParticipant(value: ParticipantRecord[]) {
 }
 
 function _errorHandle(error: unknown) {
-  const e = error as { response?: { data?: unknown }; message?: string };
-  if (e.response && typeof e.response.data === 'object' && e.response.data !== null) {
-    errors.value = Object.values(e.response.data ?? {}).flat() as string[];
-  } else {
-    errors.value = [t('app.error_try_again'), e.message ?? ''];
-  }
+  const e = error as { message?: string };
+  errors.value = validationErrorsFromAxios(error, [t('app.error_try_again'), e.message ?? '']);
 }
 </script>

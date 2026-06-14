@@ -249,6 +249,8 @@ import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import { useHtmlDir } from '../../composables/useHtmlDir';
+import { collectionValues } from '../../api/collection';
+import { validationErrorsFromAxios } from '../../api/errors';
 
 interface Country {
   id: number | string;
@@ -322,11 +324,7 @@ async function getAddresses() {
 
 async function getCountries() {
   const response = await axios.get('countries');
-  // `countries` endpoint may return an array OR an object keyed by code
-  // (Laravel serialises a Collection::keyBy(...) result as an object).
-  // Object.values handles both. Same trap as Participant.vue.
-  const list = Object.values(response.data ?? {}) as Array<{ id: number; country: string }>;
-  countries.value = list.map((country) => ({
+  countries.value = collectionValues<{ id: number; country: string }>(response.data).map((country) => ({
     id: country.id,
     name: country.country,
   }));
@@ -382,12 +380,7 @@ async function persistClient(
     }
     return await axios[method](uri, form);
   } catch (error: unknown) {
-    const data = (error as { response?: { data?: unknown } })?.response?.data;
-    if (data && typeof data === 'object') {
-      form.errors = Object.values(data ?? {}).flat() as string[];
-    } else {
-      form.errors = [t('app.error_try_again')];
-    }
+    form.errors = validationErrorsFromAxios(error, t('app.error_try_again'));
     return undefined;
   }
 }
