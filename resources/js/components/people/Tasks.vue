@@ -226,7 +226,10 @@ function toggleEditMode(task: Task) {
 
 async function index() {
   const response = await axios.get('people/' + props.hash + '/tasks');
-  tasks.value = (response.data as Task[]).map((task) => ({ ...task, disabled: false }));
+  // Laravel may serialise the task collection as an object (key-by-id) or an
+  // array; Object.values flattens both. Same trap as Participant.vue.
+  const raw = Object.values(response.data ?? {}) as Task[];
+  tasks.value = raw.map((task) => ({ ...task, disabled: false }));
 }
 
 async function store() {

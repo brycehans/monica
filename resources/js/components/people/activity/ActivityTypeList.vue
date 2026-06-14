@@ -57,7 +57,12 @@ onMounted(async () => {
 
 async function getActivities() {
   const response = await axios.get('activityCategories');
-  const list: OptGroup[] = (response.data as ApiCategory[]).map((a) => ({
+  // response.data may be object-keyed (Collation::asort style) or an array;
+  // Object.values handles both. The downstream Object.assign({}, list)
+  // reproduces the original lodash behaviour of producing an int-keyed
+  // object for the form-select grouped options.
+  const apiCategories = Object.values(response.data ?? {}) as ApiCategory[];
+  const list: OptGroup[] = apiCategories.map((a) => ({
     name: a.name,
     options: a.types,
   }));

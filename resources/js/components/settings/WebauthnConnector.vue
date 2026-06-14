@@ -357,10 +357,14 @@ async function doLogin(publicKey: unknown) {
 
 async function webauthnRemove(id: number | string) {
   try {
-    const response = await axios.delete('webauthn/keys/' + id);
-    const found = currentkeys.value.find((item) => item.id === response.data.id);
-    if (found) {
-      currentkeys.value.splice(currentkeys.value.indexOf(found), 1);
+    // asbiin/laravel-webauthn returns 204 No Content, so response.data is
+    // empty. Match on the id we sent in the URL rather than fishing for
+    // it in the (absent) body. The Options-API original spliced the last
+    // item by accident via splice(indexOf(undefined), 1) → splice(-1, 1).
+    await axios.delete('webauthn/keys/' + id);
+    const idx = currentkeys.value.findIndex((item) => item.id === id);
+    if (idx >= 0) {
+      currentkeys.value.splice(idx, 1);
     }
     success.value = true;
     notifyMessage(t('settings.webauthn_delete_success'), true);

@@ -322,7 +322,11 @@ async function getAddresses() {
 
 async function getCountries() {
   const response = await axios.get('countries');
-  countries.value = (response.data as Array<{ id: number; country: string }>).map((country) => ({
+  // `countries` endpoint may return an array OR an object keyed by code
+  // (Laravel serialises a Collection::keyBy(...) result as an object).
+  // Object.values handles both. Same trap as Participant.vue.
+  const list = Object.values(response.data ?? {}) as Array<{ id: number; country: string }>;
+  countries.value = list.map((country) => ({
     id: country.id,
     name: country.country,
   }));
