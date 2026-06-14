@@ -186,8 +186,8 @@
                 {{ task.title }}
               </form-checkbox>
               <span class="black-50 mr1 f7">
-                <a :href="'people/' + task.contact.hash_id">
-                  {{ task.contact.first_name }}
+                <a :href="'people/' + (task.contact?.hash_id ?? '')">
+                  {{ task.contact?.first_name }}
                 </a>
               </span>
             </li>
@@ -275,195 +275,169 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import moment from 'moment';
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
 import Avatar from '../partials/Avatar.vue';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
+// Dashboard payloads are loose — using `any` so the template can address
+// fields without per-shape narrowing across all the embedded sub-views.
+type AnyRecord = any;
 
-  components: {
-    Avatar,
+interface Task {
+  id: number;
+  title: string;
+  description?: string;
+  contact?: { hash_id?: string; first_name?: string } | null;
+  completed?: boolean;
+}
+
+const props = withDefaults(
+  defineProps<{
+    defaultActiveTab?: string;
+  }>(),
+  {
+    defaultActiveTab: 'calls',
   },
+);
 
-  props: {
-    defaultActiveTab: {
-      type: String,
-      default: 'calls',
-    },
-  },
+const { t } = useI18n();
+const { notify } = useNotify();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const activeTab = ref('');
 
-  data() {
-    return {
-      activeTab: '',
+const callsAlreadyLoaded = ref(false);
+const notesAlreadyLoaded = ref(false);
+const debtsAlreadyLoaded = ref(false);
+const tasksAlreadyLoaded = ref(false);
 
-      callsAlreadyLoaded: false,
-      notesAlreadyLoaded: false,
-      debtsAlreadyLoaded: false,
-      tasksAlreadyLoaded: false,
+const calls = ref<AnyRecord[]>([]);
+const notes = ref<AnyRecord[]>([]);
+const debts = ref<AnyRecord[]>([]);
+const tasks = ref<Task[]>([]);
 
-      calls: [],
-      notes: [],
-      debts: [],
-      tasks: [],
+const taskAddMode = ref(false);
+const contactRelatedTasksView = ref(true);
+const confirmDestroyTask = ref(0);
+const showTaskAction = ref(0);
+const newTask = reactive<{ id: number; title: string; description: string }>({
+  id: 0,
+  title: '',
+  description: '',
+});
 
-      taskAddMode: false,
-      contactRelatedTasksView: true,
-      confirmDestroyTask: 0,
-      showTaskAction: 0,
-      newTask: {
-        id: 0,
-        title: '',
-        description: ''
-      },
-    };
-  },
+onMounted(() => {
+  setActiveTab(props.defaultActiveTab);
+});
 
-  mounted() {
-    this.prepareComponent();
-  },
+function formatDate(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  return moment(String(value)).format('LL');
+}
 
-  methods: {
-    prepareComponent() {
-      this.setActiveTab(this.defaultActiveTab);
-    },
+async function setActiveTab(view: string) {
+  activeTab.value = view;
+  saveTab(view);
 
-    formatDate(value) {
-      if (!value) return;
-      return moment(String(value)).format('LL');
-    },
-
-    setActiveTab(view) {
-      this.activeTab = view;
-
-      this.saveTab(view);
-
-      switch (view) {
-      case 'calls':
-        if (! this.callsAlreadyLoaded) {
-          this.getCalls();
-          this.callsAlreadyLoaded = true;
-        }
-        break;
-
-      case 'notes':
-        if (! this.notesAlreadyLoaded) {
-          this.getNotes();
-          this.notesAlreadyLoaded = true;
-        }
-        break;
-
-      case 'debts':
-        if (! this.debtsAlreadyLoaded) {
-          this.getDebts();
-          this.debtsAlreadyLoaded = true;
-        }
-        break;
-
-      case 'tasks':
-        if (! this.tasksAlreadyLoaded) {
-          this.getTasks();
-          this.tasksAlreadyLoaded = true;
-        }
-        break;
-      }
-    },
-
-    saveTab(view) {
-      axios.post('dashboard/setTab', {'tab':view});
-    },
-
-    getCalls() {
-      axios.get('dashboard/calls')
-        .then(response => {
-          this.calls = response.data;
-        });
-    },
-
-    getNotes() {
-      axios.get('dashboard/notes')
-        .then(response => {
-          this.notes = response.data;
-        });
-    },
-
-    getDebts() {
-      axios.get('dashboard/debts')
-        .then(response => {
-          this.debts = response.data;
-        });
-    },
-
-    getTasks() {
-      axios.get('tasks')
-        .then(response => {
-          this.tasks = response.data.data;
-        });
-    },
-
-    // All the custom tasks not yet completed
-    customNotCompleted: function (tasks) {
-      return tasks.filter(function (task) {
-        return task.contact === null && task.completed === false;
-      });
-    },
-
-    // All the custom completed tasks
-    customCompleted: function (tasks) {
-      return tasks.filter(function (task) {
-        return task.contact === null && task.completed === true;
-      });
-    },
-
-    // All the contact related tasks
-    contactRelated: function (tasks) {
-      return tasks.filter(function (task) {
-        return task.contact !== null && !task.completed;
-      });
-    },
-
-    updateTask(task) {
-      axios.put('tasks/' + task.id, task)
-        .then(response => {
-          this.$notify({
-            group: 'main',
-            title: this.t('app.default_save_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
-
-    saveTask() {
-      axios.post('tasks', this.newTask)
-        .then(response => {
-          this.newTask.title = '';
-          this.taskAddMode = false;
-          this.getTasks();
-          this.$notify({
-            group: 'main',
-            title: this.t('app.default_save_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
-
-    destroyTask(task) {
-      axios.delete('tasks/' + task.id)
-        .then(response => {
-          this.tasks.splice(this.tasks.indexOf(task), 1);
-        });
-    },
-
-    compiledMarkdown (text) {
-      return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text)) : '';
-    },
+  switch (view) {
+  case 'calls':
+    if (!callsAlreadyLoaded.value) {
+      await getCalls();
+      callsAlreadyLoaded.value = true;
+    }
+    break;
+  case 'notes':
+    if (!notesAlreadyLoaded.value) {
+      await getNotes();
+      notesAlreadyLoaded.value = true;
+    }
+    break;
+  case 'debts':
+    if (!debtsAlreadyLoaded.value) {
+      await getDebts();
+      debtsAlreadyLoaded.value = true;
+    }
+    break;
+  case 'tasks':
+    if (!tasksAlreadyLoaded.value) {
+      await getTasks();
+      tasksAlreadyLoaded.value = true;
+    }
+    break;
   }
-};
+}
+
+async function saveTab(view: string) {
+  await axios.post('dashboard/setTab', { tab: view });
+}
+
+async function getCalls() {
+  const response = await axios.get('dashboard/calls');
+  calls.value = response.data;
+}
+
+async function getNotes() {
+  const response = await axios.get('dashboard/notes');
+  notes.value = response.data;
+}
+
+async function getDebts() {
+  const response = await axios.get('dashboard/debts');
+  debts.value = response.data;
+}
+
+async function getTasks() {
+  const response = await axios.get('tasks');
+  tasks.value = response.data.data;
+}
+
+function customNotCompleted(list: Task[]) {
+  return list.filter((task) => task.contact === null && task.completed === false);
+}
+
+function customCompleted(list: Task[]) {
+  return list.filter((task) => task.contact === null && task.completed === true);
+}
+
+function contactRelated(list: Task[]) {
+  return list.filter((task) => task.contact !== null && !task.completed);
+}
+
+async function updateTask(task: Task) {
+  await axios.put('tasks/' + task.id, task);
+  notify({
+    group: 'main',
+    title: t('app.default_save_success'),
+    text: '',
+    type: 'success',
+  });
+}
+
+async function saveTask() {
+  await axios.post('tasks', newTask);
+  newTask.title = '';
+  taskAddMode.value = false;
+  await getTasks();
+  notify({
+    group: 'main',
+    title: t('app.default_save_success'),
+    text: '',
+    type: 'success',
+  });
+}
+
+async function destroyTask(task: Task) {
+  await axios.delete('tasks/' + task.id);
+  const idx = tasks.value.indexOf(task);
+  if (idx >= 0) tasks.value.splice(idx, 1);
+}
+
+function compiledMarkdown(text: string | null | undefined): string {
+  return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text) as string) : '';
+}
 </script>

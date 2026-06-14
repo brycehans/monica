@@ -92,7 +92,7 @@
               {{ t('app.with') }}
             </span>
             <div v-for="attendees in activity.attendees" :key="attendees.id" class="dib pointer ml2" @click="redirect(attendees)">
-              <img v-tooltip.bottom="attendees.complete_name" :src="attendees.information.avatar.url" class="br3 journal-avatar-small" :alt="attendees.complete_name" />
+              <img v-tooltip.bottom="attendees.complete_name" :src="attendees.information?.avatar?.url" class="br3 journal-avatar-small" :alt="attendees.complete_name" />
             </div>
           </div>
         </div>
@@ -101,57 +101,65 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
+import JournalCalendar from './JournalCalendar.vue';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
 
-export default {
+interface Attendee {
+  id: number;
+  hash_id: string;
+  complete_name?: string;
+  information?: { avatar?: { url?: string } };
+}
 
-  props: {
-    journalEntry: {
-      type: Object,
-      default: null,
-    },
+interface ActivityObject {
+  day?: number | string;
+  day_name?: string;
+  activity_type?: string;
+  summary?: string;
+  description?: string;
+  attendees?: Attendee[];
+}
+
+interface JournalEntry {
+  id: number;
+  object: ActivityObject;
+}
+
+const props = withDefaults(
+  defineProps<{
+    journalEntry?: JournalEntry | null;
+  }>(),
+  {
+    journalEntry: null,
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  data() {
-    return {
-      showDescription: false,
-      activity: [],
-    };
-  },
+const showDescription = ref(false);
+const activity = ref<ActivityObject>({});
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
-
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      // not necessary, just a way to add more clarity to the code
-      this.activity = this.journalEntry.object;
-    },
-
-    toggleDescription() {
-      this.showDescription = !this.showDescription;
-    },
-
-    redirect(attendee) {
-      window.location.href = 'people/' + attendee.hash_id;
-    },
-
-    compiledMarkdown (text) {
-      return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text)) : '';
-    }
+onMounted(() => {
+  if (props.journalEntry) {
+    activity.value = props.journalEntry.object;
   }
-};
+});
+
+function toggleDescription() {
+  showDescription.value = !showDescription.value;
+}
+
+function redirect(attendee: Attendee) {
+  window.location.href = 'people/' + attendee.hash_id;
+}
+
+function compiledMarkdown(text: string | null | undefined): string {
+  return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text) as string) : '';
+}
 </script>

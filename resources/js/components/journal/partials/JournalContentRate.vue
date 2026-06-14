@@ -112,12 +112,12 @@
                 {{ t('journal.journal_entry_rate') }}
               </li>
               <li class="di">
-                <a v-cy-name="'entry-edit-button-' + journalEntry.id" class="pointer" :href="'journal/day/' + journalEntry.id + '/edit'" @click.prevent="editingComment">
+                <a v-cy-name="'entry-edit-button-' + journalEntry?.id" class="pointer" :href="'journal/day/' + journalEntry?.id + '/edit'" @click.prevent="editingComment">
                   {{ t('app.edit') }}
                 </a>
               </li>
               <li class="di">
-                <a v-cy-name="'entry-delete-button-' + journalEntry.id" class="pointer" href="" @click.prevent="destroy()">
+                <a v-cy-name="'entry-delete-button-' + journalEntry?.id" class="pointer" href="" @click.prevent="destroy()">
                   {{ t('app.delete') }}
                 </a>
               </li>
@@ -129,64 +129,63 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import JournalCalendar from './JournalCalendar.vue';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
 
-export default {
+interface DayObject {
+  id: number;
+  day?: number | string;
+  day_name?: string;
+  rate?: number;
+  comment?: string;
+}
 
-  props: {
-    journalEntry: {
-      type: Object,
-      default: null,
-    },
+interface JournalEntry {
+  id: number;
+  object: DayObject;
+}
+
+const props = withDefaults(
+  defineProps<{
+    journalEntry?: JournalEntry | null;
+  }>(),
+  {
+    journalEntry: null,
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const emit = defineEmits<{
+  (e: 'deleteJournalEntry', id: number): void;
+}>();
 
-  data() {
-    return {
-      day: [],
-      isEditingComment: false,
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-    };
-  },
+const day = ref<DayObject>({ id: 0 });
+const isEditingComment = ref(false);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
-
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      this.day = this.journalEntry.object;
-    },
-    editingComment() {
-      this.isEditingComment = !this.isEditingComment;
-    },
-    saveComment() {
-      axios.put('journal/day/' + this.day.id + '/update', {
-        comment: this.day.comment,
-      })
-        .then(response => {
-          this.editingComment();
-        });
-    },
-
-    destroy() {
-      axios.delete('journal/day/' + this.day.id)
-        .then(response => {
-          this.$emit('deleteJournalEntry', this.journalEntry.id);
-        });
-    },
-
+onMounted(() => {
+  if (props.journalEntry) {
+    day.value = props.journalEntry.object;
   }
-};
+});
+
+function editingComment() {
+  isEditingComment.value = !isEditingComment.value;
+}
+
+async function saveComment() {
+  await axios.put('journal/day/' + day.value.id + '/update', { comment: day.value.comment });
+  editingComment();
+}
+
+async function destroy() {
+  if (!props.journalEntry) return;
+  await axios.delete('journal/day/' + day.value.id);
+  emit('deleteJournalEntry', props.journalEntry?.id);
+}
 </script>

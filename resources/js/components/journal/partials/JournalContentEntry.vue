@@ -51,60 +51,61 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
 import Confirm from '../../partials/Confirm.vue';
+import JournalCalendar from './JournalCalendar.vue';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
 
-export default {
+interface EntryObject {
+  id: number;
+  day?: number | string;
+  day_name?: string;
+  created_at?: string;
+  title?: string;
+  post?: string;
+}
 
-  components: {
-    Confirm,
+interface JournalEntry {
+  id: number;
+  object: EntryObject;
+}
+
+const props = withDefaults(
+  defineProps<{
+    journalEntry?: JournalEntry | null;
+  }>(),
+  {
+    journalEntry: null,
   },
+);
 
-  props: {
-    journalEntry: {
-      type: Object,
-      default: null,
-    },
-  },
+const emit = defineEmits<{
+  (e: 'deleteJournalEntry', id: number): void;
+}>();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  data() {
-    return {
-      entry: [],
-    };
-  },
+const entry = ref<EntryObject>({ id: 0 });
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
-
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      // not necessary, just a way to add more clarity to the code
-      this.entry = this.journalEntry.object;
-    },
-
-    trash() {
-      axios.delete('journal/' + this.entry.id)
-        .then(response => {
-          this.$emit('deleteJournalEntry', this.journalEntry.id);
-        });
-    },
-
-    compiledMarkdown (text) {
-      return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text)) : '';
-    }
+onMounted(() => {
+  if (props.journalEntry) {
+    entry.value = props.journalEntry.object;
   }
-};
+});
+
+async function trash() {
+  if (!props.journalEntry) return;
+  await axios.delete('journal/' + entry.value.id);
+  emit('deleteJournalEntry', props.journalEntry.id);
+}
+
+function compiledMarkdown(text: string | null | undefined): string {
+  return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text) as string) : '';
+}
 </script>

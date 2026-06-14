@@ -122,13 +122,13 @@
       <notifications group="passport-personal-access-token" position="middle" :duration="5000" width="400" />
       <p>{{ t('settings.api_token_help') }}</p>
 
-      <div class="flex-auto access-key overflow-y-scroll" style="max-height: 400px;" @click.prevent="copyIntoClipboard(accessToken)">
+      <div class="flex-auto access-key overflow-y-scroll" style="max-height: 400px;" @click.prevent="copyIntoClipboard(accessToken ?? '')">
         <pre><code>{{ accessToken }}</code></pre>
       </div>
 
       <!-- Modal Actions -->
       <template #button>
-        <a class="btn btn-primary" :title="t('settings.dav_copy_help')" href="" @click.prevent="copyIntoClipboard(accessToken)">
+        <a class="btn btn-primary" :title="t('settings.dav_copy_help')" href="" @click.prevent="copyIntoClipboard(accessToken ?? '')">
           {{ t('app.copy') }}
         </a>
         <a class="btn" href="" @click.prevent="closeModal">
@@ -139,212 +139,153 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import FormErrors from '../partials/FormErrors.vue';
+import axios from 'axios';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
+import FormErrors from '../partials/FormErrors.vue';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
+interface PersonalAccessToken {
+  id: number | string;
+  name: string;
+  scopes?: string[];
+  expires_at?: string | null;
+}
 
-  components: {
-    FormErrors,
-  },
+interface TokenForm {
+  name: string;
+  scopes: string[];
+  errors: string[];
+}
 
-  setup() {
-    const { t } = useI18n();
-    return { v$: useVuelidate(), t };
-  },
+interface InputComponent {
+  focus: () => void;
+}
 
-  data() {
-    return {
-      endpoint: '',
-      accessToken: null,
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-      tokens: [],
-      scopes: [],
+const accessToken = ref<string | null>(null);
+const tokens = ref<PersonalAccessToken[]>([]);
+interface Scope {
+  id: string;
+  description?: string;
+}
 
-      form: {
-        name: '',
-        scopes: [],
-        errors: []
-      },
-      showModalCreateToken: false,
-      showModalAccessToken: false,
-    };
-  },
+const scopes = ref<Scope[]>([]);
 
-  validations() {
-    return {
-      form: {
-        name: {
-          required,
-        }
-      }
-    };
-  },
+const form = reactive<TokenForm>({ name: '', scopes: [], errors: [] });
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+const showModalCreateToken = ref(false);
+const showModalAccessToken = ref(false);
 
-  mounted() {
-    this.prepareComponent();
-  },
+const formEl = useTemplateRef<HTMLFormElement>('form');
+const createTokenName = useTemplateRef<InputComponent>('createTokenName');
 
-  methods: {
-    prepareComponent() {
-      this.getTokens();
-      this.getScopes();
-    },
+const rules = {
+  form: { name: { required } },
+};
+const v$ = useVuelidate(rules, { form });
 
-    /**
-     * Get all of the personal access tokens for the user.
-     */
-    getTokens() {
-      axios.get('oauth/personal-access-tokens')
-        .then(response => {
-          this.tokens = response.data;
-        });
-    },
+onMounted(async () => {
+  await Promise.all([getTokens(), getScopes()]);
+});
 
-    /**
-     * Get all of the available scopes.
-     */
-    getScopes() {
-      axios.get('oauth/scopes')
-        .then(response => {
-          this.scopes = response.data;
-        });
-    },
+async function getTokens() {
+  const response = await axios.get('oauth/personal-access-tokens');
+  tokens.value = response.data as PersonalAccessToken[];
+}
 
-    /**
-     * Close all modals.
-     */
-    closeModal() {
-      // $refs.form is the <form ref="form"> inside the create-modal slot.
-      // After a successful create, showAccessToken() flips
-      // showModalCreateToken = false, which unmounts that slot under
-      // vue-final-modal — so when the access-token modal's footer Close
-      // calls closeModal(), $refs.form is undefined. Without the optional
-      // chain, .reset() threw and the booleans below never ran, leaving
-      // the modal visible. See #771 for the trace.
-      this.$refs.form?.reset();
-      this.v$.$reset();
-      this.showModalCreateToken = false;
-      this.showModalAccessToken = false;
-    },
+async function getScopes() {
+  const response = await axios.get('oauth/scopes');
+  scopes.value = response.data as Scope[];
+}
 
-    /**
-     * Focus on modal open.
-     */
-    _focusInput() {
-      const vm = this;
-      setTimeout(function() {
-        vm.$refs.createTokenName.focus();
-      }, 10);
-    },
+function closeModal() {
+  // formEl is the <form ref="form"> inside the create-modal slot.
+  // After a successful create, showAccessToken() flips
+  // showModalCreateToken = false, which unmounts that slot under
+  // vue-final-modal — so when the access-token modal's footer Close
+  // calls closeModal(), formEl is null. Without the optional
+  // chain, .reset() throws and the booleans below never run, leaving
+  // the modal visible. See #771 for the trace.
+  formEl.value?.reset();
+  v$.value.$reset();
+  showModalCreateToken.value = false;
+  showModalAccessToken.value = false;
+}
 
-    /**
-     * Show the form for creating new tokens.
-     */
-    showCreateTokenForm() {
-      this.showModalCreateToken = true;
-    },
+function _focusInput() {
+  setTimeout(() => createTokenName.value?.focus(), 10);
+}
 
-    /**
-     * Create a new personal access token.
-     */
-    store() {
-      this.v$.$touch();
+function showCreateTokenForm() {
+  showModalCreateToken.value = true;
+}
 
-      if (this.v$.$invalid) {
-        return;
-      }
+function showAccessToken(token: string) {
+  showModalCreateToken.value = false;
+  accessToken.value = token;
+  showModalAccessToken.value = true;
+}
 
-      this.accessToken = null;
+async function store() {
+  v$.value.$touch();
+  if (v$.value.$invalid) return;
 
-      this.form.errors = [];
+  accessToken.value = null;
+  form.errors = [];
 
-      axios.post('oauth/personal-access-tokens', this.form)
-        .then(response => {
-          this.form.name = '';
-          this.form.scopes = [];
-          this.form.errors = [];
-
-          this.tokens.push(response.data.token);
-
-          this.showAccessToken(response.data.accessToken);
-        })
-        .catch(error => {
-          if (typeof error.response.data === 'object') {
-            this.form.errors = _.flatten(_.toArray(error.response.data));
-          } else {
-            this.form.errors = [this.t('app.error_try_again')];
-          }
-        });
-    },
-
-    /**
-     * Toggle the given scope in the list of assigned scopes.
-     */
-    toggleScope(scope) {
-      if (this.scopeIsAssigned(scope)) {
-        this.form.scopes = _.reject(this.form.scopes, s => s === scope);
-      } else {
-        this.form.scopes.push(scope);
-      }
-    },
-
-    /**
-     * Determine if the given scope has been assigned to the token.
-     */
-    scopeIsAssigned(scope) {
-      return _.indexOf(this.form.scopes, scope) >= 0;
-    },
-
-    /**
-     * Show the given access token to the user.
-     */
-    showAccessToken(accessToken) {
-      this.showModalCreateToken = false;
-
-      this.accessToken = accessToken;
-
-      this.showModalAccessToken = true;
-    },
-
-    /**
-     * Revoke the given token.
-     */
-    revoke(token) {
-      axios.delete('oauth/personal-access-tokens/' + token.id)
-        .then(response => {
-          this.getTokens();
-        });
-    },
-
-    /**
-     * Copy text into clipboard
-     */
-    copyIntoClipboard(text) {
-      navigator.clipboard.writeText(text)
-        .then(() => {
-          this.notify(this.t('settings.dav_clipboard_copied'), true);
-        })
-        .catch(() => { /* silent on permission denial / non-secure context */ });
-    },
-
-    notify(text, success) {
-      this.$notify({
-        group: 'passport-personal-access-token',
-        title: text,
-        text: '',
-        type: success ? 'success' : 'error'
-      });
+  try {
+    const response = await axios.post('oauth/personal-access-tokens', form);
+    form.name = '';
+    form.scopes = [];
+    form.errors = [];
+    tokens.value.push(response.data.token);
+    showAccessToken(response.data.accessToken);
+  } catch (error: unknown) {
+    const data = (error as { response?: { data?: unknown } })?.response?.data;
+    if (data && typeof data === 'object') {
+      form.errors = Object.values(data ?? {}).flat() as string[];
+    } else {
+      form.errors = [t('app.error_try_again')];
     }
   }
-};
+}
+
+function scopeIsAssigned(scope: string) {
+  return form.scopes.indexOf(scope) >= 0;
+}
+
+function toggleScope(scope: string) {
+  if (scopeIsAssigned(scope)) {
+    form.scopes = form.scopes.filter((s) => s !== scope);
+  } else {
+    form.scopes.push(scope);
+  }
+}
+
+async function revoke(token: PersonalAccessToken) {
+  await axios.delete('oauth/personal-access-tokens/' + token.id);
+  await getTokens();
+}
+
+async function copyIntoClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    notify({
+      group: 'passport-personal-access-token',
+      title: t('settings.dav_clipboard_copied'),
+      text: '',
+      type: 'success',
+    });
+  } catch {
+    // silent on permission denial / non-secure context
+  }
+}
 </script>
