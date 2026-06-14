@@ -52,51 +52,62 @@
   </monica-modal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
-// See genders/CreateModal.vue for the modelValue contract rationale.
-export default {
-  props: {
-    modelValue: { type: Boolean, default: false },
-    gender: { type: Object, required: true },
-    genderTypes: { type: Array, default: () => [] },
-  },
+interface Gender {
+  id: number | string;
+  name: string;
+  type: string;
+  isDefault: boolean;
+}
 
-  emits: ['update:modelValue', 'saved'],
+interface GenderType {
+  id: string;
+  name: string;
+  type?: string;
+}
 
-  setup(_, { emit }) {
-    const { t } = useI18n();
-    const { cancel, finish, sync } = useModalSelfClose(emit);
-    return { t, cancel, finish, sync };
-  },
+const props = defineProps<{
+  modelValue?: boolean;
+  gender: Gender;
+  genderTypes?: GenderType[];
+}>();
 
-  data() {
-    return {
-      form: {
-        id: this.gender.id.toString(),
-        name: this.gender.name,
-        type: this.gender.type,
-        isDefault: this.gender.isDefault,
-        errors: [],
-      },
-    };
-  },
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'saved'): void;
+}>();
 
-  computed: {
-    toggleOptions() {
-      return {
-        checked: this.t('app.yes'),
-        unchecked: this.t('app.no'),
-      };
-    },
-  },
+const { t } = useI18n();
+const { cancel, finish, sync } = useModalSelfClose(emit);
 
-  methods: {
-    update() {
-      return axios.put('settings/personalization/genders/' + this.form.id, this.form).then(this.finish);
-    },
-  },
-};
+const form = reactive<{
+  id: string;
+  name: string;
+  type: string;
+  isDefault: boolean;
+  errors: string[];
+}>({
+  id: props.gender.id.toString(),
+  name: props.gender.name,
+  type: props.gender.type,
+  isDefault: props.gender.isDefault,
+  errors: [],
+});
+
+const toggleOptions = computed(() => ({
+  checked: t('app.yes'),
+  unchecked: t('app.no'),
+}));
+
+async function update() {
+  await axios.put('settings/personalization/genders/' + form.id, form);
+  finish();
+}
+
+defineExpose({ form, toggleOptions, cancel, finish, sync, update });
 </script>
