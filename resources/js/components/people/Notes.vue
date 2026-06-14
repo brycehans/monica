@@ -81,151 +81,111 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
+interface Note {
+  id: number;
+  body: string;
+  is_favorited: boolean;
+  created_at_short?: string;
+  edit?: boolean;
+}
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+  }>(),
+  {
+    hash: '',
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  data() {
-    return {
-      notes: [],
+const notes = ref<Note[]>([]);
+const addMode = ref(false);
 
-      addMode: false,
-      editMode: false,
+const newNote = reactive<{ id: number; body: string; is_favorited: number }>({
+  id: 0,
+  body: '',
+  is_favorited: 0,
+});
 
-      newNote: {
-        id: 0,
-        body: '',
-        is_favorited: 0
-      },
+const deleteNote = reactive<{ id: number }>({ id: 0 });
 
-      deleteNote: {
-        id: 0,
-      },
+const showDeleteNoteModal = ref(false);
 
-      showDeleteNoteModal: false,
-    };
-  },
+onMounted(getNotes);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+function toggleEditMode(note: Note) {
+  note.edit = !note.edit;
+}
 
-  mounted() {
-    this.prepareComponent();
-  },
+async function getNotes() {
+  const response = await axios.get('people/' + props.hash + '/notes');
+  notes.value = response.data as Note[];
+}
 
-  methods: {
-    prepareComponent() {
-      this.getNotes();
-    },
+async function store() {
+  await axios.post('people/' + props.hash + '/notes', newNote);
+  newNote.body = '';
+  await getNotes();
+  addMode.value = false;
+  notify({
+    group: 'main',
+    title: t('people.notes_create_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-    reinitialize() {
-      this.createForm.body = '';
-    },
+async function toggleFavorite(note: Note) {
+  await axios.post('people/' + props.hash + '/notes/' + note.id + '/toggle');
+  await getNotes();
+}
 
-    favorited: function (notes) {
-      return notes.filter(function (note) {
-        return note.is_favorited === true;
-      });
-    },
+async function update(note: Note) {
+  await axios.put('people/' + props.hash + '/notes/' + note.id, note);
+  note.edit = false;
+  notify({
+    group: 'main',
+    title: t('people.notes_update_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-    normal: function (notes) {
-      return notes.filter(function (note) {
-        return note.is_favorited === false;
-      });
-    },
+function showDelete(note: Note) {
+  deleteNote.id = note.id;
+  showDeleteNoteModal.value = true;
+}
 
-    toggleEditMode(note) {
-      note.edit = !note.edit;
-    },
+function closeModal() {
+  showDeleteNoteModal.value = false;
+}
 
-    getNotes() {
-      axios.get('people/' + this.hash + '/notes')
-        .then(response => {
-          this.notes = response.data;
-        });
-    },
+async function trash(note: { id: number }) {
+  await axios.delete('people/' + props.hash + '/notes/' + note.id);
+  await getNotes();
+  closeModal();
+  notify({
+    group: 'main',
+    title: t('people.notes_delete_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-    store() {
-      axios.post('people/' + this.hash + '/notes', this.newNote)
-        .then(response => {
-          this.newNote.body = '';
-          this.getNotes();
-          this.addMode = false;
-
-          this.$notify({
-            group: 'main',
-            title: this.t('people.notes_create_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
-
-    toggleFavorite(note) {
-      axios.post('people/' + this.hash + '/notes/' + note.id + '/toggle')
-        .then(response => {
-          this.getNotes();
-        });
-    },
-
-    update(note) {
-      axios.put('people/' + this.hash + '/notes/' + note.id, note)
-        .then(response => {
-          note.edit = false;
-
-          this.$notify({
-            group: 'main',
-            title: this.t('people.notes_update_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
-
-    showDelete(note) {
-      this.deleteNote.id = note.id;
-      this.showDeleteNoteModal = true;
-    },
-
-    closeModal() {
-      this.showDeleteNoteModal = false;
-    },
-
-    trash(note) {
-      axios.delete('people/' + this.hash + '/notes/' + note.id)
-        .then(response => {
-          this.getNotes();
-
-          this.closeModal();
-
-          this.$notify({
-            group: 'main',
-            title: this.t('people.notes_delete_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
-
-    compiledMarkdown (text) {
-      return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text)) : '';
-    },
-  }
-};
+function compiledMarkdown(text: string | null | undefined): string {
+  return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text) as string) : '';
+}
 </script>

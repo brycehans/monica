@@ -107,161 +107,135 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-export default {
+interface ContactFieldType {
+  id: number | string;
+  name: string;
+}
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    contactId: {
-      type: Number,
-      default: -1,
-    },
-    sizeLimit: {
-      type: Number,
-      default: 26,
+interface ContactField {
+  id: number;
+  contact_field_type_id: number | string;
+  data: string;
+  shortenName?: string;
+  protocol?: string;
+  fontawesome_icon?: string;
+  edit?: boolean;
+}
+
+interface FormBag {
+  id?: number | string;
+  contact_field_type_id: number | string;
+  data: string;
+  errors: string[];
+}
+
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    contactId?: number;
+    sizeLimit?: number;
+  }>(),
+  {
+    hash: '',
+    contactId: -1,
+    sizeLimit: 26,
+  },
+);
+
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+
+const contactInformationData = ref<ContactField[]>([]);
+const contactFieldTypes = ref<ContactFieldType[]>([]);
+const editMode = ref(false);
+const addMode = ref(false);
+
+const createForm = reactive<FormBag>({ contact_field_type_id: '', data: '', errors: [] });
+const updateForm = reactive<FormBag>({ id: '', contact_field_type_id: '', data: '', errors: [] });
+
+onMounted(async () => {
+  await Promise.all([getContactInformationData(), getContactFieldTypes()]);
+});
+
+function formatResponse(data: ContactField[]): ContactField[] {
+  data.forEach((value) => {
+    let shortenName = value.data;
+    if (shortenName.length > props.sizeLimit + 1) {
+      shortenName = t('format.short_text', { text: shortenName.substr(0, props.sizeLimit) });
     }
-  },
+    value.shortenName = shortenName;
+  });
+  return data;
+}
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+async function getContactInformationData() {
+  const response = await axios.get('people/' + props.hash + '/contactfield');
+  contactInformationData.value = formatResponse(response.data as ContactField[]);
+}
 
-  data() {
-    return {
-      contactInformationData: [],
-      contactFieldTypes: [],
+async function getContactFieldTypes() {
+  const response = await axios.get('people/' + props.hash + '/contactfieldtypes');
+  contactFieldTypes.value = response.data as ContactFieldType[];
+}
 
-      editMode: false,
-      addMode: false,
-      updateMode: false,
-
-      createForm: {
-        contact_field_type_id: '',
-        data: '',
-        errors: []
-      },
-
-      updateForm: {
-        id: '',
-        contact_field_type_id: '',
-        data: '',
-        edit: false,
-        errors: []
-      },
-    };
-  },
-
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
+async function persistClient(method: 'post' | 'put' | 'delete', uri: string, form: FormBag) {
+  form.errors = [];
+  try {
+    if (method === 'delete') {
+      await axios.delete(uri);
+    } else {
+      await axios[method](uri, form);
     }
-  },
-
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      this.getContactInformationData();
-      this.getContactFieldTypes();
-    },
-
-    getContactInformationData() {
-      axios.get('people/' + this.hash + '/contactfield')
-        .then(response => {
-          this.contactInformationData = this.formatResponse(response.data);
-        });
-    },
-
-    formatResponse(data) {
-      var vm = this;
-      _.each(data, function(value) {
-        var shortenName = value.data;
-        if (shortenName.length > vm.sizeLimit + 1) {
-          shortenName = vm.t('format.short_text', { text: shortenName.substr(0, vm.sizeLimit) });
-        }
-        value.shortenName = shortenName;
-      });
-      return data;
-    },
-
-    getContactFieldTypes() {
-      axios.get('people/' + this.hash + '/contactfieldtypes')
-        .then(response => {
-          this.contactFieldTypes = response.data;
-        });
-    },
-
-    store() {
-      this.persistClient(
-        'post', 'people/' + this.hash + '/contactfield',
-        this.createForm
-      );
-
-      this.addMode = false;
-    },
-
-    resetState() {
-      this.editMode = false;
-      this.addMode = false;
-    },
-
-    toggleAdd() {
-      this.addMode = true;
-      this.editMode = true;
-      this.createForm.data = '';
-      this.createForm.contact_field_type_id = '';
-    },
-
-    toggleEdit(contactField) {
-      contactField.edit = !contactField.edit;
-      this.updateForm.id = contactField.id;
-      this.updateForm.data = contactField.data;
-      this.updateForm.contact_field_type_id = contactField.contact_field_type_id;
-    },
-
-    update(contactField) {
-      this.persistClient(
-        'put', 'people/' + this.hash + '/contactfield/' + contactField.id,
-        this.updateForm
-      );
-    },
-
-    trash(contactField) {
-      this.updateForm.id = contactField.id;
-
-      this.persistClient(
-        'delete', 'people/' + this.hash + '/contactfield/' + contactField.id,
-        this.updateForm
-      );
-
-      if (this.contactInformationData.length <= 1) {
-        this.editMode = false;
-      }
-    },
-
-    persistClient(method, uri, form) {
-      form.errors = [];
-
-      axios[method](uri, form)
-        .then(response => {
-          this.getContactInformationData();
-        })
-        .catch(error => {
-          if (typeof error.response.data === 'object') {
-            form.errors = _.flatten(_.toArray(error.response.data));
-          } else {
-            form.errors = [this.t('app.error_try_again')];
-          }
-        });
-    },
+    await getContactInformationData();
+  } catch (error: unknown) {
+    const data = (error as { response?: { data?: unknown } })?.response?.data;
+    if (data && typeof data === 'object') {
+      form.errors = Object.values(data ?? {}).flat() as string[];
+    } else {
+      form.errors = [t('app.error_try_again')];
+    }
   }
-};
+}
+
+function store() {
+  persistClient('post', 'people/' + props.hash + '/contactfield', createForm);
+  addMode.value = false;
+}
+
+function resetState() {
+  editMode.value = false;
+  addMode.value = false;
+}
+
+function toggleAdd() {
+  addMode.value = true;
+  editMode.value = true;
+  createForm.data = '';
+  createForm.contact_field_type_id = '';
+}
+
+function toggleEdit(contactField: ContactField) {
+  contactField.edit = !contactField.edit;
+  updateForm.id = contactField.id;
+  updateForm.data = contactField.data;
+  updateForm.contact_field_type_id = contactField.contact_field_type_id;
+}
+
+function update(contactField: ContactField) {
+  persistClient('put', 'people/' + props.hash + '/contactfield/' + contactField.id, updateForm);
+}
+
+function trash(contactField: ContactField) {
+  updateForm.id = contactField.id;
+  persistClient('delete', 'people/' + props.hash + '/contactfield/' + contactField.id, updateForm);
+  if (contactInformationData.value.length <= 1) {
+    editMode.value = false;
+  }
+}
 </script>

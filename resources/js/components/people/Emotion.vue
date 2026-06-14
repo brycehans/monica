@@ -94,107 +94,97 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 
-export default {
+interface Emotion {
+  id: number;
+  name: string;
+}
 
-  props: {
-    initialEmotions: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    }
+const props = withDefaults(
+  defineProps<{
+    initialEmotions?: Emotion[];
+  }>(),
+  {
+    initialEmotions: () => [],
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const emit = defineEmits<{
+  (e: 'update', value: Emotion[]): void;
+}>();
 
-  data() {
-    return {
-      emotions: [],
-      primaryEmotions: [],
-      secondaryEmotions: [],
-      selectedPrimaryEmotionId: 0,
-      selectedSecondaryEmotionId: 0,
-      chosenEmotions: [],
-      menu: false,
-      emotionsMenu: 'primary',
-    };
-  },
+const { t } = useI18n();
+const instance = getCurrentInstance();
 
-  mounted() {
-    this.prepareComponent();
+const emotions = ref<Emotion[]>([]);
+const primaryEmotions = ref<Emotion[]>([]);
+const secondaryEmotions = ref<Emotion[]>([]);
+const selectedPrimaryEmotionId = ref(0);
+const selectedSecondaryEmotionId = ref(0);
+const chosenEmotions = ref<Emotion[]>([]);
+const menu = ref(false);
+const emotionsMenu = ref<'primary' | 'secondary' | 'emotions'>('primary');
 
-    this.chosenEmotions = this.initialEmotions;
-  },
+onMounted(async () => {
+  await getPrimaryEmotions();
+  chosenEmotions.value = props.initialEmotions;
+  window.addEventListener('click', close);
+});
 
-  created() {
-    window.addEventListener('click', this.close);
-  },
+onBeforeUnmount(() => {
+  window.removeEventListener('click', close);
+});
 
-  beforeDestroy() {
-    window.removeEventListener('click', this.close);
-  },
-
-  methods: {
-    prepareComponent() {
-      this.getPrimaryEmotions();
-    },
-
-    close(e) {
-      if (!this.$el.contains(e.target)) {
-        this.menu = false;
-      }
-    },
-
-    getPrimaryEmotions() {
-      axios.get('emotions')
-        .then(response => {
-          this.primaryEmotions = response.data.data;
-        });
-    },
-
-    getSecondaryEmotions() {
-      axios.get('emotions/primaries/' + this.selectedPrimaryEmotionId + '/secondaries')
-        .then(response => {
-          this.secondaryEmotions = response.data.data;
-        });
-    },
-
-    getEmotions(id) {
-      axios.get('emotions/primaries/' + this.selectedPrimaryEmotionId + '/secondaries/' + this.selectedSecondaryEmotionId + '/emotions')
-        .then(response => {
-          this.emotions = response.data.data;
-        });
-    },
-
-    showSecondary(primaryEmotion) {
-      this.selectedPrimaryEmotionId = primaryEmotion.id;
-      this.getSecondaryEmotions();
-      this.emotionsMenu = 'secondary';
-    },
-
-    showEmotion(secondaryEmotion) {
-      this.selectedSecondaryEmotionId = secondaryEmotion.id;
-      this.getEmotions();
-      this.emotionsMenu = 'emotions';
-    },
-
-    addEmotion(emotion) {
-      this.menu = false;
-      this.chosenEmotions.push(emotion);
-      this.emotionsMenu = 'primary';
-      this.$emit('update', this.chosenEmotions);
-    },
-
-    removeEmotion(emotion) {
-      this.chosenEmotions.splice(emotion, 1);
-      this.$emit('update', this.chosenEmotions);
-    }
+function close(e: MouseEvent) {
+  const rootEl = instance?.vnode.el as HTMLElement | undefined;
+  if (rootEl && !rootEl.contains(e.target as Node)) {
+    menu.value = false;
   }
-};
+}
+
+async function getPrimaryEmotions() {
+  const response = await axios.get('emotions');
+  primaryEmotions.value = response.data.data;
+}
+
+async function getSecondaryEmotions() {
+  const response = await axios.get('emotions/primaries/' + selectedPrimaryEmotionId.value + '/secondaries');
+  secondaryEmotions.value = response.data.data;
+}
+
+async function getEmotions() {
+  const response = await axios.get(
+    'emotions/primaries/' + selectedPrimaryEmotionId.value + '/secondaries/' + selectedSecondaryEmotionId.value + '/emotions',
+  );
+  emotions.value = response.data.data;
+}
+
+async function showSecondary(primaryEmotion: Emotion) {
+  selectedPrimaryEmotionId.value = primaryEmotion.id;
+  await getSecondaryEmotions();
+  emotionsMenu.value = 'secondary';
+}
+
+async function showEmotion(secondaryEmotion: Emotion) {
+  selectedSecondaryEmotionId.value = secondaryEmotion.id;
+  await getEmotions();
+  emotionsMenu.value = 'emotions';
+}
+
+function addEmotion(emotion: Emotion) {
+  menu.value = false;
+  chosenEmotions.value.push(emotion);
+  emotionsMenu.value = 'primary';
+  emit('update', chosenEmotions.value);
+}
+
+function removeEmotion(emotion: Emotion) {
+  const idx = chosenEmotions.value.indexOf(emotion);
+  if (idx >= 0) chosenEmotions.value.splice(idx, 1);
+  emit('update', chosenEmotions.value);
+}
 </script>

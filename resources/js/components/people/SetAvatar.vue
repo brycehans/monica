@@ -105,107 +105,97 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+// @ts-expect-error — vue-cropperjs ships no types
 import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
-export default {
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-  components: {
-    VueCropper,
-  },
-  props: {
-    avatar: {
-      type: String,
-      default: '',
-    },
-    defaultUrl: {
-      type: String,
-      default: '',
-    },
-    gravatarUrl: {
-      type: String,
-      default: '',
-    },
-    photoUrl: {
-      type: String,
-      default: '',
-    },
-    hasReachedAccountStorageLimit: {
-      type: Boolean,
-      default: false,
-    },
-    maxUploadSize: {
-      type: Number,
-      default: 10000,
-    },
-  },
+interface CropperInstance {
+  getCroppedCanvas: () => HTMLCanvasElement;
+}
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
+const props = withDefaults(
+  defineProps<{
+    avatar?: string;
+    defaultUrl?: string;
+    gravatarUrl?: string;
+    photoUrl?: string;
+    hasReachedAccountStorageLimit?: boolean;
+    maxUploadSize?: number;
+  }>(),
+  {
+    avatar: '',
+    defaultUrl: '',
+    gravatarUrl: '',
+    photoUrl: '',
+    hasReachedAccountStorageLimit: false,
+    maxUploadSize: 10000,
   },
+);
 
-  data() {
-    return {
-      selectedAvatar: '',
-      initialAvatar: '',
-      uploadedImgUrl: '',
-      croppedImgUrl: '',
-      showCropModal: false,
-    };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
+const uploadedImg = useTemplateRef<HTMLInputElement>('uploadedImg');
+const clipper = useTemplateRef<CropperInstance>('clipper');
+
+const selectedAvatar = ref('');
+const initialAvatar = ref('');
+const uploadedImgUrl = ref('');
+const croppedImgUrl = ref('');
+const showCropModal = ref(false);
+
+watch(() => props.avatar, (val) => {
+  selectedAvatar.value = val;
+});
+
+onMounted(() => {
+  initialAvatar.value = props.avatar;
+  selectedAvatar.value = props.avatar;
+});
+
+function uploadImg(e: Event) {
+  const target = e.target as HTMLInputElement;
+  if (target.files && target.files.length !== 0) {
+    if (uploadedImgUrl.value) {
+      URL.revokeObjectURL(uploadedImgUrl.value);
     }
-  },
+    uploadedImgUrl.value = window.URL.createObjectURL(target.files[0]);
+    showCropModal.value = true;
+  }
+}
 
-  watch: {
-    avatar(val) {
-      this.selectedAvatar = val;
-    }
-  },
+function setCroppedImg() {
+  const canvas = clipper.value?.getCroppedCanvas();
+  if (!canvas) return;
 
-  mounted() {
-    this.initialAvatar = this.avatar;
-    this.selectedAvatar = this.avatar;
-  },
-
-  methods: {
-    uploadImg: function(e) {
-      if (e.target.files.length !== 0) {
-        if(this.uploadedImgUrl) {
-          URL.revokeObjectURL(this.uploadedImgUrl);
-        }
-        this.uploadedImgUrl = window.URL.createObjectURL(e.target.files[0]);
-        this.showCropModal = true;
-      }
-    },
-
-    setCroppedImg: function () {
-      const canvas = this.$refs.clipper.getCroppedCanvas();
-
-      canvas.toBlob((blob) => {
-        const input = this.$refs.uploadedImg;
-        const file = new File([blob], input.files[0].name, { type: 'image/jpeg' });
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(file);
-        input.files = dataTransfer.files;
-
-        this.croppedImgUrl = window.URL.createObjectURL(blob);
-      }, 'image/jpeg', 1);
-
-      this.showCropModal = false;
-    },
-
-    cancelCrop() {
+  canvas.toBlob(
+    (blob) => {
+      if (!blob) return;
+      const input = uploadedImg.value;
+      if (!input || !input.files?.[0]) return;
+      const file = new File([blob], input.files[0].name, { type: 'image/jpeg' });
       const dataTransfer = new DataTransfer();
-      this.$refs.uploadedImg.files = dataTransfer.files;
-      this.croppedImgUrl = '';
-      this.showCropModal = false;
+      dataTransfer.items.add(file);
+      input.files = dataTransfer.files;
+      croppedImgUrl.value = window.URL.createObjectURL(blob);
     },
-  },
-};
+    'image/jpeg',
+    1,
+  );
+
+  showCropModal.value = false;
+}
+
+function cancelCrop() {
+  const dataTransfer = new DataTransfer();
+  if (uploadedImg.value) {
+    uploadedImg.value.files = dataTransfer.files;
+  }
+  croppedImgUrl.value = '';
+  showCropModal.value = false;
+}
 </script>

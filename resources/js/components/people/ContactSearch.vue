@@ -22,8 +22,8 @@ import ContactItem from './partials/ContactItem.vue';
 interface SelectedContact {
   item: {
     id: number;
-    route: string;
-    keyword: string;
+    route?: string;
+    keyword?: string;
   };
 }
 
@@ -50,12 +50,14 @@ function capitalize(s: string): string {
 
 function select(contact: SelectedContact) {
   if (contact.item.id > 0) {
-    window.location.href = contact.item.route;
+    if (contact.item.route) {
+      window.location.href = contact.item.route;
+    }
     return;
   }
   // contact with ID = -1 is the 'add person' contact
 
-  const keyword = contact.item.keyword.trim();
+  const keyword = (contact.item.keyword ?? '').trim();
   let names: string;
   let email: string | undefined;
 

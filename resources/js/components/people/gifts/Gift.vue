@@ -82,7 +82,7 @@ interface Photo {
 interface Gift {
   url?: string;
   name?: string;
-  date?: string;
+  date?: string | null;
   recipient?: { complete_name?: string };
   photos?: Photo[];
   amount?: number;
