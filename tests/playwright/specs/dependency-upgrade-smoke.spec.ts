@@ -783,6 +783,117 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     }
   });
 
+  test('webauthn multi-key remove: deletes the clicked row, not the last one (regression for #786 wa.2 splice-by-indexOf-undefined bug)', async ({ page, context }) => {
+    // The pre-#805 connector used `splice(indexOf(response.data.id), 1)`
+    // against an empty 204 No Content body — indexOf(undefined) is -1,
+    // and splice(-1, 1) drops the LAST row regardless of which row the
+    // user clicked. Single-key paths masked this (last == only). The
+    // sibling test above covers the single-key wire contract; this one
+    // exercises the multi-key path that exposes the original bug.
+    //
+    // Note: each registration needs its OWN virtual authenticator. The
+    // server's POST /webauthn/keys/options returns excludeCredentials
+    // listing the user's already-registered keys; if the same virtual
+    // authenticator is reused, navigator.credentials.create() throws
+    // InvalidStateError ("key already registered") and no POST goes out.
+    const cdp = await context.newCDPSession(page);
+    await cdp.send('WebAuthn.enable');
+
+    const authOpts = {
+      protocol: 'ctap2' as const,
+      transport: 'internal' as const,
+      hasResidentKey: true,
+      hasUserVerification: true,
+      isUserVerified: true,
+      automaticPresenceSimulation: true,
+    };
+    let activeAuthenticatorId: string | null = null;
+
+    const swapAuthenticator = async () => {
+      // Chrome only allows one internal virtual authenticator at a time, so
+      // we tear down before adding the next. This also clears any in-memory
+      // credentials so the next create() can succeed against an excludeCreds
+      // list that includes the prior key.
+      if (activeAuthenticatorId) {
+        await cdp.send('WebAuthn.removeVirtualAuthenticator', { authenticatorId: activeAuthenticatorId });
+        activeAuthenticatorId = null;
+      }
+      const { authenticatorId } = await cdp.send('WebAuthn.addVirtualAuthenticator', { options: authOpts });
+      activeAuthenticatorId = authenticatorId;
+    };
+
+    try {
+      await loginAsAdmin(page);
+      await page.goto('/settings/security');
+
+      const baseTimestamp = Date.now();
+      const keyA = `multi-key A ${baseTimestamp}`;
+      const keyB = `multi-key B ${baseTimestamp}`;
+
+      // After a successful POST /webauthn/keys the connector reactively
+      // pushes the new row into `currentkeys` and closes the modal — no
+      // page reload needed. Wait on the modal being hidden before queueing
+      // the next registration so we don't race the v-model unmount.
+      const registerKey = async (name: string): Promise<number> => {
+        await swapAuthenticator();
+
+        await page.getByRole('link', { name: 'Add a new security key' }).click();
+        const modal = page.locator('.monica-modal__panel').filter({ hasText: 'Key name' }).first();
+        await expect(modal).toBeVisible();
+        await modal.getByRole('textbox', { name: /Key name/i }).fill(name);
+        const storeResp = page.waitForResponse((r) =>
+          /\/webauthn\/keys$/.test(r.url()) && r.request().method() === 'POST');
+        await modal.getByRole('link', { name: 'Next' }).click();
+        const response = await storeResp;
+        expect(response.status()).toBe(201);
+        const body = await response.json();
+        await expect(modal).toBeHidden();
+        return body.result.id as number;
+      };
+
+      const idA = await registerKey(keyA);
+      await registerKey(keyB);
+
+      const rowA = page.locator('li.table-row').filter({ hasText: keyA });
+      const rowB = page.locator('li.table-row').filter({ hasText: keyB });
+      await expect(rowA).toHaveCount(1);
+      await expect(rowB).toHaveCount(1);
+
+      // Delete the FIRST row (key A). With the pre-#805 bug the visual
+      // splice would unmount keyB (the last item) while the server
+      // deleted keyA, leaving the UI inverted relative to ground truth.
+      await rowA.getByRole('link', { name: /^Delete$/i }).click();
+      const deleteModal = page.locator('.monica-modal__panel').filter({ hasText: 'Remove a key' }).first();
+      await expect(deleteModal).toBeVisible();
+      const deleteResp = page.waitForResponse((r) =>
+        /\/webauthn\/keys\/\d+$/.test(r.url()) && r.request().method() === 'DELETE');
+      await deleteModal.getByRole('link', { name: /^Delete$/i }).click();
+      const response = await deleteResp;
+      expect(response.status()).toBe(204);
+      // Server deleted the row the user clicked — sanity-check the URL.
+      expect(response.url()).toMatch(new RegExp(`/webauthn/keys/${idA}$`));
+
+      // Visual ground truth: the clicked row is gone, the OTHER row stays.
+      // The pre-#805 bug would invert these counts.
+      await expect(rowA).toHaveCount(0);
+      await expect(rowB).toHaveCount(1);
+
+      // Hygiene — leave the DB the way we found it.
+      await rowB.getByRole('link', { name: /^Delete$/i }).click();
+      const cleanupModal = page.locator('.monica-modal__panel').filter({ hasText: 'Remove a key' }).first();
+      await expect(cleanupModal).toBeVisible();
+      const cleanupResp = page.waitForResponse((r) =>
+        /\/webauthn\/keys\/\d+$/.test(r.url()) && r.request().method() === 'DELETE');
+      await cleanupModal.getByRole('link', { name: /^Delete$/i }).click();
+      await cleanupResp;
+    } finally {
+      if (activeAuthenticatorId) {
+        await cdp.send('WebAuthn.removeVirtualAuthenticator', { authenticatorId: activeAuthenticatorId }).catch(() => {});
+      }
+      await cdp.detach();
+    }
+  });
+
   test('settings/dav mounts dav-resources with the base URL input', async ({ page, consoleGate }) => {
     // DavResources renders the WebDAV / CardDAV / CalDAV headings + the
     // base-URL readonly input populated from the dav-route prop. If the
