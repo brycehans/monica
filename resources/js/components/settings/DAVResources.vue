@@ -84,53 +84,39 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
-
-  props: {
-    davRoute: {
-      type: String,
-      default: '',
-    },
-    cardDavRoute: {
-      type: String,
-      default: '',
-    },
-    calDavBirthdaysRoute: {
-      type: String,
-      default: '',
-    },
-    calDavTasksRoute: {
-      type: String,
-      default: '',
-    },
+withDefaults(
+  defineProps<{
+    davRoute?: string;
+    cardDavRoute?: string;
+    calDavBirthdaysRoute?: string;
+    calDavTasksRoute?: string;
+  }>(),
+  {
+    davRoute: '',
+    cardDavRoute: '',
+    calDavBirthdaysRoute: '',
+    calDavTasksRoute: '',
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { notify } = useNotify();
 
-  methods: {
-
-    copyIntoClipboard(text) {
-      navigator.clipboard.writeText(text)
-        .then(() => {
-          this.notify(this.t('settings.dav_clipboard_copied'), true);
-        })
-        .catch(() => { /* silent on permission denial / non-secure context */ });
-    },
-
-    notify(text, success) {
-      this.$notify({
-        group: 'dav',
-        title: text,
-        text: '',
-        type: success ? 'success' : 'error'
-      });
-    }
+async function copyIntoClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    notify({
+      group: 'dav',
+      title: t('settings.dav_clipboard_copied'),
+      text: '',
+      type: 'success',
+    });
+  } catch {
+    // silent on permission denial / non-secure context
   }
-};
+}
 </script>

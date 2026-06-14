@@ -214,186 +214,167 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import FormErrors from '../partials/FormErrors.vue';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
+interface ContactFieldType {
+  id: number | string;
+  name: string;
+  protocol: string;
+  fontawesome_icon?: string;
+  delible?: boolean;
+}
 
-  components: {
-    FormErrors,
-  },
+interface InputComponent {
+  focus: () => void;
+}
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  data() {
-    return {
-      contactFieldTypes: [],
+const contactFieldTypes = ref<ContactFieldType[]>([]);
 
-      submitted: false,
-      edited: false,
-      deleted: false,
+const submitted = ref(false);
+const edited = ref(false);
+const deleted = ref(false);
 
-      createForm: {
-        name: '',
-        protocol: '',
-        icon: '',
-        errors: []
-      },
+const createForm = reactive<{
+  name: string;
+  protocol: string;
+  icon: string;
+  errors: string[] | Record<string, string[]>;
+}>({ name: '', protocol: '', icon: '', errors: [] });
 
-      editForm: {
-        id: '',
-        name: '',
-        protocol: '',
-        icon: '',
-        errors: []
-      },
-      showModalCreateContactFieldType: false,
-      showModalEditContactFieldType: false,
-      showModalDeleteContactFieldType: false,
-    };
-  },
+const editForm = reactive<{
+  id: number | string;
+  name: string;
+  protocol: string;
+  icon: string;
+  errors: string[] | Record<string, string[]>;
+}>({ id: '', name: '', protocol: '', icon: '', errors: [] });
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
+const showModalCreateContactFieldType = ref(false);
+const showModalEditContactFieldType = ref(false);
+const showModalDeleteContactFieldType = ref(false);
+
+const createName = useTemplateRef<InputComponent>('createName');
+const editName = useTemplateRef<InputComponent>('editName');
+
+onMounted(getContactFieldTypes);
+
+async function getContactFieldTypes() {
+  const response = await axios.get('settings/personalization/contactfieldtypes');
+  contactFieldTypes.value = response.data as ContactFieldType[];
+}
+
+function add() {
+  showModalCreateContactFieldType.value = true;
+}
+
+function closeModal() {
+  showModalCreateContactFieldType.value = false;
+  showModalEditContactFieldType.value = false;
+  showModalDeleteContactFieldType.value = false;
+}
+
+type FormBag = typeof createForm | typeof editForm;
+
+async function persistClient(method: 'post' | 'put' | 'delete', uri: string, form: FormBag, flag: 'submitted' | 'edited' | 'deleted') {
+  form.errors = [];
+
+  try {
+    await axios[method](uri, form);
+    await getContactFieldTypes();
+
+    if ('id' in form) (form as typeof editForm).id = '';
+    form.name = '';
+    form.protocol = '';
+    form.icon = '';
+    form.errors = [];
+
+    closeModal();
+
+    if (flag === 'submitted') submitted.value = true;
+    else if (flag === 'edited') edited.value = true;
+    else deleted.value = true;
+  } catch (error: unknown) {
+    const data = (error as { response?: { data?: unknown } })?.response?.data;
+    if (data && typeof data === 'object') {
+      form.errors = Object.values(data ?? {}).flat() as string[];
+    } else {
+      form.errors = [t('app.error_try_again')];
     }
-  },
-
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      this.getContactFieldTypes();
-    },
-
-    getContactFieldTypes() {
-      axios.get('settings/personalization/contactfieldtypes')
-        .then(response => {
-          this.contactFieldTypes = response.data;
-        });
-    },
-
-    add() {
-      this.showModalCreateContactFieldType = true;
-    },
-
-    closeModal() {
-      this.showModalCreateContactFieldType = false;
-      this.showModalEditContactFieldType = false;
-      this.showModalDeleteContactFieldType = false;
-    },
-
-    store() {
-      this.persistClient(
-        'post', 'settings/personalization/contactfieldtypes',
-        this.createForm, this.submitted
-      );
-
-      this.$notify({
-        group: 'main',
-        title: this.t('settings.personalization_contact_field_type_add_success'),
-        text: '',
-        width: '500px',
-        type: 'success'
-      });
-    },
-
-    edit(contactFieldType) {
-      this.editForm.id = contactFieldType.id;
-      this.editForm.name = contactFieldType.name;
-      this.editForm.protocol = contactFieldType.protocol;
-      this.editForm.icon = contactFieldType.fontawesome_icon;
-
-      this.showModalEditContactFieldType = true;
-    },
-
-    update() {
-      this.persistClient(
-        'put', 'settings/personalization/contactfieldtypes/' + this.editForm.id,
-        this.editForm, this.edited
-      );
-
-      this.$notify({
-        group: 'main',
-        title: this.t('settings.personalization_contact_field_type_edit_success'),
-        text: '',
-        width: '500px',
-        type: 'success'
-      });
-    },
-
-    showDelete(contactFieldType) {
-      this.editForm.id = contactFieldType.id;
-
-      this.showModalDeleteContactFieldType = true;
-    },
-
-    trash() {
-      this.persistClient(
-        'delete', 'settings/personalization/contactfieldtypes/' + this.editForm.id,
-        this.editForm, this.deleted
-      );
-
-      this.$notify({
-        group: 'main',
-        title: this.t('settings.personalization_contact_field_type_delete_success'),
-        text: '',
-        width: '500px',
-        type: 'success'
-      });
-    },
-
-    persistClient(method, uri, form, success) {
-      form.errors = {};
-
-      axios[method](uri, form)
-        .then(response => {
-          this.getContactFieldTypes();
-
-          form.id = '';
-          form.name = '';
-          form.protocol = '';
-          form.icon = '';
-          form.errors = [];
-
-          this.closeModal();
-
-          success = true;
-        })
-        .catch(error => {
-          if (typeof error.response.data === 'object') {
-            form.errors = _.flatten(_.toArray(error.response.data));
-          } else {
-            form.errors = [this.t('app.error_try_again')];
-          }
-        });
-    },
-
-    /**
-     * Focus on modal open.
-     */
-    _focusCreateInput() {
-      const vm = this;
-      setTimeout(function() {
-        vm.$refs.createName.focus();
-      }, 10);
-    },
-
-    /**
-     * Focus on modal open.
-     */
-    _focusEditInput() {
-      const vm = this;
-      setTimeout(function() {
-        vm.$refs.editName.focus();
-      }, 10);
-    },
   }
-};
+}
+
+function store() {
+  persistClient('post', 'settings/personalization/contactfieldtypes', createForm, 'submitted');
+  notify({
+    group: 'main',
+    title: t('settings.personalization_contact_field_type_add_success'),
+    text: '',
+    type: 'success',
+  });
+}
+
+function edit(contactFieldType: ContactFieldType) {
+  editForm.id = contactFieldType.id;
+  editForm.name = contactFieldType.name;
+  editForm.protocol = contactFieldType.protocol;
+  editForm.icon = contactFieldType.fontawesome_icon ?? '';
+  showModalEditContactFieldType.value = true;
+}
+
+function update() {
+  persistClient(
+    'put',
+    'settings/personalization/contactfieldtypes/' + editForm.id,
+    editForm,
+    'edited',
+  );
+  notify({
+    group: 'main',
+    title: t('settings.personalization_contact_field_type_edit_success'),
+    text: '',
+    type: 'success',
+  });
+}
+
+function showDelete(contactFieldType: ContactFieldType) {
+  editForm.id = contactFieldType.id;
+  showModalDeleteContactFieldType.value = true;
+}
+
+function trash() {
+  persistClient(
+    'delete',
+    'settings/personalization/contactfieldtypes/' + editForm.id,
+    editForm,
+    'deleted',
+  );
+  notify({
+    group: 'main',
+    title: t('settings.personalization_contact_field_type_delete_success'),
+    text: '',
+    type: 'success',
+  });
+}
+
+function _focusCreateInput() {
+  setTimeout(() => {
+    createName.value?.focus();
+  }, 10);
+}
+
+function _focusEditInput() {
+  setTimeout(() => {
+    editName.value?.focus();
+  }, 10);
+}
 </script>

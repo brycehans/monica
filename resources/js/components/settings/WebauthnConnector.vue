@@ -21,7 +21,7 @@
               <strong>{{ key.name }}</strong>
             </div>
             <div class="table-cell time w-50">
-              <template v-if="key.counter > 0">
+              <template v-if="(key.counter ?? 0) > 0 && key.updated_at">
                 {{ t('settings.webauthn_last_use', {timestamp: formatTime(key.updated_at)}) }}
               </template>
             </div>
@@ -170,226 +170,221 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import moment from 'moment-timezone';
 import { startRegistration, startAuthentication, browserSupportsWebAuthn } from '@simplewebauthn/browser';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
+interface WebauthnKey {
+  id: number | string;
+  name: string;
+  counter?: number;
+  updated_at?: string;
+}
 
-  components: {
+const props = withDefaults(
+  defineProps<{
+    keys?: WebauthnKey[];
+    // eslint-disable-next-line vue/require-default-prop
+    publicKey?: unknown;
+    method?: string;
+    timezone?: string;
+    script?: string;
+  }>(),
+  {
+    keys: () => [],
+    method: '',
+    timezone: '',
+    script: '',
   },
+);
 
-  props: {
-    keys: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    },
-    publicKey: {
-      type: Object,
-      default: null,
-    },
-    method: {
-      type: String,
-      default: '',
-    },
-    timezone: {
-      type: String,
-      default: '',
-    },
-    script: {
-      type: String,
-      default: '',
-    },
-  },
+const { t, locale } = useI18n();
+const { notify } = useNotify();
 
-  setup() {
-    const { t, locale } = useI18n();
-    return { t, locale };
-  },
+const isSupported = ref(true);
+const errorMessage = ref('');
+const infoMessage = ref('');
+const success = ref(false);
+const currentkeys = ref<WebauthnKey[]>([]);
+const keyToTrash = ref<number | string>('');
+const keyName = ref('');
+const registerTab = ref('');
+const registerModalOpen = ref(false);
+const showDelete = ref(false);
 
-  data() {
-    return {
-      isSupported: true,
-      errorMessage: '',
-      infoMessage: '',
-      success: false,
-      currentkeys: [],
-      keyToTrash: '',
-      keyName: '',
-      registerTab: '',
-      registerModalOpen: false,
-      showDelete: false,
-    };
-  },
+onMounted(() => {
+  currentkeys.value = props.keys;
+  isSupported.value = browserSupportsWebAuthn();
+  start();
+});
 
-  mounted() {
-    this.prepareComponent();
-    this.start();
-  },
+function notifyMessage(text: string, ok: boolean) {
+  notify({
+    group: 'webauthn',
+    title: text,
+    text: '',
+    type: ok ? 'success' : 'error',
+  });
+}
 
-  methods: {
-    prepareComponent() {
-      this.currentkeys = this.keys;
-      this.isSupported = browserSupportsWebAuthn();
-    },
-
-    _errorMessage(name, message) {
-      switch (name) {
-      case 'InvalidStateError':
-        return this.t('settings.webauthn_error_already_used');
-      case 'NotAllowedError':
-        return this.t('settings.webauthn_error_not_allowed');
-      default:
-        return message;
-      }
-    },
-
-    notSupportedMessage() {
-      if (! window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        return this.t('settings.webauthn_not_secured');
-      }
-      return this.t('settings.webauthn_not_supported');
-    },
-
-    start() {
-      this.errorMessage = '';
-
-      if (! browserSupportsWebAuthn()) {
-        this.isSupported = false;
-        this.errorMessage = this.notSupportedMessage();
-        return;
-      }
-
-      switch(this.method) {
-      case 'register':
-        setTimeout(() => this.doRegister(this.publicKey, true), 10);
-        break;
-      case 'login':
-        this.doLogin(this.publicKey);
-        break;
-      }
-    },
-
-    showRegisterModal() {
-      this.errorMessage = '';
-      this.infoMessage = '';
-      this.keyName = '';
-      this.success = false;
-      this.showRegisterModalTab('1');
-      this.registerModalOpen = true;
-    },
-
-    showRegisterModalTab(tab) {
-      this.registerTab = tab;
-    },
-
-    startRegister() {
-      this.errorMessage = '';
-      axios.post('webauthn/keys/options')
-        .then(response => {
-          if (this.registerTab === '2') {
-            setTimeout(() => this.doRegister(response.data.publicKey, false), 10);
-          }
-        }).catch(error => {
-          this.notify(error.response?.data?.message ?? error.message, false);
-        });
-    },
-
-    closeRegisterModal() {
-      this.registerModalOpen = false;
-      this.showRegisterModalTab('');
-    },
-
-    async doRegister(publicKey, redirect) {
-      let attResp;
-      try {
-        attResp = await startRegistration({ optionsJSON: publicKey });
-      } catch (error) {
-        this.errorMessage = this._errorMessage(error.name, error.message);
-        return;
-      }
-      try {
-        const response = await axios.post('webauthn/keys', {
-          ...attResp,
-          name: this.keyName,
-        });
-        this.success = true;
-        this.notify(this.t('settings.webauthn_success'), true);
-        this.currentkeys.push({
-          id: response.data.result.id,
-          name: response.data.result.name,
-        });
-        if (redirect) {
-          setTimeout(() => { window.location = response.data.callback; }, 100);
-        } else {
-          this.closeRegisterModal();
-        }
-      } catch (error) {
-        this.errorMessage = error.message ? error.message : error.response.data.message;
-      }
-    },
-
-    async doLogin(publicKey) {
-      let assertionResp;
-      try {
-        assertionResp = await startAuthentication({ optionsJSON: publicKey });
-      } catch (error) {
-        this.errorMessage = this._errorMessage(error.name, error.message);
-        return;
-      }
-      try {
-        const response = await axios.post('webauthn/auth', { ...assertionResp });
-        this.success = true;
-        this.notify(this.t('settings.webauthn_success'), true);
-        window.location = response.data.callback;
-      } catch (error) {
-        this.errorMessage = error.message ? error.message : error.response.data.message;
-      }
-    },
-
-    webauthnRemove(id) {
-      var self = this;
-      axios.delete('webauthn/keys/'+id)
-        .then(response => {
-          self.currentkeys.splice(self.currentkeys.indexOf(self.currentkeys.find(item => item.id === response.data.id)), 1);
-          self.success = true;
-          self.notify(self.t('settings.webauthn_delete_success'), true);
-          self.closeDeleteModal();
-        }).catch(error => {
-          self.errorMessage = error.response.data.message;
-        });
-    },
-
-    showDeleteModal(id) {
-      this.keyToTrash = id;
-      this.showDelete = true;
-    },
-
-    closeDeleteModal() {
-      this.showDelete = false;
-    },
-
-    formatTime(value) {
-      moment.locale(this.locale);
-      moment.tz.setDefault('UTC');
-
-      var t = moment(value);
-      var date = moment.tz(t, this.timezone);
-
-      return date.format('LLLL');
-    },
-
-    notify(text, success) {
-      this.$notify({
-        group: 'webauthn',
-        title: text,
-        text: '',
-        type: success ? 'success' : 'error'
-      });
-    }
+function _errorMessage(name: string | undefined, message: string): string {
+  switch (name) {
+  case 'InvalidStateError':
+    return t('settings.webauthn_error_already_used');
+  case 'NotAllowedError':
+    return t('settings.webauthn_error_not_allowed');
+  default:
+    return message;
   }
-};
+}
+
+function notSupportedMessage(): string {
+  if (
+    !window.isSecureContext &&
+    window.location.hostname !== 'localhost' &&
+    window.location.hostname !== '127.0.0.1'
+  ) {
+    return t('settings.webauthn_not_secured');
+  }
+  return t('settings.webauthn_not_supported');
+}
+
+function start() {
+  errorMessage.value = '';
+
+  if (!browserSupportsWebAuthn()) {
+    isSupported.value = false;
+    errorMessage.value = notSupportedMessage();
+    return;
+  }
+
+  switch (props.method) {
+  case 'register':
+    setTimeout(() => doRegister(props.publicKey, true), 10);
+    break;
+  case 'login':
+    doLogin(props.publicKey);
+    break;
+  }
+}
+
+function showRegisterModal() {
+  errorMessage.value = '';
+  infoMessage.value = '';
+  keyName.value = '';
+  success.value = false;
+  showRegisterModalTab('1');
+  registerModalOpen.value = true;
+}
+
+function showRegisterModalTab(tab: string) {
+  registerTab.value = tab;
+}
+
+async function startRegister() {
+  errorMessage.value = '';
+  try {
+    const response = await axios.post('webauthn/keys/options');
+    if (registerTab.value === '2') {
+      setTimeout(() => doRegister(response.data.publicKey, false), 10);
+    }
+  } catch (error: unknown) {
+    const e = error as { response?: { data?: { message?: string } }; message?: string };
+    notifyMessage(e?.response?.data?.message ?? e?.message ?? '', false);
+  }
+}
+
+function closeRegisterModal() {
+  registerModalOpen.value = false;
+  showRegisterModalTab('');
+}
+
+// startRegistration's options type is internal to @simplewebauthn; we accept
+// the publicKey blob the server hands back verbatim.
+async function doRegister(publicKey: unknown, redirect: boolean) {
+  let attResp;
+  try {
+    attResp = await startRegistration({ optionsJSON: publicKey as Parameters<typeof startRegistration>[0]['optionsJSON'] });
+  } catch (error: unknown) {
+    const e = error as { name?: string; message?: string };
+    errorMessage.value = _errorMessage(e.name, e.message ?? '');
+    return;
+  }
+  try {
+    const response = await axios.post('webauthn/keys', { ...attResp, name: keyName.value });
+    success.value = true;
+    notifyMessage(t('settings.webauthn_success'), true);
+    currentkeys.value.push({
+      id: response.data.result.id,
+      name: response.data.result.name,
+    });
+    if (redirect) {
+      setTimeout(() => {
+        window.location.href = response.data.callback;
+      }, 100);
+    } else {
+      closeRegisterModal();
+    }
+  } catch (error: unknown) {
+    const e = error as { message?: string; response?: { data?: { message?: string } } };
+    errorMessage.value = e.message ?? e.response?.data?.message ?? '';
+  }
+}
+
+async function doLogin(publicKey: unknown) {
+  let assertionResp;
+  try {
+    assertionResp = await startAuthentication({ optionsJSON: publicKey as Parameters<typeof startAuthentication>[0]['optionsJSON'] });
+  } catch (error: unknown) {
+    const e = error as { name?: string; message?: string };
+    errorMessage.value = _errorMessage(e.name, e.message ?? '');
+    return;
+  }
+  try {
+    const response = await axios.post('webauthn/auth', { ...assertionResp });
+    success.value = true;
+    notifyMessage(t('settings.webauthn_success'), true);
+    window.location.href = response.data.callback;
+  } catch (error: unknown) {
+    const e = error as { message?: string; response?: { data?: { message?: string } } };
+    errorMessage.value = e.message ?? e.response?.data?.message ?? '';
+  }
+}
+
+async function webauthnRemove(id: number | string) {
+  try {
+    const response = await axios.delete('webauthn/keys/' + id);
+    const found = currentkeys.value.find((item) => item.id === response.data.id);
+    if (found) {
+      currentkeys.value.splice(currentkeys.value.indexOf(found), 1);
+    }
+    success.value = true;
+    notifyMessage(t('settings.webauthn_delete_success'), true);
+    closeDeleteModal();
+  } catch (error: unknown) {
+    const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? '';
+    errorMessage.value = msg;
+  }
+}
+
+function showDeleteModal(id: number | string) {
+  keyToTrash.value = id;
+  showDelete.value = true;
+}
+
+function closeDeleteModal() {
+  showDelete.value = false;
+}
+
+function formatTime(value: string): string {
+  moment.locale(typeof locale.value === 'string' ? locale.value : 'en');
+  moment.tz.setDefault('UTC');
+  const m = moment(value);
+  const date = moment.tz(m, props.timezone);
+  return date.format('LLLL');
+}
 </script>

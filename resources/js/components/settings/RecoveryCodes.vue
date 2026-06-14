@@ -22,7 +22,7 @@
       <p>{{ t('settings.recovery_help_intro') }}</p>
       <p :class="[ dirltr ? 'ml3' : 'mr3' ]">
         <span v-for="code in codes" :key="code.id" v-cy-name="'recovery-' + code.id">
-          <pre class="code" :class="[ code.used ? 'used' : '' ]" :title="[ code.used ? usedHelp : '']">{{ code.recovery }}</pre>
+          <pre class="code" :class="[ code.used ? 'used' : '' ]" :title="code.used ? usedHelp : ''">{{ code.recovery }}</pre>
         </span>
       </p>
       <p>{{ t('settings.recovery_help_information') }}</p>
@@ -52,94 +52,89 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
+interface RecoveryCode {
+  id: number;
+  recovery: string;
+  used: boolean;
+}
 
-  components: {
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const codes = ref<RecoveryCode[]>([]);
+const recoveryModalOpen = ref(false);
 
-  data() {
-    return {
-      codes: [],
-      recoveryModalOpen: false,
-    };
-  },
+const usedHelp = computed(() => t('settings.recovery_already_used_help'));
+const copyHelp = computed(() => t('settings.recovery_copy_help'));
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    },
-    usedHelp() {
-      return this.t('settings.recovery_already_used_help');
-    },
-    copyHelp() {
-      return this.t('settings.recovery_copy_help');
-    },
-  },
+function notifyMessage(text: string, success: boolean) {
+  notify({
+    group: 'recovery',
+    title: text,
+    text: '',
+    type: success ? 'success' : 'error',
+  });
+}
 
-  methods: {
-    showRecoveryModal() {
-      this.codes = [];
-      axios.post('settings/security/recovery-codes')
-        .then(response => {
-          this.codes = response.data;
-          this.recoveryModalOpen = true;
-        }).catch(error => {
-          this.notify(error.response.data.message, false);
-        });
-    },
-
-    generateNewCodes() {
-      this.codes = [];
-      axios.post('settings/security/generate-recovery-codes')
-        .then(response => {
-          this.codes = response.data;
-        }).catch(error => {
-          this.notify(error.response.data.message, false);
-        });
-    },
-
-    closeRecoveryModal() {
-      this.recoveryModalOpen = false;
-    },
-
-    copyIntoClipboard() {
-      navigator.clipboard.writeText(this.getDataStream())
-        .then(() => {
-          this.notify(this.t('settings.recovery_clipboard'), true);
-        })
-        .catch(() => { /* silent on permission denial / non-secure context */ });
-    },
-
-    getDataStream() {
-      var text = this.t('settings.recovery_help_intro')+'\n';
-      var i = 1;
-      this.codes.forEach(code => {
-        if (code.used) {
-          text += i + '. ---------\n';
-        } else {
-          text += i + '. ' + code.recovery + '\n';
-        }
-        i++;
-      });
-      return text;
-    },
-
-    notify(text, success) {
-      this.$notify({
-        group: 'recovery',
-        title: text,
-        text: '',
-        type: success ? 'success' : 'error'
-      });
-    }
+async function showRecoveryModal() {
+  codes.value = [];
+  try {
+    const response = await axios.post('settings/security/recovery-codes');
+    codes.value = response.data;
+    recoveryModalOpen.value = true;
+  } catch (error: unknown) {
+    notifyMessage(
+      (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? '',
+      false,
+    );
   }
-};
+}
+
+async function generateNewCodes() {
+  codes.value = [];
+  try {
+    const response = await axios.post('settings/security/generate-recovery-codes');
+    codes.value = response.data;
+  } catch (error: unknown) {
+    notifyMessage(
+      (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? '',
+      false,
+    );
+  }
+}
+
+function closeRecoveryModal() {
+  recoveryModalOpen.value = false;
+}
+
+function getDataStream(): string {
+  let text = t('settings.recovery_help_intro') + '\n';
+  let i = 1;
+  codes.value.forEach((code) => {
+    if (code.used) {
+      text += i + '. ---------\n';
+    } else {
+      text += i + '. ' + code.recovery + '\n';
+    }
+    i++;
+  });
+  return text;
+}
+
+async function copyIntoClipboard() {
+  try {
+    await navigator.clipboard.writeText(getDataStream());
+    notifyMessage(t('settings.recovery_clipboard'), true);
+  } catch {
+    // silent on permission denial / non-secure context
+  }
+}
 </script>
