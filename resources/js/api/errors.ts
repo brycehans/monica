@@ -17,6 +17,22 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((v) => typeof v === 'string');
+}
+
+/**
+ * Runtime check that a single value matches the `FormErrorList` element
+ * type. Used to validate `Object.values(data).flat()` element-by-element
+ * so the helper's return value is type-safe by construction instead of
+ * by `as`-cast.
+ */
+function isFormErrorEntry(value: unknown): value is string | Record<string, string[]> {
+  if (typeof value === 'string') return true;
+  if (!isPlainObject(value)) return false;
+  return Object.values(value).every(isStringArray);
+}
+
 function getResponseData(error: unknown): unknown {
   if (typeof error !== 'object' || error === null) return undefined;
   const response = (error as { response?: unknown }).response;
@@ -32,9 +48,16 @@ function getResponseData(error: unknown): unknown {
  * list while a modern envelope is preserved as a `[banner, fieldMap]`
  * tuple. Both shapes are renderable by `FormErrors.vue`.
  *
+ * Every element of the candidate result is runtime-validated against
+ * `FormErrorList`'s element type before the function returns. If any
+ * element fails (Laravel version changes, a service-layer exception
+ * leaks a non-envelope shape, etc.), the helper falls back to the
+ * caller-supplied fallback rather than handing FormErrors.vue a
+ * value it would render as `[object Object]`.
+ *
  * Non-422 errors (network failure, 500, missing response.data, non-object
- * payload) get the caller-supplied fallback. Accepts either a single
- * string or an array so callers like `CreateGift` can pass a two-line
+ * payload) likewise get the fallback. Accepts either a single string or
+ * an array so callers like `CreateGift` can pass a two-line
  * `[t('error'), e.message]` fallback.
  *
  * Replaces the duplicated catch-block pattern across the form SFCs:
@@ -52,13 +75,11 @@ export function validationErrorsFromAxios(
 ): FormErrorList {
   const data = getResponseData(error);
   if (isPlainObject(data)) {
-    // The one unavoidable cast: `.flat()` on `unknown[]` returns `unknown[]`,
-    // and TypeScript can't verify the runtime values match FormErrorList
-    // without a per-element check. The CONTRACT (documented above + locked
-    // by tests in errors.spec.ts) is that Laravel only emits the two
-    // envelope shapes; values that fall outside that contract are still
-    // safely rendered by FormErrors.vue's `any[]`-typed prop.
-    return Object.values(data).flat() as FormErrorList;
+    const candidates: unknown[] = Object.values(data).flat();
+    if (candidates.every(isFormErrorEntry)) {
+      // candidates is now narrowed to FormErrorList via the type predicate.
+      return candidates;
+    }
   }
   return Array.isArray(fallback) ? fallback : [fallback];
 }

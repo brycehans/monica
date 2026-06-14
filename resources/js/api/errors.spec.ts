@@ -40,12 +40,13 @@ describe('validationErrorsFromAxios', () => {
       expect(validationErrorsFromAxios({ response: { data: {} } }, 'fb')).toEqual([]);
     });
 
-    it('flattens only one level of nesting (Object.values + .flat default)', () => {
-      // Object.values(data) wraps the inner array as a single element;
-      // .flat() peels that outer wrapper off but leaves any inner arrays
-      // intact. So if Laravel ever emits an array-of-arrays for a single
-      // field, the inner arrays survive — they'd render via FormErrors'
-      // nested v-for, not as flat banner strings.
+    it('falls back when a nested array slips through .flat()', () => {
+      // `Object.values({tags: [['a','b'],'c']}).flat()` peels one level off
+      // and produces `[['a','b'], 'c']`. The leading inner array is NOT a
+      // valid FormErrorList entry (must be string OR Record<string,string[]>),
+      // so the per-element validator rejects the whole batch and the
+      // fallback fires. Better than rendering the inner array as a
+      // mystery row in FormErrors' v-for.
       const err = {
         response: {
           data: {
@@ -53,7 +54,7 @@ describe('validationErrorsFromAxios', () => {
           },
         },
       };
-      expect(validationErrorsFromAxios(err, 'fb')).toEqual([['a', 'b'], 'c']);
+      expect(validationErrorsFromAxios(err, 'fb')).toEqual(['fb']);
     });
   });
 
@@ -109,6 +110,88 @@ describe('validationErrorsFromAxios', () => {
       // axios shouldn't hand us a primitive, but be defensive.
       expect(validationErrorsFromAxios('boom', 'fb')).toEqual(['fb']);
       expect(validationErrorsFromAxios(42, 'fb')).toEqual(['fb']);
+    });
+  });
+
+  describe('runtime validation of FormErrorList element shapes', () => {
+    it('falls back when a field value is a single string instead of an array', () => {
+      // Laravel's contract is always string[] per field, but if a service
+      // ever emits `{ field: "single-string" }` directly the per-element
+      // validator rejects it — Object.values gives ["single-string"] which
+      // .flat()s to the same, and that string passes; OK so this is fine.
+      // The interesting failure is when a NESTED value isn't a string:
+      const err = { response: { data: { field: [{ foo: 'bar' }] } } };
+      // Object.values → [[{foo:'bar'}]]; .flat() → [{foo:'bar'}]; {foo:'bar'}
+      // is a plain object whose values aren't string[] → validator rejects.
+      expect(validationErrorsFromAxios(err, 'fb')).toEqual(['fb']);
+    });
+
+    it('falls back when an inner-object value is not a string array', () => {
+      // Modern-envelope-ish shape with a malformed `errors` map:
+      //   { message: 'X', errors: { email: 'not-an-array' } }
+      // Object.values → ['X', { email: 'not-an-array' }]; flat unchanged.
+      // The inner object's value is not string[], so it fails the entry
+      // check and the whole batch falls back.
+      const err = {
+        response: {
+          data: {
+            message: 'Banner',
+            errors: { email: 'should-have-been-array' },
+          },
+        },
+      };
+      expect(validationErrorsFromAxios(err, 'fb')).toEqual(['fb']);
+    });
+
+    it('falls back when an inner string-array contains non-strings', () => {
+      const err = {
+        response: {
+          data: {
+            message: 'Banner',
+            errors: { email: ['ok', 42, 'also ok'] },
+          },
+        },
+      };
+      expect(validationErrorsFromAxios(err, 'fb')).toEqual(['fb']);
+    });
+
+    it('accepts a fully-valid modern envelope with multiple fields', () => {
+      const err = {
+        response: {
+          data: {
+            message: 'The given data was invalid.',
+            errors: {
+              email: ['Required.', 'Invalid format.'],
+              name: ['Too short.'],
+            },
+          },
+        },
+      };
+      const out = validationErrorsFromAxios(err, 'fb');
+      expect(out[0]).toBe('The given data was invalid.');
+      expect(out[1]).toEqual({ email: ['Required.', 'Invalid format.'], name: ['Too short.'] });
+    });
+
+    it('accepts an empty array as a valid string[] (rule-defined-but-no-msgs case)', () => {
+      // Laravel can emit `{ field: [] }` when a rule fires with no message
+      // (rare but valid). The empty array passes isStringArray, the whole
+      // batch validates, and we return [] (FormErrors hides on .length === 0).
+      const err = { response: { data: { field: [] } } };
+      expect(validationErrorsFromAxios(err, 'fb')).toEqual([]);
+    });
+
+    it('falls back when one of N entries is invalid (all-or-nothing)', () => {
+      // If ANY entry fails the predicate, the whole batch falls back.
+      // Avoids partial rendering of a corrupted envelope.
+      const err = {
+        response: {
+          data: {
+            good_field: ['Required.'],
+            bad_field: [{ nested: 'object' }],
+          },
+        },
+      };
+      expect(validationErrorsFromAxios(err, 'fb')).toEqual(['fb']);
     });
   });
 
