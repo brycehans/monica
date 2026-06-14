@@ -168,142 +168,110 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useVuelidate } from '@vuelidate/core';
 import { required, numeric } from '@vuelidate/validators';
+import axios from 'axios';
 import moment from 'moment-timezone';
-import StayInTouchLabel from './StayInTouchLabel';
+import StayInTouchLabel from './StayInTouchLabel.vue';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
+import { timezone as bootTimezone } from '../../boot';
 
-export default {
-
-  components: {
-    StayInTouchLabel,
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    firstName?: string;
+    frequency?: number;
+    triggerDate?: string | null;
+    limited?: boolean;
+  }>(),
+  {
+    hash: '',
+    firstName: '',
+    frequency: 0,
+    triggerDate: null,
+    limited: false,
   },
+);
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    firstName: {
-      type: String,
-      default: '',
-    },
-    frequency: {
-      type: Number,
-      default: 0,
-    },
-    triggerDate: {
-      type: String,
-      default: null,
-    },
-    limited: {
-      type: Boolean,
-      default: false,
-    },
-  },
+const { t, locale } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  setup() {
-    const { t, locale } = useI18n();
-    return { v$: useVuelidate(), t, locale };
-  },
+const isActive = ref(false);
+const errorMessage = ref('');
+const frequencyInput = ref(0);
+const nextTriggerDate = ref<string | null>(null);
+const stateInput = ref(false);
+const showUpdateModal = ref(false);
 
-  validations() {
-    return {
-      frequencyInput: {
-        required,
-        numeric,
-      },
-    };
-  },
-
-  data() {
-    return {
-      isActive: false,
-      errorMessage: '',
-      frequencyInput: 0,
-      nextTriggerDate: null,
-      stateInput: false,
-      showUpdateModal: false,
-    };
-  },
-
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
-
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      this.isActive = (this.frequency > 0);
-
-      // record initial values when the component loads so we can
-      // put those values back if user puts wrong values when updating
-      // the counter
-      this.stateInput = this.isActive;
-      this.frequencyInput = this.frequency ?? 0;
-      this.nextTriggerDate = this.triggerDate;
-    },
-
-    formatDate(dateAsString) {
-      moment.locale(this.locale);
-      moment.tz.setDefault('UTC');
-      var date = moment.tz(moment(dateAsString), this.$root.timezone);
-      return date.format('LL');
-    },
-
-    showUpdate() {
-      this.errorMessage = '';
-      this.showUpdateModal = true;
-    },
-
-    closeModal() {
-      this.showUpdateModal = false;
-    },
-
-    update() {
-      this.errorMessage = '';
-
-      // check if you need a subscription to access this feature
-      if (this.limited) {
-        this.errorMessage = this.t('people.stay_in_touch_premium');
-        return;
-      }
-
-      this.v$.$touch();
-
-      if (this.v$.$invalid) {
-        return;
-      }
-
-      axios.post('people/' + this.hash + '/stayintouch',   {frequency: this.frequencyInput, state: this.stateInput})
-        .then(response => {
-          this.showUpdateModal = false;
-          this.isActive = this.stateInput;
-          this.nextTriggerDate = response.data.trigger_date;
-
-          this.$notify({
-            group: 'main',
-            title: this.t('app.default_save_success'),
-            text: '',
-            width: '500px',
-            type: 'success'
-          });
-        })
-        .catch(error => {
-          this.errorMessage = this.t('app.error_save');
-        });
-    },
-
-    onInput(value) {
-      this.stateInput = value > 0;
-    }
-  }
+const rules = {
+  frequencyInput: { required, numeric },
 };
+
+const v$ = useVuelidate(rules, { frequencyInput });
+
+onMounted(() => {
+  isActive.value = props.frequency > 0;
+  stateInput.value = isActive.value;
+  frequencyInput.value = props.frequency ?? 0;
+  nextTriggerDate.value = props.triggerDate;
+});
+
+function formatDate(dateAsString: string | null): string {
+  if (!dateAsString) return '';
+  moment.locale(typeof locale.value === 'string' ? locale.value : 'en');
+  moment.tz.setDefault('UTC');
+  const date = moment.tz(moment(dateAsString), bootTimezone ?? 'UTC');
+  return date.format('LL');
+}
+
+function showUpdate() {
+  errorMessage.value = '';
+  showUpdateModal.value = true;
+}
+
+function closeModal() {
+  showUpdateModal.value = false;
+}
+
+async function update() {
+  errorMessage.value = '';
+
+  if (props.limited) {
+    errorMessage.value = t('people.stay_in_touch_premium');
+    return;
+  }
+
+  v$.value.$touch();
+
+  if (v$.value.$invalid) {
+    return;
+  }
+
+  try {
+    const response = await axios.post('people/' + props.hash + '/stayintouch', {
+      frequency: frequencyInput.value,
+      state: stateInput.value,
+    });
+    showUpdateModal.value = false;
+    isActive.value = stateInput.value;
+    nextTriggerDate.value = response.data.trigger_date;
+    notify({
+      group: 'main',
+      title: t('app.default_save_success'),
+      text: '',
+      type: 'success',
+    });
+  } catch {
+    errorMessage.value = t('app.error_save');
+  }
+}
+
+function onInput(value: number) {
+  stateInput.value = value > 0;
+}
 </script>

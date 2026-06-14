@@ -126,15 +126,16 @@ interface FamilyContact {
 
 interface GiftRecord {
   id: number;
-  status: 'idea' | 'offered' | 'received';
+  status: string;
+  name: string;
   date?: string | null;
-  name?: string;
-  comment?: string;
-  url?: string;
-  amount?: number;
+  comment?: string | null;
+  url?: string | null;
+  amount?: number | null;
   amount_with_currency?: string;
-  recipient?: { complete_name?: string };
-  photos?: { id: number; link: string }[];
+  recipient?: { id?: number; complete_name?: string } | null;
+  contact?: { id: number };
+  photos: { id: number; link: string }[];
   contact_id?: number;
   edit?: boolean;
 }

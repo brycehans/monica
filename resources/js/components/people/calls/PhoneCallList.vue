@@ -122,7 +122,7 @@
       <div v-for="call in calls" :key="call.id" v-cy-name="'call-body-'+call.id" class="ba br2 b--black-10 br--top w-100 mb2">
         <div v-show="editCallId !== call.id" class="pa2">
           <span v-if="!call.content">
-            {{ t('people.call_blank_desc', { name: call.contact.first_name }) }}
+            {{ t('people.call_blank_desc', { name: call.contact?.first_name ?? '' }) }}
           </span>
           <span v-if="call.content" dir="auto" class="markdown" v-html="compiledMarkdown(call.content)"></span>
         </div>
@@ -254,171 +254,178 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted, getCurrentInstance } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import moment from 'moment';
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
 import Emotion from '../Emotion.vue';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
+import { useNotify } from '../../../composables/useNotify';
+import { locale as bootLocale } from '../../../boot';
 
-export default {
-  components: {
-    Emotion,
+interface EmotionRecord {
+  id: number;
+  name: string;
+}
+
+interface Call {
+  id: number;
+  content: string;
+  called_at: string;
+  contact_called: boolean;
+  emotions: EmotionRecord[];
+  contact?: { first_name?: string };
+}
+
+interface LastCalledInstance {
+  getLastCalled: () => void;
+}
+
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    name?: string;
+  }>(),
+  {
+    hash: '',
+    name: '',
   },
+);
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    name: {
-      type: String,
-      default: '',
-    },
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
+const locale = bootLocale;
+const instance = getCurrentInstance();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const calls = ref<Call[]>([]);
+const displayLogCall = ref(false);
+const todayDate = ref('');
+const editCallId = ref(0);
+const destroyCallId = ref(0);
+const chosenEmotions = ref<EmotionRecord[]>([]);
 
-  data() {
-    return {
-      calls: [],
-      displayLogCall: false,
-      todayDate: '',
-      editCallId: 0,
-      destroyCallId: 0,
-      chosenEmotions: [],
-      newCall: {
-        content: '',
-        called_at: '',
-        contact_called: false,
-        emotions: [],
-      },
-      editCall: {
-        content: '',
-        contact_called: false,
-        emotions: [],
-      }
-    };
-  },
+const newCall = reactive<{
+  content: string;
+  called_at: string;
+  contact_called: boolean;
+  emotions: number[];
+}>({
+  content: '',
+  called_at: '',
+  contact_called: false,
+  emotions: [],
+});
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    },
-    locale() {
-      return this.$root.locale;
-    }
-  },
+const editCall = reactive<{
+  content: string;
+  called_at?: string;
+  contact_called: boolean;
+  emotions: number[];
+}>({
+  content: '',
+  contact_called: false,
+  emotions: [],
+});
 
-  mounted() {
-    this.prepareComponent(this.hash);
-  },
+onMounted(async () => {
+  await getCalls();
+  todayDate.value = moment().format('YYYY-MM-DD');
+  newCall.called_at = todayDate.value;
+});
 
-  methods: {
-    prepareComponent(hash) {
-      this.getCalls();
-      this.todayDate = moment().format('YYYY-MM-DD');
-      this.newCall.called_at = this.todayDate;
-    },
+function formatMomentLL(date: string): string {
+  return moment.utc(date).format('LL');
+}
 
-    formatMomentLL(date) {
-      return moment.utc(date).format('LL');
-    },
+function compiledMarkdown(text: string | null | undefined): string {
+  return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text) as string) : '';
+}
 
-    compiledMarkdown (text) {
-      return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text)) : '';
-    },
+function resetFields() {
+  newCall.content = '';
+  newCall.called_at = todayDate.value;
+}
 
-    resetFields() {
-      this.newCall.content = '';
-      this.newCall.called_at = this.todayDate;
-    },
+async function getCalls() {
+  const response = await axios.get('people/' + props.hash + '/calls');
+  calls.value = response.data.data as Call[];
+}
 
-    getCalls() {
-      axios.get('people/' + this.hash + '/calls')
-        .then(response => {
-          this.calls = response.data.data;
-        });
-    },
+async function store() {
+  await axios.post('people/' + props.hash + '/calls', newCall);
+  await getCalls();
+  resetFields();
+  displayLogCall.value = false;
+  chosenEmotions.value = [];
+  updateLastCalled();
+  notify({
+    group: 'main',
+    title: t('people.calls_add_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-    store() {
-      axios.post('people/' + this.hash + '/calls', this.newCall)
-        .then(response => {
-          this.getCalls();
-          this.resetFields();
-          this.displayLogCall = false;
-          this.chosenEmotions = [];
-          this.updateLastCalled();
+async function update() {
+  await axios.put('people/' + props.hash + '/calls/' + editCallId.value, editCall);
+  await getCalls();
+  editCallId.value = 0;
+  chosenEmotions.value = [];
+  updateLastCalled();
+  notify({
+    group: 'main',
+    title: t('app.default_save_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-          this.$notify({
-            group: 'main',
-            title: this.t('people.calls_add_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
+function updateLastCalled() {
+  // Called from axios await chains — if the parent (contact page) has
+  // unmounted between request and response, the parent ref is gone.
+  // Same root cause as #743.
+  const parent = instance?.parent;
+  const refs = parent?.refs as Record<string, LastCalledInstance | undefined> | undefined;
+  refs?.lastCalledAttribute?.getLastCalled();
+}
 
-    update() {
-      axios.put('people/' + this.hash + '/calls/' + this.editCallId, this.editCall)
-        .then(response => {
-          this.getCalls();
-          this.editCallId = 0;
-          this.chosenEmotions = [];
-          this.updateLastCalled();
+function showEditBox(call: Call) {
+  editCallId.value = call.id;
+  editCall.content = call.content;
+  editCall.contact_called = call.contact_called;
+  editCall.called_at = moment.utc(call.called_at).format('YYYY-MM-DD');
+}
 
-          this.$notify({
-            group: 'main',
-            title: this.t('app.default_save_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
+function updateDate(updatedContent: string) {
+  newCall.called_at = updatedContent;
+}
 
-    updateLastCalled() {
-      // Called from axios .then handlers — if the parent (contact page) has
-      // unmounted between request and response, $parent or its refs are gone.
-      // Same root cause as #743: per-instance state is cleared at unmount.
-      this.$parent?.$refs?.lastCalledAttribute?.getLastCalled();
-    },
+function showDestroyCall(call: Call) {
+  destroyCallId.value = call.id;
+}
 
-    showEditBox(call) {
-      this.editCallId = call.id;
-      this.editCall.content = call.content;
-      this.editCall.contact_called = call.contact_called;
-      this.editCall.called_at = moment.utc(call.called_at).format('YYYY-MM-DD');
-    },
+async function destroyCall(call: Call) {
+  await axios.delete('people/' + props.hash + '/calls/' + destroyCallId.value);
+  const idx = calls.value.indexOf(call);
+  if (idx >= 0) calls.value.splice(idx, 1);
+  updateLastCalled();
+}
 
-    updateDate(updatedContent) {
-      this.newCall.called_at = updatedContent;
-    },
+function updateEditCallContent(content: string) {
+  editCall.content = content;
+}
 
-    showDestroyCall(call) {
-      this.destroyCallId = call.id;
-    },
-
-    destroyCall(call) {
-      axios.delete('people/' + this.hash + '/calls/' + this.destroyCallId)
-        .then(response => {
-          this.calls.splice(this.calls.indexOf(call), 1);
-          this.updateLastCalled();
-        });
-    },
-
-    updateEmotionsList: function(emotions) {
-      this.chosenEmotions = emotions;
-      this.newCall.emotions = [];
-      this.editCall.emotions = [];
-
-      // filter the list of emotions to populate a new array
-      // containing only the emotion ids and not the entire objetcs
-      for (let i = 0; i < this.chosenEmotions.length; i++) {
-        this.newCall.emotions.push(this.chosenEmotions[i].id);
-        this.editCall.emotions.push(this.chosenEmotions[i].id);
-      }
-    }
+function updateEmotionsList(emotions: EmotionRecord[]) {
+  chosenEmotions.value = emotions;
+  newCall.emotions = [];
+  editCall.emotions = [];
+  for (let i = 0; i < chosenEmotions.value.length; i++) {
+    newCall.emotions.push(chosenEmotions.value[i].id);
+    editCall.emotions.push(chosenEmotions.value[i].id);
   }
-};
+}
 </script>

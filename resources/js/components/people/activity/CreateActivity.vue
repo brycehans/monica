@@ -124,174 +124,180 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import moment from 'moment';
 import ActivityTypeList from './ActivityTypeList.vue';
 import Emotion from '../Emotion.vue';
 import FormErrors from '../../partials/FormErrors.vue';
 import Participant from '../Participant.vue';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
+import { useNotify } from '../../../composables/useNotify';
+import { locale as bootLocale } from '../../../boot';
 
-export default {
-  components: {
-    ActivityTypeList,
-    Emotion,
-    FormErrors,
-    Participant,
+interface EmotionRecord {
+  id: number;
+  name: string;
+}
+
+interface Attendee {
+  id: number;
+  hash_id: string;
+  complete_name: string;
+}
+
+interface ActivityRecord {
+  id: number;
+  summary: string;
+  description?: string;
+  happened_at: string;
+  emotions: EmotionRecord[];
+  activity_type?: { id: number; name?: string };
+  attendees: { total?: number; contacts: Attendee[] };
+  edit?: boolean;
+}
+
+interface ParticipantRecord {
+  id: number;
+  name: string;
+}
+
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    contactId?: number;
+    name?: string;
+    activity?: ActivityRecord | null;
+  }>(),
+  {
+    hash: '',
+    contactId: 0,
+    name: '',
+    activity: null,
   },
+);
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    contactId: {
-      type: Number,
-      default: 0,
-    },
-    name: {
-      type: String,
-      default: '',
-    },
-    activity: {
-      type: Object,
-      default: null,
-    },
-  },
+const emit = defineEmits<{
+  (e: 'update', value: ActivityRecord): void;
+  (e: 'cancel'): void;
+}>();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
+const locale = bootLocale;
 
-  data() {
-    return {
-      displayDescription: false,
-      displayEmotions: false,
-      displayCategory: false,
-      displayParticipants: false,
-      newActivity: {
-        summary: '',
-        description: '',
-        happened_at: '',
-        emotions: [],
-        activity_type_id: null,
-        contacts: [],
-      },
-      todayDate: '',
-      initialEmotions: [],
-      participants: [],
-      errors: [],
-    };
-  },
+const displayDescription = ref(false);
+const displayEmotions = ref(false);
+const displayCategory = ref(false);
+const displayParticipants = ref(false);
 
-  computed: {
-    locale() {
-      return this.$root.locale;
-    },
+const newActivity = reactive<{
+  summary: string;
+  description: string;
+  happened_at: string;
+  emotions: number[];
+  activity_type_id: number | null;
+  contacts: number[];
+}>({
+  summary: '',
+  description: '',
+  happened_at: '',
+  emotions: [],
+  activity_type_id: null,
+  contacts: [],
+});
 
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+const todayDate = ref('');
+const initialEmotions = ref<EmotionRecord[]>([]);
+const participants = ref<ParticipantRecord[]>([]);
+const errors = ref<string[]>([]);
 
-  watch: {
-    participants(value) {
-      this.newActivity.contacts = _.map(value, p => p.id);
-    }
-  },
+watch(participants, (value) => {
+  newActivity.contacts = value.map((p) => p.id);
+});
 
-  mounted() {
-    this.prepareComponent();
-  },
+onMounted(() => {
+  todayDate.value = moment().format('YYYY-MM-DD');
+  resetFields();
+});
 
-  methods: {
-    prepareComponent() {
-      this.todayDate = moment().format('YYYY-MM-DD');
-      this.resetFields();
-    },
+function updateDescription(updatedDescription: string) {
+  newActivity.description = updatedDescription;
+}
 
-    updateDescription(updatedDescription) {
-      this.newActivity.description = updatedDescription;
-    },
+function updateEmotionsList(emotions: EmotionRecord[]) {
+  newActivity.emotions = emotions.map((emotion) => emotion.id);
+}
 
-    resetFields() {
-      if (this.activity) {
-        this.initialEmotions = JSON.parse(JSON.stringify(this.activity.emotions));
-        this.newActivity.summary = this.activity.summary;
-        this.newActivity.description = this.activity.description;
-        this.newActivity.happened_at = this.activity.happened_at;
-        this.updateEmotionsList(this.activity.emotions);
-        this.newActivity.activity_type_id = this.activity.activity_type ? this.activity.activity_type.id : null;
-        this.participants = this.activity.attendees.contacts.map(attendee => {
-          return {
-            id: attendee.id,
-            name: attendee.complete_name,
-          };
-        });
-      } else {
-        this.initialEmotions = [];
-        this.newActivity.summary = '';
-        this.newActivity.description = '';
-        this.newActivity.happened_at = this.todayDate;
-        this.newActivity.emotions = [];
-        this.newActivity.activity_type_id = null;
-        this.participants = [];
-      }
-      this.displayDescription = this.newActivity.description ? this.newActivity.description !== '' : false;
-      this.displayEmotions = this.newActivity.emotions && this.newActivity.emotions.length > 0;
-      this.displayCategory = this.newActivity.activity_type_id !== null;
-      this.displayParticipants = this.participants.length > 0;
-      this.errors = [];
-    },
-
-    close() {
-      this.resetFields();
-      this.$emit('cancel');
-    },
-
-    store() {
-      const method = this.activity ? 'put' : 'post';
-      const url = this.activity ? 'activities/'+this.activity.id : 'activities';
-
-      if (! this.newActivity.contacts.includes(this.contactId)) {
-        this.newActivity.contacts.push(this.contactId);
-      }
-
-      axios[method](url, this.newActivity)
-        .then(response => {
-          this.resetFields();
-          this.$emit('update', response.data.data);
-
-          this.$notify({
-            group: 'main',
-            title: this.t('people.activities_add_success'),
-            text: '',
-            type: 'success'
-          });
-        })
-        .catch(error => {
-          this._errorHandle(error);
-        });
-    },
-
-    updateParticipant: function (participants) {
-      this.participants = participants;
-    },
-
-    updateEmotionsList: function(emotions) {
-      // filter the list of emotions to populate a new array
-      // containing only the emotion ids and not the entire objetcs
-      this.newActivity.emotions = _.map(emotions, emotion => emotion.id);
-    },
-
-    _errorHandle(error) {
-      if (error.response && typeof error.response.data === 'object') {
-        this.errors = _.flatten(_.toArray(error.response.data));
-      } else {
-        this.errors = [this.t('app.error_try_again'), error.message];
-      }
-    },
+function resetFields() {
+  if (props.activity) {
+    initialEmotions.value = JSON.parse(JSON.stringify(props.activity.emotions));
+    newActivity.summary = props.activity.summary;
+    newActivity.description = props.activity.description ?? '';
+    newActivity.happened_at = props.activity.happened_at;
+    updateEmotionsList(props.activity.emotions);
+    newActivity.activity_type_id = props.activity.activity_type ? props.activity.activity_type.id : null;
+    participants.value = props.activity.attendees.contacts.map((attendee) => ({
+      id: attendee.id,
+      name: attendee.complete_name,
+    }));
+  } else {
+    initialEmotions.value = [];
+    newActivity.summary = '';
+    newActivity.description = '';
+    newActivity.happened_at = todayDate.value;
+    newActivity.emotions = [];
+    newActivity.activity_type_id = null;
+    participants.value = [];
   }
-};
+  displayDescription.value = newActivity.description ? newActivity.description !== '' : false;
+  displayEmotions.value = newActivity.emotions && newActivity.emotions.length > 0;
+  displayCategory.value = newActivity.activity_type_id !== null;
+  displayParticipants.value = participants.value.length > 0;
+  errors.value = [];
+}
+
+function close() {
+  resetFields();
+  emit('cancel');
+}
+
+async function store() {
+  const method: 'put' | 'post' = props.activity ? 'put' : 'post';
+  const url = props.activity ? 'activities/' + props.activity.id : 'activities';
+
+  if (!newActivity.contacts.includes(props.contactId)) {
+    newActivity.contacts.push(props.contactId);
+  }
+
+  try {
+    const response = await axios[method](url, newActivity);
+    resetFields();
+    emit('update', response.data.data);
+    notify({
+      group: 'main',
+      title: t('people.activities_add_success'),
+      text: '',
+      type: 'success',
+    });
+  } catch (error: unknown) {
+    _errorHandle(error);
+  }
+}
+
+function updateParticipant(value: ParticipantRecord[]) {
+  participants.value = value;
+}
+
+function _errorHandle(error: unknown) {
+  const e = error as { response?: { data?: unknown }; message?: string };
+  if (e.response && typeof e.response.data === 'object' && e.response.data !== null) {
+    errors.value = Object.values(e.response.data ?? {}).flat() as string[];
+  } else {
+    errors.value = [t('app.error_try_again'), e.message ?? ''];
+  }
+}
 </script>

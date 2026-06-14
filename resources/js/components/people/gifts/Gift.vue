@@ -80,14 +80,14 @@ interface Photo {
 }
 
 interface Gift {
-  url?: string;
+  url?: string | null;
   name?: string;
   date?: string | null;
-  recipient?: { complete_name?: string };
+  recipient?: { complete_name?: string } | null;
   photos?: Photo[];
-  amount?: number;
+  amount?: number | null;
   amount_with_currency?: string;
-  comment?: string;
+  comment?: string | null;
 }
 
 defineProps<{

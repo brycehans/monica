@@ -134,11 +134,11 @@ function handleFileUpload(event: Event) {
   }
 }
 
-async function forceFileUpload() {
+async function forceFileUpload(): Promise<unknown> {
   const f = fileInput.value?.files?.[0];
-  if (f === undefined) return;
+  if (f === undefined) return undefined;
   file.value = f;
-  await submitFile();
+  return submitFile();
 }
 
 async function submitFile() {

@@ -11,12 +11,12 @@
         📄 {{ t('people.photo_list_title') }}
         <span v-if="reachLimit === 'false'" class="fr relative" style="top: -7px;">
           <a v-if="!onUpload" class="btn" href=""
-             @click.prevent="() => { onUpload = true; $refs.upload.showUploadZone(); }"
+             @click.prevent="onShowUpload"
           >
             {{ t('people.photo_list_cta') }}
           </a>
           <a v-else class="btn" href=""
-             @click.prevent="() => { onUpload = false; $refs.upload.cancelUpload(); }"
+             @click.prevent="onCancelUpload"
           >
             {{ t('app.cancel') }}
           </a>
@@ -42,7 +42,7 @@
       ref="upload"
       :hash="hash"
       :contact-id="contactId"
-      @newphoto="handleNewPhoto($event)"
+      @newphoto="handleNewPhoto"
     />
 
     <!-- LIST OF PHOTO -->
@@ -57,10 +57,10 @@
             </div>
             <div class="pt2">
               <ul>
-                <li v-show="currentPhotoIdAsAvatar === photo.id">
+                <li v-show="String(currentPhotoIdAsAvatar) === String(photo.id)">
                   🤩 {{ t('people.photo_current_profile_pic') }}
                 </li>
-                <li v-show="currentPhotoIdAsAvatar !== photo.id">
+                <li v-show="String(currentPhotoIdAsAvatar) !== String(photo.id)">
                   <a class="pointer" @click.prevent="makeProfilePicture(photo)">
                     {{ t('people.photo_make_profile_pic') }}
                   </a>
@@ -111,175 +111,130 @@
   </div>
 </template>
 
-<script>
-
+<script setup lang="ts">
+import { ref, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import PhotoUpload from './PhotoUpload.vue';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
+import { useNotify } from '../../../composables/useNotify';
 
-export default {
+interface PhotoEntity {
+  id: number;
+  link: string;
+}
 
-  components: {
-    PhotoUpload,
+interface PhotoUploadInstance {
+  showUploadZone: () => void;
+  cancelUpload: () => void;
+}
+
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    contactId?: number;
+    reachLimit?: string;
+    currentPhotoIdAsAvatar?: string;
+  }>(),
+  {
+    hash: '',
+    contactId: 0,
+    reachLimit: '',
+    currentPhotoIdAsAvatar: '',
   },
+);
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    contactId: {
-      type: Number,
-      default: 0,
-    },
-    reachLimit: {
-      type: String,
-      default: '',
-    },
-    currentPhotoIdAsAvatar: {
-      type: String,
-      default: '',
-    },
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const upload = useTemplateRef<PhotoUploadInstance>('upload');
 
-  data() {
-    return {
-      photos: [],
-      file: '',
-      uploadPercentage: 0,
-      confirmDestroyPhotoId: 0,
-      showModal: false,
-      url: '',
-      onUpload: false,
-      canShowPrev: false,
-      canShowNext: false
-    };
-  },
+const photos = ref<PhotoEntity[]>([]);
+const confirmDestroyPhotoId = ref(0);
+const showModal = ref(false);
+const url = ref('');
+const onUpload = ref(false);
+const canShowPrev = ref(false);
+const canShowNext = ref(false);
+const modalPhotoRef = ref<PhotoEntity | null>(null);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+onMounted(getPhotos);
 
-  mounted() {
-    this.prepareComponent();
-  },
+async function getPhotos() {
+  const response = await axios.get('people/' + props.hash + '/photos');
+  photos.value = response.data.data as PhotoEntity[];
+}
 
-  methods: {
+function onShowUpload() {
+  onUpload.value = true;
+  upload.value?.showUploadZone();
+}
 
-    prepareComponent() {
-      this.getPhotos();
-    },
+function onCancelUpload() {
+  onUpload.value = false;
+  upload.value?.cancelUpload();
+}
 
-    getPhotos() {
-      axios.get('people/' + this.hash + '/photos')
-        .then(response => {
-          this.photos = response.data.data;
-        });
-    },
+function handleNewPhoto(photo: unknown) {
+  const p = photo as PhotoEntity;
+  notify({
+    group: 'main',
+    title: t('app.default_save_success'),
+    text: '',
+    type: 'success',
+  });
+  photos.value.push(p);
+}
 
-    handleNewPhoto(photo) {
-      this.$notify({
-        group: 'main',
-        title: this.t('app.default_save_success'),
-        text: '',
-        type: 'success'
-      });
+async function deletePhoto(photo: PhotoEntity) {
+  await axios.delete('people/' + props.hash + '/photos/' + photo.id);
+  const idx = photos.value.indexOf(photo);
+  if (idx >= 0) photos.value.splice(idx, 1);
+  notify({
+    group: 'main',
+    title: t('app.default_save_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-      this.photos.push(photo);
-    },
+async function makeProfilePicture(photo: PhotoEntity) {
+  await axios.post('people/' + props.hash + '/makeProfilePicture/' + photo.id);
+  window.location.href = 'people/' + props.hash;
+}
 
-    deletePhoto(photo) {
-      axios.delete( 'people/' + this.hash + '/photos/' + photo.id)
-        .then(response => {
-          this.photos.splice(this.photos.indexOf(photo), 1);
-          this.$notify({
-            group: 'main',
-            title: this.t('app.default_save_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
+function modalPhoto(photo: PhotoEntity) {
+  modalPhotoRef.value = photo;
+  url.value = photo.link;
+  canShowNext.value = modalHasNext();
+  canShowPrev.value = modalHasPrev();
+  showModal.value = true;
+}
 
-    makeProfilePicture(photo) {
-      axios.post( 'people/' + this.hash + '/makeProfilePicture/' + photo.id)
-        .then(response => {
-          window.location.href = 'people/' + this.hash;
-        });
-    },
+function modalHasNext() {
+  if (!modalPhotoRef.value) return false;
+  const index = photos.value.indexOf(modalPhotoRef.value);
+  return index < photos.value.length - 1;
+}
 
-    modalPhoto(photo) {
-      this.modal_photo = photo;
-      this.url = photo.link;
+function modalHasPrev() {
+  if (!modalPhotoRef.value) return false;
+  const index = photos.value.indexOf(modalPhotoRef.value);
+  return index > 0;
+}
 
-      if(this.modalHasNext()) {
-        this.canShowNext = true;
-      } else {
-        this.canShowNext = false;
-      }
+function displayNext() {
+  if (!modalPhotoRef.value) return;
+  const index = photos.value.indexOf(modalPhotoRef.value);
+  const photo = photos.value[index + 1];
+  if (photo) modalPhoto(photo);
+}
 
-      if(this.modalHasPrev()) {
-        this.canShowPrev = true;
-      } else {
-        this.canShowPrev = false;
-      }
-
-      this.showModal = true;
-    },
-
-    /**
-     * checks whether the there is a photo to the left of the current
-     * photo shown in the modal
-     *
-     * @return {Boolean}
-     */
-    modalHasNext() {
-      const index = this.photos.indexOf(this.modal_photo);
-
-      return index < this.photos.length-1;
-    },
-
-    /**
-     * checks whether the there is a photo to the right of the current
-     * photo shown in the modal
-     *
-     * @return {Boolean}
-     */
-    modalHasPrev() {
-      const index = this.photos.indexOf(this.modal_photo);
-
-      return index > 0;
-    },
-
-    /**
-     * set photo in modal located to the right of current modal photo
-     * from our photos list
-     */
-    displayNext() {
-      const index = this.photos.indexOf(this.modal_photo);
-
-      const photo = this.photos[index+1];
-
-      this.modalPhoto(photo);
-    },
-
-    /**
-     * set photo in modal located to the left of current modal photo
-     * from our photos list
-     */
-    displayPrev() {
-      const index = this.photos.indexOf(this.modal_photo);
-
-      const photo = this.photos[index-1];
-
-      this.modalPhoto(photo);
-    }
-  }
-};
+function displayPrev() {
+  if (!modalPhotoRef.value) return;
+  const index = photos.value.indexOf(modalPhotoRef.value);
+  const photo = photos.value[index - 1];
+  if (photo) modalPhoto(photo);
+}
 </script>

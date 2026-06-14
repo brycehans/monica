@@ -244,189 +244,192 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-export default {
+interface Country {
+  id: number | string;
+  name: string;
+}
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
+interface AddressForm {
+  id?: number | string;
+  name: string;
+  street: string;
+  city: string;
+  province: string;
+  postal_code: string;
+  country: string | number;
+  latitude: number | string;
+  longitude: number | string;
+  errors?: string[];
+}
+
+interface ContactAddress extends AddressForm {
+  id: number;
+  edit?: boolean;
+  // Derived properties returned by the server-side resource.
+  address?: string;
+  googleMapAddress?: string;
+  googleMapAddressLatitude?: string;
+}
+
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+  }>(),
+  {
+    hash: '',
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  data() {
-    return {
-      contactAddresses: [],
-      countries: [],
+const contactAddresses = ref<ContactAddress[]>([]);
+const countries = ref<Country[]>([]);
 
-      editMode: false,
-      addMode: false,
+const editMode = ref(false);
+const addMode = ref(false);
 
-      createForm: {
-        name: '',
-        street: '',
-        city: '',
-        province: '',
-        postal_code: '',
-        country: '',
-        latitude: 0,
-        longitude: 0,
-      },
+function blankForm(): AddressForm {
+  return {
+    name: '',
+    street: '',
+    city: '',
+    province: '',
+    postal_code: '',
+    country: '',
+    latitude: 0,
+    longitude: 0,
+  };
+}
 
-      updateForm: {
-        id: '',
-        name: '',
-        street: '',
-        city: '',
-        province: '',
-        postal_code: '',
-        country: '',
-        latitude: 0,
-        longitude: 0,
-      },
-    };
-  },
+const createForm = reactive<AddressForm>(blankForm());
+const updateForm = reactive<AddressForm>({ id: '', ...blankForm() });
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
+onMounted(async () => {
+  await Promise.all([getAddresses(), getCountries()]);
+});
+
+async function getAddresses() {
+  const response = await axios.get('people/' + props.hash + '/addresses');
+  contactAddresses.value = response.data as ContactAddress[];
+}
+
+async function getCountries() {
+  const response = await axios.get('countries');
+  countries.value = (response.data as Array<{ id: number; country: string }>).map((country) => ({
+    id: country.id,
+    name: country.country,
+  }));
+}
+
+function reinitialize() {
+  Object.assign(createForm, blankForm());
+}
+
+function resetState() {
+  editMode.value = false;
+  addMode.value = false;
+}
+
+function toggleAdd() {
+  addMode.value = true;
+  editMode.value = true;
+  reinitialize();
+}
+
+function toggleEditExcept(contactAddressId: number) {
+  contactAddresses.value
+    .filter((a) => a.id !== contactAddressId)
+    .forEach((a) => {
+      a.edit = false;
+    });
+}
+
+function toggleEdit(contactAddress: ContactAddress) {
+  addMode.value = false;
+  toggleEditExcept(contactAddress.id);
+  contactAddress.edit = !contactAddress.edit;
+  updateForm.id = contactAddress.id;
+  updateForm.name = contactAddress.name;
+  updateForm.street = contactAddress.street;
+  updateForm.city = contactAddress.city;
+  updateForm.province = contactAddress.province;
+  updateForm.postal_code = contactAddress.postal_code;
+  updateForm.country = contactAddress.country;
+  updateForm.latitude = contactAddress.latitude;
+  updateForm.longitude = contactAddress.longitude;
+}
+
+async function persistClient(
+  method: 'post' | 'put' | 'delete',
+  uri: string,
+  form: AddressForm,
+): Promise<unknown> {
+  form.errors = [];
+  try {
+    if (method === 'delete') {
+      return await axios.delete(uri);
     }
-  },
-
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      this.getAddresses();
-      this.getCountries();
-    },
-
-    getAddresses() {
-      axios.get('people/' + this.hash + '/addresses')
-        .then(response => {
-          this.contactAddresses = response.data;
-        });
-    },
-
-    getCountries() {
-      axios.get('countries')
-        .then(response => {
-          this.countries = _.map(response.data, function(country) {
-            return {
-              id: country.id,
-              name: country.country
-            };
-          });
-        });
-    },
-
-    reinitialize() {
-      this.createForm.name = '';
-      this.createForm.street = '';
-      this.createForm.city = '';
-      this.createForm.province = '';
-      this.createForm.postal_code = '';
-      this.createForm.country = '';
-      this.createForm.latitude = '';
-      this.createForm.longitude = '';
-    },
-
-    resetState() {
-      this.editMode = false;
-      this.addMode = false;
-    },
-
-    toggleAdd() {
-      this.addMode = true;
-      this.editMode = true;
-      this.reinitialize();
-    },
-
-    toggleEdit(contactAddress) {
-      this.addMode = false;
-      this.toggleEditExcept(contactAddress.id);
-      contactAddress.edit = !contactAddress.edit;
-      this.updateForm.id = contactAddress.id;
-      this.updateForm.name = contactAddress.name;
-      this.updateForm.street = contactAddress.street;
-      this.updateForm.city = contactAddress.city;
-      this.updateForm.province = contactAddress.province;
-      this.updateForm.postal_code = contactAddress.postal_code;
-      this.updateForm.country = contactAddress.country;
-      this.updateForm.latitude = contactAddress.latitude;
-      this.updateForm.longitude = contactAddress.longitude;
-    },
-
-    toggleEditExcept(contactAddressId) {
-      _.forEach(_.filter(this.contactAddresses, function (a) {
-        return a.id !== contactAddressId;}
-      ), (a) => {
-        a.edit = false;
-      });
-    },
-
-    store() {
-      var vm = this;
-      this.persistClient(
-        'post', 'people/' + this.hash + '/addresses',
-        this.createForm
-      ).then(response => {
-        vm.contactAddresses.push(response.data);
-      });
-
-      this.addMode = false;
-    },
-
-    update(contactAddress) {
-      var vm = this;
-      contactAddress.edit = !contactAddress.edit;
-      this.persistClient(
-        'put', 'people/' + this.hash + '/addresses/' + contactAddress.id,
-        this.updateForm
-      ).then(response => {
-        vm.contactAddresses[vm.contactAddresses.indexOf(vm.contactAddresses.find(item => item.id === response.data.id))] = response.data;
-      });
-    },
-
-    trash(contactAddress) {
-      var vm = this;
-      this.updateForm.id = contactAddress.id;
-
-      this.persistClient(
-        'delete', 'people/' + this.hash + '/addresses/' + contactAddress.id,
-        this.updateForm
-      ).then(response => {
-        if (response.data.deleted === true) {
-          vm.contactAddresses.splice(vm.contactAddresses.indexOf(vm.contactAddresses.find(item => item.id === response.data.id)), 1);
-        }
-      });
-
-      if (this.contactAddresses.length <= 1) {
-        this.editMode = false;
-      }
-    },
-
-    persistClient(method, uri, form) {
-      form.errors = {};
-
-      return axios[method](uri, form)
-        .catch(error => {
-          if (typeof error.response.data === 'object') {
-            form.errors = _.flatten(_.toArray(error.response.data));
-          } else {
-            form.errors = [this.t('app.error_try_again')];
-          }
-        });
-    },
+    return await axios[method](uri, form);
+  } catch (error: unknown) {
+    const data = (error as { response?: { data?: unknown } })?.response?.data;
+    if (data && typeof data === 'object') {
+      form.errors = Object.values(data ?? {}).flat() as string[];
+    } else {
+      form.errors = [t('app.error_try_again')];
+    }
+    return undefined;
   }
-};
+}
+
+async function store() {
+  const response = (await persistClient(
+    'post',
+    'people/' + props.hash + '/addresses',
+    createForm,
+  )) as { data?: ContactAddress } | undefined;
+  if (response?.data) {
+    contactAddresses.value.push(response.data);
+  }
+  addMode.value = false;
+}
+
+async function update(contactAddress: ContactAddress) {
+  contactAddress.edit = !contactAddress.edit;
+  const response = (await persistClient(
+    'put',
+    'people/' + props.hash + '/addresses/' + contactAddress.id,
+    updateForm,
+  )) as { data?: ContactAddress } | undefined;
+  if (response?.data) {
+    const idx = contactAddresses.value.findIndex((item) => item.id === response.data!.id);
+    if (idx >= 0) {
+      contactAddresses.value[idx] = response.data;
+    }
+  }
+}
+
+async function trash(contactAddress: ContactAddress) {
+  updateForm.id = contactAddress.id;
+  const response = (await persistClient(
+    'delete',
+    'people/' + props.hash + '/addresses/' + contactAddress.id,
+    updateForm,
+  )) as { data?: { deleted: boolean; id: number } } | undefined;
+  if (response?.data?.deleted === true) {
+    const idx = contactAddresses.value.findIndex((item) => item.id === response.data!.id);
+    if (idx >= 0) {
+      contactAddresses.value.splice(idx, 1);
+    }
+  }
+  if (contactAddresses.value.length <= 1) {
+    editMode.value = false;
+  }
+}
 </script>

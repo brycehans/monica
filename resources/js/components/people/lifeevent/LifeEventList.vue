@@ -549,106 +549,79 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import CreateLifeEvent from './CreateLifeEvent.vue';
+import { useNotify } from '../../../composables/useNotify';
 
-export default {
+interface SelectOption {
+  id: string | number;
+  name: string;
+}
 
-  components: {
+// LifeEvent payload from the server is deeply dynamic (different fields per
+// life-event-type-specific subtype). Use `any` so the template can address
+// fields without per-shape narrowing.
+type LifeEvent = any;
+
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    years?: SelectOption[];
+    months?: SelectOption[];
+    days?: SelectOption[];
+    contactName?: string;
+  }>(),
+  {
+    hash: '',
+    years: () => [],
+    months: () => [],
+    days: () => [],
+    contactName: '',
   },
+);
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    years: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    },
-    months: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    },
-    days: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    },
-    contactName: {
-      type: String,
-      default: '',
-    },
-  },
+const { t } = useI18n();
+const { notify } = useNotify();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const lifeEvents = ref<LifeEvent[]>([]);
+const lifeEventToDelete = ref<LifeEvent | null>(null);
+const showAdd = ref(false);
+const showDeleteLifeEventModal = ref(false);
 
-  data() {
-    return {
-      lifeEvents: [],
-      lifeEventToDelete: null,
-      showAdd: false,
-      showDeleteLifeEventModal: false,
-    };
-  },
+onMounted(getLifeEvents);
 
-  mounted() {
-    this.prepareComponent();
-  },
+async function getLifeEvents() {
+  const response = await axios.get('people/' + props.hash + '/lifeevents');
+  showAdd.value = false;
+  lifeEvents.value = response.data as LifeEvent[];
+}
 
-  methods: {
-    prepareComponent() {
-      this.getLifeEvents();
-    },
+function updateLifeEventsList(updatedLifeEvent: LifeEvent) {
+  getLifeEvents();
+  window.location.href = 'people/' + props.hash + '#lifeEvent' + updatedLifeEvent.id;
+}
 
-    getLifeEvents() {
-      axios.get('people/' + this.hash + '/lifeevents')
-        .then(response => {
-          this.showAdd = false;
-          this.lifeEvents = response.data;
-        });
-    },
+async function destroy(lifeEvent: LifeEvent) {
+  await axios.delete('lifeevents/' + lifeEvent.id);
+  closeDeleteModal();
+  await getLifeEvents();
+  notify({
+    group: 'main',
+    title: t('people.life_event_delete_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-    /**
-          * @TODO: do not refresh the list from the server, simply add
-          * the new object to the collection
-          */
-    updateLifeEventsList(updatedLifeEvent) {
-      this.getLifeEvents();
-      window.location.href='people/' + this.hash + '#lifeEvent'  + updatedLifeEvent.id;
-    },
+function showDeleteModal(lifeEvent: LifeEvent) {
+  showDeleteLifeEventModal.value = true;
+  lifeEventToDelete.value = lifeEvent;
+}
 
-    destroy(lifeEvent) {
-      axios.delete('lifeevents/' + lifeEvent.id)
-        .then(response => {
-          this.closeDeleteModal();
-          this.getLifeEvents();
-
-          this.$notify({
-            group: 'main',
-            title: this.t('people.life_event_delete_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
-
-    showDeleteModal(lifeEvent) {
-      this.showDeleteLifeEventModal = true;
-      this.lifeEventToDelete = lifeEvent;
-    },
-
-    closeDeleteModal() {
-      this.showDeleteLifeEventModal = false;
-    },
-  }
-};
+function closeDeleteModal() {
+  showDeleteLifeEventModal.value = false;
+}
 </script>
