@@ -7,52 +7,70 @@
 <template>
   <span>
     <img v-if="check"
-         v-tooltip.bottom="contact.complete_name"
+         v-tooltip.bottom="contact?.complete_name"
          :class="['br4 h3 w3 dib tc', imgclass]"
-         :alt="contact.initials"
+         :alt="contact?.initials"
          :src="avatar_url"
          @error="check=false"
     />
     <span v-else
-          v-tooltip.bottom="contact.complete_name"
+          v-tooltip.bottom="contact?.complete_name"
           :class="['br4 h3 w3 dib tc', 'white f3 avatar-padding', imgclass]"
           :style="'background-color: '+ default_avatar_color"
     >
-      {{ contact.initials }}
+      {{ contact?.initials }}
     </span>
   </span>
 </template>
 
-<script>
-export default {
-  props: {
-    contact: {
-      type: Object,
-      default: null,
-    },
-    imgclass: {
-      type: String,
-      default: '',
-    },
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+
+interface AvatarInfo {
+  url?: string;
+  default_avatar_color?: string;
+}
+
+interface ContactInfo {
+  avatar?: AvatarInfo;
+}
+
+interface Contact {
+  initials?: string;
+  complete_name?: string;
+  avatar_url?: string;
+  default_avatar_color?: string;
+  information?: ContactInfo | unknown;
+}
+
+const props = withDefaults(
+  defineProps<{
+    contact?: Contact | null;
+    imgclass?: string;
+  }>(),
+  {
+    contact: null,
+    imgclass: '',
   },
-  data () {
-    return {
-      check: true,
-    };
-  },
-  computed: {
-    avatar_url() {
-      if (_.isObject(this.contact.information)) {
-        return this.contact.information.avatar.url;
-      }
-      return this.contact.avatar_url;
-    },
-    default_avatar_color() {
-      if (_.isObject(this.contact.information)) {
-        return this.contact.information.avatar.default_avatar_color;
-      }
-      return this.contact.default_avatar_color;
-    }
+);
+
+const check = ref(true);
+
+function isContactInfo(value: unknown): value is ContactInfo {
+  return typeof value === 'object' && value !== null;
+}
+
+const avatar_url = computed(() => {
+  if (isContactInfo(props.contact?.information)) {
+    return props.contact?.information.avatar?.url;
   }
-};
+  return props.contact?.avatar_url;
+});
+
+const default_avatar_color = computed(() => {
+  if (isContactInfo(props.contact?.information)) {
+    return props.contact?.information.avatar?.default_avatar_color;
+  }
+  return props.contact?.default_avatar_color;
+});
 </script>

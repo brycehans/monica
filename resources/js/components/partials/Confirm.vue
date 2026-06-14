@@ -24,65 +24,54 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, getCurrentInstance } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-export default {
-
-  props: {
-    name: {
-      type: String,
-      default: '',
-    },
-    title: {
-      type: String,
-      default: '',
-    },
-    message: {
-      type: String,
-      default: '',
-    },
-    linkClass: {
-      type: [String, Array],
-      default: '',
-    },
+const props = withDefaults(
+  defineProps<{
+    name?: string;
+    title?: string;
+    message?: string;
+    linkClass?: string | string[];
+  }>(),
+  {
+    name: '',
+    title: '',
+    message: '',
+    linkClass: '',
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const emit = defineEmits<{
+  (e: 'confirm', value: Event): void;
+}>();
 
-  data() {
-    return {
-      show: false,
-    };
-  },
+const { t } = useI18n();
 
-  computed: {
-    lclass() {
-      return this.linkClass === '' ? 'pointer' : this.linkClass;
-    }
-  },
+const show = ref(false);
 
-  methods: {
-    open() {
-      this.show = true;
-    },
-    close() {
-      this.show = false;
-    },
-    confirm(event) {
-      this.close();
-      // vue-final-modal teleports the modal's submit button out of the
-      // parent form, so the button's native submit no longer fires. The
-      // component's root (`this.$el`) is not teleported and is still
-      // inside the form when one exists. See #727.
-      const form = this.$el.closest('form');
-      if (form) form.submit();
-      this.$emit('confirm', event);
-    }
-  }
+const instance = getCurrentInstance();
 
-};
+const lclass = computed(() => (props.linkClass === '' ? 'pointer' : props.linkClass));
+
+function open() {
+  show.value = true;
+}
+
+function close() {
+  show.value = false;
+}
+
+function confirm(event: Event) {
+  close();
+  // vue-final-modal teleports the modal's submit button out of the parent
+  // form, so the button's native submit no longer fires. The component's
+  // root element is not teleported and is still inside the form when one
+  // exists. See #727.
+  const rootEl = instance?.vnode.el as HTMLElement | undefined;
+  const form = rootEl?.closest('form');
+  if (form) form.submit();
+  emit('confirm', event);
+}
 </script>

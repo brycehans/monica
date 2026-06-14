@@ -7,32 +7,32 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue';
 import Avatarimg from './Avatar.img.vue';
 
-export default {
-  components: {
-    Avatarimg
-  },
+interface Contact {
+  id?: number | string;
+  hash_id?: string;
+  initials?: string;
+  complete_name?: string;
+  avatar_url?: string;
+  default_avatar_color?: string;
+  information?: unknown;
+}
 
-  props: {
-    contact: {
-      type: Object,
-      default: null,
-    },
-    clickable: {
-      type: Boolean,
-      default: true,
-    },
-    imgclass: {
-      type: String,
-      default: '',
-    },
+const props = withDefaults(
+  defineProps<{
+    contact?: Contact | null;
+    clickable?: boolean;
+    imgclass?: string;
+  }>(),
+  {
+    contact: null,
+    clickable: true,
+    imgclass: '',
   },
-  computed: {
-    id() {
-      return this.contact.hash_id ? this.contact.hash_id : this.contact.id;
-    },
-  }
-};
+);
+
+const id = computed(() => (props.contact?.hash_id ? props.contact.hash_id : props.contact?.id));
 </script>

@@ -54,7 +54,7 @@
     @opened="$emit('open')"
     @closed="$emit('close')"
   >
-    <div class="monica-modal__panel" role="dialog" :aria-label="title || null">
+    <div class="monica-modal__panel" role="dialog" :aria-label="title || undefined">
       <h3 v-if="title" class="monica-modal__title">
         {{ title }}
       </h3>
@@ -69,28 +69,33 @@
   </vue-final-modal>
 </template>
 
-<script>
+<script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { VueFinalModal } from 'vue-final-modal';
 
-export default {
-  components: { VueFinalModal },
-
-  props: {
-    modelValue: { type: Boolean, default: false },
-    title: { type: String, default: '' },
-    // When true, the X close link is suppressed and esc / click-outside do
-    // nothing. Use for modals where the only valid exits are explicit Cancel
-    // / Done buttons that run cleanup (see SetAvatar: closing via X would
-    // bypass cancelCrop and leave the uncropped upload in the file input).
-    blocking: { type: Boolean, default: false },
+// When `blocking` is true, the X close link is suppressed and esc /
+// click-outside do nothing. Use for modals where the only valid exits are
+// explicit Cancel / Done buttons that run cleanup (see SetAvatar: closing
+// via X would bypass cancelCrop and leave the uncropped upload in the file
+// input).
+withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    title?: string;
+    blocking?: boolean;
+  }>(),
+  {
+    modelValue: false,
+    title: '',
+    blocking: false,
   },
+);
 
-  emits: ['update:modelValue', 'open', 'close'],
+defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'open'): void;
+  (e: 'close'): void;
+}>();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
-};
+const { t } = useI18n();
 </script>

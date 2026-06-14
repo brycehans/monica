@@ -248,7 +248,7 @@ const createForm = reactive<{
   name: string;
   protocol: string;
   icon: string;
-  errors: string[] | Record<string, string[]>;
+  errors: string[];
 }>({ name: '', protocol: '', icon: '', errors: [] });
 
 const editForm = reactive<{
@@ -256,7 +256,7 @@ const editForm = reactive<{
   name: string;
   protocol: string;
   icon: string;
-  errors: string[] | Record<string, string[]>;
+  errors: string[];
 }>({ id: '', name: '', protocol: '', icon: '', errors: [] });
 
 const showModalCreateContactFieldType = ref(false);
