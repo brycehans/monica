@@ -55,13 +55,13 @@
     <a :href="item.route">
       <img v-if="check"
            :class="className"
-           :src="item.information.avatar.url"
+           :src="item.information?.avatar?.url"
            :alt="item.complete_name"
            @error="check=false"
       />
       <div v-else
            :class="[className, 'avatar-initials']"
-           :style="'background-color: '+item.information.avatar.default_avatar_color"
+           :style="'background-color: '+item.information?.avatar?.default_avatar_color"
       >
         {{ item.initials }}
       </div>
@@ -80,35 +80,34 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-export default {
-  props: {
-    item: {
-      type: Object,
-      required: true,
-      default: null,
-    },
-    withName: {
-      type: Boolean,
-      default: true,
-    },
-    className: {
-      type: String,
-      default: 'avatar',
-    }
-  },
+interface ContactInfo {
+  id: number;
+  name?: string;
+  route?: string;
+  complete_name?: string;
+  initials?: string;
+  information?: {
+    avatar?: { url?: string; default_avatar_color?: string };
+  };
+}
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
+withDefaults(
+  defineProps<{
+    item: ContactInfo;
+    withName?: boolean;
+    className?: string;
+  }>(),
+  {
+    withName: true,
+    className: 'avatar',
   },
+);
 
-  data() {
-    return {
-      check: true,
-    };
-  },
-};
+const { t } = useI18n();
+
+const check = ref(true);
 </script>

@@ -9,50 +9,58 @@
   />
 </template>
 
-<script>
-export default {
-  props: {
-    value: {
-      type: [String, Number],
-      default: '',
-    },
-    title: {
-      type: String,
-      default: '',
-    },
-  },
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue';
+import axios from 'axios';
 
-  data() {
-    return {
-      choosenCategory: '',
-      activityCategories: null,
-    };
-  },
+interface ActivityType {
+  id: string | number;
+  name: string;
+}
 
-  watch: {
-    value(val) {
-      this.choosenCategory = val;
-    },
-  },
+interface ApiCategory {
+  name: string;
+  types: ActivityType[];
+}
 
-  mounted() {
-    this.getActivities().then(() => {
-      this.choosenCategory = this.value;
-    });
-  },
+interface OptGroup {
+  name: string;
+  options: ActivityType[];
+}
 
-  methods: {
-    getActivities() {
-      return axios.get('activityCategories')
-        .then(response => {
-          this.activityCategories = Object.assign({}, _.map(response.data, a => {
-            return {
-              name: a.name,
-              options: a.types,
-            };
-          }));
-        });
-    },
-  }
-};
+const props = withDefaults(
+  defineProps<{
+    value?: string | number;
+    title?: string;
+  }>(),
+  {
+    value: '',
+    title: '',
+  },
+);
+
+defineEmits<{
+  (e: 'input', value: string): void;
+}>();
+
+const choosenCategory = ref<string | number>('');
+const activityCategories = ref<Record<string, OptGroup> | null>(null);
+
+watch(() => props.value, (val) => {
+  choosenCategory.value = val;
+});
+
+onMounted(async () => {
+  await getActivities();
+  choosenCategory.value = props.value;
+});
+
+async function getActivities() {
+  const response = await axios.get('activityCategories');
+  const list: OptGroup[] = (response.data as ApiCategory[]).map((a) => ({
+    name: a.name,
+    options: a.types,
+  }));
+  activityCategories.value = Object.assign({}, list) as unknown as Record<string, OptGroup>;
+}
 </script>

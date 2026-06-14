@@ -67,58 +67,49 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import moment from 'moment-timezone';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
+import { timezone as bootTimezone } from '../../../boot';
 
-export default {
+interface Photo {
+  id: number;
+  link: string;
+}
 
-  components: {
-  },
+interface Gift {
+  url?: string;
+  name?: string;
+  date?: string;
+  recipient?: { complete_name?: string };
+  photos?: Photo[];
+  amount?: number;
+  amount_with_currency?: string;
+  comment?: string;
+}
 
-  props: {
-    gift: {
-      type: Object,
-      default: null,
-    },
-  },
+defineProps<{
+  gift: Gift;
+}>();
 
-  setup() {
-    const { t, locale } = useI18n();
-    return { t, locale };
-  },
+const { t, locale } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  data() {
-    return {
-      comment: false,
-      showModal: false,
-      url: '',
-      showModalPhoto: false,
-    };
-  },
+const comment = ref(false);
+const url = ref('');
+const showModalPhoto = ref(false);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    },
-  },
+function modalPhoto(photo: Photo) {
+  url.value = photo.link;
+  showModalPhoto.value = true;
+}
 
-  methods: {
-
-    modalPhoto(photo) {
-      this.url = photo.link;
-      this.showModalPhoto = true;
-    },
-
-    formatDate(dateAsString) {
-      moment.locale(this.locale);
-      moment.tz.setDefault('UTC');
-
-      var date = moment.tz(moment(dateAsString), this.$root.timezone);
-
-      return date.format('LL');
-    },
-
-  }
-};
+function formatDate(dateAsString: string): string {
+  moment.locale(typeof locale.value === 'string' ? locale.value : 'en');
+  moment.tz.setDefault('UTC');
+  const date = moment.tz(moment(dateAsString), bootTimezone ?? 'UTC');
+  return date.format('LL');
+}
 </script>

@@ -24,44 +24,37 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import moment from 'moment';
+import { useHtmlDir } from '../../../../composables/useHtmlDir';
 
-export default {
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+interface DefaultLifeEvent {
+  name: string;
+  note: string;
+  specific_information: string;
+  happened_at?: string;
+}
 
-  data() {
-    return {
-      defaultEvent: {
-        name: '',
-        note: '',
-        specific_information: '',
-      },
-    };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+const emit = defineEmits<{
+  (e: 'contentChange', value: DefaultLifeEvent): void;
+}>();
 
-  mounted() {
-    this.prepareComponent();
-  },
+const defaultEvent = reactive<DefaultLifeEvent>({
+  name: '',
+  note: '',
+  specific_information: '',
+});
 
-  methods: {
-    prepareComponent() {
-      this.defaultEvent.happened_at = moment().format('YYYY-MM-DD');
-    },
+onMounted(() => {
+  defaultEvent.happened_at = moment().format('YYYY-MM-DD');
+});
 
-    broadcastContentChange() {
-      this.$emit('contentChange', this.defaultEvent);
-    },
-  }
-};
+function broadcastContentChange() {
+  emit('contentChange', defaultEvent);
+}
 </script>

@@ -40,7 +40,7 @@
           :participant-name="participantName"
           :display-trash="displayTrash"
           @updateAuthor="updateAuthor($event, message)"
-          @deleteMessage="deleteMessage($event, message)"
+          @deleteMessage="deleteMessage($event)"
         />
       </div>
       <p class="tc mb0">
@@ -53,69 +53,58 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-export default {
+interface Message {
+  uid: number;
+  content: string;
+  author: 'me' | 'other';
+}
 
-  props: {
-    participantName: {
-      type: String,
-      default: '',
-    },
-    existingMessages: {
-      type: Array,
-      default: () => [],
-    },
+const props = withDefaults(
+  defineProps<{
+    participantName?: string;
+    existingMessages?: Message[];
+  }>(),
+  {
+    participantName: '',
+    existingMessages: () => [],
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
 
-  data() {
-    return {
-      messages: [],
-      uid: 1,
-      displayTrash: false,
-    };
-  },
+const messages = ref<Message[]>([]);
+const uid = ref(1);
+const displayTrash = ref(false);
 
-  mounted() {
-    if (this.existingMessages.length > 0) {
-      this.messages = this.existingMessages;
-      this.uid = this.messages[this.messages.length - 1].uid + 1;
-    } else {
-      var me = this;
-      setTimeout(function () {
-        me.addMessage();
-      }, 10);
-    }
-  },
-
-  methods: {
-    addMessage() {
-      this.messages.push({
-        uid: this.uid++,
-        content: '',
-        author: 'me'
-      });
-      if (this.messages.length > 1) {
-        this.displayTrash = true;
-      }
-    },
-
-    updateAuthor(updatedAuthor, message) {
-      message.author = updatedAuthor;
-    },
-
-    deleteMessage(uid, message) {
-      this.messages.splice(this.messages.indexOf(this.messages.find(item => item.uid === uid)), 1);
-      if (this.messages.length <= 1) {
-        this.displayTrash = false;
-      }
-    },
+onMounted(() => {
+  if (props.existingMessages.length > 0) {
+    messages.value = props.existingMessages;
+    uid.value = messages.value[messages.value.length - 1].uid + 1;
+  } else {
+    setTimeout(addMessage, 10);
   }
-};
+});
+
+function addMessage() {
+  messages.value.push({ uid: uid.value++, content: '', author: 'me' });
+  if (messages.value.length > 1) {
+    displayTrash.value = true;
+  }
+}
+
+function updateAuthor(updatedAuthor: 'me' | 'other', message: Message) {
+  message.author = updatedAuthor;
+}
+
+function deleteMessage(targetUid: number) {
+  const idx = messages.value.findIndex((item) => item.uid === targetUid);
+  if (idx >= 0) messages.value.splice(idx, 1);
+  if (messages.value.length <= 1) {
+    displayTrash.value = false;
+  }
+}
 </script>

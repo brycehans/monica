@@ -49,86 +49,68 @@ input[type=text]:focus {
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 
-export default {
+interface Participant {
+  id: number;
+  name: string;
+}
 
-  props: {
-    initialParticipants: {
-      type: Array,
-      default: () => [],
-    },
-    hash: {
-      type: String,
-      default: '',
-    },
+const props = withDefaults(
+  defineProps<{
+    initialParticipants?: Participant[];
+    hash?: string;
+  }>(),
+  {
+    initialParticipants: () => [],
+    hash: '',
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const emit = defineEmits<{
+  (e: 'update', value: Participant[]): void;
+}>();
 
-  data() {
-    return {
-      search: '',
-      participants: [],
-      chosenParticipants: [],
-    };
-  },
+const { t } = useI18n();
 
-  computed: {
-    filteredList() {
-      // filter the list when searching
-      // also, sort the list by name
-      var list;
-      list = this.participants.filter(participant => {
-        return participant.name.toLowerCase().includes(this.search.toLowerCase())
-               && this.chosenParticipants.find(p => p.id === participant.id) === undefined;
-      });
+const search = ref('');
+const participants = ref<Participant[]>([]);
+const chosenParticipants = ref<Participant[]>([]);
 
-      function compare(a, b) {
-        if (a.name < b.name) {
-          return -1;
-        }
-        if (a.name > b.name) {
-          return 1;
-        }
-        return 0;
-      }
+const filteredList = computed(() => {
+  const list = participants.value.filter((participant) => {
+    return (
+      participant.name.toLowerCase().includes(search.value.toLowerCase()) &&
+      chosenParticipants.value.find((p) => p.id === participant.id) === undefined
+    );
+  });
+  return list.slice().sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+});
 
-      return list.sort(compare);
-    }
-  },
+onMounted(async () => {
+  await getParticipants();
+  chosenParticipants.value = props.initialParticipants;
+});
 
-  mounted() {
-    this.prepareComponent();
-    this.chosenParticipants = this.initialParticipants;
-  },
+async function getParticipants() {
+  const response = await axios.get('people/' + props.hash + '/activities/contacts');
+  // Collation-style endpoint: Laravel serializes the integer-keyed Collection
+  // as a JSON object. Object.values flattens it back to an array. Naive
+  // `response.data as Participant[]` would break here (see pilot doc).
+  participants.value = Object.values(response.data ?? {}) as Participant[];
+}
 
-  methods: {
-    prepareComponent() {
-      this.getParticipants();
-    },
+function select(participant: Participant) {
+  chosenParticipants.value.push(participant);
+  participants.value.splice(participants.value.indexOf(participant), 1);
+  emit('update', chosenParticipants.value);
+}
 
-    getParticipants: function () {
-      axios.get('people/' + this.hash + '/activities/contacts')
-        .then(response => {
-          this.participants = _.toArray(response.data);
-        });
-    },
-
-    select(participant) {
-      this.chosenParticipants.push(participant);
-      this.participants.splice(this.participants.indexOf(participant), 1);
-      this.$emit('update', this.chosenParticipants);
-    },
-
-    remove(participant) {
-      this.participants.push(participant);
-      this.chosenParticipants.splice(this.chosenParticipants.indexOf(participant), 1);
-    },
-  }
-};
+function remove(participant: Participant) {
+  participants.value.push(participant);
+  chosenParticipants.value.splice(chosenParticipants.value.indexOf(participant), 1);
+}
 </script>

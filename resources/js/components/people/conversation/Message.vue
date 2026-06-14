@@ -64,83 +64,59 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
 
-export default {
-
-  props: {
-    value: {
-      type: String,
-      default: '',
-    },
-    uid: {
-      type: Number,
-      default: 0,
-    },
-    id: {
-      type: String,
-      default: '',
-    },
-    participantName: {
-      type: String,
-      default: '',
-    },
-    author: {
-      type: String,
-      default: '',
-    },
-    placeholder: {
-      type: String,
-      default: '',
-    },
-    required: {
-      type: Boolean,
-      default: true,
-    },
-    displayTrash: {
-      type: Boolean,
-      default: true,
-    },
+const props = withDefaults(
+  defineProps<{
+    value?: string;
+    uid?: number;
+    id?: string;
+    participantName?: string;
+    author?: string;
+    placeholder?: string;
+    required?: boolean;
+    displayTrash?: boolean;
+  }>(),
+  {
+    value: '',
+    uid: 0,
+    id: '',
+    participantName: '',
+    author: '',
+    placeholder: '',
+    required: true,
+    displayTrash: true,
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const emit = defineEmits<{
+  (e: 'deleteMessage', uid: number): void;
+  (e: 'updateAuthor', author: string): void;
+}>();
 
-  data() {
-    return {
-      buffer: '',
-      updatedAuthor: this.author,
-    };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+const buffer = ref('');
+const updatedAuthor = ref(props.author);
 
-  watch: {
-    value(newValue) {
-      this.buffer = newValue;
-    }
-  },
+watch(() => props.value, (newValue) => {
+  buffer.value = newValue;
+});
 
-  mounted() {
-    this.buffer = this.value;
-  },
+onMounted(() => {
+  buffer.value = props.value;
+});
 
-  methods: {
-    deleteMessage() {
-      this.$emit('deleteMessage', this.uid);
-    },
+function deleteMessage() {
+  emit('deleteMessage', props.uid);
+}
 
-    updateAuthor(newAuthor) {
-      this.updatedOther = newAuthor;
-      this.$emit('updateAuthor', newAuthor);
-    },
-  }
-};
+function updateAuthor(newAuthor: string) {
+  updatedAuthor.value = newAuthor;
+  emit('updateAuthor', newAuthor);
+}
 </script>

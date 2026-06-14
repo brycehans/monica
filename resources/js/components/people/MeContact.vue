@@ -57,87 +57,72 @@ div >>> .avatar-small {
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-export default {
-  components: {
+interface Contact {
+  id: number;
+  hash_id?: string;
+  complete_name?: string;
+}
+
+const props = withDefaults(
+  defineProps<{
+    contact?: Contact | null;
+    existingContacts?: Contact[];
+    limited?: boolean;
+  }>(),
+  {
+    contact: null,
+    existingContacts: () => [],
+    limited: true,
   },
+);
 
-  props: {
-    contact: {
-      type: Object,
-      default: null,
-    },
-    existingContacts: {
-      type: Array,
-      default: () => [],
-    },
-    limited: {
-      type: Boolean,
-      default: true,
-    },
-  },
+const emit = defineEmits<{
+  (e: 'change', value: Contact | null): void;
+}>();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  data() {
-    return {
-      meContact: null,
-      newContact: null,
-      showModal: false,
-    };
-  },
+const meContact = ref<Contact | null>(null);
+const newContact = ref<Contact | null>(null);
+const showModal = ref(false);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+watch(() => props.contact, (value) => {
+  newContact.value = value;
+});
 
-  watch: {
-    contact(value) {
-      this.newContact = value;
-    }
-  },
+onMounted(() => {
+  meContact.value = props.contact;
+  newContact.value = props.contact;
+});
 
-  mounted() {
-    this.meContact = this.contact;
-    this.newContact = this.contact;
-  },
+async function save() {
+  if (!newContact.value) return;
+  await axios.post('me/contact', { contact_id: newContact.value.id });
+  emit('change', newContact.value);
+  meContact.value = newContact.value;
+  closeModal();
+}
 
-  methods: {
-    save() {
-      axios.post('me/contact', {
-        contact_id: this.newContact.id
-      })
-        .then(response => {
-          this.$emit('change', this.newContact);
-          this.meContact = this.newContact;
-          this.closeModal();
-        });
-    },
+async function remove() {
+  newContact.value = null;
+  await axios.delete('me/contact');
+  emit('change', null);
+  meContact.value = null;
+  closeModal();
+}
 
-    remove() {
-      this.newContact = null;
-      axios.delete('me/contact')
-        .then(response => {
-          this.$emit('change', null);
-          this.meContact = null;
-          this.closeModal();
-        });
-    },
+function openModal() {
+  showModal.value = true;
+}
 
-    openModal() {
-      this.showModal = true;
-    },
-
-    closeModal() {
-      this.showModal = false;
-    }
-  }
-};
+function closeModal() {
+  showModal.value = false;
+}
 </script>
