@@ -71,18 +71,20 @@ describe('collectionValues', () => {
       expect(collectionValues(undefined)).toEqual([]);
     });
 
-    it('treats a string primitive as having no keyed values', () => {
-      // Object.values on a string returns the chars; we don't want that.
-      // The current implementation accepts primitives via the Record cast,
-      // but in practice the API never returns a bare string here.
-      // Locked in to document the contract: only objects/arrays/nullish.
-      expect(collectionValues('hello')).toEqual(['h', 'e', 'l', 'l', 'o']);
+    it('returns an empty array for a string primitive (not its characters)', () => {
+      // Bare `Object.values('hello')` returns ['h','e','l','l','o'] because
+      // strings are array-like — the guard rejects non-object payloads to
+      // prevent that footgun. In practice the API never hands us a bare
+      // string here, but the contract is explicit.
+      expect(collectionValues('hello')).toEqual([]);
     });
 
     it('returns an empty array for a number primitive', () => {
-      // Object.values(42) returns []; documents that scalar payloads are
-      // safe even if accidentally passed.
       expect(collectionValues(42 as unknown)).toEqual([]);
+    });
+
+    it('returns an empty array for a boolean primitive', () => {
+      expect(collectionValues(true as unknown)).toEqual([]);
     });
   });
 });

@@ -192,7 +192,7 @@ import { required, url } from '@vuelidate/validators';
 import FormErrors from '../partials/FormErrors.vue';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { useNotify } from '../../composables/useNotify';
-import { validationErrorsFromAxios } from '../../api/errors';
+import { validationErrorsFromAxios, type FormErrorList } from '../../api/errors';
 
 interface Client {
   id: number | string;
@@ -205,7 +205,7 @@ interface ClientForm {
   id?: number | string;
   name: string;
   redirect: string;
-  errors: string[];
+  errors: FormErrorList;
 }
 
 interface InputComponent {

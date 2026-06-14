@@ -135,7 +135,7 @@ import FormErrors from '../../partials/FormErrors.vue';
 import Participant from '../Participant.vue';
 import { useHtmlDir } from '../../../composables/useHtmlDir';
 import { useNotify } from '../../../composables/useNotify';
-import { validationErrorsFromAxios } from '../../../api/errors';
+import { validationErrorsFromAxios, type FormErrorList } from '../../../api/errors';
 import type { Emotion as EmotionRecord } from '../types';
 import { locale as bootLocale } from '../../../boot';
 
@@ -210,7 +210,7 @@ const newActivity = reactive<{
 const todayDate = ref('');
 const initialEmotions = ref<EmotionRecord[]>([]);
 const participants = ref<ParticipantRecord[]>([]);
-const errors = ref<string[]>([]);
+const errors = ref<FormErrorList>([]);
 
 watch(participants, (value) => {
   newActivity.contacts = value.map((p) => p.id);

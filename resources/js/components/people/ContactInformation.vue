@@ -112,7 +112,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import { useHtmlDir } from '../../composables/useHtmlDir';
-import { validationErrorsFromAxios } from '../../api/errors';
+import { validationErrorsFromAxios, type FormErrorList } from '../../api/errors';
 
 interface ContactFieldType {
   id: number | string;
@@ -133,7 +133,7 @@ interface FormBag {
   id?: number | string;
   contact_field_type_id: number | string;
   data: string;
-  errors: string[];
+  errors: FormErrorList;
 }
 
 const props = withDefaults(

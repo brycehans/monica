@@ -148,7 +148,7 @@ import { required } from '@vuelidate/validators';
 import FormErrors from '../partials/FormErrors.vue';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { useNotify } from '../../composables/useNotify';
-import { validationErrorsFromAxios } from '../../api/errors';
+import { validationErrorsFromAxios, type FormErrorList } from '../../api/errors';
 
 interface PersonalAccessToken {
   id: number | string;
@@ -160,7 +160,7 @@ interface PersonalAccessToken {
 interface TokenForm {
   name: string;
   scopes: string[];
-  errors: string[];
+  errors: FormErrorList;
 }
 
 interface InputComponent {

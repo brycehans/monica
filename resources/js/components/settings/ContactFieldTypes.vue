@@ -221,7 +221,7 @@ import axios from 'axios';
 import FormErrors from '../partials/FormErrors.vue';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { useNotify } from '../../composables/useNotify';
-import { validationErrorsFromAxios } from '../../api/errors';
+import { validationErrorsFromAxios, type FormErrorList } from '../../api/errors';
 
 interface ContactFieldType {
   id: number | string;
@@ -249,7 +249,7 @@ const createForm = reactive<{
   name: string;
   protocol: string;
   icon: string;
-  errors: string[];
+  errors: FormErrorList;
 }>({ name: '', protocol: '', icon: '', errors: [] });
 
 const editForm = reactive<{
@@ -257,7 +257,7 @@ const editForm = reactive<{
   name: string;
   protocol: string;
   icon: string;
-  errors: string[];
+  errors: FormErrorList;
 }>({ id: '', name: '', protocol: '', icon: '', errors: [] });
 
 const showModalCreateContactFieldType = ref(false);

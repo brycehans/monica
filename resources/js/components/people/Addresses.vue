@@ -250,7 +250,7 @@ import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { collectionValues } from '../../api/collection';
-import { validationErrorsFromAxios } from '../../api/errors';
+import { validationErrorsFromAxios, type FormErrorList } from '../../api/errors';
 
 interface Country {
   id: number | string;
@@ -267,7 +267,7 @@ interface AddressForm {
   country: string | number;
   latitude: number | string;
   longitude: number | string;
-  errors?: string[];
+  errors?: FormErrorList;
 }
 
 interface ContactAddress extends AddressForm {

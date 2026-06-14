@@ -72,7 +72,7 @@ describe('validationErrorsFromAxios', () => {
           },
         },
       };
-      const out = validationErrorsFromAxios(err, 'fb') as unknown as [string, Record<string, string[]>];
+      const out = validationErrorsFromAxios(err, 'fb');
       expect(out[0]).toBe('The given data was invalid.');
       expect(out[1]).toEqual({ email: ['Required.'] });
     });

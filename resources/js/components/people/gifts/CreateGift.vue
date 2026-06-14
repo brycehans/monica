@@ -232,7 +232,7 @@ import FormErrors from '../../partials/FormErrors.vue';
 import PhotoUpload from '../photo/PhotoUpload.vue';
 import { useHtmlDir } from '../../../composables/useHtmlDir';
 import { useNotify } from '../../../composables/useNotify';
-import { validationErrorsFromAxios } from '../../../api/errors';
+import { validationErrorsFromAxios, type FormErrorList } from '../../../api/errors';
 import { locale as bootLocale } from '../../../boot';
 import type { Gift as GiftRecord, Photo } from './types';
 
@@ -311,7 +311,7 @@ const newGift = reactive<{
 });
 
 const hasRecipient = ref(false);
-const errors = ref<string[]>([]);
+const errors = ref<FormErrorList>([]);
 
 const rules = computed(() => {
   const base: Record<string, unknown> = {
