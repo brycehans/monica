@@ -2,8 +2,8 @@
   <div :class="dclass">
     <div :class="wrapperClass">
       <input
-        ref="input"
-        :type="_type"
+        ref="inputEl"
+        :type="inputType"
         :name="name"
         :value="value"
         :checked="shouldBeChecked"
@@ -27,113 +27,99 @@
   </div>
 </template>
 
-<script>
-export default {
+<script setup lang="ts">
+import { computed, useTemplateRef, useSlots } from 'vue';
 
-  props: {
-    name: {
-      type: String,
-      default: '',
-    },
-    value: {
-      type: [String, Boolean],
-      default: '',
-    },
-    modelValue: {
-      type: [String, Boolean],
-      default: '',
-    },
-    modelModifiers: {
-      type: Object,
-      default: () => ({}),
-    },
-    iclass: {
-      type: [String, Array],
-      default: ''
-    },
-    fullClass: {
-      type: [String, Array],
-      default: ''
-    },
-    dclass: {
-      type: [String, Array],
-      default: ''
-    },
-    color: {
-      type: [String, Array],
-      default: ''
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    required: {
-      type: Boolean,
-      default: false
-    }
+const props = withDefaults(
+  defineProps<{
+    inputType: 'checkbox' | 'radio' | 'input';
+    inputIclass?: string;
+    name?: string;
+    value?: string | boolean;
+    modelValue?: string | boolean;
+    modelModifiers?: Record<string, unknown>;
+    iclass?: string | string[];
+    fullClass?: string | string[];
+    dclass?: string | string[];
+    color?: string | string[];
+    disabled?: boolean;
+    required?: boolean;
+  }>(),
+  {
+    inputIclass: '',
+    name: '',
+    value: '',
+    modelValue: '',
+    modelModifiers: () => ({}),
+    iclass: '',
+    fullClass: '',
+    dclass: '',
+    color: '',
+    disabled: false,
+    required: false,
   },
+);
 
-  emits: ['change', 'update:modelValue'],
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string | boolean): void;
+  (e: 'change', value: string | boolean): void;
+}>();
 
-  computed: {
-    _type() {
-      if (this.$options.input_type) {
-        return this.$options.input_type;
-      }
-      return 'input';
-    },
-    inputClass() {
-      return this.fullClass !== '' ? this.fullClass : [this.iclass, 'p-default', this.$options.input_iclass];
-    },
-    inputColor() {
-      return this.color !== '' ? this.color : 'primary-o';
-    },
-    wrapperClass() {
-      return ['pretty', this.inputClass];
-    },
-    stateClass() {
-      return ['state', `p-${this.inputColor}`];
-    },
-    shouldBeChecked() {
-      if (this._type === 'radio') {
-        return this.modelValue === this.value;
-      }
-      return typeof this.modelValue === 'string' ? this.modelValue !== '' : !!this.modelValue;
-    },
-  },
+const inputEl = useTemplateRef<HTMLInputElement>('inputEl');
+const slots = useSlots();
 
-  methods: {
-    emitChange(val) {
-      this.$emit('update:modelValue', val);
-      this.$emit('change', val);
-    },
-    onChange(event) {
-      if (this._type === 'radio') {
-        this.emitChange(this.value);
-        return;
-      }
-      this.emitChange(event.target.checked);
-    },
-    select() {
-      if (this.disabled) {
-        return;
-      }
-      switch (this._type) {
-      case 'checkbox':
-        this.$refs.input.checked = ! this.$refs.input.checked;
-        this.emitChange(this.$refs.input.checked);
-        break;
-      case 'radio':
-        this.$refs.input.checked = true;
-        this.emitChange(this.value);
-        break;
-      case 'input':
-          //this.$refs.input.focus();
-      }
-    },
-    hasSlot (name = 'default') {
-      return !!this.$slots[ name ];
-    }
+const inputClass = computed(() =>
+  props.fullClass !== '' ? props.fullClass : [props.iclass, 'p-default', props.inputIclass],
+);
+
+const inputColor = computed(() => (props.color !== '' ? props.color : 'primary-o'));
+
+const wrapperClass = computed(() => ['pretty', inputClass.value]);
+
+const stateClass = computed(() => ['state', `p-${inputColor.value}`]);
+
+const shouldBeChecked = computed(() => {
+  if (props.inputType === 'radio') {
+    return props.modelValue === props.value;
   }
-};
+  return typeof props.modelValue === 'string' ? props.modelValue !== '' : !!props.modelValue;
+});
+
+function emitChange(val: string | boolean) {
+  emit('update:modelValue', val);
+  emit('change', val);
+}
+
+function onChange(event: Event) {
+  if (props.inputType === 'radio') {
+    emitChange(props.value);
+    return;
+  }
+  emitChange((event.target as HTMLInputElement).checked);
+}
+
+function select() {
+  if (props.disabled) {
+    return;
+  }
+  const el = inputEl.value;
+  if (!el) return;
+  switch (props.inputType) {
+  case 'checkbox':
+    el.checked = !el.checked;
+    emitChange(el.checked);
+    break;
+  case 'radio':
+    el.checked = true;
+    emitChange(props.value);
+    break;
+  case 'input':
+    // intentional no-op
+    break;
+  }
+}
+
+function hasSlot(name = 'default') {
+  return !!slots[name];
+}
 </script>
