@@ -83,96 +83,87 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import { useRowModal } from '../../composables/useRowModal';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
 import CreateModal from './life-event-types/CreateModal.vue';
 import UpdateModal from './life-event-types/UpdateModal.vue';
 import DeleteModal from './life-event-types/DeleteModal.vue';
 
-export default {
-  props: {
-    limited: {
-      type: Boolean,
-      default: false,
+interface LifeEventType {
+  id: number;
+  name: string;
+  default_life_event_type_key?: string;
+}
+
+interface LifeEventCategory {
+  id: number;
+  default_life_event_category_key: string;
+  lifeEventTypes: LifeEventType[];
+}
+
+defineProps<{
+  limited?: boolean;
+}>();
+
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
+
+const createModal = useRowModal(CreateModal);
+const updateModal = useRowModal(UpdateModal);
+const deleteModal = useRowModal(DeleteModal);
+
+const lifeEventCategories = ref<LifeEventCategory[]>([]);
+
+onMounted(getLifeEventCategories);
+
+async function getLifeEventCategories() {
+  const response = await axios.get('settings/personalization/lifeeventcategories');
+  lifeEventCategories.value = response.data as LifeEventCategory[];
+}
+
+function notifySaved() {
+  notify({
+    group: 'lifeEventTypes',
+    title: t('app.default_save_success'),
+    text: '',
+    type: 'success',
+  });
+}
+
+function showCreateType(category: LifeEventCategory) {
+  createModal.open({
+    category,
+    onSaved: () => {
+      getLifeEventCategories();
+      notifySaved();
     },
-  },
+  });
+}
 
-  setup() {
-    const { t } = useI18n();
-    const createModal = useRowModal(CreateModal);
-    const updateModal = useRowModal(UpdateModal);
-    const deleteModal = useRowModal(DeleteModal);
-    return { t, createModal, updateModal, deleteModal };
-  },
-
-  data() {
-    return {
-      lifeEventCategories: [],
-    };
-  },
-
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
-
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      this.getLifeEventCategories();
+function showEditType(type: LifeEventType, categoryId: number) {
+  updateModal.open({
+    type,
+    categoryId,
+    onSaved: () => {
+      getLifeEventCategories();
+      notifySaved();
     },
+  });
+}
 
-    getLifeEventCategories() {
-      axios.get('settings/personalization/lifeeventcategories')
-        .then(response => {
-          this.lifeEventCategories = response.data;
-        });
+function showDeleteType(type: LifeEventType) {
+  deleteModal.open({
+    type,
+    onSaved: () => {
+      getLifeEventCategories();
+      notifySaved();
     },
-
-    showCreateType(category) {
-      this.createModal.open({
-        category,
-        onSaved: () => {
-          this.getLifeEventCategories();
-          this.notify(this.t('app.default_save_success'), true);
-        },
-      });
-    },
-
-    showEditType(type, categoryId) {
-      this.updateModal.open({
-        type,
-        categoryId,
-        onSaved: () => {
-          this.getLifeEventCategories();
-          this.notify(this.t('app.default_save_success'), true);
-        },
-      });
-    },
-
-    showDeleteType(type) {
-      this.deleteModal.open({
-        type,
-        onSaved: () => {
-          this.getLifeEventCategories();
-          this.notify(this.t('app.default_save_success'), true);
-        },
-      });
-    },
-
-    notify(text, success) {
-      this.$notify({
-        group: 'lifeEventTypes',
-        title: text,
-        text: '',
-        type: success ? 'success' : 'error'
-      });
-    }
-  }
-};
+  });
+}
 </script>

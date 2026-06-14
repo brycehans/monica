@@ -27,43 +27,50 @@
   </monica-modal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
-// See genders/CreateModal.vue for the modelValue contract rationale.
-export default {
-  props: {
-    modelValue: { type: Boolean, default: false },
-    type: { type: Object, required: true },
-    categoryId: { type: Number, required: true },
-  },
+interface LifeEventType {
+  id: number;
+  name: string;
+  default_life_event_type_key?: string;
+}
 
-  emits: ['update:modelValue', 'saved'],
+const props = defineProps<{
+  modelValue?: boolean;
+  type: LifeEventType;
+  categoryId: number;
+}>();
 
-  setup(_, { emit }) {
-    const { t } = useI18n();
-    const { cancel, finish, sync } = useModalSelfClose(emit);
-    return { t, cancel, finish, sync };
-  },
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'saved'): void;
+}>();
 
-  data() {
-    return {
-      form: {
-        id: this.type.id,
-        name: this.type.name
-          ? this.type.name
-          : this.t('people.life_event_sentence_' + this.type.default_life_event_type_key),
-        life_event_category_id: this.categoryId,
-        errors: [],
-      },
-    };
-  },
+const { t } = useI18n();
+const { cancel, finish, sync } = useModalSelfClose(emit);
 
-  methods: {
-    update() {
-      return axios.put('settings/personalization/lifeeventtypes/' + this.form.id, this.form).then(this.finish);
-    },
-  },
-};
+const form = reactive<{
+  id: number;
+  name: string;
+  life_event_category_id: number;
+  errors: string[];
+}>({
+  id: props.type.id,
+  name: props.type.name
+    ? props.type.name
+    : t('people.life_event_sentence_' + props.type.default_life_event_type_key),
+  life_event_category_id: props.categoryId,
+  errors: [],
+});
+
+async function update() {
+  await axios.put('settings/personalization/lifeeventtypes/' + form.id, form);
+  finish();
+}
+
+defineExpose({ form, cancel, finish, sync, update });
 </script>
