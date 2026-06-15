@@ -1,3 +1,5 @@
+import { isRef, type Ref } from 'vue';
+
 /**
  * Shape that `FormErrors.vue` consumes via its loosely-typed `errors`
  * prop. Either a flat list of message strings (legacy Laravel envelope)
@@ -12,6 +14,27 @@
  * `form.errors: FormErrorList` instead of lying with `string[]`.
  */
 export type FormErrorList = Array<string | Record<string, string[]>>;
+
+/**
+ * Fallback for `validationErrorsFromAxios` when the response shape isn't
+ * a recognised Laravel envelope. Most callers pass a constant — a single
+ * string ("Please try again") or a two-line array. `CreateGift` and
+ * `CreateActivity` pass a function so they can include the raw error
+ * message alongside the localised banner.
+ */
+export type FormErrorFallback =
+  | string
+  | string[]
+  | ((error: unknown) => string | string[]);
+
+/**
+ * Reactive holder that `withFormErrors` can write the error list into.
+ * Most form SFCs reactive a `{ errors: FormErrorList }` form-bag; a
+ * couple (`CreateGift`, `CreateActivity`) keep errors in a top-level
+ * `ref<FormErrorList>([])`. Accept both shapes so callers don't have
+ * to wrap one in the other.
+ */
+export type FormErrorTarget = { errors?: FormErrorList } | Ref<FormErrorList>;
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -40,6 +63,16 @@ function getResponseData(error: unknown): unknown {
   return (response as { data?: unknown }).data;
 }
 
+function resolveFallback(fallback: FormErrorFallback, error: unknown): string[] {
+  const value = typeof fallback === 'function' ? fallback(error) : fallback;
+  return Array.isArray(value) ? value : [value];
+}
+
+function writeErrors(target: FormErrorTarget, errors: FormErrorList): void {
+  if (isRef(target)) target.value = errors;
+  else target.errors = errors;
+}
+
 /**
  * Normalises a Laravel validation error response into a {@link FormErrorList}.
  * Both legacy `{ field: [msgs] }` and modern `{ message, errors: { ... } }`
@@ -56,22 +89,15 @@ function getResponseData(error: unknown): unknown {
  * value it would render as `[object Object]`.
  *
  * Non-422 errors (network failure, 500, missing response.data, non-object
- * payload) likewise get the fallback. Accepts either a single string or
- * an array so callers like `CreateGift` can pass a two-line
- * `[t('error'), e.message]` fallback.
- *
- * Replaces the duplicated catch-block pattern across the form SFCs:
- *
- *   const data = (error as { response?: { data?: unknown } })?.response?.data;
- *   if (data && typeof data === 'object') {
- *     form.errors = Object.values(data ?? {}).flat() as string[];
- *   } else {
- *     form.errors = [t('app.error_try_again')];
- *   }
+ * payload) likewise get the fallback. The fallback can be:
+ *   - a string (single-line banner)
+ *   - a string[] (multi-line banner — CreateGift et al)
+ *   - a function `(error) => string | string[]` that derives the lines
+ *     from the error object (used to include `error.message` raw)
  */
 export function validationErrorsFromAxios(
   error: unknown,
-  fallback: string | string[],
+  fallback: FormErrorFallback,
 ): FormErrorList {
   const data = getResponseData(error);
   if (isPlainObject(data)) {
@@ -81,5 +107,35 @@ export function validationErrorsFromAxios(
       return candidates;
     }
   }
-  return Array.isArray(fallback) ? fallback : [fallback];
+  return resolveFallback(fallback, error);
+}
+
+/**
+ * Convenience wrapper for the catch/assign boilerplate that appears in
+ * every form SFC's submit handler. Resets the target's error list,
+ * runs the supplied action, and on rejection writes the normalised
+ * validation errors into the target. Returns the action's result on
+ * success and `undefined` on failure, so callers can branch on a
+ * single truthy check instead of try/catching themselves.
+ *
+ * Accepts either a reactive form-bag (`{ errors: FormErrorList }`) or a
+ * `Ref<FormErrorList>` — `isRef` discriminates internally. Callers don't
+ * have to manually clear `errors` before submitting; this helper does.
+ *
+ *   const response = await withFormErrors(form, () => axios.post(uri, form), t('app.error'));
+ *   if (!response) return;
+ *   clients.value.push(response.data);
+ */
+export async function withFormErrors<T>(
+  target: FormErrorTarget,
+  action: () => Promise<T>,
+  fallback: FormErrorFallback,
+): Promise<T | undefined> {
+  writeErrors(target, []);
+  try {
+    return await action();
+  } catch (error) {
+    writeErrors(target, validationErrorsFromAxios(error, fallback));
+    return undefined;
+  }
 }

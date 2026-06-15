@@ -135,7 +135,7 @@ import FormErrors from '../../partials/FormErrors.vue';
 import Participant from '../Participant.vue';
 import { useHtmlDir } from '../../../composables/useHtmlDir';
 import { useNotify } from '../../../composables/useNotify';
-import { validationErrorsFromAxios, type FormErrorList } from '../../../api/errors';
+import { withFormErrors, type FormErrorList } from '../../../api/errors';
 import type { Emotion as EmotionRecord } from '../types';
 import { locale as bootLocale } from '../../../boot';
 
@@ -270,27 +270,23 @@ async function store() {
     newActivity.contacts.push(props.contactId);
   }
 
-  try {
-    const response = await axios[method](url, newActivity);
-    resetFields();
-    emit('update', response.data.data);
-    notify({
-      group: 'main',
-      title: t('people.activities_add_success'),
-      text: '',
-      type: 'success',
-    });
-  } catch (error: unknown) {
-    _errorHandle(error);
-  }
+  const response = await withFormErrors(
+    errors,
+    () => axios[method](url, newActivity),
+    (e) => [t('app.error_try_again'), (e as { message?: string }).message ?? ''],
+  );
+  if (!response) return;
+  resetFields();
+  emit('update', response.data.data);
+  notify({
+    group: 'main',
+    title: t('people.activities_add_success'),
+    text: '',
+    type: 'success',
+  });
 }
 
 function updateParticipant(value: ParticipantRecord[]) {
   participants.value = value;
-}
-
-function _errorHandle(error: unknown) {
-  const e = error as { message?: string };
-  errors.value = validationErrorsFromAxios(error, [t('app.error_try_again'), e.message ?? '']);
 }
 </script>

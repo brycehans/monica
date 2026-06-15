@@ -232,7 +232,7 @@ import FormErrors from '../../partials/FormErrors.vue';
 import PhotoUpload from '../photo/PhotoUpload.vue';
 import { useHtmlDir } from '../../../composables/useHtmlDir';
 import { useNotify } from '../../../composables/useNotify';
-import { validationErrorsFromAxios, type FormErrorList } from '../../../api/errors';
+import { withFormErrors, validationErrorsFromAxios, type FormErrorList } from '../../../api/errors';
 import { locale as bootLocale } from '../../../boot';
 import type { Gift as GiftRecord, Photo } from './types';
 
@@ -380,6 +380,12 @@ function close() {
   emit('cancel');
 }
 
+// Caller-supplied fallback shared between `store` and `storePhoto`:
+// errors.value receives the localised banner plus the raw `error.message`
+// for diagnostic context, mirroring the pre-#805 `_errorHandle` shape.
+const giftErrorFallback = (e: unknown): string[] =>
+  [t('app.error_try_again'), (e as { message?: string }).message ?? ''];
+
 async function store() {
   if (!hasRecipient.value) {
     newGift.recipient_id = null;
@@ -393,22 +399,24 @@ async function store() {
 
   const method: 'put' | 'post' = props.gift ? 'put' : 'post';
   const url = `people/${props.hash}/gifts${props.gift ? '/' + props.gift.id : ''}`;
-  const successTitle = t('people.gifts_add_success');
 
-  try {
-    let response = await axios[method](url, newGift);
-    response = await storePhoto(response);
-    close();
-    emit('update', response.data.data);
-    notify({ group: 'main', title: successTitle, text: '', type: 'success' });
-  } catch (error: unknown) {
-    _errorHandle(error);
-  }
+  const response = await withFormErrors(errors, () => axios[method](url, newGift), giftErrorFallback);
+  if (!response) return;
+
+  // storePhoto may surface its own (photo-upload) errors into `errors.value`
+  // without rolling back the gift create — see its catch block.
+  const finalResponse = await storePhoto(response);
+  close();
+  emit('update', finalResponse.data.data);
+  notify({ group: 'main', title: t('people.gifts_add_success'), text: '', type: 'success' });
 }
 
 // Returns an axios-like response with the updated gift payload — the original
 // implementation pushed any new photo into response.data.data.photos and let
-// the caller emit the entire object via @update.
+// the caller emit the entire object via @update. Photo-upload failure
+// surfaces an error banner but does NOT roll back the already-created gift,
+// so this can't simply be wrapped in withFormErrors (which would discard
+// the original response on rejection).
 async function storePhoto<R extends { data: { data: GiftRecord } }>(response: R): Promise<R> {
   if (!upload.value) return response;
   try {
@@ -419,14 +427,9 @@ async function storePhoto<R extends { data: { data: GiftRecord } }>(response: R)
     }
     return response;
   } catch (error: unknown) {
-    _errorHandle(error);
+    errors.value = validationErrorsFromAxios(error, giftErrorFallback);
     return response;
   }
-}
-
-function _errorHandle(error: unknown) {
-  const e = error as { message?: string };
-  errors.value = validationErrorsFromAxios(error, [t('app.error_try_again'), e.message ?? '']);
 }
 
 async function deletePhoto(photo: Photo) {

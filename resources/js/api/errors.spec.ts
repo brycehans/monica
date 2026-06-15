@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { validationErrorsFromAxios } from './errors';
+import { describe, it, expect, vi } from 'vitest';
+import { ref } from 'vue';
+import { validationErrorsFromAxios, withFormErrors } from './errors';
 
 describe('validationErrorsFromAxios', () => {
   describe('legacy Laravel 422 envelope { field: [msgs] }', () => {
@@ -223,5 +224,88 @@ describe('validationErrorsFromAxios', () => {
       // hides the banner entirely.
       expect(validationErrorsFromAxios(new Error('boom'), [])).toEqual([]);
     });
+  });
+
+  describe('function fallbacks (CreateGift / CreateActivity dynamic message)', () => {
+    it('calls the fallback function with the original error so the caller can read error.message', () => {
+      const fallback = vi.fn((e: unknown) => {
+        const msg = (e as { message?: string }).message ?? '';
+        return ['Please try again', msg];
+      });
+      const err = new Error('Network unreachable');
+      const out = validationErrorsFromAxios(err, fallback);
+      expect(fallback).toHaveBeenCalledTimes(1);
+      expect(fallback).toHaveBeenCalledWith(err);
+      expect(out).toEqual(['Please try again', 'Network unreachable']);
+    });
+
+    it('does not call the fallback function when a valid envelope is present', () => {
+      // Same "fallback ignored on success" guarantee as the string/array
+      // variants — extends to function fallbacks too.
+      const fallback = vi.fn(() => 'should-not-fire');
+      const err = { response: { data: { name: ['Required.'] } } };
+      validationErrorsFromAxios(err, fallback);
+      expect(fallback).not.toHaveBeenCalled();
+    });
+
+    it('wraps a function-returned string into a single-element array', () => {
+      expect(validationErrorsFromAxios(new Error('x'), () => 'one liner')).toEqual(['one liner']);
+    });
+  });
+});
+
+describe('withFormErrors', () => {
+  it('clears the target errors before running the action (form-bag target)', async () => {
+    const form: { errors: Array<string | Record<string, string[]>> } = {
+      errors: ['stale message from a previous submit'],
+    };
+    await withFormErrors(form, async () => 'success', 'fb');
+    expect(form.errors).not.toContain('stale message from a previous submit');
+  });
+
+  it('returns the action result on success and leaves errors empty', async () => {
+    const form = { errors: [] as Array<string | Record<string, string[]>> };
+    const result = await withFormErrors(form, async () => ({ data: { id: 42 } }), 'fb');
+    expect(result).toEqual({ data: { id: 42 } });
+    expect(form.errors).toEqual([]);
+  });
+
+  it('returns undefined on rejection and writes the normalised errors', async () => {
+    const form = { errors: [] as Array<string | Record<string, string[]>> };
+    const err = { response: { data: { email: ['Required.'] } } };
+    const result = await withFormErrors(form, async () => { throw err; }, 'fb');
+    expect(result).toBeUndefined();
+    expect(form.errors).toEqual(['Required.']);
+  });
+
+  it('applies the fallback when the rejection has no valid envelope', async () => {
+    const form = { errors: [] as Array<string | Record<string, string[]>> };
+    const result = await withFormErrors(form, async () => { throw new Error('boom'); }, 'general failure');
+    expect(result).toBeUndefined();
+    expect(form.errors).toEqual(['general failure']);
+  });
+
+  it('accepts a function fallback that sees the error', async () => {
+    const form = { errors: [] as Array<string | Record<string, string[]>> };
+    await withFormErrors(
+      form,
+      async () => { throw new Error('boom'); },
+      (e) => ['general failure', (e as { message?: string }).message ?? ''],
+    );
+    expect(form.errors).toEqual(['general failure', 'boom']);
+  });
+
+  it('writes errors into a Ref target instead of a form-bag', async () => {
+    // CreateGift / CreateActivity hold their error list in a top-level
+    // ref. The helper discriminates via Vue's `isRef` so both shapes work.
+    const errors = ref<Array<string | Record<string, string[]>>>([]);
+    await withFormErrors(errors, async () => { throw new Error('boom'); }, 'fb');
+    expect(errors.value).toEqual(['fb']);
+  });
+
+  it('clears a Ref target before running the action', async () => {
+    const errors = ref<Array<string | Record<string, string[]>>>(['prior']);
+    await withFormErrors(errors, async () => 'ok', 'fb');
+    expect(errors.value).toEqual([]);
   });
 });

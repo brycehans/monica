@@ -54,7 +54,7 @@
     @opened="$emit('open')"
     @closed="$emit('close')"
   >
-    <div class="monica-modal__panel" role="dialog" :aria-label="title || undefined">
+    <div class="monica-modal__panel" role="dialog" :aria-label="title || undefined" :cy-name="cyNameAttr">
       <h3 v-if="title" class="monica-modal__title">
         {{ title }}
       </h3>
@@ -70,26 +70,38 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { VueFinalModal } from 'vue-final-modal';
+import { env } from '../../boot';
 
 // When `blocking` is true, the X close link is suppressed and esc /
 // click-outside do nothing. Use for modals where the only valid exits are
 // explicit Cancel / Done buttons that run cleanup (see SetAvatar: closing
 // via X would bypass cancelCrop and leave the uncropped upload in the file
 // input).
-withDefaults(
+//
+// `cyName`: optional label rendered as a `cy-name` attribute on the modal
+// panel, mirroring the `v-cy-name` directive's contract (only emitted
+// outside production builds — see resources/js/testing.ts). Lets specs
+// scope by a single locator without depending on the modal's title text
+// (which is i18n'd and brittle).
+const props = withDefaults(
   defineProps<{
     modelValue?: boolean;
     title?: string;
     blocking?: boolean;
+    cyName?: string;
   }>(),
   {
     modelValue: false,
     title: '',
     blocking: false,
+    cyName: '',
   },
 );
+
+const cyNameAttr = computed(() => (env !== 'production' && props.cyName) ? props.cyName : null);
 
 defineEmits<{
   (e: 'update:modelValue', value: boolean): void;

@@ -148,7 +148,7 @@ import { required } from '@vuelidate/validators';
 import FormErrors from '../partials/FormErrors.vue';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { useNotify } from '../../composables/useNotify';
-import { validationErrorsFromAxios, type FormErrorList } from '../../api/errors';
+import { withFormErrors, type FormErrorList } from '../../api/errors';
 
 interface PersonalAccessToken {
   id: number | string;
@@ -240,18 +240,17 @@ async function store() {
   if (v$.value.$invalid) return;
 
   accessToken.value = null;
-  form.errors = [];
 
-  try {
-    const response = await axios.post('oauth/personal-access-tokens', form);
-    form.name = '';
-    form.scopes = [];
-    form.errors = [];
-    tokens.value.push(response.data.token);
-    showAccessToken(response.data.accessToken);
-  } catch (error: unknown) {
-    form.errors = validationErrorsFromAxios(error, t('app.error_try_again'));
-  }
+  const response = await withFormErrors(
+    form,
+    () => axios.post('oauth/personal-access-tokens', form),
+    t('app.error_try_again'),
+  );
+  if (!response) return;
+  form.name = '';
+  form.scopes = [];
+  tokens.value.push(response.data.token);
+  showAccessToken(response.data.accessToken);
 }
 
 function scopeIsAssigned(scope: string) {

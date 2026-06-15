@@ -84,10 +84,10 @@ test.describe('Monica v4 — OAuth client form: 422 rendering', () => {
 
     // Scope a Locator to the modal's panel so we don't collide with the
     // (now hidden) page-level h3 that also says "OAuth Clients".
-    // Scope by the "Redirect URL" label (unique to this modal among the
-    // ones on /settings/api — Personal Access Tokens' modal has no
-    // redirect field).
-    const modal = page.locator('.monica-modal__panel').filter({ hasText: /Redirect URL/i }).first();
+    // Scope by the `cy-name` attribute the MonicaModal wrapper applies
+    // outside production builds (resources/js/testing.ts directive
+    // contract). Survives i18n changes to the modal title.
+    const modal = page.locator('[cy-name=oauth-client-modal]');
     await expect(modal).toBeVisible();
 
     // Both inputs need vuelidate-valid values or `store()` short-circuits
@@ -150,10 +150,10 @@ test.describe('Monica v4 — OAuth client form: 422 rendering', () => {
     await page.goto('/settings/api');
 
     await page.getByRole('link', { name: /create new client/i }).click();
-    // Scope by the "Redirect URL" label (unique to this modal among the
-    // ones on /settings/api — Personal Access Tokens' modal has no
-    // redirect field).
-    const modal = page.locator('.monica-modal__panel').filter({ hasText: /Redirect URL/i }).first();
+    // Scope by the `cy-name` attribute the MonicaModal wrapper applies
+    // outside production builds (resources/js/testing.ts directive
+    // contract). Survives i18n changes to the modal title.
+    const modal = page.locator('[cy-name=oauth-client-modal]');
     await expect(modal).toBeVisible();
 
     await modal.getByRole('textbox', { name: /Name/i }).first().fill('mock client name');

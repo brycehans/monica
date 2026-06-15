@@ -221,7 +221,7 @@ import axios from 'axios';
 import FormErrors from '../partials/FormErrors.vue';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { useNotify } from '../../composables/useNotify';
-import { validationErrorsFromAxios, type FormErrorList } from '../../api/errors';
+import { withFormErrors, type FormErrorList } from '../../api/errors';
 
 interface ContactFieldType {
   id: number | string;
@@ -287,26 +287,21 @@ function closeModal() {
 type FormBag = typeof createForm | typeof editForm;
 
 async function persistClient(method: 'post' | 'put' | 'delete', uri: string, form: FormBag, flag: 'submitted' | 'edited' | 'deleted') {
-  form.errors = [];
+  const ok = await withFormErrors(form, () => axios[method](uri, form), t('app.error_try_again'));
+  if (!ok) return;
 
-  try {
-    await axios[method](uri, form);
-    await getContactFieldTypes();
+  await getContactFieldTypes();
 
-    if ('id' in form) (form as typeof editForm).id = '';
-    form.name = '';
-    form.protocol = '';
-    form.icon = '';
-    form.errors = [];
+  if ('id' in form) (form as typeof editForm).id = '';
+  form.name = '';
+  form.protocol = '';
+  form.icon = '';
 
-    closeModal();
+  closeModal();
 
-    if (flag === 'submitted') submitted.value = true;
-    else if (flag === 'edited') edited.value = true;
-    else deleted.value = true;
-  } catch (error: unknown) {
-    form.errors = validationErrorsFromAxios(error, t('app.error_try_again'));
-  }
+  if (flag === 'submitted') submitted.value = true;
+  else if (flag === 'edited') edited.value = true;
+  else deleted.value = true;
 }
 
 function store() {

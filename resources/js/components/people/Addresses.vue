@@ -250,7 +250,7 @@ import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { collectionValues } from '../../api/collection';
-import { validationErrorsFromAxios, type FormErrorList } from '../../api/errors';
+import { withFormErrors, type FormErrorList } from '../../api/errors';
 
 interface Country {
   id: number | string;
@@ -373,16 +373,11 @@ async function persistClient(
   uri: string,
   form: AddressForm,
 ): Promise<unknown> {
-  form.errors = [];
-  try {
-    if (method === 'delete') {
-      return await axios.delete(uri);
-    }
-    return await axios[method](uri, form);
-  } catch (error: unknown) {
-    form.errors = validationErrorsFromAxios(error, t('app.error_try_again'));
-    return undefined;
-  }
+  return withFormErrors(
+    form,
+    () => (method === 'delete' ? axios.delete(uri) : axios[method](uri, form)),
+    t('app.error_try_again'),
+  );
 }
 
 async function store() {

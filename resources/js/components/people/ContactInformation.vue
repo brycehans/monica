@@ -112,7 +112,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import { useHtmlDir } from '../../composables/useHtmlDir';
-import { validationErrorsFromAxios, type FormErrorList } from '../../api/errors';
+import { withFormErrors, type FormErrorList } from '../../api/errors';
 
 interface ContactFieldType {
   id: number | string;
@@ -186,17 +186,12 @@ async function getContactFieldTypes() {
 }
 
 async function persistClient(method: 'post' | 'put' | 'delete', uri: string, form: FormBag) {
-  form.errors = [];
-  try {
-    if (method === 'delete') {
-      await axios.delete(uri);
-    } else {
-      await axios[method](uri, form);
-    }
-    await getContactInformationData();
-  } catch (error: unknown) {
-    form.errors = validationErrorsFromAxios(error, t('app.error_try_again'));
-  }
+  const ok = await withFormErrors(
+    form,
+    () => (method === 'delete' ? axios.delete(uri) : axios[method](uri, form)),
+    t('app.error_try_again'),
+  );
+  if (ok) await getContactInformationData();
 }
 
 function store() {

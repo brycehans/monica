@@ -94,6 +94,7 @@
     <!-- Create Client Modal -->
     <monica-modal v-model="showModalClient"
                   :title="form.id ? t('settings.api_oauth_edit') : t('settings.api_oauth_create')"
+                  cy-name="oauth-client-modal"
                   @open="_focusInput"
     >
       <!-- Form Errors -->
@@ -192,7 +193,7 @@ import { required, url } from '@vuelidate/validators';
 import FormErrors from '../partials/FormErrors.vue';
 import { useHtmlDir } from '../../composables/useHtmlDir';
 import { useNotify } from '../../composables/useNotify';
-import { validationErrorsFromAxios, type FormErrorList } from '../../api/errors';
+import { withFormErrors, type FormErrorList } from '../../api/errors';
 
 interface Client {
   id: number | string;
@@ -278,19 +279,14 @@ function closeSecretModal() {
 }
 
 async function persistClient(method: 'post' | 'put', uri: string, f: ClientForm) {
-  const isCreate = method === 'post';
-  f.errors = [];
-  try {
-    const response = await axios[method](uri, f);
-    if (isCreate) {
-      clients.value.push(response.data);
-      showClientSecret(response.data.secret);
-    } else {
-      await getClients();
-      closeModal();
-    }
-  } catch (error: unknown) {
-    f.errors = validationErrorsFromAxios(error, t('app.error_try_again'));
+  const response = await withFormErrors(f, () => axios[method](uri, f), t('app.error_try_again'));
+  if (!response) return;
+  if (method === 'post') {
+    clients.value.push(response.data);
+    showClientSecret(response.data.secret);
+  } else {
+    await getClients();
+    closeModal();
   }
 }
 

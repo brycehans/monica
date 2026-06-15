@@ -88,3 +88,12 @@ please ping @djaiss in an issue *before* you start working on it, explaining
 what you want to achieve, why and how. We want to maintain a high level of
 visual quality in the software and we will dismiss all pull requests that change
 the front end that have not been discussed before-hand.
+
+### 8. Fork-specific tooling
+
+This community-maintenance fork tracks dev-tool version floors separately
+from the standard `engines` block in `package.json`. The custom
+`toolFloors` namespace and its CI enforcement (`scripts/check-ts-version.mjs`)
+are documented in [`CLAUDE.md`](CLAUDE.md#tool-version-floors-toolfloors).
+If you encounter a `toolFloors.X is below the floor of Y.Z` CI error,
+that's the section to read first.

@@ -85,7 +85,7 @@ jobs:
       - name: Install yarn dependencies
         run: yarn inst
 
-      - name: Verify minimum TypeScript version (engines.typescript)
+      - name: Verify minimum TypeScript version (toolFloors.typescript)
         run: yarn check:ts-version
 
       - name: Run vue-tsc
