@@ -86,15 +86,23 @@ Standard Laravel + Vue monolith. Worth knowing before changing things:
 - `Contacts/`, `Settings/`, `Account/`, `Auth/`, `Settings/`, `DAV/` — server-rendered Blade views in `resources/views/`.
 - `DAV/` is the CardDAV/CalDAV surface via `sabre/dav` + `monicahq/laravel-sabre`.
 
-**Frontend is mixed-paradigm.** Most pages are Blade templates with islands of Vue 3 components mounted by `resources/js/app.ts` (via `createApp(...)`). Components live in `resources/js/components/`. 82 SFCs total; 4 converted to `<script setup lang="ts">` in the #798 pilot (RateDay, Genders, MfaActivate, Tags) — the remaining 78 are still Options API and on the modernization ladder. New components or files being touched substantively should land in `<script setup lang="ts">`. **Do not introduce jQuery for new behaviour** (the existing jQuery is legacy Bootstrap-plugin glue and is on the removal list); use Vue. New CSS should prefer Tachyons utility classes over new SASS — Bootstrap 4 is being phased out.
+**Frontend is mixed-paradigm.** Most pages are Blade templates with islands of Vue 3 components mounted by `resources/js/app.ts` (via `createApp(...)`). Components live in `resources/js/components/`. All 82 SFCs run on `<script setup lang="ts">` (4 in the #798 pilot, 78 in the #805 bulk migration). New components or files being touched substantively should stay on `<script setup lang="ts">`. **Do not introduce jQuery for new behaviour** (the existing jQuery is legacy Bootstrap-plugin glue and is on the removal list); use Vue. New CSS should prefer Tachyons utility classes over new SASS — Bootstrap 4 is being phased out.
 
 **Composables available in `resources/js/composables/`** (importable from `<script setup>` blocks):
-- `useHtmlDir()` → `{ dirltr: boolean }` — replaces `this.$root.htmldir === 'ltr'` (39 callsites pre-pilot)
-- `useNotify()` → `{ notify }` from `@kyvg/vue3-notification` — replaces `this.$notify` (25 callsites pre-pilot)
+- `useHtmlDir()` → `{ dirltr: boolean }` — replaces `this.$root.htmldir === 'ltr'`
+- `useNotify()` → `{ notify }` from `@kyvg/vue3-notification` — replaces `this.$notify`
 - `useRowModal(Component)` — per-row modal with attr-reset between opens (vue-final-modal wrapper)
 - `useModalSelfClose()` — for modals that close themselves on save
 
-**Conventions for Options-API → `<script setup>` conversions** are documented in `docs/plans/2026-06-13-798-composition-api-pilot.md`. Non-obvious traps from the pilot: `_.toArray(response.data)` is load-bearing for shape AND null-safety on Collator-sorted endpoints (use `Object.values(response.data ?? {})`, not a naive `as T[]` cast); `defineExpose` defaults to NO exposure (template-driven specs); `trigger('keydown.esc')` doesn't fire `@keydown.esc` in happy-dom (use `trigger('keydown', { key: 'Escape' })`).
+**API helpers in `resources/js/api/`** (typed wrappers around the Laravel ↔ axios boundary):
+- `collectionValues<T>(payload): T[]` — flattens an object-keyed Laravel Collection or passes an array through unchanged. Use whenever the endpoint might `keyBy`/`asort`/`filter` and serialise as an object instead of an array (the trap that bit 4 sites in #805). Replaces the `_.toArray(response.data)` idiom from the Options API era.
+- `validationErrorsFromAxios(error, fallback): FormErrorList` — normalises both legacy `{ field: [msgs] }` and modern `{ message, errors: { ... } }` Laravel 422 envelopes into the positional shape `FormErrors.vue` consumes. Runtime-validates each element via a type predicate; falls back when the shape isn't recognised. Accepts string, string[], or `(error) => string | string[]` fallbacks.
+- `withFormErrors<T>(target, action, fallback): Promise<T | undefined>` — convenience wrapper around the catch/assign boilerplate. Clears `target.errors`, runs the action, on rejection writes the normalised errors and returns `undefined`. Accepts either a `{ errors?: FormErrorList }` form-bag or a `Ref<FormErrorList>`.
+- `FormErrorList` (type) — `Array<string | Record<string, string[]>>`. The actual runtime shape of validation errors; use this in `interface MyForm { errors: FormErrorList }` instead of `string[]`.
+
+The helpers are runtime-validated rather than `as`-cast: `validationErrorsFromAxios` narrows `unknown[]` to `FormErrorList` by `.every()`-ing a per-element type predicate (a malformed envelope triggers the fallback instead of leaking through as `[object Object]`), and `collectionValues` keeps a single boundary cast on the caller-supplied `T` (the only place call-site shape knowledge enters the type system). If you add a new helper here, match that pattern — predicates over assertions wherever the input is `unknown`.
+
+**Conventions for Options-API → `<script setup>` conversions** are documented in `docs/plans/2026-06-13-798-composition-api-pilot.md` (pilot, 4 SFCs). The #805 bulk migration extended that doc's traps; key additions: prefer `collectionValues<T>(response.data)` over the inline `Object.values(...) as T[]` cast; declare form-state `errors` as `FormErrorList` not `string[]`; use `withFormErrors` to wrap the axios call instead of hand-rolling the try/catch; modals that need a test-locator should accept a `cy-name` prop and pass it to `MonicaModal`. Other traps still relevant from the pilot: `defineExpose` defaults to NO exposure (template-driven specs); `trigger('keydown.esc')` doesn't fire `@keydown.esc` in happy-dom (use `trigger('keydown', { key: 'Escape' })`).
 
 **Localization.** Source strings live in `resources/lang/en/*.php`. Crowdin owns every other locale — don't edit non-`en` files by hand. Strings used in Vue need `php artisan lang:generate` to be regenerated into JS, then `yarn run prod` to bundle them. PHP side uses `trans('file.key')`. Vue side uses `vue-i18n` in composition mode — destructure `t` from `useI18n()` in `setup()` and call `t('file.key')` (plural form: `t('file.key', namedParams, count)`). There is no template `$t` fallback — `globalInjection: false`. The legacy `$tc` helper is gone (dropped from vue-i18n 11's legacy mode and from composition mode entirely; use `t` with the count argument).
 
@@ -153,7 +161,7 @@ Anything not on the modernization ladder is out of scope. The ladder, in rough p
 
 1. Continued security patches against the current dependency graph (`composer audit` / `yarn audit` reduction)
 2. Triage of the imported issue and PR queue
-3. **Frontend modernization** (active): Options API → Composition API with TypeScript adoption on the .vue side; typing the shared `.js` modules in `resources/js/` first so their types flow into the eventual Vue rewrites; dropping Bootstrap 4 + jQuery in favour of Tachyons-only. Constraint: zero user-facing behaviour change.
+3. **Frontend modernization** (next): dropping Bootstrap 4 + jQuery in favour of Tachyons-only; continuing to type the shared `.js` modules in `resources/js/`. Composition API conversion is complete (#798 + #805); the remaining ladder is the CSS/jQuery cleanup. Constraint: zero user-facing behaviour change.
 
 Already landed (kept here as context for older docs that may still list these as "things we plan to do"):
 
@@ -161,6 +169,7 @@ Already landed (kept here as context for older docs that may still list these as
 - Modern Laravel (currently 12.x)
 - Modern Node / build chain (Vite 8 + `@vitejs/plugin-vue 6`)
 - Vue 2.7 → Vue 3.5 cutover (#730) and post-cutover cleanups: vue-i18n composition-mode migration (#744 + #746/#755/#756/#757/#758), `vue-final-modal` `useModal()` composable (#724), Vitest harness (#759)
+- **Composition API + TypeScript on all 82 SFCs** (#798 pilot + #805 bulk migration). All `<script setup lang="ts">`. Includes the `resources/js/api/` helper module (`collectionValues`, `validationErrorsFromAxios`, `withFormErrors`, `FormErrorList` type), feature-local types in `resources/js/components/people/{,gifts/}types.ts`, and the `toolFloors.typescript` CI guard for TS 5.5+.
 
 Hard constraints:
 

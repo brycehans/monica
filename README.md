@@ -46,9 +46,12 @@ In rough priority order, the things we plan to do:
    (`composer audit` and `yarn audit` reduction)
 2. Triage of the imported issue and PR queue, cherry-picking valuable
    community contributions that were never merged upstream
-3. Internal modernization of the frontend layer: Options API →
-   Composition API, TypeScript adoption, dropping Bootstrap 4 + jQuery
-   in favour of Tachyons. Constraint: zero user-facing behaviour change.
+3. Continuing the internal modernization of the frontend layer:
+   dropping Bootstrap 4 + jQuery in favour of Tachyons; finishing
+   the TypeScript adoption on the shared `.js` modules. The
+   Composition API conversion landed in PRs #798 (pilot) and #805
+   (bulk migration of the remaining 78 SFCs). Constraint: zero
+   user-facing behaviour change.
 
 Already landed in the modernization ladder:
 
@@ -59,6 +62,10 @@ Already landed in the modernization ladder:
   (vue-i18n composition mode, `vue-final-modal`, `@vuelidate/core`,
   `@vuepic/vue-datepicker`, `@vueform/multiselect`, `floating-vue`,
   `@kyvg/vue3-notification`)
+- Composition API + TypeScript on all 82 Vue SFCs (`<script setup
+  lang="ts">`), with a small `resources/js/api/` helpers module
+  owning the Laravel envelope shapes and a `toolFloors.typescript`
+  CI guard pinning the minimum TS version
 
 Things we will not do:
 
