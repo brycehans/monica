@@ -85,7 +85,12 @@
     </div>
 
     <!-- MODAL ZOOM PHOTO -->
+    <!-- Legacy Vue 2 idiom: v-if is on <transition> rather than the inner
+         element, so the transition CSS never fires (the wrapper itself
+         mounts/unmounts with showModal). Moving v-if onto .modal-mask would
+         make the modal fade in/out — that's a UI change, out of scope here. -->
     <transition v-if="showModal" name="modal">
+      <!-- eslint-disable-next-line vue/require-toggle-inside-transition -->
       <div class="modal-mask">
         <div class="modal-wrapper">
           <div class="modal-container">

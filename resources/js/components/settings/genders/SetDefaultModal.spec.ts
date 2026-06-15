@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { mountModal } from '../../../../../tests/js/helpers';
+import { mount } from '@vue/test-utils';
+import { modalMountOptions } from '../../../../../tests/js/helpers';
 import SetDefaultModal from './SetDefaultModal.vue';
 
 const genders = [
@@ -9,12 +10,12 @@ const genders = [
 
 describe('genders/SetDefaultModal', () => {
   it('initializes selectedId from the defaultId prop', () => {
-    const w = mountModal(SetDefaultModal, { props: { modelValue: true, genders, defaultId: 2 } });
+    const w = mount(SetDefaultModal, { ...modalMountOptions, props: { modelValue: true, genders, defaultId: 2 } });
     expect(w.vm.selectedId).toBe(2);
   });
 
   it('save() PUTs to settings/personalization/genders/default/{id}, emits saved + close', async () => {
-    const w = mountModal(SetDefaultModal, { props: { modelValue: true, genders, defaultId: 2 } });
+    const w = mount(SetDefaultModal, { ...modalMountOptions, props: { modelValue: true, genders, defaultId: 2 } });
     w.vm.selectedId = 1;
     await w.vm.save();
     expect(axios.put).toHaveBeenCalledWith('settings/personalization/genders/default/1');
@@ -23,7 +24,7 @@ describe('genders/SetDefaultModal', () => {
   });
 
   it('cancel() emits update:modelValue=false and does not emit saved', () => {
-    const w = mountModal(SetDefaultModal, { props: { modelValue: true, genders, defaultId: 2 } });
+    const w = mount(SetDefaultModal, { ...modalMountOptions, props: { modelValue: true, genders, defaultId: 2 } });
     w.vm.cancel();
     expect(w.emitted('update:modelValue')?.flat()).toContain(false);
     expect(w.emitted('saved')).toBeFalsy();

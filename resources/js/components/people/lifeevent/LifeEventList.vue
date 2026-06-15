@@ -491,8 +491,8 @@
                        :months="months"
                        :days="days"
                        :years="years"
-                       @updateLifeEventTimeline="updateLifeEventsList($event)"
-                       @dismissModal="showAdd = false"
+                       @update-life-event-timeline="updateLifeEventsList($event)"
+                       @dismiss-modal="showAdd = false"
     />
 
     <!-- LISTING OF LIFE EVENTS -->

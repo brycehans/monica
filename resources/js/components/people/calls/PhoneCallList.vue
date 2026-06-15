@@ -135,7 +135,7 @@
               :label="t('people.modal_call_comment')"
               :rows="4"
               iclass="br2 f5 w-100 ba b--black-40 pa2 outline-0"
-              @contentChange="updateEditCallContent($event)"
+              @content-change="updateEditCallContent($event)"
             />
             <p class="f6">
               {{ t('app.markdown_description') }}
