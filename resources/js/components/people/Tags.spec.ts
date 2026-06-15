@@ -59,7 +59,7 @@ describe('Tags', () => {
     const w = mount(Tags, { props: { hash: 'abc123' } });
     await flushPromises();
     // Enter edit mode to expose the × buttons.
-    await w.find(`a[href=""][cy-name="edit-button"], a.pointer`).trigger('click');
+    await w.find('a[href=""][cy-name="edit-button"], a.pointer').trigger('click');
     await flushPromises();
 
     // The × is the only span.pointer inside the tag <li>.

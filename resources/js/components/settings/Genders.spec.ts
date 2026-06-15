@@ -23,9 +23,9 @@ vi.mock('../../composables/useRowModal', () => ({
     const name = component?.name ?? '';
     const spy =
       name === 'CreateModal' ? openSpies.create :
-      name === 'EditModal' ? openSpies.edit :
-      name === 'DeleteModal' ? openSpies.delete :
-      openSpies.setDefault;
+        name === 'EditModal' ? openSpies.edit :
+          name === 'DeleteModal' ? openSpies.delete :
+            openSpies.setDefault;
     return { open: spy, close: vi.fn() };
   },
 }));
