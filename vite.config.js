@@ -51,8 +51,10 @@ export default defineConfig(({ mode }) => ({
       // reach the consumer-facing moment.
       { find: /^moment$/, replacement: path.resolve(__dirname, 'node_modules/moment/dist/moment.js') },
     ],
-    // Match webpack/Mix's default: resolve .vue imports without explicit extension.
-    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.vue'],
+    // Resolve extensionless imports. TypeScript variants are listed first so
+    // a `foo.ts` wins over a stale `foo.js` (a footgun until the conversion in
+    // #797 finished). Vue last so explicit `.vue` SFC imports still work.
+    extensions: ['.mts', '.ts', '.mjs', '.js', '.tsx', '.jsx', '.json', '.vue'],
   },
   build: {
     sourcemap: true,

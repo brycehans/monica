@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { mountModal } from '../../../../../tests/js/helpers.js';
+import { describe, it, expect } from 'vitest';
+import { mountModal } from '../../../../../tests/js/helpers';
 import UpdateModal from './UpdateModal.vue';
 
 const customType = { id: 12, name: 'Anniversary', default_life_event_type_key: 'birthday' };

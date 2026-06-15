@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mountModal } from '../../../../../tests/js/helpers.js';
+import { mountModal } from '../../../../../tests/js/helpers';
 import CreateModal from './CreateModal.vue';
 
 const familyCategory = { id: 4, default_life_event_category_key: 'family' };

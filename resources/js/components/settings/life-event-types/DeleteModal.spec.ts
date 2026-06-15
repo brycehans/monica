@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { mountModal } from '../../../../../tests/js/helpers.js';
+import { describe, it, expect, vi } from 'vitest';
+import { mountModal } from '../../../../../tests/js/helpers';
 import DeleteModal from './DeleteModal.vue';
 
 const aType = { id: 9, name: 'Anniversary' };
@@ -20,7 +20,7 @@ describe('life-event-types/DeleteModal', () => {
   });
 
   it('destroy() with structured error sets errorMessage from response.data.message and does not emit saved', async () => {
-    axios.delete.mockRejectedValueOnce({ response: { data: { message: 'cannot delete' } } });
+    (axios.delete as ReturnType<typeof vi.fn>).mockRejectedValueOnce({ response: { data: { message: 'cannot delete' } } });
     const w = mountModal(DeleteModal, { props: { modelValue: true, type: aType } });
     await w.vm.destroy();
     expect(w.vm.errorMessage).toBe('cannot delete');

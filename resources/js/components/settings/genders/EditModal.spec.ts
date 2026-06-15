@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mountModal } from '../../../../../tests/js/helpers.js';
+import { mountModal } from '../../../../../tests/js/helpers';
 import EditModal from './EditModal.vue';
 
 const genderTypes = [{ id: 'M', name: 'Male', type: 'M' }, { id: 'F', name: 'Female', type: 'F' }];

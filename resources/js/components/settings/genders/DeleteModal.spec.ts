@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { mountModal } from '../../../../../tests/js/helpers.js';
+import { describe, it, expect, vi } from 'vitest';
+import { mountModal } from '../../../../../tests/js/helpers';
 import DeleteModal from './DeleteModal.vue';
 
 const allGenders = [
@@ -40,7 +40,7 @@ describe('genders/DeleteModal', () => {
   });
 
   it('trashAndReplace() with structured error sets errorMessage from response.data.message', async () => {
-    axios.delete.mockRejectedValueOnce({ response: { data: { message: 'cannot delete' } } });
+    (axios.delete as ReturnType<typeof vi.fn>).mockRejectedValueOnce({ response: { data: { message: 'cannot delete' } } });
     const w = mountModal(DeleteModal, { props: { modelValue: true, gender: hasContacts, genders: allGenders } });
     w.vm.form.newId = 2;
     await w.vm.trashAndReplace();
@@ -49,7 +49,7 @@ describe('genders/DeleteModal', () => {
   });
 
   it('trashAndReplace() with non-object error falls back to app.error_try_again', async () => {
-    axios.delete.mockRejectedValueOnce({ response: { data: 'oops' } });
+    (axios.delete as ReturnType<typeof vi.fn>).mockRejectedValueOnce({ response: { data: 'oops' } });
     const w = mountModal(DeleteModal, { props: { modelValue: true, gender: isDefault, genders: allGenders } });
     w.vm.form.newId = 3;
     await w.vm.trashAndReplace();
