@@ -1,11 +1,37 @@
 import globals from 'globals';
 import pluginVue from 'eslint-plugin-vue';
 import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 
 export default [
   // plugin-vue v9's `vue/recommended` resolved to vue2 rules; v10's `flat/recommended`
   // is Vue 3-oriented. Use `flat/vue2-recommended` explicitly since we're on Vue 2.
   ...pluginVue.configs['flat/vue2-recommended'],
+  // Register @typescript-eslint as a plugin (no rules enabled) so that
+  // existing `// eslint-disable-next-line @typescript-eslint/no-explicit-any`
+  // comments resolve. Without the plugin loaded, those rule names produce a
+  // "Definition for rule '...' was not found" error.
+  {
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+    },
+  },
+  // Standalone TypeScript files (not inside .vue SFCs). The pluginVue block
+  // above configures vue-eslint-parser for .vue files and delegates to tsParser
+  // for `<script lang="ts">` blocks — but bare `.ts` files don't go through
+  // vue-eslint-parser at all, so they need tsParser as the outer parser here.
+  // Without this block, eslint would try (and fail) to parse them with espree.
+  {
+    files: ['**/*.ts'],
+    languageOptions: {
+      ecmaVersion: 12,
+      sourceType: 'module',
+      parser: tsParser,
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
   {
     languageOptions: {
       ecmaVersion: 12,

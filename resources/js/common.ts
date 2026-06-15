@@ -44,7 +44,6 @@ window.DOMPurify = DOMPurify;
 import messages from '../../public/js/langs/en.json';
 import pluralization from './pluralization';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyI18n = I18n<any, any, any, any, false>;
 
 const common = {
@@ -77,7 +76,6 @@ const common = {
   _loadLanguageAsync(lang: string): Promise<AnyI18n> {
     if ((this.i18n.global.locale as { value: string }).value !== lang) {
       if (!this.loadedLanguages.includes(lang)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return axios.get<any>(`js/langs/${lang}.json`).then(msgs => {
           this.i18n.global.setLocaleMessage(lang, msgs.data);
           this.loadedLanguages.push(lang);
