@@ -4,9 +4,12 @@ import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 
 export default [
-  // plugin-vue v9's `vue/recommended` resolved to vue2 rules; v10's `flat/recommended`
-  // is Vue 3-oriented. Use `flat/vue2-recommended` explicitly since we're on Vue 2.
-  ...pluginVue.configs['flat/vue2-recommended'],
+  // Vue 3 (#730 cutover). plugin-vue v10's `flat/recommended` is Vue 3-oriented;
+  // `flat/vue2-recommended` was the bridge preset during the migration and is
+  // now wrong for our codebase. Rules that fired only under the Vue 2 preset
+  // (or that we wanted to skip during the dep-upgrade sweep) are individually
+  // overridden in the rules block below.
+  ...pluginVue.configs['flat/recommended'],
   // Register @typescript-eslint as a plugin (no rules enabled) so that
   // existing `// eslint-disable-next-line @typescript-eslint/no-explicit-any`
   // comments resolve. Without the plugin loaded, those rule names produce a

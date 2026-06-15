@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { mountModal } from '../../../../../tests/js/helpers';
+import { mount } from '@vue/test-utils';
+import { modalMountOptions } from '../../../../../tests/js/helpers';
 import DeleteModal from './DeleteModal.vue';
 
 const allGenders = [
@@ -14,7 +15,7 @@ const isDefault = { id: 2, name: 'Woman', isDefault: true, numberOfContacts: 0 }
 
 describe('genders/DeleteModal', () => {
   it('initializes form from the gender prop and starts with empty errorMessage', () => {
-    const w = mountModal(DeleteModal, { props: { modelValue: true, gender: hasContacts, genders: allGenders } });
+    const w = mount(DeleteModal, { ...modalMountOptions, props: { modelValue: true, gender: hasContacts, genders: allGenders } });
     expect(w.vm.form.id).toBe('1');
     expect(w.vm.form.name).toBe('Man');
     expect(w.vm.form.isDefault).toBe(false);
@@ -23,7 +24,7 @@ describe('genders/DeleteModal', () => {
   });
 
   it('trash() (no contacts, not default) DELETEs and emits saved + close', async () => {
-    const w = mountModal(DeleteModal, { props: { modelValue: true, gender: simpleDeletable, genders: allGenders } });
+    const w = mount(DeleteModal, { ...modalMountOptions, props: { modelValue: true, gender: simpleDeletable, genders: allGenders } });
     await w.vm.trash();
     expect(axios.delete).toHaveBeenCalledWith('settings/personalization/genders/3');
     expect(w.emitted('saved')).toBeTruthy();
@@ -31,7 +32,7 @@ describe('genders/DeleteModal', () => {
   });
 
   it('trashAndReplace() DELETEs with replaceby and emits saved + close', async () => {
-    const w = mountModal(DeleteModal, { props: { modelValue: true, gender: hasContacts, genders: allGenders } });
+    const w = mount(DeleteModal, { ...modalMountOptions, props: { modelValue: true, gender: hasContacts, genders: allGenders } });
     w.vm.form.newId = 2;
     await w.vm.trashAndReplace();
     expect(axios.delete).toHaveBeenCalledWith('settings/personalization/genders/1/replaceby/2');
@@ -41,7 +42,7 @@ describe('genders/DeleteModal', () => {
 
   it('trashAndReplace() with structured error sets errorMessage from response.data.message', async () => {
     (axios.delete as ReturnType<typeof vi.fn>).mockRejectedValueOnce({ response: { data: { message: 'cannot delete' } } });
-    const w = mountModal(DeleteModal, { props: { modelValue: true, gender: hasContacts, genders: allGenders } });
+    const w = mount(DeleteModal, { ...modalMountOptions, props: { modelValue: true, gender: hasContacts, genders: allGenders } });
     w.vm.form.newId = 2;
     await w.vm.trashAndReplace();
     expect(w.vm.errorMessage).toBe('cannot delete');
@@ -50,7 +51,7 @@ describe('genders/DeleteModal', () => {
 
   it('trashAndReplace() with non-object error falls back to app.error_try_again', async () => {
     (axios.delete as ReturnType<typeof vi.fn>).mockRejectedValueOnce({ response: { data: 'oops' } });
-    const w = mountModal(DeleteModal, { props: { modelValue: true, gender: isDefault, genders: allGenders } });
+    const w = mount(DeleteModal, { ...modalMountOptions, props: { modelValue: true, gender: isDefault, genders: allGenders } });
     w.vm.form.newId = 3;
     await w.vm.trashAndReplace();
     expect(w.vm.errorMessage).toBe('app.error_try_again');
@@ -58,7 +59,7 @@ describe('genders/DeleteModal', () => {
   });
 
   it('cancel() emits update:modelValue=false (no saved)', () => {
-    const w = mountModal(DeleteModal, { props: { modelValue: true, gender: simpleDeletable, genders: allGenders } });
+    const w = mount(DeleteModal, { ...modalMountOptions, props: { modelValue: true, gender: simpleDeletable, genders: allGenders } });
     w.vm.cancel();
     expect(w.emitted('update:modelValue')?.flat()).toContain(false);
     expect(w.emitted('saved')).toBeFalsy();
