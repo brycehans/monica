@@ -1,10 +1,11 @@
-import { mount } from '@vue/test-utils';
+import { mount, type MountingOptions, type VueWrapper } from '@vue/test-utils';
 import { vi } from 'vitest';
+import type { Component } from 'vue';
 
 // vue-i18n's useI18n() is called inside setup(). Stub it module-wide
 // in tests that don't need real translations.
 vi.mock('vue-i18n', () => ({
-  useI18n: () => ({ t: (k) => k, tc: (k) => k }),
+  useI18n: () => ({ t: (k: string) => k, tc: (k: string) => k }),
 }));
 
 // Default mount config for modal SFCs:
@@ -13,7 +14,15 @@ vi.mock('vue-i18n', () => ({
 //     That's playwright's job.
 //   - form atom stubs avoid mounting their full templates.
 //   - useI18n's t() is stubbed to identity so assertions against keys work.
-export function mountModal(component, options = {}) {
+//
+// Returns `VueWrapper<any>` so tests can poke at component-exposed state
+// (`w.vm.form.type`, `w.vm.store()`, etc.) without re-declaring each modal's
+// `defineExpose` shape at every call site.
+export function mountModal(
+  component: Component,
+  options: MountingOptions<Record<string, unknown>> = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): VueWrapper<any> {
   return mount(component, {
     global: {
       stubs: {
@@ -27,7 +36,7 @@ export function mountModal(component, options = {}) {
         'form-toggle': true,
       },
       mocks: {
-        $t: (k) => k,
+        $t: (k: string) => k,
       },
       ...options.global,
     },

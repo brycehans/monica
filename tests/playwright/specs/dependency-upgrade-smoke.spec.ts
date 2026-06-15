@@ -1312,7 +1312,7 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
 
   test('dashboard debts tab: formatDate filter renders LL date (pr-1c global formatDate guard)', async ({ page, consoleGate }) => {
     // Guards the global `Vue.filter('formatDate')` registration in
-    // resources/js/common.js. Its only consumer is DashboardLog.vue:118
+    // resources/js/common.ts. Its only consumer is DashboardLog.vue:118
     // `{{ debt.created_at | formatDate }}` inside the Debts tab. pr-1c will
     // lift the global filter to a method/util; this test asserts the LL
     // formatted date still renders against the dev seed.
