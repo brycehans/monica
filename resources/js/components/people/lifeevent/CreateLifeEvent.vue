@@ -119,7 +119,7 @@
           </p>
         </div>
 
-        <create-default-life-event @contentChange="updateLifeEventContent($event)" />
+        <create-default-life-event @content-change="updateLifeEventContent($event)" />
 
         <!-- YEARLY REMINDER -->
         <div class="ph4 pv3 mb3 mb0-ns bb b--gray-monica">

@@ -39,8 +39,8 @@
           :uid="message.uid"
           :participant-name="participantName"
           :display-trash="displayTrash"
-          @updateAuthor="updateAuthor($event, message)"
-          @deleteMessage="deleteMessage($event)"
+          @update-author="updateAuthor($event, message)"
+          @delete-message="deleteMessage($event)"
         />
       </div>
       <p class="tc mb0">

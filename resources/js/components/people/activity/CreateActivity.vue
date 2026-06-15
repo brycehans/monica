@@ -1,7 +1,11 @@
 <template>
   <div>
     <!-- LOG AN ACTIVITY -->
+    <!-- Legacy Vue 2 idiom: <transition> wraps an always-rendered child so the
+         transition CSS never fires. Cleanup would alter UI behaviour (suddenly
+         animate on mount) — out of scope for the fork's "no UI changes" rule. -->
     <transition name="fade">
+      <!-- eslint-disable-next-line vue/require-toggle-inside-transition -->
       <div class="ba br3 mb3 pa3 b--black-40">
         <div class="dt dt--fixed pb3 mb3 mb0-ns bb b--gray-monica">
           <!-- SUMMARY -->
@@ -61,7 +65,7 @@
             :rows="4"
             :title="t('people.activities_summary')"
             :placeholder="t('people.conversation_add_content')"
-            @contentChange="updateDescription($event)"
+            @content-change="updateDescription($event)"
           />
           <p class="f6">
             {{ t('app.markdown_description') }} <a href="https://guides.github.com/features/mastering-markdown/" rel="noopener noreferrer" target="_blank">

@@ -43,7 +43,7 @@
 
 
       <!-- How was your day -->
-      <journal-rate-day @hasRated="hasRated" />
+      <journal-rate-day @has-rated="hasRated" />
 
       <!-- Logs -->
       <div v-if="journalEntries.data" v-cy-name="'journal-entries-body'" v-cy-items="journalEntries.data.map(j => j.id)"
@@ -53,7 +53,7 @@
              v-cy-name="'entry-body-' + journalEntry.id" class="cf"
         >
           <journal-content-rate v-if="journalEntry.journalable_type === 'App\\Models\\Journal\\Day'"
-                                :journal-entry="journalEntry" @deleteJournalEntry="deleteJournalEntry"
+                                :journal-entry="journalEntry" @delete-journal-entry="deleteJournalEntry"
           />
 
           <journal-content-activity v-else-if="journalEntry.journalable_type === 'App\\Models\\Account\\Activity'"
@@ -61,7 +61,7 @@
           />
 
           <journal-content-entry v-else-if="journalEntry.journalable_type === 'App\\Models\\Journal\\Entry'"
-                                 :journal-entry="journalEntry" @deleteJournalEntry="deleteJournalEntry"
+                                 :journal-entry="journalEntry" @delete-journal-entry="deleteJournalEntry"
           />
         </div>
       </div>
