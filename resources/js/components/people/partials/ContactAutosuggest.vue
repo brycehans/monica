@@ -63,10 +63,10 @@
     />
     <ul v-if="open && items.length > 0" class="contact-autosuggest__results">
       <li
-        v-for="(item, idx) in items"
+        v-for="item in items"
         :key="item.id"
         class="contact-autosuggest__result"
-        @mousedown.prevent="onSelect(item, idx)"
+        @mousedown.prevent="onSelect(item)"
       >
         <component :is="componentItem" :item="item" />
       </li>
@@ -74,153 +74,157 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, onMounted, type Component } from 'vue';
 import axios from 'axios';
 
-export default {
+interface ContactItem {
+  id: number;
+  name?: string;
+  complete_name?: string;
+  keyword?: string;
+}
 
-  props: {
-    id: {
-      type: String,
-      default: null,
-    },
-    title: {
-      type: String,
-      default: null,
-    },
-    required: {
-      type: Boolean,
-      default: true,
-    },
-    addNoResult: {
-      type: Boolean,
-      default: true,
-    },
-    placeholder: {
-      type: String,
-      default: '',
-    },
-    componentItem: {
-      type: Object,
-      default: () => null,
-    },
-    wait: {
-      type: Number,
-      default: 200,
-    },
-    minLen: {
-      type: Number,
-      default: 1,
-    },
-    overflow: {
-      type: Boolean,
-      default: false,
-    },
-    inputClass: {
-      type: String,
-      default: '',
-    },
-    filter: {
-      type: Function,
-      default: () => true,
-    },
+const props = withDefaults(
+  defineProps<{
+    id?: string | null;
+    title?: string | null;
+    required?: boolean;
+    addNoResult?: boolean;
+    placeholder?: string;
+    componentItem?: Component | null;
+    wait?: number;
+    minLen?: number;
+    overflow?: boolean;
+    inputClass?: string;
+    filter?: (item: ContactItem) => boolean;
+  }>(),
+  {
+    id: null,
+    title: null,
+    required: true,
+    addNoResult: true,
+    placeholder: '',
+    componentItem: null,
+    wait: 200,
+    minLen: 1,
+    overflow: false,
+    inputClass: '',
+    filter: () => true,
   },
+);
 
-  emits: ['select', 'blur'],
+const emit = defineEmits<{
+  (e: 'select', payload: { item: ContactItem }): void;
+  (e: 'blur'): void;
+}>();
 
-  data() {
-    return {
-      query: '',
-      items: [],
-      open: false,
-      cache: {},
-      debounced: null,
-    };
-  },
+const query = ref('');
+const items = ref<ContactItem[]>([]);
+const open = ref(false);
+const cache = ref<Record<string, ContactItem[]>>({});
 
-  computed: {
-    realid() {
-      return this.id ? this.id : 'autosuggest__input';
-    },
-  },
+const realid = computed(() => (props.id ? props.id : 'autosuggest__input'));
 
-  mounted() {
-    this.debounced = _.debounce((text) => {
-      this.fetch(text);
-    }, this.wait);
-  },
+// Minimal debounce — replaces lodash's _.debounce for the search-as-you-type
+// input. Carries a .cancel() to drop a queued fetch when a cached result hits.
+interface Debounced {
+  (text: string): void;
+  cancel: () => void;
+}
 
-  methods: {
-    onInput() {
-      const text = this.query;
-      if (text === '' || text.length < this.minLen) {
-        this.items = this.addNoResult && text !== '' ? [this.addNewSentinel(text)] : [];
-        this.open = this.items.length > 0;
-        return;
-      }
-      if (this.cache[text] !== undefined) {
-        this.debounced.cancel();
-        this.items = this.cache[text];
-        this.open = this.items.length > 0;
-      } else {
-        this.debounced(text);
-      }
-    },
+function makeDebounced(fn: (text: string) => void, wait: number): Debounced {
+  let handle: ReturnType<typeof setTimeout> | null = null;
+  const debounced = ((text: string) => {
+    if (handle !== null) clearTimeout(handle);
+    handle = setTimeout(() => fn(text), wait);
+  }) as Debounced;
+  debounced.cancel = () => {
+    if (handle !== null) {
+      clearTimeout(handle);
+      handle = null;
+    }
+  };
+  return debounced;
+}
 
-    async fetch(text) {
-      try {
-        const response = await axios.post('people/search', { needle: text });
-        const matches = (response.data && response.data.data ? response.data.data : [])
-          .map(contact => ({ ...contact, keyword: text }))
-          .filter(this.filter);
-        if (this.addNoResult) {
-          matches.push(this.addNewSentinel(text));
-        }
-        this.cache[text] = matches;
-        if (text === this.query) {
-          this.items = matches;
-          this.open = matches.length > 0;
-        }
-      } catch (e) {
-        // network failure — leave the dropdown empty rather than throw.
-      }
-    },
+let debounced: Debounced = makeDebounced(() => undefined, 0);
 
-    addNewSentinel(keyword) {
-      return {
-        id: -1,
-        name: 'add_new_contact',
-        complete_name: 'add_new_contact',
-        keyword,
-      };
-    },
+onMounted(() => {
+  debounced = makeDebounced((text: string) => fetchMatches(text), props.wait);
+});
 
-    onFocus() {
-      if (this.items.length > 0) {
-        this.open = true;
-      }
-    },
+function addNewSentinel(keyword: string): ContactItem {
+  return {
+    id: -1,
+    name: 'add_new_contact',
+    complete_name: 'add_new_contact',
+    keyword,
+  };
+}
 
-    onBlur() {
-      // Defer to let the click handler fire first (mousedown beats blur via
-      // .prevent, but click after mouseup can still race).
-      setTimeout(() => {
-        this.open = false;
-        this.$emit('blur');
-      }, 150);
-    },
+function onInput() {
+  const text = query.value;
+  if (text === '' || text.length < props.minLen) {
+    items.value = props.addNoResult && text !== '' ? [addNewSentinel(text)] : [];
+    open.value = items.value.length > 0;
+    return;
+  }
+  if (cache.value[text] !== undefined) {
+    debounced.cancel();
+    items.value = cache.value[text];
+    open.value = items.value.length > 0;
+  } else {
+    debounced(text);
+  }
+}
 
-    onSelect(item) {
-      this.open = false;
-      this.$emit('select', { item });
-      this.query = '';
-      this.items = [];
-    },
+async function fetchMatches(text: string) {
+  try {
+    const response = await axios.post('people/search', { needle: text });
+    const data: ContactItem[] = response.data?.data ?? [];
+    const matches: ContactItem[] = data
+      .map((contact) => ({ ...contact, keyword: text }))
+      .filter(props.filter);
+    if (props.addNoResult) {
+      matches.push(addNewSentinel(text));
+    }
+    cache.value[text] = matches;
+    if (text === query.value) {
+      items.value = matches;
+      open.value = matches.length > 0;
+    }
+  } catch {
+    // network failure — leave the dropdown empty rather than throw.
+  }
+}
 
-    clearCache() {
-      this.cache = {};
-      this.items = [];
-    },
-  },
-};
+function onFocus() {
+  if (items.value.length > 0) {
+    open.value = true;
+  }
+}
+
+function onBlur() {
+  // Defer to let the click handler fire first (mousedown beats blur via
+  // .prevent, but click after mouseup can still race).
+  setTimeout(() => {
+    open.value = false;
+    emit('blur');
+  }, 150);
+}
+
+function onSelect(item: ContactItem) {
+  open.value = false;
+  emit('select', { item });
+  query.value = '';
+  items.value = [];
+}
+
+function clearCache() {
+  cache.value = {};
+  items.value = [];
+}
+
+defineExpose({ clearCache });
 </script>

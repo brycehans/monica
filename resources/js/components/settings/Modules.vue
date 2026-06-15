@@ -49,7 +49,7 @@
               :iclass="'module-'"
               :disabled="limited"
               :labels="true"
-              @change="toggle(module, $event)"
+              @change="toggle(module)"
             />
           </div>
         </div>
@@ -58,59 +58,49 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
+interface Module {
+  id: number;
+  name: string;
+  active: boolean;
+}
 
-  props: {
-    limited: {
-      type: Boolean,
-      default: false,
-    },
+withDefaults(
+  defineProps<{
+    limited?: boolean;
+  }>(),
+  {
+    limited: false,
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  data() {
-    return {
-      modules: [],
-    };
-  },
+const modules = ref<Module[]>([]);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+onMounted(getModules);
 
-  mounted() {
-    this.getModules();
-  },
+async function getModules() {
+  const response = await axios.get('settings/personalization/modules');
+  modules.value = response.data as Module[];
+}
 
-  methods: {
-    getModules() {
-      axios.get('settings/personalization/modules')
-        .then(response => {
-          this.modules = response.data;
-        });
-    },
-
-    toggle(module) {
-      axios.post('settings/personalization/modules/' + module.id)
-        .then(response => {
-          this.$notify({
-            group: 'main',
-            title: this.t('settings.personalization_module_save'),
-            text: '',
-            type: 'success'
-          });
-          module.active = response.data.data.active;
-        });
-    }
-  }
-};
+async function toggle(mod: Module) {
+  const response = await axios.post('settings/personalization/modules/' + mod.id);
+  notify({
+    group: 'main',
+    title: t('settings.personalization_module_save'),
+    text: '',
+    type: 'success',
+  });
+  mod.active = response.data.data.active;
+}
 </script>

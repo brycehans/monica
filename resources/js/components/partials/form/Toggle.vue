@@ -87,70 +87,58 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue';
+
 let counter = 0;
 
-export default {
-  props: {
-    modelValue: {
-      type: Boolean,
-      default: false,
-    },
-    title: {
-      type: String,
-      default: '',
-    },
-    labels: {
-      type: [Boolean, Object],
-      default: false,
-    },
-    id: {
-      type: String,
-      default: '',
-    },
-    required: {
-      type: Boolean,
-      default: true,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    iclass: {
-      type: String,
-      default: '',
-    },
-  },
+interface ToggleLabels {
+  checked: string;
+  unchecked: string;
+}
 
-  emits: ['update:modelValue', 'change'],
-
-  data() {
-    return {
-      uid: ++counter,
-    };
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    title?: string;
+    labels?: boolean | ToggleLabels;
+    id?: string;
+    required?: boolean;
+    disabled?: boolean;
+    iclass?: string;
+  }>(),
+  {
+    modelValue: false,
+    title: '',
+    labels: false,
+    id: '',
+    required: true,
+    disabled: false,
+    iclass: '',
   },
+);
 
-  computed: {
-    realId() {
-      return this.id + '_' + this.uid;
-    },
-    inputClass() {
-      return this.iclass;
-    },
-    labelText() {
-      if (this.labels && typeof this.labels === 'object') {
-        return this.modelValue ? this.labels.checked : this.labels.unchecked;
-      }
-      return '';
-    },
-  },
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'change', value: boolean): void;
+}>();
 
-  methods: {
-    onChange(event) {
-      const checked = event.target.checked;
-      this.$emit('update:modelValue', checked);
-      this.$emit('change', checked);
-    },
-  },
-};
+const uid = ++counter;
+
+const realId = computed(() => props.id + '_' + uid);
+
+const inputClass = computed(() => props.iclass);
+
+const labelText = computed(() => {
+  if (props.labels && typeof props.labels === 'object') {
+    return props.modelValue ? props.labels.checked : props.labels.unchecked;
+  }
+  return '';
+});
+
+function onChange(event: Event) {
+  const checked = (event.target as HTMLInputElement).checked;
+  emit('update:modelValue', checked);
+  emit('change', checked);
+}
 </script>

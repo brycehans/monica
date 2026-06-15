@@ -2,53 +2,40 @@
   <span v-cy-name="'last-talked-to'">{{ lastCalledMessage }}</span>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 
-export default {
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    initialValue: {
-      type: String,
-      default: '',
-    }
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    initialValue?: string;
+  }>(),
+  {
+    hash: '',
+    initialValue: '',
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
 
-  data() {
-    return {
-      lastCalled: '',
-    };
-  },
+const lastCalled = ref('');
 
-  computed: {
-    lastCalledMessage() {
-      if (!this.initialValue && !this.lastCalled) {
-        return this.t('people.last_called_empty');
-      }
-
-      if (!this.lastCalled) {
-        return this.t('people.last_talked_to', {date: this.initialValue});
-      }
-
-      return this.t('people.last_talked_to', {date: this.lastCalled});
-    }
-  },
-
-  methods: {
-    getLastCalled() {
-      axios.get('people/' + this.hash + '/calls/last')
-        .then(response => {
-          this.lastCalled = response.data.last_talked_to;
-        });
-    }
+const lastCalledMessage = computed(() => {
+  if (!props.initialValue && !lastCalled.value) {
+    return t('people.last_called_empty');
   }
-};
+  if (!lastCalled.value) {
+    return t('people.last_talked_to', { date: props.initialValue });
+  }
+  return t('people.last_talked_to', { date: lastCalled.value });
+});
+
+async function getLastCalled() {
+  const response = await axios.get('people/' + props.hash + '/calls/last');
+  lastCalled.value = response.data.last_talked_to;
+}
+
+defineExpose({ getLastCalled, lastCalled });
 </script>

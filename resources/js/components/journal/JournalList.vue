@@ -66,7 +66,7 @@
         </div>
       </div>
 
-      <div v-if="(journalEntries.per_page * journalEntries.current_page) <= journalEntries.total"
+      <div v-if="((journalEntries.per_page ?? 0) * (journalEntries.current_page ?? 0)) <= (journalEntries.total ?? 0)"
            class="br3 ba b--gray-monica bg-white pr3 pb3 pt3 mb3 tc"
       >
         <p class="mb0 pointer" @click="loadMore()">
@@ -102,123 +102,83 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-export default {
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+interface JournalEntry {
+  id: number;
+  journalable_type: string;
+  object: { id: number };
+}
 
-  data() {
-    return {
-      journalEntries: [],
+interface JournalEntriesPage {
+  data?: JournalEntry[];
+  current_page?: number;
+  next_page_url?: string | null;
+  per_page?: number;
+  prev_page_url?: string | null;
+  total?: number;
+}
 
-      day: {
-        rate: ''
-      },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-      showSadSmileyColor: false,
-      showHappySmileyColor: false,
-      loadingMore: false,
-      startDate: '',
-      endDate: '',
-      sortBy: 'created_at', // Specify the field to sort by (e.g., 'created_at', 'updated_at')
-      sortOrder: 'desc', // Specify the sort order ('asc' or 'desc')
-      perPage: 30, // Specify the number of entries per page
-    };
-  },
+const journalEntries = reactive<JournalEntriesPage>({});
+const loadingMore = ref(false);
+const startDate = ref('');
+const endDate = ref('');
+const sortBy = ref('created_at');
+const sortOrder = ref<'asc' | 'desc'>('desc');
+const perPage = ref(30);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
+onMounted(getEntries);
+
+async function getEntries() {
+  const response = await axios.get('journal/entries', {
+    params: {
+      start_date: startDate.value,
+      end_date: endDate.value,
+      per_page: perPage.value,
+      sort_order: sortOrder.value,
+      sort_by: sortBy.value,
     },
-    hasMorePage: function () {
-      var total = this.journalEntries.per_page * this.journalEntries.current_page;
+  });
+  Object.assign(journalEntries, response.data);
+}
 
-      if (total >= this.journalEntries.total) {
-        return true;
-      }
+function deleteJournalEntry(journalEntryId: number) {
+  if (!journalEntries.data) return;
+  journalEntries.data = journalEntries.data.filter((element) => element.id !== journalEntryId);
+}
 
-      return false;
-    }
-  },
+function hasRated(journalObject: JournalEntry) {
+  if (!journalEntries.data) journalEntries.data = [];
+  journalEntries.data.unshift(journalObject);
+}
 
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      this.getEntries();
+async function loadMore() {
+  loadingMore.value = true;
+  const response = await axios.get('journal/entries?page=' + ((journalEntries.current_page ?? 0) + 1), {
+    params: {
+      start_date: startDate.value,
+      end_date: endDate.value,
+      per_page: perPage.value,
+      sort_order: sortOrder.value,
+      sort_by: sortBy.value,
     },
-
-    getEntries() {
-      axios.get('journal/entries', {
-        params: {
-          start_date: this.startDate,
-          end_date: this.endDate,
-          per_page: this.perPage,
-          sort_order: this.sortOrder,
-          sort_by: this.sortBy,
-        },
-      })
-        .then(response => {
-          this.journalEntries = response.data;
-          this.journalEntries.current_page = response.data.current_page;
-          this.journalEntries.next_page_url = response.data.next_page_url;
-          this.journalEntries.per_page = response.data.per_page;
-          this.journalEntries.prev_page_url = response.data.prev_page_url;
-          this.journalEntries.total = response.data.total;
-        });
-    },
-
-    // This event is omited from the child component
-    deleteJournalEntry: function ($journalEntryId) {
-      // check if the deleted entry date is today. If that's the case
-      // we need to put back the Rate box. This is only necessary if
-      // the user does all his actions on the same page without ever
-      // reloading the page.
-      this.journalEntries.data.filter(function (obj) {
-        return obj.id === $journalEntryId;
-      });
-
-      // Filter out the array without the deleted Journal Entry
-      this.journalEntries.data = this.journalEntries.data.filter(function (element) {
-        return element.id !== $journalEntryId;
-      });
-    },
-
-    hasRated: function (journalObject) {
-      this.journalEntries.data.unshift(journalObject);
-    },
-
-    loadMore() {
-      this.loadingMore = true;
-      axios.get('journal/entries?page=' + (this.journalEntries.current_page + 1),{
-        params: {
-          start_date: this.startDate,
-          end_date: this.endDate,
-          per_page: this.perPage,
-          sort_order: this.sortOrder,
-          sort_by: this.sortBy,
-        },
-      })
-        .then(response => {
-          this.journalEntries.current_page = response.data.current_page;
-          this.journalEntries.next_page_url = response.data.next_page_url;
-          this.journalEntries.per_page = response.data.per_page;
-          this.journalEntries.prev_page_url = response.data.prev_page_url;
-          this.journalEntries.total = response.data.total;
-
-          for (var j of response.data.data) {
-            this.journalEntries.data.push(j);
-          }
-
-          this.loadingMore = false;
-        });
-    },
+  });
+  journalEntries.current_page = response.data.current_page;
+  journalEntries.next_page_url = response.data.next_page_url;
+  journalEntries.per_page = response.data.per_page;
+  journalEntries.prev_page_url = response.data.prev_page_url;
+  journalEntries.total = response.data.total;
+  if (!journalEntries.data) journalEntries.data = [];
+  for (const j of response.data.data) {
+    journalEntries.data.push(j);
   }
-};
+  loadingMore.value = false;
+}
 </script>

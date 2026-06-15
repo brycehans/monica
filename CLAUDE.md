@@ -120,6 +120,25 @@ Fork-internal review rules live under `docs/review-rules/`. Read these before re
 
 - [`vue3-proxy-after-unmount.md`](docs/review-rules/vue3-proxy-after-unmount.md) — Vue 2 → 3 cutover footgun: `$t` / `$refs` / `$emit('update')` after self-unmount across a `.then` or `await` boundary crashes silently. Both flavours documented with a reviewer checklist. Closes #743.
 
+## Tool version floors (`toolFloors`)
+
+`package.json` has a custom `toolFloors` block alongside `engines`:
+
+```json
+"toolFloors": {
+  "_comment": "Non-standard mirror of `engines` for dev tooling that isn't a runtime engine. Enforced by scripts/check-ts-version.mjs in CI. Kept out of `engines` because yarn 1 warns on unknown keys there.",
+  "typescript": ">=5.5"
+}
+```
+
+**Why a custom field instead of `engines`.** Yarn 1 emits `warning @: The engine "typescript" appears to be invalid.` on every command if you put non-runtime tools (TypeScript, ESLint, etc.) under `engines`. Moving them to `toolFloors` keeps the same documentation intent without the per-command warning noise.
+
+**How it's enforced.** `scripts/check-ts-version.mjs` reads `toolFloors.typescript`, resolves the locally-installed `typescript` package's actual version via `createRequire`, and exits 1 if it's below the floor. The CI typecheck job in `.github/workflows/static.yml` runs this script via `yarn check:ts-version` before `vue-tsc`, so a future downgrade of the typescript devDep fails fast with a clear message instead of as a vue-tsc compile error pointing at a single file.
+
+**When to bump a floor.** Add an entry under `toolFloors` whenever new code starts to rely on a language/compiler feature that older toolchain versions can't handle. The current `typescript: ">=5.5"` entry is there because `resources/js/api/errors.ts` uses `array.every(predicate)`-as-type-guard narrowing, added in TS 5.5. If we ever add a similar floor for ESLint or another dev tool, the same pattern applies (one entry per tool, `scripts/check-*-version.mjs` per tool, one new CI step).
+
+**When to remove a floor.** When the code that depended on the version-gated feature is gone, or when the floor falls so far below the actual installed version that the check is purely ceremonial. The script exits 1 if the entry is missing entirely, so removal needs both the `toolFloors` entry AND the matching CI step to go.
+
 ## Composer wrinkles
 
 **`spatie/ray` and `spatie/laravel-ray` are explicitly suppressed.** They were stowaway transitive deps (zero callers anywhere in `vendor/`) pulled in via `psalm/plugin-laravel → orchestra/testbench → orchestra/workbench`. The root `composer.json` declares them in `replace`, and `composer.lock` has been hand-pruned to drop them and their now-orphaned transitive deps (`rector/rector`, the `zbateson/*` chain, `pimple/pimple`, `symfony/polyfill-iconv`).

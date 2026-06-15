@@ -31,7 +31,7 @@
       :class="inputClass"
       :style="inputStyle"
       :value="modelValue"
-      :maxlength="maxlength"
+      :maxlength="maxlength ?? undefined"
       :step="step"
       @input="onInput($event)"
       @blur="onBlur($event)"
@@ -50,151 +50,131 @@
   </div>
 </template>
 
-<script>
-import { getCurrentInstance } from 'vue';
+<script setup lang="ts">
+import { computed, getCurrentInstance, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-export default {
+interface Validator {
+  $error: boolean;
+  $reset: () => void;
+  $touch: () => void;
+  required?: { $invalid: boolean };
+  url?: { $invalid: boolean };
+  maxLength?: { $invalid: boolean; $params?: { max?: number } };
+}
 
-  props: {
-    modelValue: {
-      type: [String, Number],
-      default: '',
-    },
-    modelModifiers: {
-      type: Object,
-      default: () => ({}),
-    },
-    title: {
-      type: String,
-      default: '',
-    },
-    label: {
-      type: String,
-      default: null,
-    },
-    id: {
-      type: String,
-      default: '',
-    },
-    placeholder: {
-      type: String,
-      default: '',
-    },
-    required: {
-      type: Boolean,
-      default: true,
-    },
-    inputType: {
-      type: String,
-      default: '',
-    },
-    step: {
-      type: String,
-      default: '',
-    },
-    width: {
-      type: Number,
-      default: -1,
-    },
-    iclass: {
-      type: [String, Array],
-      default: ''
-    },
-    maxlength: {
-      type: Number,
-      default: null,
-    },
-    validator: {
-      type: Object,
-      default: null,
-    },
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string | number;
+    modelModifiers?: Record<string, unknown>;
+    title?: string;
+    label?: string | null;
+    id?: string;
+    placeholder?: string;
+    required?: boolean;
+    inputType?: string;
+    step?: string;
+    width?: number;
+    iclass?: string | string[];
+    maxlength?: number | null;
+    validator?: Validator | null;
+  }>(),
+  {
+    modelValue: '',
+    modelModifiers: () => ({}),
+    title: '',
+    label: null,
+    id: '',
+    placeholder: '',
+    required: true,
+    inputType: '',
+    step: '',
+    width: -1,
+    iclass: '',
+    maxlength: null,
+    validator: null,
   },
+);
 
-  emits: ['update:modelValue', 'input', 'submit', 'blur', 'change'],
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void;
+  (e: 'input', value: string): void;
+  (e: 'submit', value: string): void;
+  (e: 'blur', value: string): void;
+  (e: 'change', value: string): void;
+}>();
 
-  setup() {
-    const { t } = useI18n();
-    return { uid: getCurrentInstance().uid, t };
-  },
+const { t } = useI18n();
+const uid = getCurrentInstance()?.uid ?? 0;
+const inputEl = useTemplateRef<HTMLInputElement>('input');
 
-  computed: {
-    realid() {
-      return this.id + this.uid;
-    },
-    inputClass() {
-      var c = [this.iclass !== '' ? this.iclass : 'br2 f5 w-100 ba b--black-40 pa2 outline-0'];
-      if (this.validator) {
-        c.push({ error: this.validator.$error });
-      }
-      c.push('input');
-      return c;
-    },
-    inputStyle() {
-      return this.width >= 0 ? 'width:' + this.width + 'px' : '';
-    },
+const realid = computed(() => props.id + uid);
 
-    field() {
-      return this.label && this.label.length > 0 ? this.label : this.title;
-    },
-    requiredMessage() {
-      return this.t('validation.vue.required', { field: this.field });
-    },
-    urlMessage() {
-      return this.t('validation.vue.url', { field: this.field });
-    },
-    maxLengthMessage() {
-      var type = 'string';
-      switch (this.inputType) {
-      case 'number':
-        type = 'numeric';
-        break;
-      }
-      return this.t(`validation.vue.max.${type}`, {
-        field: this.field,
-        max: this.validator?.maxLength?.$params?.max ?? '',
-      });
-    },
-  },
+const inputClass = computed(() => {
+  const c: Array<string | string[] | Record<string, boolean>> = [
+    props.iclass !== '' ? props.iclass : 'br2 f5 w-100 ba b--black-40 pa2 outline-0',
+  ];
+  if (props.validator) {
+    c.push({ error: props.validator.$error });
+  }
+  c.push('input');
+  return c;
+});
 
-  methods: {
-    focus() {
-      this.$refs.input.focus();
-    },
+const inputStyle = computed(() => (props.width >= 0 ? 'width:' + props.width + 'px' : ''));
 
-    emitUpdate(val) {
-      this.$emit('update:modelValue', val);
-      this.$emit('input', val);
-    },
+const field = computed(() => (props.label && props.label.length > 0 ? props.label : props.title));
 
-    onInput(event) {
-      if (this.validator && event.data !== undefined) {
-        this.validator.$reset();
-      }
-      this.emitUpdate(event.target.value);
-    },
+const requiredMessage = computed(() => t('validation.vue.required', { field: field.value }));
 
-    onSubmit(event) {
-      if (this.validator) {
-        this.validator.$touch();
-      }
-      this.$emit('submit', event.target.value);
-    },
+const urlMessage = computed(() => t('validation.vue.url', { field: field.value }));
 
-    onBlur(event) {
-      if (this.validator && event.target.value !== '') {
-        this.validator.$touch();
-      }
-      this.$emit('blur', event.target.value);
-    },
+const maxLengthMessage = computed(() => {
+  const type = props.inputType === 'number' ? 'numeric' : 'string';
+  return t(`validation.vue.max.${type}`, {
+    field: field.value,
+    max: props.validator?.maxLength?.$params?.max ?? '',
+  });
+});
 
-    onChange(event) {
-      if (this.validator) {
-        this.validator.$touch();
-      }
-      this.$emit('change', event.target.value);
-    },
-  },
+function focus() {
+  inputEl.value?.focus();
+}
 
-};
+function emitUpdate(val: string) {
+  emit('update:modelValue', val);
+  emit('input', val);
+}
+
+function onInput(event: Event) {
+  const e = event as InputEvent;
+  if (props.validator && e.data !== undefined) {
+    props.validator.$reset();
+  }
+  emitUpdate((event.target as HTMLInputElement).value);
+}
+
+function onSubmit(event: Event) {
+  if (props.validator) {
+    props.validator.$touch();
+  }
+  emit('submit', (event.target as HTMLInputElement).value);
+}
+
+function onBlur(event: Event) {
+  const value = (event.target as HTMLInputElement).value;
+  if (props.validator && value !== '') {
+    props.validator.$touch();
+  }
+  emit('blur', value);
+}
+
+function onChange(event: Event) {
+  if (props.validator) {
+    props.validator.$touch();
+  }
+  emit('change', (event.target as HTMLInputElement).value);
+}
+
+defineExpose({ focus });
 </script>

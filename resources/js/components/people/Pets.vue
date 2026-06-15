@@ -110,147 +110,129 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
+interface PetCategory {
+  id: number;
+  name: string;
+}
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
+interface Pet {
+  id: number;
+  pet_category_id: number;
+  category_name: string;
+  name?: string;
+  edit?: boolean;
+}
+
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+  }>(),
+  {
+    hash: '',
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  data() {
-    return {
-      petCategories: [],
-      pets: [],
+const petCategories = ref<PetCategory[]>([]);
+const pets = ref<Pet[]>([]);
 
-      editMode: false,
-      addMode: false,
-      updateMode: false,
+const editMode = ref(false);
+const addMode = ref(false);
 
-      createForm: {
-        pet_category_id: '',
-        name: '',
-        errors: []
-      },
+const createForm = reactive<{
+  pet_category_id: number | string;
+  name: string;
+  errors: string[];
+}>({ pet_category_id: '', name: '', errors: [] });
 
-      updateForm: {
-        id: '',
-        pet_category_id: '',
-        name: '',
-        edit: false,
-        errors: []
-      },
-    };
-  },
+const updateForm = reactive<{
+  id: number | string;
+  pet_category_id: number | string;
+  name: string;
+  errors: string[];
+}>({ id: '', pet_category_id: '', name: '', errors: [] });
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+onMounted(async () => {
+  await Promise.all([getPetCategories(), getPets()]);
+});
 
-  mounted() {
-    this.prepareComponent();
-  },
+async function getPetCategories() {
+  const response = await axios.get('petcategories');
+  petCategories.value = response.data as PetCategory[];
+}
 
-  methods: {
-    prepareComponent() {
-      this.getPetCategories();
-      this.getPets();
-    },
+async function getPets() {
+  const response = await axios.get('people/' + props.hash + '/pets');
+  pets.value = response.data as Pet[];
+}
 
-    getPetCategories() {
-      axios.get('petcategories')
-        .then(response => {
-          this.petCategories = response.data;
-        });
-    },
+async function store() {
+  const response = await axios.post('people/' + props.hash + '/pets', createForm);
+  addMode.value = false;
+  pets.value.push(response.data as Pet);
+  createForm.name = '';
+  notify({
+    group: 'main',
+    title: t('people.pets_create_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-    getPets() {
-      axios.get('people/' + this.hash + '/pets')
-        .then(response => {
-          this.pets = response.data;
-        });
-    },
+function resetState() {
+  editMode.value = false;
+  addMode.value = false;
+}
 
-    store() {
-      axios.post('people/' + this.hash + '/pets', this.createForm)
-        .then(response => {
-          this.addMode = false;
-          this.pets.push(response.data);
-          this.createForm.name = '';
+function toggleAdd() {
+  addMode.value = true;
+  editMode.value = true;
+  createForm.name = '';
+  createForm.pet_category_id = '';
+}
 
-          this.$notify({
-            group: 'main',
-            title: this.t('people.pets_create_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
+function toggleEdit(pet: Pet) {
+  pet.edit = !pet.edit;
+  updateForm.id = pet.id;
+  updateForm.name = pet.name ?? '';
+  updateForm.pet_category_id = pet.pet_category_id;
+}
 
-    resetState() {
-      this.editMode = false;
-      this.addMode = false;
-    },
+async function update(pet: Pet) {
+  const response = await axios.put('people/' + props.hash + '/pets/' + pet.id, updateForm);
+  pet.edit = !pet.edit;
+  pet.name = response.data.name;
+  pet.pet_category_id = response.data.pet_category_id;
+  pet.category_name = response.data.category_name;
+  notify({
+    group: 'main',
+    title: t('people.pets_update_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-    toggleAdd() {
-      this.addMode = true;
-      this.editMode = true;
-      this.createForm.data = '';
-      this.createForm.pet_category_id = '';
-    },
-
-    toggleEdit(pet) {
-      pet.edit = !pet.edit;
-      this.updateForm.id = pet.id;
-      this.updateForm.name = pet.name;
-      this.updateForm.pet_category_id = pet.pet_category_id;
-    },
-
-    update(pet) {
-      axios.put('people/' + this.hash + '/pets/' + pet.id, this.updateForm)
-        .then(response => {
-          pet.edit = !pet.edit;
-          pet.name = response.data.name;
-          pet.pet_category_id = response.data.pet_category_id;
-          pet.category_name = response.data.category_name;
-
-          this.$notify({
-            group: 'main',
-            title: this.t('people.pets_update_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
-
-    trash(pet) {
-      axios.delete('people/' + this.hash + '/pets/' + pet.id)
-        .then(response => {
-          this.getPets();
-
-          this.$notify({
-            group: 'main',
-            title: this.t('people.pets_delete_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-
-      if (this.pets.length <= 1) {
-        this.resetState();
-      }
-    },
+async function trash(pet: Pet) {
+  await axios.delete('people/' + props.hash + '/pets/' + pet.id);
+  await getPets();
+  notify({
+    group: 'main',
+    title: t('people.pets_delete_success'),
+    text: '',
+    type: 'success',
+  });
+  if (pets.value.length <= 1) {
+    resetState();
   }
-};
+}
 </script>

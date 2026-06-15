@@ -29,42 +29,50 @@
   </monica-modal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
-// See genders/CreateModal.vue for the modelValue contract rationale.
-export default {
-  props: {
-    modelValue: { type: Boolean, default: false },
-    type: { type: Object, required: true },
-  },
+interface LifeEventType {
+  id: number;
+  name?: string;
+}
 
-  emits: ['update:modelValue', 'saved'],
-
-  setup(_, { emit }) {
-    const { t } = useI18n();
-    const { cancel, finish, sync } = useModalSelfClose(emit);
-    return { t, cancel, finish, sync };
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    type: LifeEventType;
+  }>(),
+  {
+    modelValue: false,
   },
+);
 
-  data() {
-    return {
-      form: {
-        id: this.type.id,
-      },
-      errorMessage: '',
-    };
-  },
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'saved'): void;
+}>();
 
-  methods: {
-    destroy() {
-      return axios.delete('settings/personalization/lifeeventtypes/' + this.form.id)
-        .then(this.finish)
-        .catch((error) => {
-          this.errorMessage = error.response.data.message;
-        });
-    },
-  },
-};
+const { t } = useI18n();
+const { cancel, finish, sync } = useModalSelfClose(emit);
+
+const form = reactive<{ id: number }>({
+  id: props.type.id,
+});
+
+const errorMessage = ref('');
+
+async function destroy() {
+  try {
+    await axios.delete('settings/personalization/lifeeventtypes/' + form.id);
+    finish();
+  } catch (error: unknown) {
+    const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? '';
+    errorMessage.value = msg;
+  }
+}
+
+defineExpose({ form, errorMessage, cancel, finish, sync, destroy });
 </script>

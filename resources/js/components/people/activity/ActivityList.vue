@@ -63,10 +63,10 @@
                 </li>
 
                 <!-- PARTICIPANT LIST -->
-                <li v-if="activity.attendees.total > 1" class="di">
+                <li v-if="(activity.attendees.total ?? 0) > 1" class="di">
                   <ul class="di list" :class="[ dirltr ? 'mr3' : 'ml3' ]">
                     <li class="di">
-                      {{ t('people.activities_list_participants', { total: activity.attendees.total - 1}) }}
+                      {{ t('people.activities_list_participants', { total: (activity.attendees.total ?? 0) - 1}) }}
                     </li>
                     <li v-for="attendee in activity.attendees.contacts.filter(c => c.id !== contactId)" :key="attendee.id" class="di mr2">
                       <a :href="'people/' + attendee.hash_id">{{ attendee.complete_name }}</a>
@@ -137,105 +137,100 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import moment from 'moment';
+import axios from 'axios';
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
 import CreateActivity from './CreateActivity.vue';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
+import type { Emotion } from '../types';
 
-export default {
-  components: {
-    CreateActivity
+interface Attendee {
+  id: number;
+  hash_id: string;
+  complete_name: string;
+}
+
+interface ActivityType {
+  id: number;
+  name?: string;
+}
+
+interface Activity {
+  id: number;
+  summary: string;
+  description?: string;
+  happened_at: string;
+  attendees: { total?: number; contacts: Attendee[] };
+  emotions: Emotion[];
+  activity_type?: ActivityType;
+  edit?: boolean;
+}
+
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    name?: string;
+    contactId?: number;
+  }>(),
+  {
+    hash: '',
+    name: '',
+    contactId: 0,
   },
+);
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    name: {
-      type: String,
-      default: '',
-    },
-    contactId: {
-      type: Number,
-      default: 0,
-    }
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const displayLogActivity = ref(false);
+const activities = ref<Activity[]>([]);
+const destroyActivityId = ref(0);
+const currentPage = ref(0);
+const lastPage = ref<number | null>(null);
 
-  data() {
-    return {
-      displayLogActivity: false,
-      activities: [],
-      emotions: [],
-      displayDescription: false,
-      displayEmotions: false,
-      displayCategory: false,
-      displayParticipants: false,
-      destroyActivityId: 0,
-      errors: [],
-      currentPage: 0,
-      lastPage: null
-    };
-  },
+const isLastPage = computed(() => lastPage.value === currentPage.value);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    },
-    isLastPage () {
-      return this.lastPage === this.currentPage;
-    }
-  },
+onMounted(getActivities);
 
-  mounted() {
-    this.prepareComponent();
-  },
+function formatMomentLL(date: string): string {
+  return moment.utc(date).format('LL');
+}
 
-  methods: {
-    prepareComponent() {
-      this.getActivities();
-      this.todayDate = moment().format('YYYY-MM-DD');
-    },
+function compiledMarkdown(text: string | null | undefined): string {
+  return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text) as string) : '';
+}
 
-    formatMomentLL(date) {
-      return moment.utc(date).format('LL');
-    },
+async function getActivities() {
+  currentPage.value++;
+  const response = await axios.get(
+    'api/contacts/' + props.contactId + '/activities?page=' + currentPage.value,
+  );
+  activities.value.push(...response.data.data);
+  currentPage.value = response.data.meta.current_page;
+  lastPage.value = response.data.meta.last_page;
+}
 
-    compiledMarkdown (text) {
-      return text !== undefined && text !== null ? DOMPurify.sanitize(marked.parse(text)) : '';
-    },
-
-    getActivities() {
-      this.currentPage++;
-      axios.get('api/contacts/' + this.contactId + '/activities?page=' + this.currentPage)
-        .then(response => {
-          this.activities.push(...response.data.data);
-          this.currentPage = response.data.meta.current_page;
-          this.lastPage = response.data.meta.last_page;
-        });
-    },
-
-    updateList(activity) {
-      this.displayLogActivity = false;
-      const index = this.activities.indexOf(this.activities.find(item => item.id === activity.id));
-      this.activities[index >= 0 ? index : this.activities.length] = activity;
-    },
-
-    showDestroyActivity(activity) {
-      this.destroyActivityId = activity.id;
-    },
-
-    destroyActivity(activity) {
-      axios.delete(`activities/${activity.id}`)
-        .then(response => {
-          this.activities.splice(this.activities.indexOf(activity), 1);
-        });
-    },
+function updateList(activity: Activity) {
+  displayLogActivity.value = false;
+  const index = activities.value.findIndex((item) => item.id === activity.id);
+  if (index >= 0) {
+    activities.value[index] = activity;
+  } else {
+    activities.value.push(activity);
   }
-};
+}
+
+function showDestroyActivity(activity: Activity) {
+  destroyActivityId.value = activity.id;
+}
+
+async function destroyActivity(activity: Activity) {
+  await axios.delete(`activities/${activity.id}`);
+  const idx = activities.value.indexOf(activity);
+  if (idx >= 0) activities.value.splice(idx, 1);
+}
 </script>

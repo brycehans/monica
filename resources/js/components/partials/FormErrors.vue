@@ -26,36 +26,38 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-export default {
-  name: 'FormErrors',
+// `errors` is intentionally loosely typed: the legacy contract is a positional
+// tuple — index 0 is either a string banner or an ApiError envelope, index 1 is
+// the laravel-422 nested validation map. Strict typing here would just push
+// runtime casts into the template.
+type ErrorList = any[];
 
-  props: {
-    errors: {
-      type: [Array, Object],
-      default: () => [],
-    },
+const props = withDefaults(
+  defineProps<{
+    errors?: ErrorList;
+  }>(),
+  {
+    errors: () => [],
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
 
-  computed: {
-    apierror() {
-      return _.isObject(this.errors[0]) && this.errors[0].error_code !== undefined;
-    },
-    apimessage() {
-      return _.isArray(this.errors[0].message);
-    }
-  },
-  methods: {
-    display($val) {
-      return _.isObject($val);
-    },
-  }
-};
+const apierror = computed(() => {
+  const first = props.errors[0];
+  return typeof first === 'object' && first !== null && first.error_code !== undefined;
+});
+
+const apimessage = computed(() => {
+  const first = props.errors[0];
+  return typeof first === 'object' && first !== null && Array.isArray(first.message);
+});
+
+function display(val: unknown): boolean {
+  return typeof val === 'object' && val !== null;
+}
 </script>

@@ -35,78 +35,56 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted, markRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ContactAutosuggest from './partials/ContactAutosuggest.vue';
 import ContactMultiItem from './partials/ContactMultiItem.vue';
 
-export default {
+interface Contact {
+  id: number;
+  complete_name?: string;
+}
 
-  components: {
-    ContactAutosuggest
+const props = withDefaults(
+  defineProps<{
+    id?: string | null;
+    title?: string | null;
+    required?: boolean;
+    placeholder?: string;
+    userContactId?: number;
+    contacts?: Contact[];
+  }>(),
+  {
+    id: null,
+    title: null,
+    required: true,
+    placeholder: '',
+    userContactId: 0,
+    contacts: () => [],
   },
-  props: {
-    id: {
-      type: String,
-      default: null,
-    },
-    title: {
-      type: String,
-      default: null,
-    },
-    required: {
-      type: Boolean,
-      default: true,
-    },
-    placeholder : {
-      type: String,
-      default: '',
-    },
-    userContactId: {
-      type: Number,
-      default: 0,
-    },
-    contacts: {
-      type: Array,
-      default: () => []
-    }
-  },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
 
-  data() {
-    return {
-      items: [],
-    };
-  },
+const items = ref<Contact[]>([]);
+const componentItem = markRaw(ContactMultiItem);
 
-  computed: {
-    componentItem() {
-      return ContactMultiItem;
-    }
-  },
+onMounted(() => {
+  items.value = props.contacts;
+});
 
-  mounted() {
-    this.items = this.contacts;
-  },
+function filter(item: Contact) {
+  return items.value.findIndex((i) => i.id === item.id) < 0;
+}
 
-  methods: {
-    filter(item) {
-      return _.findIndex(this.items, i => { return i.id === item.id; }) < 0;
-    },
-
-    select(contact) {
-      if (contact.item && contact.item.id > 0 && this.filter(contact.item)) {
-        this.items.push(contact.item);
-      }
-    },
-
-    remove(contact) {
-      this.items.splice(this.items.indexOf(contact), 1);
-    }
+function select(contact: { item?: Contact }) {
+  if (contact.item && contact.item.id > 0 && filter(contact.item)) {
+    items.value.push(contact.item);
   }
-};
+}
+
+function remove(contact: Contact) {
+  items.value.splice(items.value.indexOf(contact), 1);
+}
 </script>

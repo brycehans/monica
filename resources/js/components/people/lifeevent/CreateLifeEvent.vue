@@ -11,12 +11,12 @@
           </a>
         </li>
         <li v-if="view === 'types'" class="di">
-          > {{ t('people.life_event_category_' + activeCategory.default_life_event_category_key) }}
+          > {{ t('people.life_event_category_' + activeCategory?.default_life_event_category_key) }}
         </li>
         <template v-else-if="view === 'add'">
           <li class="di">
             &gt; <a class="pointer" href="" @click.prevent="view = 'types'">
-              {{ t('people.life_event_category_' + activeCategory.default_life_event_category_key) }}
+              {{ t('people.life_event_category_' + activeCategory?.default_life_event_category_key) }}
             </a>
           </li>
           <li class="di">
@@ -68,15 +68,15 @@
       <!-- ADD SCREEN -->
       <div v-else class="ba b--gray-monica br2 pt4">
         <div class="life-event-add-icon tc center">
-          <img :src="'img/people/life-events/types/' + activeType.default_life_event_type_key + '.svg'" :alt="activeType.default_life_event_type_key" style="min-width: 17px;" />
+          <img :src="'img/people/life-events/types/' + activeType?.default_life_event_type_key + '.svg'" :alt="activeType?.default_life_event_type_key" style="min-width: 17px;" />
         </div>
 
         <h3 class="pt3 ph4 f3 fw5 tc">
-          <template v-if="activeType.name">
+          <template v-if="activeType?.name">
             {{ activeType.name }}
           </template>
           <template v-else>
-            {{ t('people.life_event_sentence_' + activeType.default_life_event_type_key) }}
+            {{ t('people.life_event_sentence_' + activeType?.default_life_event_type_key) }}
           </template>
         </h3>
 
@@ -152,149 +152,147 @@
   </section>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import moment from 'moment';
+import CreateDefaultLifeEvent from './content/CreateDefaultLifeEvent.vue';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
+import { useNotify } from '../../../composables/useNotify';
 
-export default {
+interface SelectOption {
+  id: string | number;
+  name: string;
+}
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    years: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    },
-    months: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    },
-    days: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    },
+interface Category {
+  id: number;
+  default_life_event_category_key: string;
+}
+
+interface LifeEventTypeRecord {
+  id: number;
+  name?: string;
+  default_life_event_type_key: string;
+}
+
+interface LifeEventContent {
+  name: string;
+  note: string;
+  specific_information?: string;
+}
+
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    years?: SelectOption[];
+    months?: SelectOption[];
+    days?: SelectOption[];
+  }>(),
+  {
+    hash: '',
+    years: () => [],
+    months: () => [],
+    days: () => [],
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const emit = defineEmits<{
+  (e: 'updateLifeEventTimeline', value: unknown): void;
+  (e: 'dismissModal'): void;
+}>();
 
-  data() {
-    return {
-      selectedDay: 0,
-      selectedMonth: 0,
-      selectedYear: 0,
-      newLifeEvent: {
-        name: '',
-        note: '',
-        happened_at: '',
-        life_event_type_id: 0,
-        happened_at_month_unknown: false,
-        happened_at_day_unknown: false,
-        specific_information: '',
-        has_reminder: false,
-      },
-      categories: [],
-      activeCategory: '',
-      activeType: '',
-      types: [],
-      view: 'categories',
-    };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+const selectedDay = ref<number | string>(0);
+const selectedMonth = ref<number | string>(0);
+const selectedYear = ref<number | string>(0);
 
-  mounted() {
-    this.prepareComponent();
-  },
+const newLifeEvent = reactive<{
+  name: string;
+  note: string;
+  happened_at: string;
+  life_event_type_id: number;
+  happened_at_month_unknown: boolean;
+  happened_at_day_unknown: boolean;
+  specific_information: string;
+  has_reminder: boolean;
+}>({
+  name: '',
+  note: '',
+  happened_at: '',
+  life_event_type_id: 0,
+  happened_at_month_unknown: false,
+  happened_at_day_unknown: false,
+  specific_information: '',
+  has_reminder: false,
+});
 
-  methods: {
-    prepareComponent() {
-      this.getCategories();
-      this.newLifeEvent.happened_at = moment().format('YYYY-MM-DD');
-      this.selectedYear = moment().year();
-      this.selectedMonth = moment().month() + 1; // month is zero indexed (O_o) in moments.js
-      this.selectedDay = moment().date();
-    },
+const categories = ref<Category[]>([]);
+const activeCategory = ref<Category | null>(null);
+const activeType = ref<LifeEventTypeRecord | null>(null);
+const types = ref<LifeEventTypeRecord[]>([]);
+const view = ref<'categories' | 'types' | 'add'>('categories');
 
-    displayAddScreen(type) {
-      this.view = 'add';
-      this.activeType = type;
-      this.newLifeEvent.life_event_type_id = type.id;
-    },
+onMounted(async () => {
+  await getCategories();
+  newLifeEvent.happened_at = moment().format('YYYY-MM-DD');
+  selectedYear.value = moment().year();
+  selectedMonth.value = moment().month() + 1;
+  selectedDay.value = moment().date();
+});
 
-    getCategories() {
-      axios.get('lifeevents/categories')
-        .then(response => {
-          this.categories = response.data.data;
-        });
-    },
+function displayAddScreen(type: LifeEventTypeRecord) {
+  view.value = 'add';
+  activeType.value = type;
+  newLifeEvent.life_event_type_id = type.id;
+}
 
-    getType(category) {
-      axios.get('lifeevents/categories/' + category.id + '/types')
-        .then(response => {
-          this.types = response.data.data;
-        });
+async function getCategories() {
+  const response = await axios.get('lifeevents/categories');
+  categories.value = response.data.data as Category[];
+}
 
-      this.view = 'types';
-      this.activeCategory = category;
-    },
+async function getType(category: Category) {
+  const response = await axios.get('lifeevents/categories/' + category.id + '/types');
+  types.value = response.data.data as LifeEventTypeRecord[];
+  view.value = 'types';
+  activeCategory.value = category;
+}
 
-    updateLifeEventContent(lifeEvent) {
-      this.newLifeEvent.note = lifeEvent.note;
-      this.newLifeEvent.name = lifeEvent.name;
-      this.newLifeEvent.specific_information = lifeEvent.specific_information;
-    },
+function updateLifeEventContent(lifeEvent: LifeEventContent) {
+  newLifeEvent.note = lifeEvent.note;
+  newLifeEvent.name = lifeEvent.name;
+  newLifeEvent.specific_information = lifeEvent.specific_information ?? '';
+}
 
-    /**
-     * Sets the date when the user chooses either an empty month
-     * or an empty day of the month.
-     * If the user chooses an empty day, the day is set to 1 and we use
-     * a boolean to indicate that the day is unknown.
-     * Same for the month.
-     */
-    updateDate() {
-      if (this.selectedDay === 0 || this.selectedDay === '0') {
-        this.newLifeEvent.happened_at_day_unknown = true;
-        this.newLifeEvent.happened_at = this.selectedYear + '-' + this.selectedMonth + '-01';
-      } else if (this.selectedMonth === 0 || this.selectedMonth === '0') {
-        this.newLifeEvent.happened_at_month_unknown = true;
-        this.newLifeEvent.happened_at_day_unknown = true;
-        this.newLifeEvent.happened_at = this.selectedYear + '-01-01';
-        this.selectedDay = 0;
-      } else {
-        this.newLifeEvent.happened_at = this.selectedYear + '-' + this.selectedMonth + '-' + this.selectedDay;
-        this.newLifeEvent.happened_at_month_unknown = false;
-        this.newLifeEvent.happened_at_day_unknown = false;
-      }
-    },
-
-    store() {
-      axios.post('people/' + this.hash + '/lifeevents', this.newLifeEvent)
-        .then(response => {
-          this.$emit('updateLifeEventTimeline', response.data);
-
-          this.$notify({
-            group: 'main',
-            title: this.t('people.life_event_create_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
+function updateDate() {
+  if (selectedDay.value === 0 || selectedDay.value === '0') {
+    newLifeEvent.happened_at_day_unknown = true;
+    newLifeEvent.happened_at = selectedYear.value + '-' + selectedMonth.value + '-01';
+  } else if (selectedMonth.value === 0 || selectedMonth.value === '0') {
+    newLifeEvent.happened_at_month_unknown = true;
+    newLifeEvent.happened_at_day_unknown = true;
+    newLifeEvent.happened_at = selectedYear.value + '-01-01';
+    selectedDay.value = 0;
+  } else {
+    newLifeEvent.happened_at = selectedYear.value + '-' + selectedMonth.value + '-' + selectedDay.value;
+    newLifeEvent.happened_at_month_unknown = false;
+    newLifeEvent.happened_at_day_unknown = false;
   }
-};
+}
+
+async function store() {
+  const response = await axios.post('people/' + props.hash + '/lifeevents', newLifeEvent);
+  emit('updateLifeEventTimeline', response.data);
+  notify({
+    group: 'main',
+    title: t('people.life_event_create_success'),
+    text: '',
+    type: 'success',
+  });
+}
 </script>

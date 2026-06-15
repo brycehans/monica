@@ -144,150 +144,140 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import moment from 'moment-timezone';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
+import { collectionValues } from '../../api/collection';
+import { timezone as bootTimezone } from '../../boot';
 
-export default {
+interface Task {
+  id: number;
+  contact_id: number;
+  title: string;
+  description?: string;
+  completed: boolean;
+  completed_at?: string | null;
+  disabled?: boolean;
+  edit?: boolean;
+}
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    contactId: {
-      type: Number,
-      default: -1,
-    },
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    contactId?: number;
+  }>(),
+  {
+    hash: '',
+    contactId: -1,
   },
+);
 
-  setup() {
-    const { t, locale } = useI18n();
-    return { t, locale };
-  },
+const { t, locale } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  data() {
-    return {
-      tasks: [],
+const tasks = ref<Task[]>([]);
 
-      updateMode: false,
-      addMode: false,
-      editMode: false,
+const updateMode = ref(false);
+const addMode = ref(false);
+const editMode = ref(false);
 
-      newTask: {
-        contact_id: 0,
-        title: '',
-        description: '',
-        completed: 0
-      },
-    };
-  },
+const newTask = reactive<{
+  contact_id: number;
+  title: string;
+  description: string;
+  completed: number;
+}>({
+  contact_id: 0,
+  title: '',
+  description: '',
+  completed: 0,
+});
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+onMounted(() => {
+  newTask.contact_id = props.contactId;
+  index();
+});
 
-  mounted() {
-    this.newTask.contact_id = this.contactId;
-    this.index();
-  },
+function reinitialize() {
+  newTask.title = '';
+  newTask.description = '';
+}
 
-  methods: {
-    reinitialize() {
-      this.newTask.title = '';
-      this.newTask.description = '';
-    },
+function completed(list: Task[]) {
+  return list.filter((task) => task.completed === true);
+}
 
-    completed: function (tasks) {
-      return tasks.filter(function (task) {
-        return task.completed === true;
-      });
-    },
+function inProgress(list: Task[]) {
+  return list.filter((task) => task.completed === false);
+}
 
-    inProgress: function (tasks) {
-      return tasks.filter(function (task) {
-        return task.completed === false;
-      });
-    },
+function toggleAddMode() {
+  addMode.value = true;
+  reinitialize();
+}
 
-    toggleAddMode() {
-      this.addMode = true;
-      this.reinitialize();
-    },
+function toggleEditMode(task: Task) {
+  task.edit = !task.edit;
+}
 
-    toggleEditMode(task) {
-      task.edit = !task.edit;
-    },
+async function index() {
+  const response = await axios.get('people/' + props.hash + '/tasks');
+  tasks.value = collectionValues<Task>(response.data).map((task) => ({ ...task, disabled: false }));
+}
 
-    index() {
-      axios.get('people/' + this.hash + '/tasks')
-        .then(response => {
-          this.tasks = _.map(response.data, function (task) {
-            return _.assign({}, task, {disabled: false});
-          });
-        });
-    },
+async function store() {
+  const response = await axios.post('tasks', newTask);
+  addMode.value = false;
+  reinitialize();
+  tasks.value.push(response.data as Task);
+  notify({
+    group: 'main',
+    title: t('app.default_save_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-    store() {
-      axios.post('tasks', this.newTask)
-        .then(response => {
-          this.addMode = false;
-          this.reinitialize();
-          this.tasks.push(response.data);
-          this.$notify({
-            group: 'main',
-            title: this.t('app.default_save_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
+function toggleComplete(task: Task) {
+  updateMode.value = true;
+  task.disabled = true;
+  update(task, false);
+}
 
-    toggleComplete(task) {
-      this.updateMode = true;
-      task.disabled = true;
-      this.update(task, false);
-    },
-
-    update(task, toggleEdit) {
-      axios.put('tasks/' + task.id, task)
-        .then(response => {
-          this.updateMode = false;
-          task.disabled = false;
-          task.completed_at = response.data.completed_at ? this.formatDate(response.data.completed_at) : null;
-          if (toggleEdit) {
-            this.toggleEditMode(task);
-          }
-          this.$notify({
-            group: 'main',
-            title: this.t('app.default_save_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
-
-    formatDate(dateAsString) {
-      moment.locale(this.locale);
-      moment.tz.setDefault('UTC');
-
-      var date = moment.tz(moment(dateAsString), this.$root.timezone);
-
-      return date.format('ll');
-    },
-
-    trash(task) {
-      axios.delete('tasks/' + task.id)
-        .then(response => {
-          this.tasks.splice(this.tasks.indexOf(task), 1);
-        });
-
-      if (this.tasks.length <= 1) {
-        this.editMode = false;
-      }
-    },
+async function update(task: Task, toggleEdit: boolean) {
+  const response = await axios.put('tasks/' + task.id, task);
+  updateMode.value = false;
+  task.disabled = false;
+  task.completed_at = response.data.completed_at ? formatDate(response.data.completed_at) : null;
+  if (toggleEdit) {
+    toggleEditMode(task);
   }
-};
+  notify({
+    group: 'main',
+    title: t('app.default_save_success'),
+    text: '',
+    type: 'success',
+  });
+}
+
+function formatDate(dateAsString: string): string {
+  moment.locale(typeof locale.value === 'string' ? locale.value : 'en');
+  moment.tz.setDefault('UTC');
+  const date = moment.tz(moment(dateAsString), bootTimezone ?? 'UTC');
+  return date.format('ll');
+}
+
+async function trash(task: Task) {
+  await axios.delete('tasks/' + task.id);
+  const idx = tasks.value.indexOf(task);
+  if (idx >= 0) tasks.value.splice(idx, 1);
+  if (tasks.value.length <= 1) {
+    editMode.value = false;
+  }
+}
 </script>

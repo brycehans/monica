@@ -34,82 +34,55 @@ textarea:focus {
   </div>
 </template>
 
-<script>
-import { getCurrentInstance } from 'vue';
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, getCurrentInstance } from 'vue';
 
-export default {
-
-  props: {
-    modelValue: {
-      type: String,
-      default: '',
-    },
-    modelModifiers: {
-      type: Object,
-      default: () => ({}),
-    },
-    label: {
-      type: String,
-      default: '',
-    },
-    id: {
-      type: String,
-      default: '',
-    },
-    placeholder: {
-      type: String,
-      default: '',
-    },
-    required: {
-      type: Boolean,
-      default: true,
-    },
-    width: {
-      type: Number,
-      default: -1,
-    },
-    rows: {
-      type: Number,
-      default: 0,
-    }
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string;
+    modelModifiers?: Record<string, unknown>;
+    label?: string;
+    id?: string;
+    placeholder?: string;
+    required?: boolean;
+    width?: number;
+    rows?: number;
+  }>(),
+  {
+    modelValue: '',
+    modelModifiers: () => ({}),
+    label: '',
+    id: '',
+    placeholder: '',
+    required: true,
+    width: -1,
+    rows: 0,
   },
+);
 
-  emits: ['update:modelValue', 'input'],
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void;
+  (e: 'input', value: string): void;
+}>();
 
-  setup() {
-    return { uid: getCurrentInstance().uid };
-  },
+const uid = getCurrentInstance()?.uid ?? 0;
 
-  data() {
-    return {
-      buffer: this.modelValue
-    };
-  },
+const buffer = ref(props.modelValue);
 
-  computed: {
-    realid() {
-      return this.id + this.uid;
-    },
-    textareaStyle() {
-      return this.width >= 0 ? 'width:' + this.width + 'px' : '';
-    }
-  },
+const realid = computed(() => props.id + uid);
 
-  watch: {
-    modelValue: function (newValue) {
-      this.buffer = newValue;
-    }
-  },
+const textareaStyle = computed(() => (props.width >= 0 ? 'width:' + props.width + 'px' : ''));
 
-  mounted() {
-    this.buffer = this.modelValue;
-  },
+watch(() => props.modelValue, (newValue) => {
+  buffer.value = newValue;
+});
 
-  methods: {
-    emitUpdate() {
-      this.$emit('update:modelValue', this.buffer);
-      this.$emit('input', this.buffer);
-    },
-  },
-};
+onMounted(() => {
+  buffer.value = props.modelValue;
+});
+
+function emitUpdate() {
+  emit('update:modelValue', buffer.value);
+  emit('input', buffer.value);
+}
 </script>

@@ -52,88 +52,69 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 import { useVuelidate } from '@vuelidate/core';
-import { required, numeric, helpers } from '@vuelidate/validators';
+import { required, helpers } from '@vuelidate/validators';
+import { locale as bootLocale } from '../../boot';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-const before = (param) =>
+interface FocusableComponent {
+  focus: () => void;
+}
+
+const before = (param: moment.Moment) =>
   helpers.withParams(
     { type: 'before', date: param },
-    (value) => !helpers.req(value) || moment(value).isBefore(param)
+    (value: unknown) => !helpers.req(value) || moment(value as string | Date).isBefore(param),
   );
 
-export default {
-
-  props: {
-    value: {
-      type: Boolean,
-      default: false,
-    },
-    date: {
-      type: String,
-      default: '',
-    },
-    reminder: {
-      type: Boolean,
-      default: false,
-    },
+const props = withDefaults(
+  defineProps<{
+    value?: boolean;
+    date?: string;
+    reminder?: boolean;
+  }>(),
+  {
+    value: false,
+    date: '',
+    reminder: false,
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { v$: useVuelidate(), t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const locale = bootLocale;
 
-  data() {
-    return {
-      deceased: false,
-      dateKnown: false,
-      selectedDate: null,
-    };
-  },
+const deceased = ref(false);
+const dateKnown = ref(false);
+const selectedDate = ref<string | null>(null);
 
-  validations() {
-    return {
-      selectedDate: {
-        required,
-        before: before(moment())
-      }
-    };
-  },
+const deaceasedday = useTemplateRef<FocusableComponent>('deaceasedday');
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    },
-    locale() {
-      return this.$root.locale;
-    }
-  },
-
-  watch: {
-    value(val) {
-      this.deceased = val;
-    },
-
-    date(val) {
-      this.selectedDate = val;
-    },
-  },
-
-  mounted() {
-    this.deceased = this.value;
-    this.dateKnown = this.date !== '';
-    this.selectedDate = this.date;
-  },
-
-  methods: {
-    _focusDate() {
-      setTimeout(() => {
-        this.$refs.deaceasedday.focus();
-      }, 100);
-    },
-  }
+const rules = {
+  selectedDate: { required, before: before(moment()) },
 };
+
+const v$ = useVuelidate(rules, { selectedDate });
+
+watch(() => props.value, (val) => {
+  deceased.value = val;
+});
+
+watch(() => props.date, (val) => {
+  selectedDate.value = val;
+});
+
+onMounted(() => {
+  deceased.value = props.value;
+  dateKnown.value = props.date !== '';
+  selectedDate.value = props.date;
+});
+
+function _focusDate() {
+  setTimeout(() => deaceasedday.value?.focus(), 100);
+}
 </script>

@@ -12,7 +12,7 @@
           :value="'unknown'"
           :dclass="'flex mb3'"
           :iclass="[ dirltr ? 'mr2' : 'ml2' ]"
-          @change="event => { _saveOption(); }"
+          @change="() => { _saveOption(); }"
         >
           <template #label>
             {{ t('people.information_edit_unknown') }}
@@ -24,7 +24,7 @@
           :value="'approximate'"
           :dclass="'flex mb3'"
           :iclass="[ dirltr ? 'mr2' : 'ml2' ]"
-          @change="event => { if (selectedOptionSave !== 'approximate') {_focusAge();} _saveOption(); }"
+          @change="() => { if (selectedOptionSave !== 'approximate') {_focusAge();} _saveOption(); }"
         >
           <template #label>
             {{ t('people.information_edit_probably') }}
@@ -47,7 +47,7 @@
           :value="'almost'"
           :dclass="'flex mb3'"
           :iclass="[ dirltr ? 'mr2' : 'ml2' ]"
-          @change="event => { if (selectedOptionSave !== 'almost') {_focusMonth();} _saveOption(); }"
+          @change="() => { if (selectedOptionSave !== 'almost') {_focusMonth();} _saveOption(); }"
         >
           <template #label>
             {{ t('people.information_edit_not_year') }}
@@ -78,7 +78,7 @@
           :value="'exact'"
           :dclass="'flex mb3'"
           :iclass="[ dirltr ? 'mr2' : 'ml2' ]"
-          @change="event => { if (selectedOptionSave !== 'exact') {_focusBirthday();} _saveOption(); }"
+          @change="() => { if (selectedOptionSave !== 'exact') {_focusBirthday();} _saveOption(); }"
         >
           <template #label>
             {{ t('people.information_edit_exact') }}
@@ -116,144 +116,117 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 import { useVuelidate } from '@vuelidate/core';
 import { required, numeric, helpers } from '@vuelidate/validators';
+import { locale as bootLocale } from '../../boot';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-const before = (param) =>
+interface SelectOption {
+  id: string | number;
+  name: string;
+}
+
+interface FocusableComponent {
+  focus: () => void;
+}
+
+const before = (param: moment.Moment) =>
   helpers.withParams(
     { type: 'before', date: param },
-    (value) => !helpers.req(value) || moment(value).isBefore(param)
+    (value: unknown) => !helpers.req(value) || moment(value as string | Date).isBefore(param),
   );
 
-export default {
-
-  props: {
-    value: {
-      type: String,
-      default: '',
-    },
-    days: {
-      type: Array,
-      default: () => [],
-    },
-    months: {
-      type: Array,
-      default: () => [],
-    },
-    day: {
-      type: Number,
-      default: 0,
-    },
-    month: {
-      type: Number,
-      default: 0,
-    },
-    birthdate: {
-      type: String,
-      default: '',
-    },
-    age: {
-      type: Number,
-      default: 0,
-    },
-    reminder: {
-      type: Boolean,
-      default: false,
-    },
+const props = withDefaults(
+  defineProps<{
+    value?: string;
+    days?: SelectOption[];
+    months?: SelectOption[];
+    day?: number;
+    month?: number;
+    birthdate?: string;
+    age?: number;
+    reminder?: boolean;
+  }>(),
+  {
+    value: '',
+    days: () => [],
+    months: () => [],
+    day: 0,
+    month: 0,
+    birthdate: '',
+    age: 0,
+    reminder: false,
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { v$: useVuelidate(), t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const locale = bootLocale;
 
-  data() {
-    return {
-      selectedDate: null,
-      selectedOption: null,
-      selectedOptionSave: null,
-      selectedAge: 0,
-      selectedMonth: 0,
-      selectedDay: 0,
-      hasBirthdayReminder: false
-    };
-  },
+const selectedDate = ref<string | null>(null);
+const selectedOption = ref<string | null>(null);
+const selectedOptionSave = ref<string | null>(null);
+const selectedAge = ref(0);
+const selectedMonth = ref(0);
+const selectedDay = ref(0);
+const hasBirthdayReminder = ref(false);
 
-  validations() {
-    switch (this.selectedOption) {
-    case 'approximate':
-      return {
-        selectedAge: {
-          required,
-          numeric,
-        }
-      };
-    case 'exact':
-      return {
-        selectedDate: {
-          required,
-          before: before(moment())
-        }
-      };
-    }
+const ageRef = useTemplateRef<FocusableComponent>('age');
+const monthRef = useTemplateRef<FocusableComponent>('month');
+const birthdayRef = useTemplateRef<FocusableComponent>('birthday');
+
+const rules = computed(() => {
+  switch (selectedOption.value) {
+  case 'approximate':
+    return { selectedAge: { required, numeric } };
+  case 'exact':
+    return { selectedDate: { required, before: before(moment()) } };
+  default:
     return {};
-  },
-
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    },
-    locale() {
-      return this.$root.locale;
-    }
-  },
-
-  watch: {
-    birthdate(val) {
-      this.selectedDate = val;
-    },
-
-    value(val) {
-      this.selectedOption = val;
-    },
-
-    age(val) {
-      this.selectedAge = val;
-    },
-  },
-
-  mounted() {
-    this.selectedDate = this.birthdate;
-    this.selectedOption = this.value !== '' ? this.value : 'unknown';
-    this.selectedOptionSave = this.selectedOption;
-    this.selectedAge = this.age;
-    this.selectedMonth = this.month;
-    this.selectedDay = this.day;
-    this.hasBirthdayReminder = this.reminder;
-  },
-
-  methods: {
-    _focusAge() {
-      setTimeout(() => {
-        this.$refs.age.focus();
-      }, 100);
-    },
-    _focusMonth() {
-      setTimeout(() => {
-        this.$refs.month.focus();
-      }, 100);
-    },
-    _focusBirthday() {
-      setTimeout(() => {
-        this.$refs.birthday.focus();
-      }, 100);
-    },
-    _saveOption() {
-      this.selectedOptionSave = this.selectedOption;
-    },
   }
-};
+});
+
+const v$ = useVuelidate(rules, { selectedAge, selectedDate });
+
+watch(() => props.birthdate, (val) => {
+  selectedDate.value = val;
+});
+
+watch(() => props.value, (val) => {
+  selectedOption.value = val;
+});
+
+watch(() => props.age, (val) => {
+  selectedAge.value = val;
+});
+
+onMounted(() => {
+  selectedDate.value = props.birthdate;
+  selectedOption.value = props.value !== '' ? props.value : 'unknown';
+  selectedOptionSave.value = selectedOption.value;
+  selectedAge.value = props.age;
+  selectedMonth.value = props.month;
+  selectedDay.value = props.day;
+  hasBirthdayReminder.value = props.reminder;
+});
+
+function _focusAge() {
+  setTimeout(() => ageRef.value?.focus(), 100);
+}
+
+function _focusMonth() {
+  setTimeout(() => monthRef.value?.focus(), 100);
+}
+
+function _focusBirthday() {
+  setTimeout(() => birthdayRef.value?.focus(), 100);
+}
+
+function _saveOption() {
+  selectedOptionSave.value = selectedOption.value;
+}
 </script>

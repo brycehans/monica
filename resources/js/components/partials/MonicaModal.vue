@@ -54,7 +54,7 @@
     @opened="$emit('open')"
     @closed="$emit('close')"
   >
-    <div class="monica-modal__panel" role="dialog" :aria-label="title || null">
+    <div class="monica-modal__panel" role="dialog" :aria-label="title || undefined" :cy-name="cyNameAttr">
       <h3 v-if="title" class="monica-modal__title">
         {{ title }}
       </h3>
@@ -69,28 +69,45 @@
   </vue-final-modal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { VueFinalModal } from 'vue-final-modal';
+import { env } from '../../boot';
 
-export default {
-  components: { VueFinalModal },
-
-  props: {
-    modelValue: { type: Boolean, default: false },
-    title: { type: String, default: '' },
-    // When true, the X close link is suppressed and esc / click-outside do
-    // nothing. Use for modals where the only valid exits are explicit Cancel
-    // / Done buttons that run cleanup (see SetAvatar: closing via X would
-    // bypass cancelCrop and leave the uncropped upload in the file input).
-    blocking: { type: Boolean, default: false },
+// When `blocking` is true, the X close link is suppressed and esc /
+// click-outside do nothing. Use for modals where the only valid exits are
+// explicit Cancel / Done buttons that run cleanup (see SetAvatar: closing
+// via X would bypass cancelCrop and leave the uncropped upload in the file
+// input).
+//
+// `cyName`: optional label rendered as a `cy-name` attribute on the modal
+// panel, mirroring the `v-cy-name` directive's contract (only emitted
+// outside production builds — see resources/js/testing.ts). Lets specs
+// scope by a single locator without depending on the modal's title text
+// (which is i18n'd and brittle).
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    title?: string;
+    blocking?: boolean;
+    cyName?: string;
+  }>(),
+  {
+    modelValue: false,
+    title: '',
+    blocking: false,
+    cyName: '',
   },
+);
 
-  emits: ['update:modelValue', 'open', 'close'],
+const cyNameAttr = computed(() => (env !== 'production' && props.cyName) ? props.cyName : null);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
-};
+defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'open'): void;
+  (e: 'close'): void;
+}>();
+
+const { t } = useI18n();
 </script>

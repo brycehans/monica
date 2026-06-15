@@ -19,55 +19,40 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
-
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    active: {
-      type: Boolean,
-      default: true,
-    },
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    active?: boolean;
+  }>(),
+  {
+    hash: '',
+    active: true,
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { notify } = useNotify();
 
-  data() {
-    return {
-      isActive: false,
-    };
-  },
+const isActive = ref(false);
 
-  mounted() {
-    this.prepareComponent();
-  },
+onMounted(() => {
+  isActive.value = props.active;
+});
 
-  methods: {
-    prepareComponent() {
-      this.isActive = this.active;
-    },
-
-    toggle() {
-      axios.put('people/' + this.hash + '/archive')
-        .then(response => {
-          this.isActive = response.data.is_active;
-
-          this.$notify({
-            group: 'archive',
-            title: this.t('app.default_save_success'),
-            text: '',
-            type: 'success'
-          });
-        });
-    },
-  }
-};
+async function toggle() {
+  const response = await axios.put('people/' + props.hash + '/archive');
+  isActive.value = response.data.is_active;
+  notify({
+    group: 'archive',
+    title: t('app.default_save_success'),
+    text: '',
+    type: 'success',
+  });
+}
 </script>

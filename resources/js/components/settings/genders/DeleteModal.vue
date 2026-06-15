@@ -52,54 +52,73 @@
   </monica-modal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
-// See genders/CreateModal.vue for the modelValue contract rationale.
-export default {
-  props: {
-    modelValue: { type: Boolean, default: false },
-    gender: { type: Object, required: true },
-    genders: { type: Array, default: () => [] },
-  },
+interface Gender {
+  id: number | string;
+  name: string;
+  isDefault: boolean;
+  numberOfContacts: number;
+}
 
-  emits: ['update:modelValue', 'saved'],
-
-  setup(_, { emit }) {
-    const { t } = useI18n();
-    const { cancel, finish, sync } = useModalSelfClose(emit);
-    return { t, cancel, finish, sync };
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    gender: Gender;
+    genders?: Gender[];
+  }>(),
+  {
+    modelValue: false,
+    genders: () => [],
   },
+);
 
-  data() {
-    return {
-      form: {
-        id: this.gender.id.toString(),
-        name: this.gender.name,
-        isDefault: this.gender.isDefault,
-        numberOfContacts: this.gender.numberOfContacts,
-        newId: 0,
-      },
-      errorMessage: '',
-    };
-  },
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'saved'): void;
+}>();
 
-  methods: {
-    trash() {
-      return axios.delete('settings/personalization/genders/' + this.form.id).then(this.finish);
-    },
-    trashAndReplace() {
-      return axios.delete('settings/personalization/genders/' + this.form.id + '/replaceby/' + this.form.newId)
-        .then(this.finish)
-        .catch((error) => {
-          if (error?.response?.data && typeof error.response.data === 'object') {
-            this.errorMessage = error.response.data.message;
-          } else {
-            this.errorMessage = this.t('app.error_try_again');
-          }
-        });
-    },
-  },
-};
+const { t } = useI18n();
+const { cancel, finish, sync } = useModalSelfClose(emit);
+
+const form = reactive<{
+  id: string;
+  name: string;
+  isDefault: boolean;
+  numberOfContacts: number;
+  newId: number;
+}>({
+  id: props.gender.id.toString(),
+  name: props.gender.name,
+  isDefault: props.gender.isDefault,
+  numberOfContacts: props.gender.numberOfContacts,
+  newId: 0,
+});
+
+const errorMessage = ref('');
+
+async function trash() {
+  await axios.delete('settings/personalization/genders/' + form.id);
+  finish();
+}
+
+async function trashAndReplace() {
+  try {
+    await axios.delete('settings/personalization/genders/' + form.id + '/replaceby/' + form.newId);
+    finish();
+  } catch (error: unknown) {
+    const data = (error as { response?: { data?: unknown } })?.response?.data;
+    if (data && typeof data === 'object') {
+      errorMessage.value = (data as { message?: string }).message ?? '';
+    } else {
+      errorMessage.value = t('app.error_try_again');
+    }
+  }
+}
+
+defineExpose({ form, errorMessage, cancel, finish, sync, trash, trashAndReplace });
 </script>

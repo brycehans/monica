@@ -15,6 +15,7 @@
     "lint:fix": "yarn run lint --fix",
     "test:js": "vitest run",
     "test:js:watch": "vitest",
+    "check:ts-version": "node scripts/check-ts-version.mjs",
     "snyk-protect": "snyk-protect",
     "prepublish": "yarn run snyk-protect",
     "migrate": "DB_CONNECTION=testing php artisan migrate:fresh && DB_CONNECTION=testing php artisan db:seed",
@@ -26,6 +27,10 @@
   "engines": {
     "node": "20.x",
     "yarn": "1.22.x"
+  },
+  "toolFloors": {
+    "_comment": "Non-standard mirror of `engines` for dev tooling that isn't a runtime engine. Enforced by scripts/check-ts-version.mjs in CI. Kept out of `engines` because yarn 1 warns on unknown keys there.",
+    "typescript": ">=5.5"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.0.0",

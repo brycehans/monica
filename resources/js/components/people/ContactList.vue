@@ -65,19 +65,19 @@
           {{ t('people.people_search_no_results') }}
         </div>
       </template>
-      <template #table-row="props">
-        <template v-if="props.column.field === 'avatar'">
+      <template #table-row="slotProps">
+        <template v-if="slotProps.column.field === 'avatar'">
           <contact-item
-            :item="props.row"
+            :item="slotProps.row"
             :with-name="false"
             :class-name="'avatar-search'"
           />
         </template>
-        <template v-else-if="props.column.field === 'name'">
-          <a :href="props.row.route">
-            <template v-if="props.row.is_starred">
-              <span :class="[dirltr === 'ltr' ? 'ml3' : 'mr3']">
-                {{ props.row.complete_name }}
+        <template v-else-if="slotProps.column.field === 'name'">
+          <a :href="slotProps.row.route">
+            <template v-if="slotProps.row.is_starred">
+              <span :class="[dirltr ? 'ml3' : 'mr3']">
+                {{ slotProps.row.complete_name }}
               </span>
               <svg class="relative" style="top: 5px" width="23" height="22" viewBox="0 0 23 22"
                    fill="none"
@@ -89,14 +89,14 @@
               </svg>
             </template>
             <span v-else>
-              {{ props.row.complete_name }}
+              {{ slotProps.row.complete_name }}
             </span>
           </a>
         </template>
-        <template v-else-if="props.column.field === 'description'">
-          <a :href="props.row.route">
-            <span v-if="props.row.description" :class="['i', dirltr === 'ltr' ? 'ml3' : 'mr3']">
-              {{ props.row.description }}
+        <template v-else-if="slotProps.column.field === 'description'">
+          <a :href="slotProps.row.route">
+            <span v-if="slotProps.row.description" :class="['i', dirltr ? 'ml3' : 'mr3']">
+              {{ slotProps.row.description }}
             </span>
           </a>
         </template>
@@ -105,154 +105,117 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+// @ts-expect-error — vue-good-table-next ships no types
 import { VueGoodTable } from 'vue-good-table-next';
 import ContactItem from './partials/ContactItem.vue';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-export default {
+interface Contact {
+  id: number;
+  complete_name?: string;
+  route?: string;
+  description?: string;
+  is_starred?: boolean;
+}
 
-  components: {
-    VueGoodTable,
-    ContactItem,
+interface ServerParams {
+  search: string;
+  page: number;
+  perPage: number;
+}
+
+const props = withDefaults(
+  defineProps<{
+    showArchived?: boolean;
+    debounceWait?: number;
+  }>(),
+  {
+    showArchived: false,
+    debounceWait: 200,
   },
+);
 
-  props: {
-    showArchived: {
-      type: Boolean,
-      default: false,
-    },
-    debounceWait: {
-      type: Number,
-      default: 200,
-    },
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const contacts = ref<Contact[]>([]);
+const ready = ref(false);
+const totalRecords = ref(0);
+const perPageDropdown = [30, 50, 100];
 
-  data() {
-    return {
-      contacts: [],
-      searchEntries: null,
-      ready: false,
+const serverParams = reactive<ServerParams>({ search: '', page: 1, perPage: 30 });
 
-      totalRecords: 0,
-      perPageDropdown: [30, 50, 100],
+const columns = [
+  { label: t('app.contact_list_avatar'), field: 'avatar', width: '70px', sortable: false },
+  { label: t('app.contact_list_name'), field: 'name' },
+  { label: t('app.contact_list_description'), field: 'description' },
+];
 
-      serverParams: {
-        search: '',
-        page: 1,
-        perPage: 30
-      },
+let searchHandle: ReturnType<typeof setTimeout> | null = null;
+function searchEntries() {
+  if (searchHandle !== null) clearTimeout(searchHandle);
+  searchHandle = setTimeout(() => {
+    ready.value = false;
+    contacts.value = [];
+    _loadItems();
+  }, props.debounceWait);
+}
 
-      columns: [
-        {
-          label: this.t('app.contact_list_avatar'),
-          field: 'avatar',
-          width: '70px',
-          sortable: false,
-        },
-        {
-          label: this.t('app.contact_list_name'),
-          field: 'name',
-        },
-        {
-          label: this.t('app.contact_list_description'),
-          field: 'description',
-        }
-      ],
-    };
-  },
+onMounted(() => {
+  _loadItems();
+});
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
-
-  mounted() {
-    this.searchEntries = _.debounce(() => {
-      this.ready = false;
-      this.contacts = [];
-      this._loadItems();
-    }, this.debounceWait);
-
-    this._loadItems();
-  },
-
-  methods: {
-    onRowClick(params) {
-      params.event.preventDefault();
-      if (params.event.ctrlKey) {
-        window.open(params.row.route, '_blank');
-        return;
-      }
-      window.location.href = params.row.route;
-    },
-
-    updateParams(newProps) {
-      this.serverParams = Object.assign({}, this.serverParams, newProps);
-    },
-
-    onPageChange(params) {
-      this.updateParams({page: params.currentPage});
-      this.searchEntries();
-    },
-
-    onPerPageChange(params) {
-      this.updateParams({perPage: params.currentPerPage, page: 1});
-      this.searchEntries();
-    },
-
-    onSearch(params) {
-      this.updateParams({search: params.searchTerm});
-      this.searchEntries();
-    },
-
-    // load items is what brings back the rows from server
-    _loadItems() {
-      let urlParam = window.location.search;
-
-      if (urlParam) {
-        urlParam += '&';
-      } else {
-        urlParam += '?';
-      }
-
-      urlParam += 'page='+this.serverParams.page;
-      urlParam += '&perPage='+this.serverParams.perPage;
-      urlParam += '&search='+this.serverParams.search;
-      if (this.showArchived) {
-        urlParam += '&show_archived=true';
-      }
-
-      this._loadNewItems(urlParam, (entries, total) => {
-        this.contacts = entries;
-        this.totalRecords = total;
-        this.ready = true;
-      });
-    },
-
-    _loadNewItems(urlParam, after) {
-      axios.get('people/list'+urlParam)
-        .then(response => {
-          const contacts = response.data.contacts.data || response.data.contacts;
-
-          if (_.isFunction(after)) {
-            after(
-              _.uniqBy(contacts, entry => _.uniqueId()),
-              response.data.totalRecords
-            );
-          }
-        });
-    },
-
-    getRowStyleClass() {
-      return 'people-list-item bg-white pointer';
-    }
+function onRowClick(params: { event: MouseEvent; row: Contact }) {
+  params.event.preventDefault();
+  if (params.event.ctrlKey) {
+    window.open(params.row.route, '_blank');
+    return;
   }
-};
+  if (params.row.route) {
+    window.location.href = params.row.route;
+  }
+}
+
+function updateParams(newProps: Partial<ServerParams>) {
+  Object.assign(serverParams, newProps);
+}
+
+function onPageChange(params: { currentPage: number }) {
+  updateParams({ page: params.currentPage });
+  searchEntries();
+}
+
+function onPerPageChange(params: { currentPerPage: number }) {
+  updateParams({ perPage: params.currentPerPage, page: 1 });
+  searchEntries();
+}
+
+function onSearch(params: { searchTerm: string }) {
+  updateParams({ search: params.searchTerm });
+  searchEntries();
+}
+
+async function _loadItems() {
+  let urlParam = window.location.search;
+  urlParam += urlParam ? '&' : '?';
+  urlParam += 'page=' + serverParams.page;
+  urlParam += '&perPage=' + serverParams.perPage;
+  urlParam += '&search=' + serverParams.search;
+  if (props.showArchived) {
+    urlParam += '&show_archived=true';
+  }
+  const response = await axios.get('people/list' + urlParam);
+  const list: Contact[] = response.data.contacts.data || response.data.contacts;
+  contacts.value = list;
+  totalRecords.value = response.data.totalRecords;
+  ready.value = true;
+}
+
+function getRowStyleClass() {
+  return 'people-list-item bg-white pointer';
+}
 </script>

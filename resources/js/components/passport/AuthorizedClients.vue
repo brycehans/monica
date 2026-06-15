@@ -58,46 +58,32 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useHtmlDir } from '../../composables/useHtmlDir';
 
-export default {
+interface OAuthToken {
+  id: string | number;
+  client: { name: string };
+  scopes: string[];
+}
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  data() {
-    return {
-      tokens: []
-    };
-  },
+const tokens = ref<OAuthToken[]>([]);
 
-  mounted() {
-    this.getTokens();
-  },
+onMounted(getTokens);
 
-  methods: {
-    /**
-     * Get all of the authorized tokens for the user.
-     */
-    getTokens() {
-      axios.get('oauth/tokens')
-        .then(response => {
-          this.tokens = response.data;
-        });
-    },
+async function getTokens() {
+  const response = await axios.get('oauth/tokens');
+  tokens.value = response.data as OAuthToken[];
+}
 
-    /**
-     * Revoke the given token.
-     */
-    revoke(token) {
-      axios.delete('oauth/tokens/' + token.id)
-        .then(response => {
-          this.getTokens();
-        });
-    }
-  }
-};
+async function revoke(token: OAuthToken) {
+  await axios.delete('oauth/tokens/' + token.id);
+  await getTokens();
+}
 </script>

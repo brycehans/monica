@@ -81,224 +81,202 @@
   </form>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
+interface StripeError {
+  code?: string;
+  param?: string;
+  message?: string;
+}
 
-  props: {
-    name: {
-      type: String,
-      default: '',
-    },
-    stripeKey: {
-      type: String,
-      default: '',
-    },
-    clientSecret: {
-      type: String,
-      default: '',
-    },
-    plan: {
-      type: String,
-      default: '',
-    },
-    amount: {
-      type: String,
-      default: '',
-    },
-    callback: {
-      type: String,
-      default: '',
-    },
-    token: {
-      type: String,
-      default: '',
-    },
-    confirm: {
-      type: Boolean,
-      default: false,
-    },
-    paymentSucceeded: {
-      type: Boolean,
-      default: false,
-    },
-    paymentCancelled: {
-      type: Boolean,
-      default: false,
-    },
+interface StripeCardElement {
+  mount: (selector: string) => void;
+  addEventListener: (event: string, cb: (event: { error?: StripeError }) => void) => void;
+}
+
+interface StripeSetupIntent {
+  payment_method: string;
+}
+
+interface StripeInstance {
+  elements: () => {
+    create: (type: string, options: unknown) => StripeCardElement;
+  };
+  handleCardSetup: (
+    clientSecret: string,
+    element: StripeCardElement,
+    data: unknown,
+  ) => Promise<{ error?: StripeError; setupIntent?: StripeSetupIntent }>;
+  handleCardPayment: (
+    clientSecret: string,
+    element: StripeCardElement,
+    data: unknown,
+  ) => Promise<{ error?: StripeError }>;
+}
+
+declare const Stripe: (key: string) => StripeInstance;
+
+const props = withDefaults(
+  defineProps<{
+    name?: string;
+    stripeKey?: string;
+    clientSecret?: string;
+    plan?: string;
+    amount?: string;
+    callback?: string;
+    token?: string;
+    confirm?: boolean;
+    paymentSucceeded?: boolean;
+    paymentCancelled?: boolean;
+  }>(),
+  {
+    name: '',
+    stripeKey: '',
+    clientSecret: '',
+    plan: '',
+    amount: '',
+    callback: '',
+    token: '',
+    confirm: false,
+    paymentSucceeded: false,
+    paymentCancelled: false,
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { notify } = useNotify();
 
-  data() {
-    return {
-      selectedName: '',
-      stripe: null,
-      zip: '',
-      errors: '',
-      successMessage: '',
-      cardElement: null,
-      paymentMethod: '',
-      paymentProcessing: false,
-      paymentProcessed: false,
-    };
-  },
+const formEl = useTemplateRef<HTMLFormElement>('form');
 
-  watch: {
-    name() {
-      this.selectedName = this.name;
-    }
-  },
+const selectedName = ref('');
+const stripe = ref<StripeInstance | null>(null);
+const zip = ref('');
+const errors = ref('');
+const successMessage = ref('');
+const cardElement = ref<StripeCardElement | null>(null);
+const paymentMethod = ref('');
+const paymentProcessing = ref(false);
+const paymentProcessed = ref(false);
 
-  mounted() {
-    this.selectedName = this.name;
-    if (this.paymentSucceeded || this.paymentCancelled) {
-      this.paymentProcessed = true;
-    }
-    if (! this.paymentProcessed) {
-      this.start();
-    }
-  },
+watch(() => props.name, () => {
+  selectedName.value = props.name;
+});
 
-  methods: {
-    start() {
-      this.stripe = Stripe(this.stripeKey);
-
-      const elements = this.stripe.elements();
-
-      // Custom styling can be passed to options when creating an Element.
-      // (Note that this demo uses a wider set of styles than the guide below.)
-      const style = {
-        base: {
-          color: '#32325d',
-          lineHeight: '18px',
-          fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-          fontSmoothing: 'antialiased',
-          fontSize: '16px',
-          '::placeholder': {
-            color: '#aab7c4'
-          }
-        },
-        invalid: {
-          color: '#fa755a',
-          iconColor: '#fa755a'
-        }
-      };
-
-      // Create an instance of the card Element
-      this.cardElement = elements.create('card', {
-        hidePostalCode: true,
-        style: style
-      });
-
-      // Add an instance of the card Element into the `card-element` <div>
-      this.cardElement.mount('#card-element');
-
-      // Handle real-time validation errors from the card Element.
-      var self = this;
-      this.cardElement.addEventListener('change', function(event) {
-        if (event.error) {
-          self.errors = event.error.message;
-        } else {
-          self.errors = '';
-        }
-      });
-    },
-
-    handleError(error) {
-      if (error.code === 'parameter_invalid_empty' &&
-            error.param === 'payment_method_data[billing_details][name]') {
-        this.errors = this.t('settings.subscriptions_payment_error_name');
-      } else {
-        this.errors = error.message;
-      }
-    },
-
-    subscribe() {
-      var self = this;
-
-      this.errors = '';
-      this.paymentProcessing = true;
-      this.paymentProcessed = false;
-
-      this.stripe.handleCardSetup(
-        self.clientSecret,
-        self.cardElement,
-        {
-          payment_method_data: {
-            billing_details: {
-              name: self.selectedName,
-              address: {
-                postal_code: self.zip,
-              }
-            }
-          }
-        }
-      ).then(function (result) {
-        self.paymentProcessing = false;
-        if (result.error) {
-          self.handleError(result.error);
-        } else {
-          // The card has been verified successfully...
-          self.paymentProcessed = true;
-          self.paymentSucceeded = true;
-          self.successMessage = self.t('settings.subscriptions_payment_success');
-          self.notify(self.successMessage, true);
-          self.processPayment(result.setupIntent);
-        }
-      });
-    },
-
-    processPayment(setupIntent) {
-      var self = this;
-      this.paymentMethod = setupIntent.payment_method;
-      setTimeout(function () {
-        self.$refs.form.submit();
-      }, 10);
-    },
-
-    confirmPayment() {
-      var self = this;
-
-      this.paymentProcessing = true;
-      this.paymentProcessed = false;
-      this.errorMessage = '';
-
-      this.stripe.handleCardPayment(
-        self.clientSecret, self.cardElement, {
-          payment_method_data: {
-            billing_details: { name: this.selectedName }
-          }
-        }
-      ).then(function (result) {
-        self.paymentProcessing = false;
-
-        if (result.error) {
-          self.handleError(result.error);
-        } else {
-          self.paymentProcessed = true;
-          self.paymentSucceeded = true;
-          self.successMessage = self.t('settings.subscriptions_payment_success');
-          self.notify(self.successMessage, true);
-          setTimeout(function () {
-            window.location = self.callback;
-          }, 3000);
-        }
-      });
-    },
-
-    notify(text, success) {
-      this.$notify({
-        group: 'subscription',
-        title: text,
-        text: '',
-        type: success ? 'success' : 'error'
-      });
-    }
+onMounted(() => {
+  selectedName.value = props.name;
+  if (props.paymentSucceeded || props.paymentCancelled) {
+    paymentProcessed.value = true;
   }
-};
+  if (!paymentProcessed.value) {
+    start();
+  }
+});
+
+function start() {
+  stripe.value = Stripe(props.stripeKey);
+
+  const elements = stripe.value.elements();
+
+  const style = {
+    base: {
+      color: '#32325d',
+      lineHeight: '18px',
+      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      fontSmoothing: 'antialiased',
+      fontSize: '16px',
+      '::placeholder': { color: '#aab7c4' },
+    },
+    invalid: { color: '#fa755a', iconColor: '#fa755a' },
+  };
+
+  cardElement.value = elements.create('card', { hidePostalCode: true, style });
+  cardElement.value.mount('#card-element');
+
+  cardElement.value.addEventListener('change', (event) => {
+    errors.value = event.error ? event.error.message ?? '' : '';
+  });
+}
+
+function handleError(error: StripeError) {
+  if (
+    error.code === 'parameter_invalid_empty' &&
+    error.param === 'payment_method_data[billing_details][name]'
+  ) {
+    errors.value = t('settings.subscriptions_payment_error_name');
+  } else {
+    errors.value = error.message ?? '';
+  }
+}
+
+function notifyMessage(text: string, success: boolean) {
+  notify({
+    group: 'subscription',
+    title: text,
+    text: '',
+    type: success ? 'success' : 'error',
+  });
+}
+
+async function subscribe() {
+  errors.value = '';
+  paymentProcessing.value = true;
+  paymentProcessed.value = false;
+
+  if (!stripe.value || !cardElement.value) return;
+
+  const result = await stripe.value.handleCardSetup(props.clientSecret, cardElement.value, {
+    payment_method_data: {
+      billing_details: {
+        name: selectedName.value,
+        address: { postal_code: zip.value },
+      },
+    },
+  });
+
+  paymentProcessing.value = false;
+  if (result.error) {
+    handleError(result.error);
+  } else if (result.setupIntent) {
+    paymentProcessed.value = true;
+    successMessage.value = t('settings.subscriptions_payment_success');
+    notifyMessage(successMessage.value, true);
+    processPayment(result.setupIntent);
+  }
+}
+
+function processPayment(setupIntent: StripeSetupIntent) {
+  paymentMethod.value = setupIntent.payment_method;
+  setTimeout(() => {
+    formEl.value?.submit();
+  }, 10);
+}
+
+async function confirmPayment() {
+  paymentProcessing.value = true;
+  paymentProcessed.value = false;
+  errors.value = '';
+
+  if (!stripe.value || !cardElement.value) return;
+
+  const result = await stripe.value.handleCardPayment(props.clientSecret, cardElement.value, {
+    payment_method_data: {
+      billing_details: { name: selectedName.value },
+    },
+  });
+
+  paymentProcessing.value = false;
+  if (result.error) {
+    handleError(result.error);
+  } else {
+    paymentProcessed.value = true;
+    successMessage.value = t('settings.subscriptions_payment_success');
+    notifyMessage(successMessage.value, true);
+    setTimeout(() => {
+      window.location.href = props.callback;
+    }, 3000);
+  }
+}
 </script>

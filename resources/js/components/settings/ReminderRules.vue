@@ -35,7 +35,7 @@
               v-model="reminderRule.active"
               :iclass="'reminder-rule-' + reminderRule.number_of_days_before"
               :labels="true"
-              @change="toggle(reminderRule, $event)"
+              @change="toggle(reminderRule)"
             />
           </div>
         </div>
@@ -44,56 +44,40 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
 
-export default {
+interface ReminderRule {
+  id: number;
+  number_of_days_before: number;
+  active: boolean;
+}
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  data() {
-    return {
-      reminderRules: [],
-    };
-  },
+const reminderRules = ref<ReminderRule[]>([]);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+onMounted(getReminderRules);
 
-  mounted() {
-    this.prepareComponent();
-  },
+async function getReminderRules() {
+  const response = await axios.get('settings/personalization/reminderrules');
+  reminderRules.value = response.data as ReminderRule[];
+}
 
-  methods: {
-    prepareComponent() {
-      this.getReminderRules();
-    },
-
-    getReminderRules() {
-      axios.get('settings/personalization/reminderrules')
-        .then(response => {
-          this.reminderRules = response.data;
-        });
-    },
-
-    toggle(reminderRule, event) {
-      axios.post('settings/personalization/reminderrules/' + reminderRule.id)
-        .then(response => {
-          this.$notify({
-            group: 'main',
-            title: this.t('settings.personalization_reminder_rule_save'),
-            text: '',
-            type: 'success'
-          });
-          reminderRule.active = response.data.data.active;
-        });
-    }
-  }
-};
+async function toggle(reminderRule: ReminderRule) {
+  const response = await axios.post('settings/personalization/reminderrules/' + reminderRule.id);
+  notify({
+    group: 'main',
+    title: t('settings.personalization_reminder_rule_save'),
+    text: '',
+    type: 'success',
+  });
+  reminderRule.active = response.data.data.active;
+}
 </script>

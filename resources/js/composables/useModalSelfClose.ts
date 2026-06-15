@@ -18,7 +18,10 @@
 // button uses `@click.prevent="cancel"`, and the success path calls
 // `axios.post(...).then(this.finish)`.
 
-type Emit = (event: string, ...args: unknown[]) => void;
+type Emit = {
+  (event: 'update:modelValue', value: boolean): void;
+  (event: 'saved'): void;
+};
 
 export function useModalSelfClose(emit: Emit) {
   return {

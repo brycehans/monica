@@ -79,108 +79,93 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 
-export default {
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    contactId: {
-      type: Number,
-      default: 0,
-    },
-    reachLimit: {
-      type: String,
-      default: '',
-    },
-    currentPhotoIdAsAvatar: {
-      type: String,
-      default: '',
-    },
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    contactId?: number;
+    reachLimit?: string;
+    currentPhotoIdAsAvatar?: string;
+  }>(),
+  {
+    hash: '',
+    contactId: 0,
+    reachLimit: '',
+    currentPhotoIdAsAvatar: '',
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const emit = defineEmits<{
+  (e: 'upload', event: Event): void;
+  (e: 'newphoto', value: unknown): void;
+}>();
 
-  data() {
-    return {
-      displayUploadZone: false,
-      displayUploadProgress: false,
-      displayUploadError: false,
-      file: '',
-      uploadPercentage: 0,
-      confirmDestroyPhotoId: 0,
-      url: '',
-    };
-  },
+const { t } = useI18n();
+const fileInput = useTemplateRef<HTMLInputElement>('file');
 
-  methods: {
+const displayUploadZone = ref(false);
+const displayUploadProgress = ref(false);
+const displayUploadError = ref(false);
+const file = ref<File | null>(null);
+const uploadPercentage = ref(0);
 
-    showUploadZone() {
-      this.displayUploadZone = true;
-    },
+function showUploadZone() {
+  displayUploadZone.value = true;
+}
 
-    inUpload() {
-      return this.displayUploadZone || this.displayUploadError || this.displayUploadProgress;
-    },
+function inUpload() {
+  return displayUploadZone.value || displayUploadError.value || displayUploadProgress.value;
+}
 
-    cancelUpload() {
-      this.displayUploadZone = false;
-      this.displayUploadError = false;
-      this.displayUploadProgress = false;
-    },
+function cancelUpload() {
+  displayUploadZone.value = false;
+  displayUploadError.value = false;
+  displayUploadProgress.value = false;
+}
 
-    handleFileUpload(event){
-      this.$emit('upload', event);
-      if (!event.cancelBubble) {
-        this.forceFileUpload();
-      }
-    },
-
-    forceFileUpload(){
-      const f = this.$refs.file !== undefined ? this.$refs.file.files[0] : undefined;
-      if (f === undefined) {
-        return Promise.resolve();
-      }
-      this.file = f;
-      return this.submitFile();
-    },
-
-    submitFile(){
-      this.displayUploadZone = false;
-      this.displayUploadProgress = true;
-
-      const formData = new FormData();
-      formData.append('photo', this.file);
-
-      return axios.post(`people/${this.hash}/photos`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          onUploadProgress: function( progressEvent ) {
-            this.uploadPercentage = parseInt( Math.round( ( progressEvent.loaded * 100 ) / progressEvent.total ) );
-          }.bind(this)
-        }
-      ).then(response => {
-        this.displayUploadProgress = false;
-
-        this.$emit('newphoto', response.data.data);
-
-        return response.data.data;
-      })
-        .catch(error => {
-          this.displayUploadProgress = false;
-          this.file = null;
-          this.displayUploadError = true;
-        });
-    },
+function handleFileUpload(event: Event) {
+  emit('upload', event);
+  if (!event.cancelBubble) {
+    forceFileUpload();
   }
-};
+}
+
+async function forceFileUpload(): Promise<unknown> {
+  const f = fileInput.value?.files?.[0];
+  if (f === undefined) return undefined;
+  file.value = f;
+  return submitFile();
+}
+
+async function submitFile() {
+  displayUploadZone.value = false;
+  displayUploadProgress.value = true;
+
+  const formData = new FormData();
+  if (file.value) formData.append('photo', file.value);
+
+  try {
+    const response = await axios.post(`people/${props.hash}/photos`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          uploadPercentage.value = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        }
+      },
+    });
+    displayUploadProgress.value = false;
+    emit('newphoto', response.data.data);
+    return response.data.data;
+  } catch {
+    displayUploadProgress.value = false;
+    file.value = null;
+    displayUploadError.value = true;
+  }
+}
+
+defineExpose({ showUploadZone, inUpload, cancelUpload, forceFileUpload });
 </script>

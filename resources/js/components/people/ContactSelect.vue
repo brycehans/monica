@@ -17,91 +17,75 @@
       label="complete_name"
       value-prop="id"
       :object="true"
-      :dir="$root.htmldir"
+      :dir="htmldir"
       :aria="{ 'aria-label': title }"
     />
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch } from 'vue';
 import Multiselect from '@vueform/multiselect';
 import '@vueform/multiselect/themes/default.css';
 import axios from 'axios';
+import { htmldir } from '../../boot';
 
-export default {
-  components: { Multiselect },
+interface ContactOption {
+  id: number;
+  complete_name?: string;
+}
 
-  props: {
-    id: {
-      type: String,
-      default: null,
-    },
-    modelValue: {
-      type: Object,
-      default: null,
-    },
-    name: {
-      type: String,
-      default: '',
-    },
-    title: {
-      type: String,
-      default: '',
-    },
-    required: {
-      type: Boolean,
-      default: true,
-    },
-    userContactId: {
-      type: Number,
-      default: null,
-    },
-    defaultOptions: {
-      type: Array,
-      default: () => [],
-    },
-    placeholder: {
-      type: String,
-      default: '',
-    },
-    wait: {
-      type: Number,
-      default: 200,
-    },
+const props = withDefaults(
+  defineProps<{
+    id?: string | null;
+    modelValue?: ContactOption | null;
+    name?: string;
+    title?: string;
+    required?: boolean;
+    userContactId?: number | null;
+    defaultOptions?: ContactOption[];
+    placeholder?: string;
+    wait?: number;
+  }>(),
+  {
+    id: null,
+    modelValue: null,
+    name: '',
+    title: '',
+    required: true,
+    userContactId: null,
+    defaultOptions: () => [],
+    placeholder: '',
+    wait: 200,
   },
+);
 
-  emits: ['update:modelValue'],
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: ContactOption | null): void;
+}>();
 
-  data() {
-    return {
-      selected: this.modelValue,
-    };
-  },
+const selected = ref<ContactOption | null>(props.modelValue);
 
-  watch: {
-    modelValue(newValue) {
-      this.selected = newValue;
-    },
-    selected(newValue) {
-      this.$emit('update:modelValue', newValue);
-    },
-  },
+watch(() => props.modelValue, (newValue) => {
+  selected.value = newValue;
+});
 
-  methods: {
-    async searchOptions(query) {
-      if (!query) {
-        return this.filterDefaults(this.defaultOptions);
-      }
-      const response = await axios.post('people/search', { needle: query });
-      return this.filterDefaults(response.data.data);
-    },
+watch(selected, (newValue) => {
+  emit('update:modelValue', newValue);
+});
 
-    filterDefaults(items) {
-      if (this.userContactId === null) {
-        return items;
-      }
-      return items.filter(item => item.id !== this.userContactId);
-    },
-  },
-};
+function filterDefaults(items: ContactOption[]): ContactOption[] {
+  if (props.userContactId === null || props.userContactId === undefined) {
+    return items;
+  }
+  return items.filter((item) => item.id !== props.userContactId);
+}
+
+async function searchOptions(query: string): Promise<ContactOption[]> {
+  if (!query) {
+    return filterDefaults(props.defaultOptions);
+  }
+  const response = await axios.post('people/search', { needle: query });
+  return filterDefaults(response.data.data);
+}
 </script>

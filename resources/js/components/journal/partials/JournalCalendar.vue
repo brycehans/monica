@@ -1,12 +1,12 @@
 <template>
   <div :class="[ dirltr ? 'fl' : 'fr' ]" class="journal-calendar-box relative">
-    <template v-if="journalEntry.show_calendar">
+    <template v-if="journalEntry?.show_calendar">
       <div class="journal-calendar-text absolute tc">
         <span class="db w-100">
-          {{ journalEntry.object.month_name }}
+          {{ journalEntry?.object?.month_name }}
         </span>
         <span class="db w-100">
-          {{ journalEntry.object.year }}
+          {{ journalEntry?.object?.year }}
         </span>
       </div>
       <div class="journal-calendar-svg">
@@ -85,20 +85,25 @@
   </div>
 </template>
 
-<script>
-export default {
+<script setup lang="ts">
+import { useHtmlDir } from '../../../composables/useHtmlDir';
 
-  props: {
-    journalEntry: {
-      type: Object,
-      default: null,
-    },
-  },
+// The parent journal entries pass through arbitrary subtypes for `object`
+// (Day/Activity/Entry). The calendar only reads month_name/year when present;
+// keep the field open.
+interface CalendarEntry {
+  show_calendar?: boolean;
+  object?: any;
+}
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
+withDefaults(
+  defineProps<{
+    journalEntry?: CalendarEntry | null;
+  }>(),
+  {
+    journalEntry: null,
   },
-};
+);
+
+const { dirltr } = useHtmlDir();
 </script>

@@ -29,77 +29,59 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import moment from 'moment-timezone';
 
-export default {
+interface SelectOption {
+  id: string;
+  name: string;
+}
 
-  props: {
-    timezone: {
-      type: String,
-      default: 'UTC',
-    },
-    timezones: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    },
-    reminder: {
-      type: String,
-      default: '',
-    },
-    hours: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    }
+const props = withDefaults(
+  defineProps<{
+    timezone?: string;
+    timezones?: SelectOption[];
+    reminder?: string;
+    hours?: SelectOption[];
+  }>(),
+  {
+    timezone: 'UTC',
+    timezones: () => [],
+    reminder: '',
+    hours: () => [],
   },
+);
 
-  setup() {
-    const { t, locale } = useI18n();
-    return { t, locale };
-  },
+const { t, locale } = useI18n();
 
-  data() {
-    return {
-      message: '',
-      updatedTimezone: '',
-      updatedReminder: ''
-    };
-  },
+const message = ref('');
+const updatedTimezone = ref('');
+const updatedReminder = ref('');
 
-  mounted() {
-    this.prepareComponent();
-  },
+onMounted(() => {
+  updatedReminder.value = props.reminder;
+  updatedTimezone.value = props.timezone;
+  computeMessage();
+});
 
-  methods: {
-    prepareComponent() {
-      this.updatedReminder = this.reminder;
-      this.updatedTimezone = this.timezone;
-      this.computeMessage();
-    },
+function computeMessage() {
+  moment.locale(typeof locale.value === 'string' ? locale.value : 'en');
+  moment.tz.setDefault('UTC');
 
-    computeMessage() {
-      moment.locale(this.locale);
-      moment.tz.setDefault('UTC');
+  const now = moment();
+  const formatted = now.format('YYYY-MM-DD ' + updatedReminder.value + ':00');
 
-      var now = moment();
-      var t = now.format('YYYY-MM-DD ' + this.updatedReminder + ':00');
+  let date = moment.tz(formatted, updatedTimezone.value);
 
-      var date = moment.tz(t, this.updatedTimezone);
-
-      if (date.isBefore(now)) {
-        date = date.add(1, 'days');
-      }
-
-      this.message = this.t('settings.reminder_time_to_send_help', {
-        dateTime: date.format('LLL'),
-        dateTimeUtc: date.utc().format('YYYY-MM-DD HH:mm z')
-      });
-    }
+  if (date.isBefore(now)) {
+    date = date.add(1, 'days');
   }
-};
+
+  message.value = t('settings.reminder_time_to_send_help', {
+    dateTime: date.format('LLL'),
+    dateTimeUtc: date.utc().format('YYYY-MM-DD HH:mm z'),
+  });
+}
 </script>

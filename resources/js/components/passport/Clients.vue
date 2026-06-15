@@ -77,7 +77,7 @@
             <code dir="ltr">{{ client.secret }}</code>
             <em class="fa fa-clipboard pointer" :class="[ dirltr ? 'ml2' : 'mr2' ]"
                 :title="t('settings.dav_copy_help')"
-                @click="copyIntoClipboard(client.secret)"
+                @click="copyIntoClipboard(client.secret ?? '')"
             ></em>
           </div>
         </div>
@@ -94,6 +94,7 @@
     <!-- Create Client Modal -->
     <monica-modal v-model="showModalClient"
                   :title="form.id ? t('settings.api_oauth_edit') : t('settings.api_oauth_create')"
+                  cy-name="oauth-client-modal"
                   @open="_focusInput"
     >
       <!-- Form Errors -->
@@ -164,14 +165,14 @@
       <p>{{ t('settings.api_oauth_secret_help') }}</p>
 
       <div class="flex-auto access-key overflow-y-scroll" cy-name="client-secret-display"
-           style="max-height: 400px;" @click.prevent="copyIntoClipboard(clientSecret)"
+           style="max-height: 400px;" @click.prevent="copyIntoClipboard(clientSecret ?? '')"
       >
         <pre><code>{{ clientSecret }}</code></pre>
       </div>
 
       <template #button>
         <a class="btn btn-primary" :title="t('settings.dav_copy_help')" href=""
-           @click.prevent="copyIntoClipboard(clientSecret)"
+           @click.prevent="copyIntoClipboard(clientSecret ?? '')"
         >
           {{ t('app.copy') }}
         </a>
@@ -183,216 +184,141 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import FormErrors from '../partials/FormErrors.vue';
+import axios from 'axios';
 import { useVuelidate } from '@vuelidate/core';
 import { required, url } from '@vuelidate/validators';
+import FormErrors from '../partials/FormErrors.vue';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
+import { withFormErrors, type FormErrorList } from '../../api/errors';
 
-export default {
+interface Client {
+  id: number | string;
+  name: string;
+  redirect: string;
+  secret?: string;
+}
 
-  components: {
-    FormErrors,
+interface ClientForm {
+  id?: number | string;
+  name: string;
+  redirect: string;
+  errors: FormErrorList;
+}
+
+interface InputComponent {
+  focus: () => void;
+}
+
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
+
+const clients = ref<Client[]>([]);
+const clientSecret = ref<string | null>(null);
+
+const form = reactive<ClientForm>({ errors: [], name: '', redirect: '' });
+const showModalClient = ref(false);
+const showModalClientSecret = ref(false);
+
+const formEl = useTemplateRef<HTMLFormElement>('form');
+const clientName = useTemplateRef<InputComponent>('clientName');
+
+const rules = {
+  form: {
+    name: { required },
+    redirect: { required, url },
   },
-
-  setup() {
-    const { t } = useI18n();
-    return { v$: useVuelidate(), t };
-  },
-
-  data() {
-    return {
-      clients: [],
-      clientSecret: null,
-
-      form: {
-        errors: [],
-        name: '',
-        redirect: ''
-      },
-      showModalClient: false,
-      showModalClientSecret: false,
-    };
-  },
-
-  validations() {
-    return {
-      form: {
-        name: {
-          required,
-        },
-        redirect: {
-          required,
-          url,
-        }
-      }
-    };
-  },
-
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
-
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      this.getClients();
-    },
-
-    /**
-     * Focus on modal open.
-     */
-    _focusInput() {
-      const vm = this;
-      setTimeout(function() {
-        vm.$refs.clientName.focus();
-      }, 10);
-    },
-
-    /**
-     * Get all of the OAuth clients for the user.
-     */
-    getClients() {
-      axios.get('oauth/clients')
-        .then(response => {
-          this.clients = response.data;
-        });
-    },
-
-    /**
-     * Show the form for creating new clients.
-     */
-    showCreateClientForm() {
-      this.resetField();
-      this.showModalClient = true;
-    },
-
-    /**
-     * Create a new OAuth client for the user.
-     */
-    store() {
-      this.v$.$touch();
-
-      if (this.v$.$invalid) {
-        return;
-      }
-
-      const method = this.form.id ? 'put' : 'post';
-      const url = this.form.id ? 'oauth/clients/' + this.form.id : 'oauth/clients';
-
-      this.persistClient(method, url, this.form);
-    },
-
-    /**
-     * Edit the given client.
-     */
-    edit(client) {
-      this.form = Object.assign({errors:[]}, client);
-
-      this.showModalClient = true;
-    },
-
-    /**
-     * Persist the client to storage using the given form.
-     *
-     * On create, the response carries `secret` = the plain client secret
-     * (Passport v13 hashes it at insertion, so it's only available here).
-     * Push the new client into the in-memory list so the row appears, and
-     * surface the plain secret in a one-shot modal — same pattern as
-     * PersonalAccessTokens.vue. On update, refetch the list as before
-     * (no secret in the response).
-     */
-    persistClient(method, uri, form) {
-      const isCreate = method === 'post';
-      form.errors = [];
-
-      axios[method](uri, form)
-        .then(response => {
-          if (isCreate) {
-            this.clients.push(response.data);
-            this.showClientSecret(response.data.secret);
-          } else {
-            this.getClients();
-            this.closeModal();
-          }
-        })
-        .catch(error => {
-          if (typeof error.response.data === 'object') {
-            form.errors = _.flatten(_.toArray(error.response.data));
-          } else {
-            form.errors = [this.t('app.error_try_again')];
-          }
-        });
-    },
-
-    /**
-     * Show the plain client secret in a one-shot modal after create.
-     */
-    showClientSecret(secret) {
-      this.showModalClient = false;
-      this.clientSecret = secret;
-      this.showModalClientSecret = true;
-    },
-
-    /**
-     * Close the secret modal and clear in-memory state.
-     */
-    closeSecretModal() {
-      this.showModalClientSecret = false;
-      this.clientSecret = null;
-      this.resetField();
-    },
-
-    /**
-     * Destroy the given client.
-     */
-    destroy(client) {
-      axios.delete('oauth/clients/' + client.id)
-        .then(response => {
-          this.getClients();
-        });
-    },
-
-    closeModal() {
-      this.resetField();
-      this.v$.$reset();
-      this.$refs.form.reset();
-      this.showModalClient = false;
-    },
-
-    resetField() {
-      this.form = {
-        id: '',
-        errors:[],
-        name: '',
-        redirect: '',
-      };
-    },
-
-    /**
-     * Copy text into clipboard
-     */
-    copyIntoClipboard(text) {
-      navigator.clipboard.writeText(text)
-        .then(() => {
-          this.notify(this.t('settings.dav_clipboard_copied'), true);
-        })
-        .catch(() => { /* silent on permission denial / non-secure context */ });
-    },
-
-    notify(text, success) {
-      this.$notify({
-        group: 'passport-clients',
-        title: text,
-        text: '',
-        type: success ? 'success' : 'error'
-      });
-    }
-  }
 };
+
+const v$ = useVuelidate(rules, { form });
+
+onMounted(getClients);
+
+function _focusInput() {
+  setTimeout(() => clientName.value?.focus(), 10);
+}
+
+async function getClients() {
+  const response = await axios.get('oauth/clients');
+  clients.value = response.data as Client[];
+}
+
+function resetField() {
+  form.id = '';
+  form.errors = [];
+  form.name = '';
+  form.redirect = '';
+}
+
+function closeModal() {
+  resetField();
+  v$.value.$reset();
+  formEl.value?.reset();
+  showModalClient.value = false;
+}
+
+function showCreateClientForm() {
+  resetField();
+  showModalClient.value = true;
+}
+
+function showClientSecret(secret: string) {
+  showModalClient.value = false;
+  clientSecret.value = secret;
+  showModalClientSecret.value = true;
+}
+
+function closeSecretModal() {
+  showModalClientSecret.value = false;
+  clientSecret.value = null;
+  resetField();
+}
+
+async function persistClient(method: 'post' | 'put', uri: string, f: ClientForm) {
+  const response = await withFormErrors(f, () => axios[method](uri, f), t('app.error_try_again'));
+  if (!response) return;
+  if (method === 'post') {
+    clients.value.push(response.data);
+    showClientSecret(response.data.secret);
+  } else {
+    await getClients();
+    closeModal();
+  }
+}
+
+function store() {
+  v$.value.$touch();
+  if (v$.value.$invalid) return;
+  const method: 'post' | 'put' = form.id ? 'put' : 'post';
+  const uri = form.id ? 'oauth/clients/' + form.id : 'oauth/clients';
+  persistClient(method, uri, form);
+}
+
+function edit(client: Client) {
+  Object.assign(form, { errors: [], ...client });
+  showModalClient.value = true;
+}
+
+async function destroy(client: Client) {
+  await axios.delete('oauth/clients/' + client.id);
+  await getClients();
+}
+
+async function copyIntoClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    notify({
+      group: 'passport-clients',
+      title: t('settings.dav_clipboard_copied'),
+      text: '',
+      type: 'success',
+    });
+  } catch {
+    // silent on permission denial / non-secure context
+  }
+}
 </script>

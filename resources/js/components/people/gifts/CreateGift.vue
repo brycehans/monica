@@ -79,7 +79,7 @@
               <a href="" @click.prevent="displayRecipient = true">{{ t('people.gifts_add_recipient') }}</a>
             </li>
             <li v-if="!reachLimit" v-show="!displayUpload" class="di pointer" :class="dirltr ? 'mr3' : 'ml3'">
-              <a href="" @click.prevent="() => { displayUpload = true; $refs.upload.showUploadZone(); }">{{ t('people.gifts_add_photo') }}</a>
+              <a href="" @click.prevent="onShowUpload">{{ t('people.gifts_add_photo') }}</a>
             </li>
             <li v-show="!displayDate" class="di pointer" :class="dirltr ? 'mr3' : 'ml3'">
               <a href="" @click.prevent="displayDate = true">{{ t('people.gifts_add_date') }}</a>
@@ -144,7 +144,7 @@
           <form-checkbox
             v-model="hasRecipient"
             :name="'has_recipient'"
-            @change="(val) => { if (val) { $refs.recipient.focus() } }"
+            @change="(val: unknown) => { if (val) { recipient?.focus() } }"
           >
             {{ t('people.gifts_add_someone', {name: ''}) }}
           </form-checkbox>
@@ -168,7 +168,7 @@
             ref="upload"
             :hash="hash"
             :contact-id="contactId"
-            @upload.stop="handlePhoto($event)"
+            @upload.stop="handlePhoto"
           />
 
           <!-- LIST OF PHOTO -->
@@ -222,247 +222,226 @@
   </div>
 </template>
 
-<script>
-
+<script setup lang="ts">
+import { ref, reactive, computed, watch, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import FormErrors from '../../partials/FormErrors.vue';
-import PhotoUpload from '../photo/PhotoUpload.vue';
+import axios from 'axios';
 import { useVuelidate } from '@vuelidate/core';
 import { required, maxLength } from '@vuelidate/validators';
+import FormErrors from '../../partials/FormErrors.vue';
+import PhotoUpload from '../photo/PhotoUpload.vue';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
+import { useNotify } from '../../../composables/useNotify';
+import { withFormErrors, validationErrorsFromAxios, type FormErrorList } from '../../../api/errors';
+import { locale as bootLocale } from '../../../boot';
+import type { Gift as GiftRecord, Photo } from './types';
 
-export default {
-  components: {
-    FormErrors,
-    PhotoUpload
+interface FamilyContact {
+  id: number;
+  complete_name?: string;
+}
+
+interface PhotoUploadInstance {
+  forceFileUpload: () => Promise<Photo | undefined>;
+  showUploadZone: () => void;
+}
+
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    contactId?: number;
+    gift?: GiftRecord | null;
+    familyContacts?: FamilyContact[];
+    reachLimit?: boolean;
+  }>(),
+  {
+    hash: '',
+    contactId: 0,
+    gift: null,
+    familyContacts: () => [],
+    reachLimit: true,
   },
+);
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    contactId: {
-      type: Number,
-      default: 0,
-    },
-    gift: {
-      type: Object,
-      default: null,
-    },
-    familyContacts: {
-      type: Array,
-      default: () => [],
-    },
-    reachLimit: {
-      type: Boolean,
-      default: true,
-    },
-  },
+const emit = defineEmits<{
+  (e: 'update', value: GiftRecord): void;
+  (e: 'cancel'): void;
+}>();
 
-  setup() {
-    const { t } = useI18n();
-    return { v$: useVuelidate(), t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
+const locale = bootLocale;
 
-  data() {
-    return {
-      photos: [],
-      displayComment: false,
-      displayUrl: false,
-      displayAmount: false,
-      displayRecipient: false,
-      displayUpload: false,
-      displayDate: false,
-      newGift: {
-        name: '',
-        status: 'idea',
-        comment: null,
-        url: null,
-        amount: null,
-        date: null,
-        recipient_id: null,
-        photo_id: null,
-      },
-      hasRecipient: false,
-      errors: [],
-    };
-  },
+const upload = useTemplateRef<PhotoUploadInstance>('upload');
+const recipient = useTemplateRef<{ focus: () => void }>('recipient');
 
-  validations() {
-    var v = {
-      newGift: {
-        name: {
-          required,
-          maxLength: maxLength(255),
-        },
-      }
-    };
+function onShowUpload() {
+  displayUpload.value = true;
+  upload.value?.showUploadZone();
+}
 
-    if (this.hasRecipient) {
-      v.newGift = Object.assign(v.newGift, {
-        recipient_id: {
-          required,
-        }
-      });
-    }
+const photos = ref<Photo[]>([]);
+const displayComment = ref(false);
+const displayUrl = ref(false);
+const displayAmount = ref(false);
+const displayRecipient = ref(false);
+const displayUpload = ref(false);
+const displayDate = ref(false);
 
-    return v;
-  },
+const newGift = reactive<{
+  name: string;
+  status: string;
+  comment: string | null;
+  url: string | null;
+  amount: number | null;
+  date: string | null;
+  recipient_id: number | null;
+  photo_id: number | null;
+  contact_id?: number;
+}>({
+  name: '',
+  status: 'idea',
+  comment: null,
+  url: null,
+  amount: null,
+  date: null,
+  recipient_id: null,
+  photo_id: null,
+});
 
-  computed: {
-    locale() {
-      return this.$root.locale;
-    },
+const hasRecipient = ref(false);
+const errors = ref<FormErrorList>([]);
 
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    },
-
-    displayMenu() {
-      return !this.displayComment ||
-        !this.displayUrl ||
-        !this.displayAmount ||
-        !this.displayDate ||
-        !(this.displayRecipient || this.familyContacts.length === 0) ||
-        !(this.displayUpload || this.reachLimit);
-    }
-  },
-
-  watch: {
-    gift: function (val) {
-      this.newGift = val;
-    }
-  },
-
-  mounted() {
-    this.resetFields();
-  },
-
-  methods: {
-    resetFields() {
-      this.newGift.contact_id = this.contactId;
-      if (this.gift) {
-        this.newGift.contact_id = this.gift.contact.id;
-        this.newGift.name = this.gift.name;
-        this.newGift.comment = this.gift.comment;
-        this.newGift.url = this.gift.url;
-        this.newGift.amount = this.gift.amount;
-        this.newGift.status = this.gift.status;
-        this.newGift.recipient_id = this.gift.recipient ? this.gift.recipient.id : null;
-        this.hasRecipient = this.newGift.recipient_id !== null;
-        this.newGift.date = this.gift.date;
-        this.photos = this.gift.photos;
-      } else {
-        this.newGift.name = '';
-        this.newGift.comment = null;
-        this.newGift.url = null;
-        this.newGift.amount = null;
-        this.newGift.status = 'idea';
-        this.newGift.recipient_id = null;
-        this.newGift.date = null;
-        this.hasRecipient = false;
-      }
-      this.displayComment = this.gift ? this.gift.comment : false;
-      this.displayDate = this.gift ? this.gift.date : false;
-      this.displayUrl = this.gift ? this.gift.url : false;
-      this.displayAmount = this.gift ? this.gift.amount !== '' : false;
-      this.displayRecipient = this.gift ? (this.gift.recipient ? this.gift.recipient.id !== 0 : false) : false;
-      this.displayUpload= this.gift ? this.gift.photos.length > 0 : false;
-
-      this.errors = [];
-      this.v$.$reset();
-    },
-
-    close() {
-      this.resetFields();
-      this.$emit('cancel');
-    },
-
-    store() {
-      if (! this.hasRecipient) {
-        this.newGift.recipient_id = null;
-      }
-
-      this.v$.$touch();
-
-      if (this.v$.$invalid) {
-        return;
-      }
-
-      const method = this.gift ? 'put' : 'post';
-      const url = `people/${this.hash}/gifts${this.gift ? '/'+this.gift.id : ''}`;
-
-      // vue-i18n legacy mode installs $t per component instance (not on a
-      // shared prototype like vue 2 did), so it dies with the proxy once
-      // vm.close() emits 'cancel' and the parent flips its v-if. Resolve
-      // the toast string here while the proxy is still alive.
-      const successTitle = this.t('people.gifts_add_success');
-
-      const vm = this;
-      axios[method](url, this.newGift)
-        .then(response => {
-          return vm.storePhoto(response);
-        })
-        .then(response => {
-          vm.close();
-          vm.$emit('update', response.data.data);
-          return response;
-        })
-        .then(() => {
-          this.$notify({
-            group: 'main',
-            title: successTitle,
-            text: '',
-            type: 'success'
-          });
-        })
-        .catch(error => {
-          vm._errorHandle(error);
-        });
-    },
-
-    storePhoto(response) {
-      const vm = this;
-      // $refs.upload is under v-show, so usually live — but storePhoto runs
-      // inside store()'s axios .then chain, and if the modal closes before
-      // the save resolves the ref evaporates.
-      const upload = this.$refs.upload;
-      if (!upload) return Promise.resolve(response);
-      return upload.forceFileUpload()
-        .then(photo => {
-          if (photo !== undefined) {
-            axios.put(`people/${this.hash}/gifts/${response.data.data.id}/photo/${photo.id}`);
-            response.data.data.photos.push(photo);
-          }
-          return response;
-        })
-        .catch(error => {
-          vm._errorHandle(error);
-          return response;
-        });
-    },
-
-    _errorHandle(error) {
-      if (error.response && typeof error.response.data === 'object') {
-        this.errors = _.flatten(_.toArray(error.response.data));
-      } else {
-        this.errors = [this.t('app.error_try_again'), error.message];
-      }
-    },
-
-    deletePhoto(photo) {
-      axios.delete(`people/${this.hash}/photos/${photo.id}`)
-        .then(response => {
-          this.photos.splice(this.photos.indexOf(photo), 1);
-          if (this.photos.length === 0) {
-            this.$refs.upload?.showUploadZone();
-          }
-        });
-    },
-
-    handlePhoto(event) {
-      this.photos.push({ id: -1, link: '' });
-    },
+const rules = computed(() => {
+  const base: Record<string, unknown> = {
+    name: { required, maxLength: maxLength(255) },
+  };
+  if (hasRecipient.value) {
+    base.recipient_id = { required };
   }
-};
+  return { newGift: base };
+});
+
+const v$ = useVuelidate(rules, { newGift });
+
+const displayMenu = computed(() =>
+  !displayComment.value ||
+  !displayUrl.value ||
+  !displayAmount.value ||
+  !displayDate.value ||
+  !(displayRecipient.value || props.familyContacts.length === 0) ||
+  !(displayUpload.value || props.reachLimit),
+);
+
+watch(() => props.gift, (val) => {
+  if (val) {
+    Object.assign(newGift, val);
+  }
+});
+
+onMounted(resetFields);
+
+function resetFields() {
+  newGift.contact_id = props.contactId;
+  if (props.gift) {
+    newGift.contact_id = props.gift.contact?.id ?? props.contactId;
+    newGift.name = props.gift.name;
+    newGift.comment = props.gift.comment ?? null;
+    newGift.url = props.gift.url ?? null;
+    newGift.amount = props.gift.amount ?? null;
+    newGift.status = props.gift.status;
+    newGift.recipient_id = props.gift.recipient?.id ?? null;
+    hasRecipient.value = newGift.recipient_id !== null;
+    newGift.date = props.gift.date ?? null;
+    photos.value = props.gift.photos ?? [];
+  } else {
+    newGift.name = '';
+    newGift.comment = null;
+    newGift.url = null;
+    newGift.amount = null;
+    newGift.status = 'idea';
+    newGift.recipient_id = null;
+    newGift.date = null;
+    hasRecipient.value = false;
+  }
+  displayComment.value = !!(props.gift && props.gift.comment);
+  displayDate.value = !!(props.gift && props.gift.date);
+  displayUrl.value = !!(props.gift && props.gift.url);
+  displayAmount.value = !!(props.gift && props.gift.amount);
+  displayRecipient.value = !!(props.gift && props.gift.recipient && props.gift.recipient.id !== 0);
+  displayUpload.value = !!(props.gift && props.gift.photos && props.gift.photos.length > 0);
+  errors.value = [];
+  v$.value.$reset();
+}
+
+function close() {
+  resetFields();
+  emit('cancel');
+}
+
+// Caller-supplied fallback shared between `store` and `storePhoto`:
+// errors.value receives the localised banner plus the raw `error.message`
+// for diagnostic context, mirroring the pre-#805 `_errorHandle` shape.
+const giftErrorFallback = (e: unknown): string[] =>
+  [t('app.error_try_again'), (e as { message?: string }).message ?? ''];
+
+async function store() {
+  if (!hasRecipient.value) {
+    newGift.recipient_id = null;
+  }
+
+  v$.value.$touch();
+
+  if (v$.value.$invalid) {
+    return;
+  }
+
+  const method: 'put' | 'post' = props.gift ? 'put' : 'post';
+  const url = `people/${props.hash}/gifts${props.gift ? '/' + props.gift.id : ''}`;
+
+  const response = await withFormErrors(errors, () => axios[method](url, newGift), giftErrorFallback);
+  if (!response) return;
+
+  // storePhoto may surface its own (photo-upload) errors into `errors.value`
+  // without rolling back the gift create — see its catch block.
+  const finalResponse = await storePhoto(response);
+  close();
+  emit('update', finalResponse.data.data);
+  notify({ group: 'main', title: t('people.gifts_add_success'), text: '', type: 'success' });
+}
+
+// Returns an axios-like response with the updated gift payload — the original
+// implementation pushed any new photo into response.data.data.photos and let
+// the caller emit the entire object via @update. Photo-upload failure
+// surfaces an error banner but does NOT roll back the already-created gift,
+// so this can't simply be wrapped in withFormErrors (which would discard
+// the original response on rejection).
+async function storePhoto<R extends { data: { data: GiftRecord } }>(response: R): Promise<R> {
+  if (!upload.value) return response;
+  try {
+    const photo = (await upload.value.forceFileUpload()) as Photo | undefined;
+    if (photo !== undefined) {
+      await axios.put(`people/${props.hash}/gifts/${response.data.data.id}/photo/${photo.id}`);
+      response.data.data.photos.push(photo);
+    }
+    return response;
+  } catch (error: unknown) {
+    errors.value = validationErrorsFromAxios(error, giftErrorFallback);
+    return response;
+  }
+}
+
+async function deletePhoto(photo: Photo) {
+  await axios.delete(`people/${props.hash}/photos/${photo.id}`);
+  const idx = photos.value.indexOf(photo);
+  if (idx >= 0) photos.value.splice(idx, 1);
+  if (photos.value.length === 0) {
+    upload.value?.showUploadZone();
+  }
+}
+
+function handlePhoto() {
+  photos.value.push({ id: -1, link: '' });
+}
 </script>

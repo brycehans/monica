@@ -21,7 +21,7 @@
         :contact-id="contactId"
         :family-contacts="familyContacts"
         :reach-limit="reachLimit"
-        @update="updateList($event)"
+        @update="updateList()"
         @cancel="displayCreateGift = false"
       />
     </template>
@@ -55,7 +55,7 @@
       <div v-for="gift in filteredGifts" :key="gift.id" v-cy-name="'gift-item-' + gift.id" class="ba b--gray-monica mb3 br2">
         <gift v-if="!gift.edit"
               :gift="gift"
-              @update="($event) => { updateList($event) }"
+              @update="() => { updateList() }"
         >
           <div :class="dirltr ? 'fl' : 'fr'">
             <a v-if="gift.status === 'idea'" class="di" href="" @click.prevent="toggle(gift)">
@@ -102,7 +102,7 @@
         <a class="btn" href="" @click.prevent="closeDeleteModal()">
           {{ t('app.cancel') }}
         </a>
-        <a v-cy-name="'modal-delete-gift-button-' + giftToTrash.id" class="btn btn-primary" href="" @click.prevent="trash(giftToTrash)">
+        <a v-if="giftToTrash" v-cy-name="'modal-delete-gift-button-' + giftToTrash.id" class="btn btn-primary" href="" @click.prevent="trash(giftToTrash)">
           {{ t('app.delete') }}
         </a>
       </template>
@@ -110,152 +110,116 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
+import moment from 'moment';
 import Gift from './Gift.vue';
 import CreateGift from './CreateGift.vue';
-import moment from 'moment';
+import { useHtmlDir } from '../../../composables/useHtmlDir';
+import type { Gift as GiftRecord } from './types';
 
-export default {
+interface FamilyContact {
+  id: number;
+  complete_name?: string;
+}
 
-  components: {
-    Gift,
-    CreateGift,
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    contactId?: number;
+    giftsActiveTab?: string;
+    familyContacts?: FamilyContact[];
+    reachLimit?: boolean;
+  }>(),
+  {
+    hash: '',
+    contactId: 0,
+    giftsActiveTab: 'idea',
+    familyContacts: () => [],
+    reachLimit: true,
   },
+);
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    contactId: {
-      type: Number,
-      default: 0,
-    },
-    giftsActiveTab: {
-      type: String,
-      default: 'idea',
-    },
-    familyContacts: {
-      type: Array,
-      default: () => [],
-    },
-    reachLimit: {
-      type: Boolean,
-      default: true,
-    },
-  },
+const emit = defineEmits<{
+  (e: 'update', value: GiftRecord): void;
+}>();
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
 
-  data() {
-    return {
-      gifts: [],
-      activeTab: '',
-      giftToTrash: '',
-      displayCreateGift: false,
-      showModal: false,
-    };
-  },
+const gifts = ref<GiftRecord[]>([]);
+const activeTab = ref('');
+const giftToTrash = ref<GiftRecord | null>(null);
+const displayCreateGift = ref(false);
+const showModal = ref(false);
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    },
+const ideas = computed(() => gifts.value.filter((g) => g.status === 'idea'));
+const offered = computed(() => gifts.value.filter((g) => g.status === 'offered'));
+const received = computed(() => gifts.value.filter((g) => g.status === 'received'));
+const filteredGifts = computed(() => gifts.value.filter((g) => g.status === activeTab.value));
 
-    ideas() {
-      return this.gifts.filter(gift => gift.status === 'idea');
-    },
+onMounted(() => {
+  getGifts();
+  setActiveTab(props.giftsActiveTab);
+});
 
-    offered() {
-      return this.gifts.filter(gift => gift.status === 'offered');
-    },
+function setActiveTab(view: string) {
+  activeTab.value = view === 'ideas' ? 'idea' : view;
+}
 
-    received() {
-      return this.gifts.filter(gift => gift.status === 'received');
-    },
+async function getGifts() {
+  const response = await axios.get(`people/${props.hash}/gifts`);
+  gifts.value = response.data.data as GiftRecord[];
+}
 
-    filteredGifts() {
-      const vm = this;
-      return this.gifts.filter(gift => gift.status === vm.activeTab);
-    },
-  },
-
-  mounted() {
-    this.prepareComponent();
-  },
-
-  methods: {
-    prepareComponent() {
-      this.getGifts();
-      this.setActiveTab(this.giftsActiveTab);
-    },
-
-    setActiveTab(view) {
-      this.activeTab = view === 'ideas' ? 'idea' : view;
-    },
-
-    getGifts() {
-      axios.get(`people/${this.hash}/gifts`)
-        .then(response => {
-          this.gifts = response.data.data;
-        });
-    },
-
-    toggle(gift) {
-      if (gift.status === 'idea') {
-        gift.status = 'offered';
-        gift.date = moment().format('YYYY-MM-DD');
-      } else {
-        gift.status = 'idea';
-        gift.date = null;
-      }
-      gift.contact_id = this.contactId;
-      axios.put(`people/${this.hash}/gifts/${gift.id}`, gift)
-        .then(response => {
-          gift.status = response.data.data.status;
-          gift.date = response.data.data.date;
-        });
-    },
-
-    showDeleteModal(gift) {
-      this.showModal = true;
-      this.giftToTrash = gift;
-    },
-
-    trash(gift) {
-      axios.delete(`people/${this.hash}/gifts/${gift.id}`)
-        .then(response => {
-          this.gifts.splice(this.gifts.indexOf(gift), 1);
-          this.closeDeleteModal();
-        });
-    },
-
-    updateList(activity) {
-      this.displayCreateGift = false;
-      this.getGifts();
-    },
-
-    updateGift(gift, response) {
-      gift.edit = false;
-      gift.name = response.name;
-      gift.comment = response.comment;
-      gift.url = response.url;
-      gift.amount = response.amount;
-      gift.amount_with_currency = response.amount_with_currency;
-      gift.status = response.status;
-      gift.recipient = response.recipient;
-      gift.date = response.date;
-      gift.photos = response.photos;
-      this.$emit('update', response);
-    },
-
-    closeDeleteModal() {
-      this.showModal = false;
-    }
+async function toggle(gift: GiftRecord) {
+  if (gift.status === 'idea') {
+    gift.status = 'offered';
+    gift.date = moment().format('YYYY-MM-DD');
+  } else {
+    gift.status = 'idea';
+    gift.date = null;
   }
-};
+  gift.contact_id = props.contactId;
+  const response = await axios.put(`people/${props.hash}/gifts/${gift.id}`, gift);
+  gift.status = response.data.data.status;
+  gift.date = response.data.data.date;
+}
+
+function showDeleteModal(gift: GiftRecord) {
+  showModal.value = true;
+  giftToTrash.value = gift;
+}
+
+async function trash(gift: GiftRecord) {
+  await axios.delete(`people/${props.hash}/gifts/${gift.id}`);
+  const idx = gifts.value.indexOf(gift);
+  if (idx >= 0) gifts.value.splice(idx, 1);
+  closeDeleteModal();
+}
+
+function updateList() {
+  displayCreateGift.value = false;
+  getGifts();
+}
+
+function updateGift(gift: GiftRecord, response: GiftRecord) {
+  gift.edit = false;
+  gift.name = response.name;
+  gift.comment = response.comment;
+  gift.url = response.url;
+  gift.amount = response.amount;
+  gift.amount_with_currency = response.amount_with_currency;
+  gift.status = response.status;
+  gift.recipient = response.recipient;
+  gift.date = response.date;
+  gift.photos = response.photos;
+  emit('update', response);
+}
+
+function closeDeleteModal() {
+  showModal.value = false;
+}
 </script>

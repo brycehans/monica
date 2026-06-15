@@ -1,28 +1,28 @@
-<script>
-import { h } from 'vue';
+<template>
+  <div>
+    <span>{{ texts[0] }}</span>
+    <slot ></slot>
+    <span>{{ texts[1] }}</span>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-export default {
-  props: {
-    value: {
-      type: Number,
-      default: 0,
-    },
+const props = withDefaults(
+  defineProps<{
+    value?: number;
+  }>(),
+  {
+    value: 0,
   },
+);
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
 
-  render() {
-    const text = this.t('people.stay_in_touch_modal_label', {count: '[slot]'}, this.value);
-    const texts = _.split(text, '[slot]');
-    return h('div', [
-      h('span', texts[0]),
-      this.$slots.default && this.$slots.default(),
-      h('span', texts[1]),
-    ]);
-  },
-};
+const texts = computed(() => {
+  const text = t('people.stay_in_touch_modal_label', { count: '[slot]' }, props.value);
+  return text.split('[slot]');
+});
 </script>

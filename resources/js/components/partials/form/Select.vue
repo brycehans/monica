@@ -60,120 +60,105 @@
   </div>
 </template>
 
-<script>
-import { getCurrentInstance } from 'vue';
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, getCurrentInstance, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-export default {
+interface Validator {
+  $error: boolean;
+  $touch: () => void;
+  required?: { $invalid: boolean };
+}
 
-  props: {
-    modelValue: {
-      type: [String, Number],
-      default: '',
-    },
-    modelModifiers: {
-      type: Object,
-      default: () => ({}),
-    },
-    options: {
-      type: [Array, Object],
-      default: () => [],
-    },
-    title: {
-      type: String,
-      default: '',
-    },
-    label: {
-      type: String,
-      default: null,
-    },
-    id: {
-      type: String,
-      default: '',
-    },
-    excludedId: {
-      type: Number,
-      default: -1,
-    },
-    required: {
-      type: Boolean,
-      default: true,
-    },
-    iclass: {
-      type: String,
-      default: '',
-    },
-    validator: {
-      type: Object,
-      default: null,
-    }
+interface Option {
+  id: string | number;
+  name: string;
+}
+
+interface OptGroup {
+  name: string;
+  options: Option[];
+}
+
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string | number;
+    modelModifiers?: Record<string, unknown>;
+    options?: Option[] | Record<string, OptGroup>;
+    title?: string;
+    label?: string | null;
+    id?: string;
+    excludedId?: number;
+    required?: boolean;
+    iclass?: string;
+    validator?: Validator | null;
+  }>(),
+  {
+    modelValue: '',
+    modelModifiers: () => ({}),
+    options: () => [],
+    title: '',
+    label: null,
+    id: '',
+    excludedId: -1,
+    required: true,
+    iclass: '',
+    validator: null,
   },
+);
 
-  emits: ['update:modelValue', 'input'],
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void;
+  (e: 'input', value: string): void;
+}>();
 
-  setup() {
-    const { t } = useI18n();
-    return { uid: getCurrentInstance().uid, t };
-  },
+const { t } = useI18n();
+const uid = getCurrentInstance()?.uid ?? 0;
+const selectEl = useTemplateRef<HTMLSelectElement>('select');
 
-  data() {
-    return {
-      selectedOption: null,
-    };
-  },
+const selectedOption = ref<string | number | null>(null);
 
-  computed: {
-    realid() {
-      return this.id + this.uid;
-    },
-    selectClass() {
-      var c = [this.iclass !== '' ? this.iclass : 'br2 f5 w-100 ba b--black-40 pa2 outline-0'];
-      if (this.validator) {
-        c.push({ error: this.validator.$error });
-      }
-      c.push('select');
-      return c;
-    },
-    field() {
-      return this.label && this.label.length > 0 ? this.label : this.title;
-    },
-    requiredMessage() {
-      return this.t('validation.vue.required', { field: this.field });
-    },
-  },
+const realid = computed(() => props.id + uid);
 
-  watch: {
-    modelValue: function (newValue) {
-      this.selectedOption = newValue;
-    }
-  },
+const selectClass = computed(() => {
+  const c: Array<string | Record<string, boolean>> = [
+    props.iclass !== '' ? props.iclass : 'br2 f5 w-100 ba b--black-40 pa2 outline-0',
+  ];
+  if (props.validator) {
+    c.push({ error: props.validator.$error });
+  }
+  c.push('select');
+  return c;
+});
 
-  mounted() {
-    this.selectedOption = this.modelValue;
-  },
+const field = computed(() => (props.label && props.label.length > 0 ? props.label : props.title));
 
-  methods: {
-    /**
-     * Filter options
-     */
-    filterExclude: function (options) {
-      var me = this;
-      return options.filter(function (option) {
-        return option.id !== me.excludedId;
-      });
-    },
+const requiredMessage = computed(() => t('validation.vue.required', { field: field.value }));
 
-    focus() {
-      this.$refs.select.focus();
-    },
+watch(() => props.modelValue, (newValue) => {
+  selectedOption.value = newValue;
+});
 
-    onInput(event) {
-      if (this.validator) {
-        this.validator.$touch();
-      }
-      this.$emit('update:modelValue', event.target.value);
-      this.$emit('input', event.target.value);
-    },
-  },
-};
+onMounted(() => {
+  selectedOption.value = props.modelValue;
+});
+
+function filterExclude<T extends { id: string | number }>(options: T[]): T[] {
+  return options.filter((option) => option.id !== props.excludedId);
+}
+
+function focus() {
+  selectEl.value?.focus();
+}
+
+function onInput(event: Event) {
+  if (props.validator) {
+    props.validator.$touch();
+  }
+  const value = (event.target as HTMLSelectElement).value;
+  emit('update:modelValue', value);
+  emit('input', value);
+}
+
+defineExpose({ focus });
 </script>

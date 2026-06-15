@@ -27,39 +27,49 @@
   </monica-modal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
-// See genders/CreateModal.vue for the modelValue contract rationale.
-export default {
-  props: {
-    modelValue: { type: Boolean, default: false },
-    category: { type: Object, required: true },
-  },
+interface LifeEventCategory {
+  id: number;
+  default_life_event_category_key?: string;
+}
 
-  emits: ['update:modelValue', 'saved'],
-
-  setup(_, { emit }) {
-    const { t } = useI18n();
-    const { cancel, finish, sync } = useModalSelfClose(emit);
-    return { t, cancel, finish, sync };
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    category: LifeEventCategory;
+  }>(),
+  {
+    modelValue: false,
   },
+);
 
-  data() {
-    return {
-      form: {
-        name: '',
-        life_event_category_id: this.category.id,
-        errors: [],
-      },
-    };
-  },
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'saved'): void;
+}>();
 
-  methods: {
-    store() {
-      return axios.post('settings/personalization/lifeeventtypes', this.form).then(this.finish);
-    },
-  },
-};
+const { t } = useI18n();
+const { cancel, finish, sync } = useModalSelfClose(emit);
+
+const form = reactive<{
+  name: string;
+  life_event_category_id: number;
+  errors: string[];
+}>({
+  name: '',
+  life_event_category_id: props.category.id,
+  errors: [],
+});
+
+async function store() {
+  await axios.post('settings/personalization/lifeeventtypes', form);
+  finish();
+}
+
+defineExpose({ form, cancel, finish, sync, store });
 </script>

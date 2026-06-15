@@ -28,36 +28,45 @@
   </monica-modal>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import { useModalSelfClose } from '../../../composables/useModalSelfClose';
 
-// See genders/CreateModal.vue for the modelValue contract rationale.
-export default {
-  props: {
-    modelValue: { type: Boolean, default: false },
-    genders: { type: Array, default: () => [] },
-    defaultId: { type: Number, default: null },
-  },
+interface Gender {
+  id: number;
+  name: string;
+  isDefault: boolean;
+}
 
-  emits: ['update:modelValue', 'saved'],
-
-  setup(_, { emit }) {
-    const { t } = useI18n();
-    const { cancel, finish, sync } = useModalSelfClose(emit);
-    return { t, cancel, finish, sync };
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    genders?: Gender[];
+    defaultId?: number | null;
+  }>(),
+  {
+    modelValue: false,
+    genders: () => [],
+    defaultId: null,
   },
+);
 
-  data() {
-    return {
-      selectedId: this.defaultId,
-    };
-  },
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'saved'): void;
+}>();
 
-  methods: {
-    save() {
-      return axios.put('settings/personalization/genders/default/' + this.selectedId).then(this.finish);
-    },
-  },
-};
+const { t } = useI18n();
+const { cancel, finish, sync } = useModalSelfClose(emit);
+
+const selectedId = ref<number | null>(props.defaultId ?? null);
+
+async function save() {
+  await axios.put('settings/personalization/genders/default/' + selectedId.value);
+  finish();
+}
+
+defineExpose({ selectedId, cancel, finish, sync, save });
 </script>

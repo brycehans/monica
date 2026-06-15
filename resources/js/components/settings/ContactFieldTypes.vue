@@ -214,186 +214,158 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import FormErrors from '../partials/FormErrors.vue';
+import { useHtmlDir } from '../../composables/useHtmlDir';
+import { useNotify } from '../../composables/useNotify';
+import { withFormErrors, type FormErrorList } from '../../api/errors';
 
-export default {
+interface ContactFieldType {
+  id: number | string;
+  name: string;
+  protocol: string;
+  fontawesome_icon?: string;
+  delible?: boolean;
+}
 
-  components: {
-    FormErrors,
-  },
+interface InputComponent {
+  focus: () => void;
+}
 
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
+const { t } = useI18n();
+const { dirltr } = useHtmlDir();
+const { notify } = useNotify();
 
-  data() {
-    return {
-      contactFieldTypes: [],
+const contactFieldTypes = ref<ContactFieldType[]>([]);
 
-      submitted: false,
-      edited: false,
-      deleted: false,
+const submitted = ref(false);
+const edited = ref(false);
+const deleted = ref(false);
 
-      createForm: {
-        name: '',
-        protocol: '',
-        icon: '',
-        errors: []
-      },
+const createForm = reactive<{
+  name: string;
+  protocol: string;
+  icon: string;
+  errors: FormErrorList;
+}>({ name: '', protocol: '', icon: '', errors: [] });
 
-      editForm: {
-        id: '',
-        name: '',
-        protocol: '',
-        icon: '',
-        errors: []
-      },
-      showModalCreateContactFieldType: false,
-      showModalEditContactFieldType: false,
-      showModalDeleteContactFieldType: false,
-    };
-  },
+const editForm = reactive<{
+  id: number | string;
+  name: string;
+  protocol: string;
+  icon: string;
+  errors: FormErrorList;
+}>({ id: '', name: '', protocol: '', icon: '', errors: [] });
 
-  computed: {
-    dirltr() {
-      return this.$root.htmldir === 'ltr';
-    }
-  },
+const showModalCreateContactFieldType = ref(false);
+const showModalEditContactFieldType = ref(false);
+const showModalDeleteContactFieldType = ref(false);
 
-  mounted() {
-    this.prepareComponent();
-  },
+const createName = useTemplateRef<InputComponent>('createName');
+const editName = useTemplateRef<InputComponent>('editName');
 
-  methods: {
-    prepareComponent() {
-      this.getContactFieldTypes();
-    },
+onMounted(getContactFieldTypes);
 
-    getContactFieldTypes() {
-      axios.get('settings/personalization/contactfieldtypes')
-        .then(response => {
-          this.contactFieldTypes = response.data;
-        });
-    },
+async function getContactFieldTypes() {
+  const response = await axios.get('settings/personalization/contactfieldtypes');
+  contactFieldTypes.value = response.data as ContactFieldType[];
+}
 
-    add() {
-      this.showModalCreateContactFieldType = true;
-    },
+function add() {
+  showModalCreateContactFieldType.value = true;
+}
 
-    closeModal() {
-      this.showModalCreateContactFieldType = false;
-      this.showModalEditContactFieldType = false;
-      this.showModalDeleteContactFieldType = false;
-    },
+function closeModal() {
+  showModalCreateContactFieldType.value = false;
+  showModalEditContactFieldType.value = false;
+  showModalDeleteContactFieldType.value = false;
+}
 
-    store() {
-      this.persistClient(
-        'post', 'settings/personalization/contactfieldtypes',
-        this.createForm, this.submitted
-      );
+type FormBag = typeof createForm | typeof editForm;
 
-      this.$notify({
-        group: 'main',
-        title: this.t('settings.personalization_contact_field_type_add_success'),
-        text: '',
-        width: '500px',
-        type: 'success'
-      });
-    },
+async function persistClient(method: 'post' | 'put' | 'delete', uri: string, form: FormBag, flag: 'submitted' | 'edited' | 'deleted') {
+  const ok = await withFormErrors(form, () => axios[method](uri, form), t('app.error_try_again'));
+  if (!ok) return;
 
-    edit(contactFieldType) {
-      this.editForm.id = contactFieldType.id;
-      this.editForm.name = contactFieldType.name;
-      this.editForm.protocol = contactFieldType.protocol;
-      this.editForm.icon = contactFieldType.fontawesome_icon;
+  await getContactFieldTypes();
 
-      this.showModalEditContactFieldType = true;
-    },
+  if ('id' in form) (form as typeof editForm).id = '';
+  form.name = '';
+  form.protocol = '';
+  form.icon = '';
 
-    update() {
-      this.persistClient(
-        'put', 'settings/personalization/contactfieldtypes/' + this.editForm.id,
-        this.editForm, this.edited
-      );
+  closeModal();
 
-      this.$notify({
-        group: 'main',
-        title: this.t('settings.personalization_contact_field_type_edit_success'),
-        text: '',
-        width: '500px',
-        type: 'success'
-      });
-    },
+  if (flag === 'submitted') submitted.value = true;
+  else if (flag === 'edited') edited.value = true;
+  else deleted.value = true;
+}
 
-    showDelete(contactFieldType) {
-      this.editForm.id = contactFieldType.id;
+function store() {
+  persistClient('post', 'settings/personalization/contactfieldtypes', createForm, 'submitted');
+  notify({
+    group: 'main',
+    title: t('settings.personalization_contact_field_type_add_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-      this.showModalDeleteContactFieldType = true;
-    },
+function edit(contactFieldType: ContactFieldType) {
+  editForm.id = contactFieldType.id;
+  editForm.name = contactFieldType.name;
+  editForm.protocol = contactFieldType.protocol;
+  editForm.icon = contactFieldType.fontawesome_icon ?? '';
+  showModalEditContactFieldType.value = true;
+}
 
-    trash() {
-      this.persistClient(
-        'delete', 'settings/personalization/contactfieldtypes/' + this.editForm.id,
-        this.editForm, this.deleted
-      );
+function update() {
+  persistClient(
+    'put',
+    'settings/personalization/contactfieldtypes/' + editForm.id,
+    editForm,
+    'edited',
+  );
+  notify({
+    group: 'main',
+    title: t('settings.personalization_contact_field_type_edit_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-      this.$notify({
-        group: 'main',
-        title: this.t('settings.personalization_contact_field_type_delete_success'),
-        text: '',
-        width: '500px',
-        type: 'success'
-      });
-    },
+function showDelete(contactFieldType: ContactFieldType) {
+  editForm.id = contactFieldType.id;
+  showModalDeleteContactFieldType.value = true;
+}
 
-    persistClient(method, uri, form, success) {
-      form.errors = {};
+function trash() {
+  persistClient(
+    'delete',
+    'settings/personalization/contactfieldtypes/' + editForm.id,
+    editForm,
+    'deleted',
+  );
+  notify({
+    group: 'main',
+    title: t('settings.personalization_contact_field_type_delete_success'),
+    text: '',
+    type: 'success',
+  });
+}
 
-      axios[method](uri, form)
-        .then(response => {
-          this.getContactFieldTypes();
+function _focusCreateInput() {
+  setTimeout(() => {
+    createName.value?.focus();
+  }, 10);
+}
 
-          form.id = '';
-          form.name = '';
-          form.protocol = '';
-          form.icon = '';
-          form.errors = [];
-
-          this.closeModal();
-
-          success = true;
-        })
-        .catch(error => {
-          if (typeof error.response.data === 'object') {
-            form.errors = _.flatten(_.toArray(error.response.data));
-          } else {
-            form.errors = [this.t('app.error_try_again')];
-          }
-        });
-    },
-
-    /**
-     * Focus on modal open.
-     */
-    _focusCreateInput() {
-      const vm = this;
-      setTimeout(function() {
-        vm.$refs.createName.focus();
-      }, 10);
-    },
-
-    /**
-     * Focus on modal open.
-     */
-    _focusEditInput() {
-      const vm = this;
-      setTimeout(function() {
-        vm.$refs.editName.focus();
-      }, 10);
-    },
-  }
-};
+function _focusEditInput() {
+  setTimeout(() => {
+    editName.value?.focus();
+  }, 10);
+}
 </script>

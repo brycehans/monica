@@ -230,123 +230,100 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import axios from 'axios';
 import moment from 'moment-timezone';
 
-export default {
+interface DocumentRecord {
+  id: number;
+  type?: string;
+  original_filename?: string;
+  link?: string;
+  created_at?: string;
+}
 
-  props: {
-    hash: {
-      type: String,
-      default: '',
-    },
-    reachLimit: {
-      type: String,
-      default: '',
-    },
+const props = withDefaults(
+  defineProps<{
+    hash?: string;
+    reachLimit?: string;
+  }>(),
+  {
+    hash: '',
+    reachLimit: '',
   },
+);
 
-  setup() {
-    const { t, locale } = useI18n();
-    return { t, locale };
-  },
+const { t, locale } = useI18n();
+const fileInput = useTemplateRef<HTMLInputElement>('file');
 
-  data() {
-    return {
-      documents: [],
-      displayUploadZone: false,
-      displayUploadProgress: false,
-      displayUploadError: false,
-      file: '',
-      uploadPercentage: 0,
-      modalToDisplay: null,
-    };
-  },
+const documents = ref<DocumentRecord[]>([]);
+const displayUploadZone = ref(false);
+const displayUploadProgress = ref(false);
+const displayUploadError = ref(false);
+const file = ref<File | null>(null);
+const uploadPercentage = ref(0);
+const modalToDisplay = ref<number | null>(null);
 
-  mounted() {
-    this.prepareComponent();
-  },
+onMounted(getDocuments);
 
-  methods: {
+async function getDocuments() {
+  const response = await axios.get('people/' + props.hash + '/documents');
+  documents.value = response.data.data as DocumentRecord[];
+}
 
-    prepareComponent() {
-      this.getDocuments();
-    },
+function toggleActionsModal(id: number) {
+  modalToDisplay.value = modalToDisplay.value === id ? null : id;
+}
 
-    getDocuments() {
-      axios.get('people/' + this.hash + '/documents')
-        .then(response => {
-          this.documents = response.data.data;
-        });
-    },
+function handleFileUpload() {
+  const f = fileInput.value?.files?.[0];
+  if (!f) return;
+  file.value = f;
+  submitFile();
+}
 
-    showUploadZone() {
-      this.displayUploadZone = true;
-    },
+function formatTime(dateAsString?: string): string {
+  if (!dateAsString) return '';
+  moment.locale(typeof locale.value === 'string' ? locale.value : 'en');
+  const date = moment(dateAsString);
+  return date.format('ll');
+}
 
-    toggleActionsModal(id) {
-      if (this.modalToDisplay === id) {
-        this.modalToDisplay = null;
-      } else {
-        this.modalToDisplay = id;
-      }
-    },
+async function submitFile() {
+  displayUploadZone.value = false;
+  displayUploadProgress.value = true;
 
-    handleFileUpload(){
-      this.file = this.$refs.file.files[0];
-      this.submitFile();
-    },
+  const formData = new FormData();
+  if (file.value) formData.append('document', file.value);
 
-    formatTime(dateAsString) {
-      moment.locale(this.locale);
-
-      var date = moment(dateAsString);
-      return date.format('ll');
-    },
-
-    submitFile(){
-      this.displayUploadZone = false;
-      this.displayUploadProgress = true;
-
-      const formData = new FormData();
-
-      formData.append('document', this.file);
-
-      axios.post( 'people/' + this.hash + '/documents',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          onUploadProgress: function( progressEvent ) {
-            this.uploadPercentage = parseInt( Math.round( ( progressEvent.loaded * 100 ) / progressEvent.total ) );
-          }.bind(this)
+  try {
+    const response = await axios.post('people/' + props.hash + '/documents', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          uploadPercentage.value = Math.round((progressEvent.loaded * 100) / progressEvent.total);
         }
-      ).then(response => {
-        this.displayUploadProgress = false;
-        this.documents.push(response.data);
-      })
-        .catch(error => {
-          this.displayUploadProgress = false;
-          this.file = null;
-          this.displayUploadError = true;
-        });
-    },
-
-    downloadDocument(doc) {
-      window.open(doc.link, '_blank');
-
-      // Close the modal menu
-      this.modalToDisplay = null;
-    },
-
-    deleteDocument(document) {
-      axios.delete( 'people/' + this.hash + '/documents/' + document.id)
-        .then(response => {
-          this.documents.splice(this.documents.indexOf(document), 1);
-        });
-    },
+      },
+    });
+    displayUploadProgress.value = false;
+    documents.value.push(response.data);
+  } catch {
+    displayUploadProgress.value = false;
+    file.value = null;
+    displayUploadError.value = true;
   }
-};
+}
+
+function downloadDocument(doc: DocumentRecord) {
+  if (doc.link) window.open(doc.link, '_blank');
+  modalToDisplay.value = null;
+}
+
+async function deleteDocument(doc: DocumentRecord) {
+  await axios.delete('people/' + props.hash + '/documents/' + doc.id);
+  const idx = documents.value.indexOf(doc);
+  if (idx >= 0) documents.value.splice(idx, 1);
+}
 </script>
