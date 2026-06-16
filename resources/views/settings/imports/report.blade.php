@@ -49,9 +49,9 @@
               <li class="table-row">
                 <div class="table-cell status">
                   @if ($importJobReport->skipped == 0)
-                    <span class="badge badge-success">{{ trans('settings.import_report_status_imported') }}</span>
+                    <span class="dib pv1 ph1 f7 fw7 lh-solid white tc nowrap v-base br2 bg-monica-success">{{ trans('settings.import_report_status_imported') }}</span>
                   @else
-                    <span class="badge badge-danger">{{ trans('settings.import_report_status_skipped') }}</span>
+                    <span class="dib pv1 ph1 f7 fw7 lh-solid white tc nowrap v-base br2 bg-monica-danger">{{ trans('settings.import_report_status_skipped') }}</span>
                   @endif
                 </div>
                 <div class="table-cell">

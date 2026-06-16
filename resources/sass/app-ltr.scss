@@ -139,24 +139,11 @@ $bg-hover-monica: #d7e3ec;
   padding: 15px;
 }
 
-.badge {
-  display: inline-block;
-  padding: 4px 5px;
-  font-size: 75%;
-  font-weight: 700;
-  line-height: 1;
-  color: #ffffff;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: .25rem;
-}
-
-.badge-success {
+.bg-monica-success {
   background-color: #32cd32;
 }
 
-.badge-danger {
+.bg-monica-danger {
   background-color: #d9534f;
 }
 
@@ -586,11 +573,6 @@ table.vgt-table {
 }
 
 footer {
-  .badge-success {
-    font-size: 12px;
-    font-weight: 400;
-  }
-
   .show-version {
     text-align: left;
 

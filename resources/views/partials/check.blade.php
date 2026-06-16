@@ -8,7 +8,7 @@
 
     @if (($version = config('monica.app_version')) !== '' && version_compare($instance->latest_version, $version) > 0)
     <li>
-        <a href="" class="badge badge-success" onclick="document.dispatchEvent(new CustomEvent('monica:show-version-modal')); return false;">{{ trans('app.footer_new_version') }}</a>
+        <a href="" class="dib pv1 ph1 f7 fw4 lh-solid white tc nowrap v-base br2 bg-monica-success" onclick="document.dispatchEvent(new CustomEvent('monica:show-version-modal')); return false;">{{ trans('app.footer_new_version') }}</a>
     </li>
     @endif
 
