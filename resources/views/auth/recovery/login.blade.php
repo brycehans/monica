@@ -35,7 +35,7 @@
                     <button type="submit" class="btn btn-primary">{{ trans('auth.login') }}</button>
                   </div>
                   <div class="col-12 col-md-6">
-                    <a href="login" class="btn btn-secondary w-100 mb2 pb0-ns tc" style="margin-top: 10px">{{ trans('app.cancel') }}</a>
+                    <a href="login" class="btn w-100 mb2 pb0-ns tc" style="margin-top: 10px">{{ trans('app.cancel') }}</a>
                   </div>
                 </div>
               </div>

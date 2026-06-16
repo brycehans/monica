@@ -60,7 +60,7 @@
 
             <div class="tc">
               <button type="submit" class="btn btn-primary">{{ trans('app.confirm') }}</button>
-              <a href="{{ route('settings.subscriptions.index') }}" class="btn btn-secondary">{{ trans('app.cancel') }}</a>
+              <a href="{{ route('settings.subscriptions.index') }}" class="btn">{{ trans('app.cancel') }}</a>
             </div>
           </form>
 

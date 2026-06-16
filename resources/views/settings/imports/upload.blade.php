@@ -75,7 +75,7 @@
 
                 <div class="form-group actions">
                     <button id="upload" type="submit" class="btn btn-primary">{{ trans('app.upload') }}</button>
-                    <a href="{{ route('settings.import') }}" class="btn btn-secondary">{{ trans('app.cancel') }}</a>
+                    <a href="{{ route('settings.import') }}" class="btn">{{ trans('app.cancel') }}</a>
                 </div> <!-- .form-group -->
               </form>
             </div>
