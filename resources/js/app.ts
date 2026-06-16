@@ -33,6 +33,7 @@ import ContactMultiSearch from './components/people/ContactMultiSearch.vue';
 // Partials
 import Avatar from './components/partials/Avatar.vue';
 import Confirm from './components/partials/Confirm.vue';
+import Dropdown from './components/partials/Dropdown.vue';
 import MonicaModal from './components/partials/MonicaModal.vue';
 
 // Form elements
@@ -112,7 +113,17 @@ common.loadLanguage(locale, true).then((i18n) => {
         date_met_the_contact: 'known',
         global_relationship_form_new_contact: true,
         global_profile_default_view: profileDefaultView,
+        show_version_modal: false,
       };
+    },
+    mounted() {
+      // The "new version available" trigger lives in partials.footer (outside
+      // #app, so Vue can't bind to it). It dispatches this DOM event when
+      // clicked; the modal in partials.check-modal binds to show_version_modal
+      // here on the root component.
+      document.addEventListener('monica:show-version-modal', () => {
+        this.show_version_modal = true;
+      });
     },
     methods,
   });
@@ -136,6 +147,7 @@ common.loadLanguage(locale, true).then((i18n) => {
   // Partials
   app.component('Avatar', Avatar);
   app.component('Confirm', Confirm);
+  app.component('Dropdown', Dropdown);
   app.component('MonicaModal', MonicaModal);
   app.component('ModalsContainer', ModalsContainer);
 
@@ -205,5 +217,3 @@ common.loadLanguage(locale, true).then((i18n) => {
   return app;
 });
 
-$(document).ready(function() {
-});
