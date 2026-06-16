@@ -44,7 +44,7 @@
         />
       </div>
       <p class="tc mb0">
-        <a class="btn btn-secondary pointer" href="" @click.prevent="addMessage">
+        <a class="btn pointer" href="" @click.prevent="addMessage">
           {{ t('people.conversation_add_another') }}
         </a>
       </p>

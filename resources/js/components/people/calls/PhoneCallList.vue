@@ -103,7 +103,7 @@
         <div class="pt3">
           <div class="flex-ns justify-between">
             <div class="">
-              <a class="btn btn-secondary tc w-auto-ns w-100 mb2 pb0-ns" href="" @click.prevent="displayLogCall = false; resetFields()">
+              <a class="btn tc w-auto-ns w-100 mb2 pb0-ns" href="" @click.prevent="displayLogCall = false; resetFields()">
                 {{ t('app.cancel') }}
               </a>
             </div>
@@ -191,7 +191,7 @@
             <div class="">
               <div class="flex-ns justify-between">
                 <div class="">
-                  <a class="btn btn-secondary tc w-auto-ns w-100 mb2 pb0-ns" href="" @click.prevent="editCallId = 0">
+                  <a class="btn tc w-auto-ns w-100 mb2 pb0-ns" href="" @click.prevent="editCallId = 0">
                     {{ t('app.cancel') }}
                   </a>
                 </div>

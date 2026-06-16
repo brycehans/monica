@@ -112,7 +112,7 @@
         <div class="pt3">
           <div class="flex-ns justify-between">
             <div class="">
-              <a class="btn btn-secondary tc w-auto-ns w-100 mb2 pb0-ns" @click.prevent="close()">
+              <a class="btn tc w-auto-ns w-100 mb2 pb0-ns" @click.prevent="close()">
                 {{ t('app.cancel') }}
               </a>
             </div>

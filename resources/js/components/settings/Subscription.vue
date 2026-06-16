@@ -70,7 +70,7 @@
         </button>
       </div>
       <a v-if="paymentProcessed" :href="callback"
-         class="btn btn-secondary w-100 tc"
+         class="btn w-100 tc"
       >
         {{ t('app.go_back') }}
       </a>

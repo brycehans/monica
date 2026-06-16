@@ -136,7 +136,7 @@
         <div class="ph4-ns ph3 pv3 bb b--gray-monica">
           <div class="flex-ns justify-between">
             <div>
-              <a class="btn btn-secondary tc w-auto-ns w-100 mb2 pb0-ns" href="" @click.prevent="$emit('dismissModal')">
+              <a class="btn tc w-auto-ns w-100 mb2 pb0-ns" href="" @click.prevent="$emit('dismissModal')">
                 {{ t('app.cancel') }}
               </a>
             </div>
