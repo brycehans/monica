@@ -9,6 +9,7 @@
     "smoke:debug": "PWDEBUG=1 playwright test",
     "smoke:report": "playwright show-report",
     "smoke:subscription": "playwright test subscription-flow.spec.ts",
+    "rtl-smoke": "playwright test specs/rtl-smoke.spec.ts",
     "typecheck": "tsc --noEmit -p ."
   },
   "devDependencies": {

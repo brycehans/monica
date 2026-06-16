@@ -29,7 +29,7 @@
             {{ t('settings.personalization_reminder_rule_line', {count: reminderRule.number_of_days_before}, reminderRule.number_of_days_before) }}
           </div>
         </div>
-        <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]">
+        <div class="dtc" :class="[ dirltr ? 'tr' : 'tl' ]" data-testid="reminder-rule-actions-cell">
           <div class="pa2">
             <form-toggle
               v-model="reminderRule.active"
