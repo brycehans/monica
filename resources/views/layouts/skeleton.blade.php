@@ -44,6 +44,7 @@
       @if (Route::currentRouteName() != 'settings.subscriptions.confirm')
         @include('partials.header')
         @include('partials.subscription')
+        @include('partials.check-modal')
       @endif
       @yield('content')
     </div>

@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
         );
 
         View::composer(
-            'partials.check', 'App\Http\ViewComposers\InstanceViewComposer'
+            ['partials.check', 'partials.check-modal'], 'App\Http\ViewComposers\InstanceViewComposer'
         );
 
         Password::defaults(function () {

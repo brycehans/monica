@@ -73,34 +73,31 @@
                 <li class="people-list-item sorting">
                   {{ trans_choice('people.people_list_stats', $contactsCount, ['count' => $contactsCount]) }}
                   <div class="options">
-                    <div class="options-dropdowns dropdown">
-                      <a href="" class="dropdown-btn" data-toggle="dropdown" id="dropdownSort">{{ trans('people.people_list_sort') }}</a>
-                      <div class="dropdown-menu" aria-labelledby="dropdownSort">
-                        <a class="dropdown-item {{ ($sort == 'firstnameAZ')?'selected':'' }}" href="{{ route('people.index') }}?sort=firstnameAZ">
-                          {{ trans('people.people_list_firstnameAZ') }}
-                        </a>
+                    <dropdown class="options-dropdowns" label="{{ trans('people.people_list_sort') }}" trigger-id="dropdownSort">
+                      <a class="dropdown-item {{ ($sort == 'firstnameAZ')?'selected':'' }}" href="{{ route('people.index') }}?sort=firstnameAZ">
+                        {{ trans('people.people_list_firstnameAZ') }}
+                      </a>
 
-                        <a class="dropdown-item {{ ($sort == 'firstnameZA')?'selected':'' }}" href="{{ route('people.index') }}?sort=firstnameZA">
-                          {{ trans('people.people_list_firstnameZA') }}
-                        </a>
+                      <a class="dropdown-item {{ ($sort == 'firstnameZA')?'selected':'' }}" href="{{ route('people.index') }}?sort=firstnameZA">
+                        {{ trans('people.people_list_firstnameZA') }}
+                      </a>
 
-                        <a class="dropdown-item {{ ($sort == 'lastnameAZ')?'selected':'' }}" href="{{ route('people.index') }}?sort=lastnameAZ">
-                          {{ trans('people.people_list_lastnameAZ') }}
-                        </a>
+                      <a class="dropdown-item {{ ($sort == 'lastnameAZ')?'selected':'' }}" href="{{ route('people.index') }}?sort=lastnameAZ">
+                        {{ trans('people.people_list_lastnameAZ') }}
+                      </a>
 
-                        <a class="dropdown-item {{ ($sort == 'lastnameZA')?'selected':'' }}" href="{{ route('people.index') }}?sort=lastnameZA">
-                          {{ trans('people.people_list_lastnameZA') }}
-                        </a>
+                      <a class="dropdown-item {{ ($sort == 'lastnameZA')?'selected':'' }}" href="{{ route('people.index') }}?sort=lastnameZA">
+                        {{ trans('people.people_list_lastnameZA') }}
+                      </a>
 
-                        <a class="dropdown-item {{ ($sort == 'lastactivitydateNewtoOld')?'selected':'' }}" href="{{ route('people.index') }}?sort=lastactivitydateNewtoOld">
-                          {{ trans('people.people_list_lastactivitydateNewtoOld') }}
-                        </a>
+                      <a class="dropdown-item {{ ($sort == 'lastactivitydateNewtoOld')?'selected':'' }}" href="{{ route('people.index') }}?sort=lastactivitydateNewtoOld">
+                        {{ trans('people.people_list_lastactivitydateNewtoOld') }}
+                      </a>
 
-                        <a class="dropdown-item {{ ($sort == 'lastactivitydateOldtoNew')?'selected':'' }}" href="{{ route('people.index') }}?sort=lastactivitydateOldtoNew">
-                          {{ trans('people.people_list_lastactivitydateOldtoNew') }}
-                        </a>
-                      </div>
-                    </div>
+                      <a class="dropdown-item {{ ($sort == 'lastactivitydateOldtoNew')?'selected':'' }}" href="{{ route('people.index') }}?sort=lastactivitydateOldtoNew">
+                        {{ trans('people.people_list_lastactivitydateOldtoNew') }}
+                      </a>
+                    </dropdown>
                   </div>
                 </li>
 
