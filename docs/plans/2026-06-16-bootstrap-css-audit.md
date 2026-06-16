@@ -16,7 +16,7 @@ Implications:
 
 1. **All "dead Bootstrap variants" are already absent from production CSS.** `.btn-secondary`, `.btn-success`, `.btn-info`, `.btn-light`, `.btn-dark`, `.btn-link`, `.btn-outline-*`, `.btn-sm`, `.btn-lg`, `.btn-add` — none paint anything in `public/build/assets/app-ltr-*.css`. The dead-variant deletion PR is **source-readability cleanup**, not bundle-size cleanup.
 
-2. **The four "live" button variants survive both ways.** Compiled CSS contains `.btn`, `.btn-primary`, `.btn-danger`, `.btn-warning` only (verified by `grep -oE "\.btn-?[a-z]*" app-ltr-*.css | sort -u`). All other `btn-*` tokens in the bundle (`btn-bar`, `btn-base`, `btn-in`, …) are from `phpdebugbar-*` chrome, not app styles.
+2. **The four "live" button variants survive both ways**, plus one scoped SFC override. Compiled CSS across all bundles contains `.btn`, `.btn-primary`, `.btn-danger`, `.btn-warning`, and `.btn-title` (verified at `30641d908` by `grep -oh "\.btn[a-z-]*" public/build/assets/*.css | sort -u`). `.btn-title` is a Vue-scoped rule in `ActivityList.vue` — PurgeCSS keeps it because the consuming SFC references it literally. **Correction to a prior version of this doc:** earlier text claimed `.btn-bar` / `.btn-base` / `.btn-in` from `phpdebugbar` were in the bundle. They are not — laravel-debugbar serves its CSS at runtime from the package, never bundled by Vite. The full-bundle sweep `public/build/assets/*.css` (LTR Sass + RTL Sass + Vue SFC `app-*.css` + `common-*.css` + `stripe-*.css`) is the authoritative verification surface.
 
 3. **Dynamic class composition is a footgun.** PurgeCSS only sees literal tokens. A future migration step that introduces `:class="'btn-' + variant"` or `\`btn-${type}\`` would have the corresponding CSS rule silently stripped unless the rule is added to `safelist.standard`. Current audit found **0** incidents of dynamic CSS-class composition app-side (one Blade interpolation builds `{contactHash}-edit-relationship` as a JS/test hook, but no SCSS targets it). Migration PR template should call this out: **every dynamic class composition needs an explicit safelist entry**.
 
@@ -49,7 +49,7 @@ Implications:
 
 1. **The handoff's "39 imports" claim was wrong.** Actual count of active partials in `resources/sass/_custom_bootstrap.scss` is **12**: `bootstrap-reboot`, `bootstrap-grid`, `_tables`, `_forms`, `_dropdown`, `_nav`, `_card`, `_pagination`, `_alert`, `_close`, `_modal`, `_print`. The rest (lines 21-48) are commented out.
 
-2. **Dead button variants — provably no-op to delete.** None of the following are defined anywhere in `resources/sass/`: `.btn-secondary`, `.btn-success`, `.btn-info`, `.btn-light`, `.btn-dark`, `.btn-link`, `.btn-outline-*`, `.btn-sm`, `.btn-lg`. Bootstrap's `_buttons.scss` partial is commented out and the custom `buttons.scss` defines only the four real ones. **Confirmed at the compiled-CSS layer:** `grep -oE "\.btn-?[a-z]*" app-ltr-*.css | sort -u` returns only `.btn`, `.btn-danger`, `.btn-primary`, `.btn-warning`.
+2. **Dead button variants — provably no-op to delete.** None of the following are defined anywhere in `resources/sass/`: `.btn-secondary`, `.btn-success`, `.btn-info`, `.btn-light`, `.btn-dark`, `.btn-link`, `.btn-outline-*`, `.btn-sm`, `.btn-lg`. Bootstrap's `_buttons.scss` partial is commented out and the custom `buttons.scss` defines only the four real ones. **Confirmed at the compiled-CSS layer (full-bundle sweep at `30641d908`):** `grep -oh "\.btn[a-z-]*" public/build/assets/*.css | sort -u` returns `.btn`, `.btn-danger`, `.btn-primary`, `.btn-title`, `.btn-warning` — see finding #2 above for the `.btn-title` exception.
 
 3. **JS never reads classList for Bootstrap class names.** Verified via `grep classList\|className` on `resources/js/**/*.{ts,vue}` filtered for `btn-`/`alert-`/`badge-`/`card-`/`modal-`/`nav-` → empty. The dead-variant deletion is provably safe at the JS level.
 
@@ -73,9 +73,9 @@ Implications:
 
 Order optimised for "smallest unambiguous diff first → builds reviewer confidence → harder swaps come last":
 
-1. **Dead-variant deletion** — strip `.btn-secondary` etc. from the 30+ templates that emit them as no-ops. Plus delete `.btn-add` from `buttons.scss`. Zero visual change (proved by PurgeCSS already stripping these from prod). Source-readability cleanup.
-2. **Badge migration** — 7 sites, custom SCSS in `app-ltr.scss:142-161` to swap to Tachyons utilities. Methodology validation for the larger swaps.
-3. **Breadcrumb migration** — 36 sites, settings pages only.
+1. **Dead-variant deletion** — ✅ done (#817 / `bb28358eb`). Stripped `.btn-secondary` (32 sites), `.btn-success` + `.btn-approve` (passport view), `.btn-add` (SCSS), and renamed `Message.vue`'s scoped `.btn-secondary` override to `.delete-message-btn`.
+2. **Badge migration** — ✅ done (#818 / `30641d908`). Verified 3 markup sites + 4 SCSS rules (the audit's "7 sites" was the combined count). Inlined Tachyons utilities at each call site, renamed colour rules to `.bg-monica-success` / `.bg-monica-danger`, deleted `.badge` base + `footer .badge-success` nested override.
+3. **Breadcrumb migration** — 36 sites, settings pages only. `_breadcrumb.scss` partial commented out; custom styles in `app-ltr.scss`. Next in sequence.
 4. **Alert migration** — 30 sites, two variants only (success / danger).
 5. **Card migration** — 12 sites, standalone `.card` predominantly.
 6. **Pagination migration** — 7 sites, always paired.
@@ -83,7 +83,7 @@ Order optimised for "smallest unambiguous diff first → builds reviewer confide
 8. **Grid migration** — 293 sites, the big one. Tachyons has `flex` utilities for layout, but most `row`/`col-*` usage is layout-structural and needs case-by-case judgement.
 9. **Button colour-variant migration** — last, because the four "live" variants (`.btn-primary`, `.btn-danger`, `.btn-warning`) carry the brand palette (`#228b22`, `#b22222`, `#daa520`); replacing the styling without a Tachyons green/red/gold palette is a design decision, not a mechanical swap.
 
-Run the RTL smoke locally between each PR. Each PR's body should include the smoke result.
+Run the RTL smoke locally between each PR (`tests/playwright/specs/rtl-smoke.spec.ts`, ~5s) plus the full smoke (`yarn run smoke`, currently 93 specs, ~3min). Each PR's body should include both results.
 
 ---
 
@@ -103,8 +103,10 @@ This audit ages. Before relying on any specific count above:
 # Active Bootstrap partials in _custom_bootstrap.scss
 grep -c "^@import" resources/sass/_custom_bootstrap.scss
 
-# btn-* selectors that survive PurgeCSS in prod
-grep -oE "\.btn-?[a-z]*" public/build/assets/app-ltr-*.css | sort -u
+# Family-X selectors that survive PurgeCSS in prod — full-bundle sweep
+# (LTR Sass + RTL Sass + Vue SFC app-*.css + common-*.css + stripe-*.css).
+# Substitute btn/badge/alert/breadcrumb/etc. as needed.
+grep -oh "\.btn[a-z-]*" public/build/assets/*.css | sort -u
 
 # Dynamic class composition (should stay 0)
 grep -rEn ":class=\"\[?'[a-z-]+-' *\+|:class=\"\[?\`[a-z-]+-\\\$\{" resources/js
