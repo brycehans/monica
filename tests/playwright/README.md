@@ -4,7 +4,8 @@ Standalone Playwright suite for verifying the user-facing app. Two distinct sets
 
 1. **`dependency-upgrade-smoke.spec.ts`** — the phase-close gate per `CLAUDE.md`: login → dashboard → contact list → contact detail → vCard export → journal → reminders → settings → search → logout. Run before merging composer/npm bump PRs.
 2. **`subscription-flow.spec.ts`** — drives the Stripe-gated `/settings/subscriptions/*` routes through stripe-mock.
-3. **`<feature>.spec.ts`** — UI-binding / cross-component invariant coverage (#725) + Tier A & B coverage-gap backfill (#731). Each spec covers behaviour that phpunit alone can't reach:
+3. **`rtl-smoke.spec.ts`** — safety net for the Bootstrap-CSS → Tachyons migration. Flips the admin user's locale to Hebrew and asserts direction-sensitive layout properties across six surfaces (dashboard, contact list, contact detail, note modal, journal, settings personalization). Run for any PR touching `resources/sass/`, `resources/views/`, or files using `useHtmlDir()` (see `docs/plans/2026-06-16-rtl-playwright-smoke-design.md`).
+4. **`<feature>.spec.ts`** — UI-binding / cross-component invariant coverage (#725) + Tier A & B coverage-gap backfill (#731). Each spec covers behaviour that phpunit alone can't reach:
    - `contact-introductions.spec.ts` — ContactSelect multiselect ARIA contract + filter behaviour
    - `activity-types.spec.ts` — settings → activity-add cross-flow (premium-gated)
    - `activity-journal-side-effect.spec.ts` — activity-create inserts a non-deletable journal row
