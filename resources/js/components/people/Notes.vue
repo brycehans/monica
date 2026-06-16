@@ -17,7 +17,7 @@
           <a v-if="addMode" v-cy-name="'add-note-button'" class="pointer btn btn-primary" href="" @click.prevent="store">
             {{ t('app.add') }}
           </a>
-          <a v-if="addMode" v-cy-name="'cancel-note-button'" class="pointer btn btn-secondary" href="" @click.prevent="addMode = false">
+          <a v-if="addMode" v-cy-name="'cancel-note-button'" class="pointer btn" href="" @click.prevent="addMode = false">
             {{ t('app.cancel') }}
           </a>
         </form>

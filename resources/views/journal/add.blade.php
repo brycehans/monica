@@ -51,7 +51,7 @@
 
               <div class="form-group actions">
                 <button type="submit" cy-name="save-entry-button" class="btn btn-primary">{{ trans('journal.journal_add_cta') }}</button>
-                <a href="{{ route('journal.index') }}" class="btn btn-secondary">{{ trans('app.cancel') }}</a>
+                <a href="{{ route('journal.index') }}" class="btn">{{ trans('app.cancel') }}</a>
               </div> <!-- .form-group -->
             </form>
           </div>

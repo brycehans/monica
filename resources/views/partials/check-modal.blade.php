@@ -18,7 +18,7 @@
         {!! $instance->latest_release_notes !!}
       </div>
       <template #button>
-        <button type="button" class="btn btn-secondary" @click="show_version_modal = false">{{ trans('app.close') }}</button>
+        <button type="button" class="btn" @click="show_version_modal = false">{{ trans('app.close') }}</button>
       </template>
     </monica-modal>
     @endif

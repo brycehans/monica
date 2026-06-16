@@ -84,6 +84,6 @@
             {{ trans('people.reminders_edit_update_cta') }}
             @endif
         </button>
-        <a href="{{ route('people.show', $contact) }}" class="btn btn-secondary">{{ trans('app.cancel') }}</a>
+        <a href="{{ route('people.show', $contact) }}" class="btn">{{ trans('app.cancel') }}</a>
     </div>
 </form>

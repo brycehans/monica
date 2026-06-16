@@ -66,7 +66,7 @@
                           
                   <div class="form-group actions">
                     <button type="submit" class="btn btn-primary" :disabled="!accept_invite_user">{{ trans('settings.users_add_cta') }}</button>
-                    <a href="{{ route('settings.users.index') }}" class="btn btn-secondary">{{ trans('app.cancel') }}</a>
+                    <a href="{{ route('settings.users.index') }}" class="btn">{{ trans('app.cancel') }}</a>
                   </div>
                 </form>
               </div>
