@@ -14,7 +14,7 @@
             </div>
             <h2>{{ trans('auth.confirmation_title') }}</h2>
 
-            <div class="card-body">
+            <div class="pa3">
               @if (session('resent'))
                 <div class="page-alert page-alert-success" role="alert">
                   {{ trans('auth.confirmation_fresh') }}
