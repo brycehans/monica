@@ -4,7 +4,7 @@
   <div class="people-show debt">
 
     {{-- Breadcrumb --}}
-    <div class="breadcrumb">
+    <div class="page-breadcrumb">
       <div class="{{ Auth::user()->getFluidLayout() }}">
         <div class="row">
           <div class="col-12">

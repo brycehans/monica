@@ -5,7 +5,7 @@
 <div class="settings">
 
   {{-- Breadcrumb --}}
-  <div class="breadcrumb">
+  <div class="page-breadcrumb">
     <div class="{{ auth()->user()->getFluidLayout() }}">
       <div class="row">
         <div class="col-12">
