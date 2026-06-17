@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Before proceeding, please check your email for a verification link.',
     'confirmation_request_another' => 'If you did not receive the email <a :action>click here to request another</a>.',
 
-    'confirmation_again' => 'If you want to change your email address you can <a href=":url" class="alert-link">click here</a>.',
+    'confirmation_again' => 'If you want to change your email address you can <a href=":url">click here</a>.',
     'email_change_current_email' => 'Current email address:',
     'email_change_title' => 'Change your email address',
     'email_change_new' => '新しいEメールアドレス',

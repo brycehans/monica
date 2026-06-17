@@ -11,6 +11,6 @@ return [
     'success' => 'Úspěšně jste ověřili svůj účet! Nyní se můžete přihlásit.',
     'again' => 'Musíte ověřit svůj e-mail, než budete moci přistupovat na web.
                 <br/>Pokud jste neobdrželi potvrzovací e-mail, zkontrolujte složku s nevyžádanou poštou.
-                <br/>Chcete-li získat nový potvrzovací e-mail, <a href=":url" class="alert-link">klikněte zde</a>.',
+                <br/>Chcete-li získat nový potvrzovací e-mail, <a href=":url">klikněte zde</a>.',
     'resend' => 'Potvrzovací zpráva byla odeslána. Zkontrolujte prosím svou e-mailovou schránku.'
 ];

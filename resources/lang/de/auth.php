@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Bevor sie weitermachen, überprüfen sie bitte ihre E-mails nach einem Bestätigungslink.',
     'confirmation_request_another' => 'Falls Sie keine E-Mail erhalten haben, <a :action>klicken Sie hier um eine neue E-Mail zu erhalten</a>.',
 
-    'confirmation_again' => 'Wenn Sie Ihre E-Mail-Adresse ändern möchten, <a href=":url" class="alert-link">klicken Sie bitte hier</a>.',
+    'confirmation_again' => 'Wenn Sie Ihre E-Mail-Adresse ändern möchten, <a href=":url">klicken Sie bitte hier</a>.',
     'email_change_current_email' => 'Aktuelle E-Mail-Adresse:',
     'email_change_title' => 'E-Mail-Adresse ändern',
     'email_change_new' => 'Neue E-Mail-Adresse',

@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Πριν προχωρήσετε, παρακαλώ ελέγξτε το email σας για τον σύνδεσμο επαλήθευσης.',
     'confirmation_request_another' => 'Αν δεν έχετε παραλάβει το email <a :action>πατήστε εδώ για να αποστείλουμε νέο</a>.',
 
-    'confirmation_again' => 'Αν θέλετε να αλλάξετε την διεύθυνση email σας <a href=":url" class="alert-link">πατήστε εδώ</a>.',
+    'confirmation_again' => 'Αν θέλετε να αλλάξετε την διεύθυνση email σας <a href=":url">πατήστε εδώ</a>.',
     'email_change_current_email' => 'Διεύθυνση email αυτή τη στιγμή:',
     'email_change_title' => 'Αλλάξτε την διεύθυνση email σας',
     'email_change_new' => 'Νέα διεύθυνση email',

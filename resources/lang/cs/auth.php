@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Before proceeding, please check your email for a verification link.',
     'confirmation_request_another' => 'If you did not receive the email <a :action>click here to request another</a>.',
 
-    'confirmation_again' => 'If you want to change your email address you can <a href=":url" class="alert-link">click here</a>.',
+    'confirmation_again' => 'If you want to change your email address you can <a href=":url">click here</a>.',
     'email_change_current_email' => 'Aktuální e-mailová adresa:',
     'email_change_title' => 'Změna e-mailové adresy',
     'email_change_new' => 'Nová e-mailová adresa',

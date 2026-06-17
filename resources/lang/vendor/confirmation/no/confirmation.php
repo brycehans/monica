@@ -11,6 +11,6 @@ return [
     'success' => 'Du har bekreftet din konto! Du kan nå logge inn.',
     'again' => 'Du må bekrefte e-postadressen din før du får tilgang til nettstedet.
                 <br/>Hvis du ikke har mottatt bekreftelsen for e-posten, sjekk søppelpostmappen din.
-                <br/>For å få en ny bekreftelses-e-post, <a href=":url" class="alert-link">klikk her</a>.',
+                <br/>For å få en ny bekreftelses-e-post, <a href=":url">klikk her</a>.',
     'resend' => 'En verifikasjons-epost har blitt sendt. Vennligst sjekk din e-post.'
 ];

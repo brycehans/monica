@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Før du fortsetter må du sjekke e-posten din for verifiseringslenken.',
     'confirmation_request_another' => 'Hvis du ikke mottok e-posten, <a :action>klikk her for å be om en ny</a>.',
 
-    'confirmation_again' => 'Hvis du vil endre din e-postadresse kan du <a href=":url" class="alert-link">klikke her</a>.',
+    'confirmation_again' => 'Hvis du vil endre din e-postadresse kan du <a href=":url">klikke her</a>.',
     'email_change_current_email' => 'Nåværende e-postadresse:',
     'email_change_title' => 'Endre e-postadresse',
     'email_change_new' => 'Ny e-postadresse',

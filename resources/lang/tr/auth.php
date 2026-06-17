@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Devam etmeden önce lütfen doğrulama linki için e-postanızı kontrol edin.',
     'confirmation_request_another' => 'E-postayı almadıysanız <a :action>başka bir tane istemek için buraya tıklayın</a>.',
 
-    'confirmation_again' => 'Eğer e-posta adresinizi değiştirmek istiyorsanız <a href=":url" class="alert-link">buraya tıklayabilirsiniz</a>.',
+    'confirmation_again' => 'Eğer e-posta adresinizi değiştirmek istiyorsanız <a href=":url">buraya tıklayabilirsiniz</a>.',
     'email_change_current_email' => 'Geçerli e-posta adresi:',
     'email_change_title' => 'E-posta adresini değiştir',
     'email_change_new' => 'Yeni e-posta adresi',

@@ -81,7 +81,7 @@ return [
     'confirmation_check' => '在您繼續之前，請檢查您的信箱以獲得驗證連結。',
     'confirmation_request_another' => '如果您沒有收到電子郵件 <a :action>, 請點擊此處重新發送</a>。',
 
-    'confirmation_again' => '如果要更改電子郵件地址, 可以 <a href=":url" class="alert-link">點擊此處</a>。',
+    'confirmation_again' => '如果要更改電子郵件地址, 可以 <a href=":url">點擊此處</a>。',
     'email_change_current_email' => '當前郵件地址：',
     'email_change_title' => '更換您的電子郵件',
     'email_change_new' => '新郵件地址：',

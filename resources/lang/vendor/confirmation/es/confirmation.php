@@ -11,6 +11,6 @@ return [
     'success' => '¡Has verificado tu cuenta con éxito! Ya puedes iniciar sesión.',
     'again' => 'Debes verificar tu correo electrónico antes de acceder al sitio.
                 <br/>Si no has recibido correo de confirmación, revisa tu carpeta de spam.
-                <br/>Para obtener un nuevo correo de confirmación, haz <a href=":url" class="alert-link">clic aquí</a>.',
+                <br/>Para obtener un nuevo correo de confirmación, haz <a href=":url">clic aquí</a>.',
     'resend' => 'Se ha enviado un mensaje de confirmación. Por favor, revisa tu bandeja de entrada.'
 ];

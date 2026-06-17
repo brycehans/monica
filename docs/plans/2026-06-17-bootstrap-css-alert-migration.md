@@ -168,6 +168,18 @@ The Playwright and Dusk suites both target the alert DOM by class selector. Foun
 
 Dusk isn't part of the standard verification cycle (`yarn run test` doesn't run it, neither does `yarn run e2e`), but the change is mechanical and the same migration logic applies — left out it'd be a latent regression for the next person to run `php artisan dusk`.
 
+### Locale-strings cleanup (`class="alert-link"`)
+
+Bootstrap's `.alert-link` rule (`font-weight: 700` on links inside alerts) shipped via `bootstrap/scss/_alert.scss` and is also retired by this PR's import drop. The `class="alert-link"` token appears in 53 locale-PHP files (23 `lang/{locale}/auth.php` for the `confirmation_again` string, plus 30 `lang/vendor/confirmation/{locale}/confirmation.php` for a now-removed package's `again` string). These translation strings are *not* in PurgeCSS's content glob (`vite.config.js:67-105` scans Blade/Vue/JS/PHP under `app/`, `resources/views`, `resources/js` — `resources/lang/` is intentionally excluded), so PurgeCSS already silently stripped the `.alert-link` rule from production CSS pre-PR. **Net effect pre-PR: the class rendered as bold-link only in dev builds; prod was a no-op.** Post-PR neither dev nor prod styles it.
+
+The dead attribute is stripped from all 53 locale files in this PR. This relaxes the "Crowdin owns non-en, don't hand-edit" rule, justified by:
+
+1. The change is **structural** (HTML-attribute hygiene), not a translation edit — the translatable text is byte-identical before/after the strip.
+2. Source-state consistency: the plan claims "zero `.alert*` selectors anywhere in source," and `.alert-link` would otherwise contradict that.
+3. The `vendor/confirmation/` strings have zero callers in the current app (grep `confirmation::` and `trans('confirmation` both return empty), so 30/53 of the edits are also dead-translation cleanup as a bonus.
+
+A future Crowdin sync that re-introduces `class="alert-link"` from the upstream TM will need either a re-strip or a Crowdin-side TM update — flagged in the commit message for the next person who runs the sync.
+
 ---
 
 ## PurgeCSS

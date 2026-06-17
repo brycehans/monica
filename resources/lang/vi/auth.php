@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Trước khi tiếp tục, hãy kiểm tra email của bạn cho liên kết xác thực.',
     'confirmation_request_another' => 'Nếu bạn không nhận được email  <a :action>bấm vào đây để yêu cầu một email khác</a>.',
 
-    'confirmation_again' => 'Nếu bạn muốn đổi địa chỉ email, bạn có thể <a href=":url" class="alert-link">bấm vào đây</a>.',
+    'confirmation_again' => 'Nếu bạn muốn đổi địa chỉ email, bạn có thể <a href=":url">bấm vào đây</a>.',
     'email_change_current_email' => 'Địa chỉ email hiện tại:',
     'email_change_title' => 'Đổi địa chỉ email',
     'email_change_new' => 'Địa chỉ email mới',
