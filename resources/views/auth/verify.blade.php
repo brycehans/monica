@@ -16,7 +16,7 @@
 
             <div class="card-body">
               @if (session('resent'))
-                <div class="alert alert-success" role="alert">
+                <div class="page-alert page-alert-success" role="alert">
                   {{ trans('auth.confirmation_fresh') }}
                 </div>
               @endif

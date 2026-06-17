@@ -1,6 +1,6 @@
 @if (($subscription = auth()->user()->account->getSubscribedPlan()) && $subscription->hasIncompletePayment())
 
-<div class="alert alert-success">
+<div class="page-alert page-alert-success">
   {!! trans('settings.subscriptions_account_confirm_payment', ['url' => route('settings.subscriptions.confirm', $subscription->latestPayment() ? $subscription->latestPayment()->id : '')]) !!}
 </div>
 

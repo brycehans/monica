@@ -3,7 +3,7 @@
     <notifications group="subscription" position="top middle" :duration="5000" width="400" />
 
     <div class="form-group">
-      <div v-if="errors" role="alert" class="alert alert-danger w-100">
+      <div v-if="errors" role="alert" class="page-alert page-alert-danger w-100">
         {{ errors }}
       </div>
 

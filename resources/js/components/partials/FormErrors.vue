@@ -1,5 +1,5 @@
 <template>
-  <div v-if="apierror || errors.length > 0" class="alert alert-danger">
+  <div v-if="apierror || errors.length > 0" class="page-alert page-alert-danger">
     <p>{{ t('app.error_title') }}</p>
     <template v-if="apierror">
       <ul v-if="apimessage">

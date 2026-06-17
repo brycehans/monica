@@ -26,7 +26,7 @@ test.describe('Monica v4 — password reset', () => {
     await page.getByRole('button', { name: 'Send Password Reset Link' }).click();
 
     // Laravel surfaces the post-submit confirmation via session('status'),
-    // rendered into an .alert-success block on the same view.
+    // rendered into a .page-alert-success block on the same view.
     await expect(page.locator('body')).toContainText(
       /password reset link|we have emailed/i,
     );

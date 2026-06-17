@@ -38,7 +38,7 @@
             @include ('partials.errors')
 
             @if (session('status'))
-              <div class="alert alert-success">
+              <div class="page-alert page-alert-success">
                 {{ session('status') }}
               </div>
             @endif
@@ -57,7 +57,7 @@
 
             <h4>{{ trans('settings.export_title_json') }}</h4>
             <p>{{ trans('settings.export_json_explanation') }}</p>
-            <div class="alert alert-success">
+            <div class="page-alert page-alert-success">
               {{ trans('settings.export_json_beta') }}
               <a href="https://github.com/monicahq/monica/discussions/5824" target="_blank" rel="noopener noreferrer">https://github.com/monicahq/monica/discussions/5824</a>
             </div>

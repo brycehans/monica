@@ -26,10 +26,10 @@ test.describe('Monica v4 — account data export', () => {
     await page.getByRole('button', { name: 'Export to Json' }).click();
 
     await expect(page).toHaveURL(/\/settings\/export$/);
-    // Scope to .alert-success — the dev container's Laravel Debugbar
+    // Scope to .page-alert-success — the dev container's Laravel Debugbar
     // dumps the session into the page footer, which duplicates flash text
     // and trips strict-mode matching against an unscoped getByText.
-    await expect(page.locator('.alert-success').getByText('Your export has been submitted')).toBeVisible();
+    await expect(page.locator('.page-alert-success').getByText('Your export has been submitted')).toBeVisible();
 
     // The exports list has a single "Done" row (fresh user — no prior
     // runs). Exact text match disambiguates from the "Json export is in
@@ -54,10 +54,10 @@ test.describe('Monica v4 — account data export', () => {
     await page.getByRole('button', { name: 'Export to SQL' }).click();
 
     await expect(page).toHaveURL(/\/settings\/export$/);
-    // Scope to .alert-success — the dev container's Laravel Debugbar
+    // Scope to .page-alert-success — the dev container's Laravel Debugbar
     // dumps the session into the page footer, which duplicates flash text
     // and trips strict-mode matching against an unscoped getByText.
-    await expect(page.locator('.alert-success').getByText('Your export has been submitted')).toBeVisible();
+    await expect(page.locator('.page-alert-success').getByText('Your export has been submitted')).toBeVisible();
     await expect(page.getByText('SQL export', { exact: true })).toBeVisible();
     await expect(page.getByText('Done', { exact: true })).toBeVisible();
 

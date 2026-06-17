@@ -22,7 +22,7 @@
   <div class="mw7 center br3 ba b--gray-monica bg-white mb6">
 
     @if (session('status'))
-    <div class="alert alert-success">
+    <div class="page-alert page-alert-success">
         {{ session('status') }}
     </div>
     @endif

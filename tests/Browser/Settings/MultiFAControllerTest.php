@@ -219,7 +219,7 @@ class MultiFAControllerTest extends DuskTestCase
 
             $this->assertTrue($this->hasDivAlert($browser));
             $notification = $this->getDivAlert($browser);
-            $this->assertStringContainsString('alert-danger', $notification->getAttribute('class'));
+            $this->assertStringContainsString('page-alert-danger', $notification->getAttribute('class'));
             $this->assertStringContainsString('The two factor authentication has failed.', $notification->getText());
         });
     }
