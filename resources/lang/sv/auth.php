@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Innan du fortsätter, kontrollera din e-post efter en verifieringslänk.',
     'confirmation_request_another' => 'Om du inte fick e-postmeddelandet <a :action>klicka här för att begära en annan</a>.',
 
-    'confirmation_again' => 'Om du vill ändra din e-postadress kan du <a href=":url" class="alert-link">klicka här</a>.',
+    'confirmation_again' => 'Om du vill ändra din e-postadress kan du <a href=":url">klicka här</a>.',
     'email_change_current_email' => 'Nuvarande e-postadresser:',
     'email_change_title' => 'Ändra din e-postadress',
     'email_change_new' => 'Ny e-postadress',

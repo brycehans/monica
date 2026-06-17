@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Antes de proceder, por favor comprueba el link de verificación en tu correo electrónico.',
     'confirmation_request_another' => 'Si no has recibido el correo electrónico <a :action>haz clic aquí para solicitar otro</a>.',
 
-    'confirmation_again' => 'Si deseas cambiar tu dirección de correo electrónico, puedes <a href=":url" class="alert-link">hacer clic aquí</a>.',
+    'confirmation_again' => 'Si deseas cambiar tu dirección de correo electrónico, puedes <a href=":url">hacer clic aquí</a>.',
     'email_change_current_email' => 'Dirección de correo electrónico actual:',
     'email_change_title' => 'Cambiar tu dirección de correo electrónico',
     'email_change_new' => 'Nueva dirección de correo electrónico',

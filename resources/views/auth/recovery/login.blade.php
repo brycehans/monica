@@ -16,7 +16,7 @@
 
             @include ('partials.errors')
             @if (session('status'))
-              <div class="alert alert-success">
+              <div class="page-alert page-alert-success">
                 {{ session('status') }}
               </div>
             @endif

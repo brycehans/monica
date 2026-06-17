@@ -40,7 +40,7 @@ test.describe('Monica v4 — signup duplicate email', () => {
     await page.getByRole('button', { name: 'Register' }).click();
 
     // Laravel surfaces the unique-constraint validation as "The email has
-    // already been taken." inside the form's .alert block.
+    // already been taken." inside the form's .page-alert block.
     await expect(page).toHaveURL(/\/register$/);
     await expect(page.locator('body')).toContainText(/email has already been taken/i);
 

@@ -56,7 +56,7 @@
               </div>
             @endforeach
 
-            <p class="ma3 alert alert-success">{{ trans('settings.subscriptions_account_update_information') }}</p>
+            <p class="ma3 page-alert page-alert-success">{{ trans('settings.subscriptions_account_update_information') }}</p>
 
             <div class="tc">
               <button type="submit" class="btn btn-primary">{{ trans('app.confirm') }}</button>

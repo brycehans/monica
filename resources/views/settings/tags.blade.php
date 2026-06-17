@@ -54,7 +54,7 @@
               <p>{{ trans('settings.tags_list_description') }}</p>
 
               @if (session('success'))
-                <div class="alert alert-success">
+                <div class="page-alert page-alert-success">
                     {{ session('success') }}
                 </div>
               @endif

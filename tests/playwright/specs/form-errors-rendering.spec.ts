@@ -58,7 +58,7 @@ test.describe('Monica v4 — FormErrors rendering (#625)', () => {
     await page.getByRole('link', { name: 'Save', exact: true }).click();
 
     await expect(
-      page.locator('.alert.alert-danger').filter({ hasText: 'Field type create: intercepted message' }),
+      page.locator('.page-alert.page-alert-danger').filter({ hasText: 'Field type create: intercepted message' }),
     ).toBeVisible();
 
     consoleGate.assertNoUnknownErrors('contactfieldtypes/create');
@@ -87,7 +87,7 @@ test.describe('Monica v4 — FormErrors rendering (#625)', () => {
     await page.getByRole('link', { name: 'Edit', exact: true }).click();
 
     await expect(
-      page.locator('.alert.alert-danger').filter({ hasText: 'Field type edit: intercepted message' }),
+      page.locator('.page-alert.page-alert-danger').filter({ hasText: 'Field type edit: intercepted message' }),
     ).toBeVisible();
 
     consoleGate.assertNoUnknownErrors('contactfieldtypes/edit');
@@ -107,7 +107,7 @@ test.describe('Monica v4 — FormErrors rendering (#625)', () => {
     await page.getByRole('link', { name: 'Create', exact: true }).click();
 
     await expect(
-      page.locator('.alert.alert-danger').filter({ hasText: 'Token create: intercepted message' }),
+      page.locator('.page-alert.page-alert-danger').filter({ hasText: 'Token create: intercepted message' }),
     ).toBeVisible();
 
     consoleGate.assertNoUnknownErrors('oauth/personal-access-tokens/create');
@@ -128,7 +128,7 @@ test.describe('Monica v4 — FormErrors rendering (#625)', () => {
     await page.getByRole('link', { name: 'Create', exact: true }).click();
 
     await expect(
-      page.locator('.alert.alert-danger').filter({ hasText: 'Client create: intercepted message' }),
+      page.locator('.page-alert.page-alert-danger').filter({ hasText: 'Client create: intercepted message' }),
     ).toBeVisible();
 
     consoleGate.assertNoUnknownErrors('oauth/clients/create');
@@ -150,7 +150,7 @@ test.describe('Monica v4 — FormErrors rendering (#625)', () => {
     await page.getByRole('button', { name: 'Add', exact: true }).click();
 
     await expect(
-      page.locator('.alert.alert-danger').filter({ hasText: 'Gift create: intercepted message' }),
+      page.locator('.page-alert.page-alert-danger').filter({ hasText: 'Gift create: intercepted message' }),
     ).toBeVisible();
 
     consoleGate.assertNoUnknownErrors('people/h:<contact>/gifts/create');
@@ -173,7 +173,7 @@ test.describe('Monica v4 — FormErrors rendering (#625)', () => {
     await page.getByRole('button', { name: 'Add', exact: true }).click();
 
     await expect(
-      page.locator('.alert.alert-danger').filter({ hasText: 'Activity create: intercepted message' }),
+      page.locator('.page-alert.page-alert-danger').filter({ hasText: 'Activity create: intercepted message' }),
     ).toBeVisible();
 
     consoleGate.assertNoUnknownErrors('activities/create');

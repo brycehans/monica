@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Avant de continuer, veuillez vérifier votre boîte mail pour un lien de vérification.',
     'confirmation_request_another' => 'Si vous n’avez pas reçu le courriel <a :action>cliquez ici pour en demander un autre</a>.',
 
-    'confirmation_again' => 'Si vous souhaitez modifier votre adresse courriel vous pouvez <a href=":url" class="alert-link">cliquer ici</a>.',
+    'confirmation_again' => 'Si vous souhaitez modifier votre adresse courriel vous pouvez <a href=":url">cliquer ici</a>.',
     'email_change_current_email' => 'Adresse courriel actuelle :',
     'email_change_title' => 'Modifier votre adresse courriel',
     'email_change_new' => 'Nouvelle adresse courriel',

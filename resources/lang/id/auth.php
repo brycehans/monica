@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'Sebelum melanjutkan, silakan periksa email Anda untuk sebuah tautan verifikasi.',
     'confirmation_request_another' => 'Jika Anda tidak menerima email <a :action>>klik di sini untuk meminta lagi</a>.',
 
-    'confirmation_again' => 'Jika Anda ingin mengganti alamat email Anda, Anda bisa <a href=":url" class="alert-link">klik di sini</a>.',
+    'confirmation_again' => 'Jika Anda ingin mengganti alamat email Anda, Anda bisa <a href=":url">klik di sini</a>.',
     'email_change_current_email' => 'Alamat email saat ini:',
     'email_change_title' => 'Ganti alamat email Anda',
     'email_change_new' => 'Alamat email baru',

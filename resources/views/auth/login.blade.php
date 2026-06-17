@@ -16,20 +16,20 @@
 
             @include ('partials.errors')
             @if (session('status'))
-              <div class="alert alert-success">
+              <div class="page-alert page-alert-success">
                 {{ session('status') }}
               </div>
             @endif
             @if (session('confirmation-success'))
-              <div class="alert alert-success">
+              <div class="page-alert page-alert-success">
                 {{ session('confirmation-success') }}
               </div>
             @endif
             @if (session('confirmation-danger'))
-              <div class="alert alert-danger">
+              <div class="page-alert page-alert-danger">
                 {!! __(session('confirmation-danger'), ['url' => 'confirmation/resend']) !!}
               </div>
-              <div class="alert alert-danger">
+              <div class="page-alert page-alert-danger">
                 {!! trans('auth.confirmation_again', ['url' => 'settings/emailchange1']) !!}
               </div>
             @endif

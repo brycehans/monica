@@ -81,7 +81,7 @@ return [
     'confirmation_check' => 'قبل از ادامه، لطفاً ایمیل خود را برای لینک تأیید بررسی کنید.',
     'confirmation_request_another' => 'اگر ایمیل را دریافت نکرده اید  <a :action>برای درخواست مجدد اینجا کلیک کنید</a>.',
 
-    'confirmation_again' => 'اگر میخواهید ایمیل خود را تغییر دهید می‌توانید <a href=":url" class="alert-link">اینجا کلیک کنید</a>.',
+    'confirmation_again' => 'اگر میخواهید ایمیل خود را تغییر دهید می‌توانید <a href=":url">اینجا کلیک کنید</a>.',
     'email_change_current_email' => 'ادرس ایمیل فعلی:',
     'email_change_title' => 'آدرس ایمیل خود را تغییر دهید',
     'email_change_new' => 'آدرس ایمیل جدید',

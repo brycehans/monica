@@ -60,9 +60,9 @@ test.describe('Monica v4 — dependency-upgrade smoke walkthrough', () => {
     await page.getByRole('textbox', { name: 'Password' }).fill('not-a-real-password');
     await page.getByRole('button', { name: 'Login' }).click();
 
-    // The login validation error is rendered as a Bootstrap alert div
-    // (.alert.alert-danger) wrapped around a <ul>. Laravel surfaces the
-    // validation message verbatim; verify the well-known string so a
+    // The login validation error is rendered as a project alert div
+    // (.page-alert.page-alert-danger) wrapped around a <ul>. Laravel surfaces
+    // the validation message verbatim; verify the well-known string so a
     // future copy change is caught.
     await expect(page.locator('body')).toContainText('These credentials do not match our records');
     await expect(page).toHaveURL(/\/login$/);
